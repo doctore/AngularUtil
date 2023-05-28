@@ -10,7 +10,7 @@
   - [Build](#build)
   - [Running unit tests](#running-unit-tests)
   - [Running end-to-end tests](#running-end-to-end-tests)
-  - [Further help](#further help) 
+  - [Further help](#further-help) 
 
 
 ## Why was this project created?
