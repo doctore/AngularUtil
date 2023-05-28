@@ -1,0 +1,38 @@
+<div class="modal modal-table"
+     id="alertConfirmation"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="modalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">{{ title }}</h5>
+        <button type="button"
+                class="btn-close close pull-right"
+                aria-label="Close"
+                (click)="onCloseClick()">
+        </button>
+      </div>
+      <div class="modal-body">
+        <p [innerHTML]="bodyMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button id="secondaryButton"
+                *ngIf="textSecondaryButton"
+                type="button"
+                class="btn btn-secondary"
+                (click)="onCloseClick()">
+          {{ textSecondaryButton }}
+        </button>
+        <button id="primaryButton"
+                *ngIf="textPrimaryButton"
+                type="button"
+                class="btn btn-primary"
+                (click)="onOkClick()">
+          {{ textPrimaryButton }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
