@@ -43,7 +43,7 @@ Different new types related with functional programming like:
 * [ArrayUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/array.util.ts)
 * [AssertUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/assert.util.ts)
 * [StringUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/string.util.ts)
-
+<br><br>
 
 
 ## How to use the project
