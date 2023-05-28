@@ -1,5 +1,5 @@
 import { AssertUtil } from '@app-core/util';
-import { Consumer1, Function0, isFFunction0, Nullable, PObject, TFunction0 } from '@app-core/types';
+import { Consumer1, Function0, isFFunction0, Nullable, PObject, Predicate1, TConsumer1, TFunction0, TPredicate1 } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
 import * as _ from 'lodash';
 
@@ -59,14 +59,14 @@ export class Optional<T> {
    * @return an {@link Optional} with a present value if the specified value
    *         is non-{@code null}, otherwise an empty {@link Optional}
    */
-  static ofNullableOrUndefined = <T>(value?: Nullable<T>): Optional<T> =>
+  static ofNullable = <T>(value?: Nullable<T>): Optional<T> =>
     _.isNil(value)
       ? Optional.empty()
       : Optional.of(value);
 
 
   /**
-   * Returns {@code true} if the argument is equal to the current one, {@code false} otherwise.
+   * Returns {@code true} if {@code other} is equal to this {@link Optional}, {@code false} otherwise.
    *
    * @apiNote
    *    Due to we cannot know the type of generics in runtime, this function will return
@@ -74,6 +74,9 @@ export class Optional<T> {
    *
    * @param other
    *    {@link Optional} to compare
+   *
+   * @return {@code true} if the {@code other} is equal to this {@link Optional},
+   *         {@code false} otherwise.
    */
   equals = <U>(other?: Nullable<Optional<U>>): boolean => {
     if (_.isNil(other) ||
@@ -84,6 +87,24 @@ export class Optional<T> {
       ? true
       : this.internalEqualResult(other);
   }
+
+
+  /**
+   *    If the {@link Optional}'s value is not {@code null} and it matches the given {@link TPredicate1}, returns an
+   * {@link Optional} describing the value, {@link Optional#empty} otherwise.
+   *
+   * @param predicate
+   *    The {@link Predicate1} to apply to {@link Optional}'s value, if present
+   *
+   * @return an {@link Optional} describing the value of this {@link Optional}, if it is present and matches the
+   *         given {@link TPredicate1}, {@link Optional#empty} otherwise
+   */
+  filter = (predicate: TPredicate1<T>): Optional<T> =>
+    !this.isPresent()
+      ? Optional.empty()
+      : Predicate1.of(predicate).apply(this.value)
+        ? Optional.of<T>(this.value!)
+        : Optional.empty();
 
 
   /**
@@ -140,15 +161,16 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional}'s value is not {@code null}, performs the given {@link Consumer1} using internal value
+   *    If the {@link Optional}'s value is not {@code null}, performs the given {@link TConsumer1} using internal value
    * as input parameter, does nothing otherwise.
    *
    * @param action
-   *    {@link Consumer1} to be invoked, of the curren {@link Optional} is not empty
+   *    {@link TConsumer1} to be invoked, of the curren {@link Optional} is not empty
    */
-  ifPresent = (action: Consumer1<T>): void => {
+  ifPresent = (action: TConsumer1<T>): void => {
     if (this.isPresent()) {
-      action.apply(this.value);
+      Consumer1.of(action)
+        .apply(this.value);
     }
   }
 

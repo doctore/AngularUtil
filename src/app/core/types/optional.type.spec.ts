@@ -1,4 +1,4 @@
-import { FFunction0, Function0, Optional, PObject } from '@app-core/types';
+import { FConsumer1, FFunction0, FPredicate1, Function0, NullableOrUndefined, Optional, PObject } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
 import * as _ from "lodash";
 
@@ -150,6 +150,61 @@ describe('Optional', () => {
 
 
 
+  describe('filter', () => {
+
+    it('when the Optional is empty then predicate is not invoked and an empty Optional is returned', () => {
+      const isEven: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+
+      const isEvenSpy = jasmine.createSpy('isEven', isEven);
+
+      // @ts-ignore
+      expect(Optional.empty().filter(isEvenSpy).isPresent()).toBeFalse();
+
+      expect(isEvenSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is not empty then predicate is invoked', () => {
+      const isEven: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+
+      const isEvenSpy = jasmine.createSpy('isEven', isEven);
+
+      // @ts-ignore
+      expect(Optional.of(1).filter(isEvenSpy).isPresent()).toBeFalse();
+
+      expect(isEvenSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Optional is not empty and predicate does not match then an empty Optional is returned', () => {
+      const isEven: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+
+      expect(Optional.of(1).filter(isEven).isPresent()).toBeFalse();
+      expect(Optional.of(9).filter(isEven).isPresent()).toBeFalse();
+    });
+
+
+    it('when the Optional is not empty and predicate matches then same Optional is returned', () => {
+      const isEven: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+
+      const optional1 = Optional.of(2).filter(isEven);
+      const optional2 = Optional.of(18).filter(isEven);
+
+      expect(optional1.isPresent()).toBeTrue();
+      expect(optional1.get()).toEqual(2);
+
+      expect(optional2.isPresent()).toBeTrue();
+      expect(optional2.get()).toEqual(18);
+    });
+
+  });
+
+
+
   describe('get', () => {
 
     it('when the Optional is empty then an error is thrown', () => {
@@ -162,7 +217,7 @@ describe('Optional', () => {
       const stringValue = 'abd';
 
       expect(Optional.of(intValue).get()).toEqual(intValue);
-      expect(Optional.ofNullableOrUndefined(stringValue).get()).toEqual(stringValue);
+      expect(Optional.ofNullable(stringValue).get()).toEqual(stringValue);
     });
 
   });
@@ -178,7 +233,7 @@ describe('Optional', () => {
       const stringSupplier: Function0<string> = Function0.of(() => 'yxz');
 
       const getOrElseIntResult = Optional.of(intValue).getOrElse(14);
-      const getOrElseStringResult = Optional.ofNullableOrUndefined(stringValue).getOrElse(stringSupplier);
+      const getOrElseStringResult = Optional.ofNullable(stringValue).getOrElse(stringSupplier);
 
       expect(getOrElseIntResult).toEqual(intValue);
       expect(getOrElseStringResult).toEqual(stringValue);
@@ -190,7 +245,7 @@ describe('Optional', () => {
       const otherStringValue = 'abd';
 
       const getOrElseIntResult = Optional.empty().getOrElse(otherIntValue);
-      const getOrElseStringResult = Optional.ofNullableOrUndefined<string>(null).getOrElse(otherStringValue);
+      const getOrElseStringResult = Optional.ofNullable<string>(null).getOrElse(otherStringValue);
 
       expect(getOrElseIntResult).toEqual(otherIntValue);
       expect(getOrElseStringResult).toEqual(otherStringValue);
@@ -205,10 +260,53 @@ describe('Optional', () => {
       const otherStringFunc: Function0<string> = Function0.of(() => otherStringValue);
 
       const getOrElseIntResult = Optional.empty().getOrElse(otherIntFunc);
-      const getOrElseStringResult = Optional.ofNullableOrUndefined<string>(null).getOrElse(otherStringFunc);
+      const getOrElseStringResult = Optional.ofNullable<string>(null).getOrElse(otherStringFunc);
 
       expect(getOrElseIntResult).toEqual(otherIntValue);
       expect(getOrElseStringResult).toEqual(otherStringValue);
+    });
+
+  });
+
+
+
+  describe('ifPresent', () => {
+
+    it('when the Optional is empty then action is not invoked', () => {
+      const plus2: FConsumer1<number> =
+        (n: NullableOrUndefined<number>) => { n! += 2; };
+
+      const plus2Spy = jasmine.createSpy('action', plus2);
+
+      // @ts-ignore
+      Optional.empty().ifPresent(plus2Spy);
+
+      expect(plus2Spy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is not empty then action is invoked', () => {
+      const plus2: FConsumer1<number> =
+        (n: NullableOrUndefined<number>) => { n! += 2; };
+
+      const plus2Spy = jasmine.createSpy('action', plus2);
+
+      // @ts-ignore
+      Optional.of(1).ifPresent(plus2Spy);
+
+      expect(plus2Spy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Optional is not empty then action is invoked and the values of the Optional updated', () => {
+      const objectForTesting = { name: 'ForTestPurpose' };
+      const objNameV2 = objectForTesting.name + 'V2';
+      const actionFunction = (obj: NullableOrUndefined<{ name: string }>) => obj!.name = objNameV2;
+
+      const optionalObject = Optional.of(objectForTesting);
+      optionalObject.ifPresent(actionFunction);
+
+      expect(optionalObject.get().name).toEqual(objNameV2);
     });
 
   });
@@ -219,13 +317,13 @@ describe('Optional', () => {
 
     it('when no value is provided then false is returned', () => {
       expect(Optional.empty().isPresent()).toBeFalse();
-      expect(Optional.ofNullableOrUndefined().isPresent()).toBeFalse();
-      expect(Optional.ofNullableOrUndefined(null).isPresent()).toBeFalse();
+      expect(Optional.ofNullable().isPresent()).toBeFalse();
+      expect(Optional.ofNullable(null).isPresent()).toBeFalse();
     });
 
 
     it('when a value is provided then true is returned', () => {
-      expect(Optional.ofNullableOrUndefined(12).isPresent()).toBeTrue();
+      expect(Optional.ofNullable(12).isPresent()).toBeTrue();
       expect(Optional.of('abc').isPresent()).toBeTrue();
     });
 
@@ -256,12 +354,12 @@ describe('Optional', () => {
 
 
 
-  describe('ofNullableOrUndefined', () => {
+  describe('ofNullable', () => {
 
     it('when null or undefined is given then empty Optional is returned', () => {
-      expect(Optional.ofNullableOrUndefined().isPresent()).toBeFalse();
-      expect(Optional.ofNullableOrUndefined(null).isPresent()).toBeFalse();
-      expect(Optional.ofNullableOrUndefined(undefined).isPresent()).toBeFalse();
+      expect(Optional.ofNullable().isPresent()).toBeFalse();
+      expect(Optional.ofNullable(null).isPresent()).toBeFalse();
+      expect(Optional.ofNullable(undefined).isPresent()).toBeFalse();
     });
 
 
@@ -269,11 +367,11 @@ describe('Optional', () => {
       const intValue = 11;
       const stringValue = 'abd';
 
-      expect(Optional.ofNullableOrUndefined(intValue).isPresent()).toBeTrue();
-      expect(Optional.ofNullableOrUndefined(intValue).get()).toEqual(intValue);
+      expect(Optional.ofNullable(intValue).isPresent()).toBeTrue();
+      expect(Optional.ofNullable(intValue).get()).toEqual(intValue);
 
-      expect(Optional.ofNullableOrUndefined(stringValue).isPresent()).toBeTrue();
-      expect(Optional.ofNullableOrUndefined(stringValue).get()).toEqual(stringValue);
+      expect(Optional.ofNullable(stringValue).isPresent()).toBeTrue();
+      expect(Optional.ofNullable(stringValue).get()).toEqual(stringValue);
     });
 
   });
@@ -290,7 +388,7 @@ describe('Optional', () => {
       const otherStringOptional = Optional.of('yxz');
 
       const orElseIntResult = Optional.of(intValue).orElse(otherIntOptional);
-      const orElseStringResult = Optional.ofNullableOrUndefined(stringValue).orElse(otherStringOptional);
+      const orElseStringResult = Optional.ofNullable(stringValue).orElse(otherStringOptional);
 
       expect(orElseIntResult.get()).toEqual(intValue);
       expect(orElseStringResult.get()).toEqual(stringValue);
@@ -305,7 +403,7 @@ describe('Optional', () => {
       const otherStringOptional = Optional.of(otherStringValue);
 
       const orElseIntResult = Optional.empty<number>().orElse(otherIntOptional);
-      const orElseStringResult = Optional.ofNullableOrUndefined<string>(null).orElse(otherStringOptional);
+      const orElseStringResult = Optional.ofNullable<string>(null).orElse(otherStringOptional);
 
       expect(orElseIntResult.get()).toEqual(otherIntValue);
       expect(orElseStringResult.get()).toEqual(otherStringValue);

@@ -263,7 +263,7 @@ export class PartialFunction<T, R> {
     Function1.of(
       (t: NullableOrUndefined<T>) =>
         this.isDefinedAt(t)
-          ? Optional.ofNullableOrUndefined(
+          ? Optional.ofNullable(
               this.apply(t)
             )
           : Optional.empty()
