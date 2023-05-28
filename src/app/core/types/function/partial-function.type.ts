@@ -167,7 +167,8 @@ export class PartialFunction<T, R> {
    * @return new instance of R
    *
    */
-  apply = (t: NullableOrUndefined<T>): R => this.mapper.apply(t);
+  apply = (t: NullableOrUndefined<T>): R =>
+    this.mapper.apply(t);
 
 
   /**

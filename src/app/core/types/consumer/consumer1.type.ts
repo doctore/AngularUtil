@@ -126,6 +126,7 @@ export class Consumer1<T> {
    * @param t
    *    The input argument
    */
-  apply = (t: NullableOrUndefined<T>): void => this.action(t);
+  apply = (t: NullableOrUndefined<T>): void =>
+    this.action(t);
 
 }

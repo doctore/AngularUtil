@@ -231,7 +231,8 @@ export class Predicate2<T1, T2> {
    *         {@code false} otherwise
    */
   apply = (t1: NullableOrUndefined<T1>,
-           t2: NullableOrUndefined<T2>): boolean => this.verifier(t1, t2);
+           t2: NullableOrUndefined<T2>): boolean =>
+    this.verifier(t1, t2);
 
 
   /**

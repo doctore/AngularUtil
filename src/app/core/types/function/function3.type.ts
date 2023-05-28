@@ -147,6 +147,7 @@ export class Function3<T1, T2, T3, R> {
    */
   apply = (t1: NullableOrUndefined<T1>,
            t2: NullableOrUndefined<T2>,
-           t3: NullableOrUndefined<T3>): R => this.mapper(t1, t2, t3);
+           t3: NullableOrUndefined<T3>): R =>
+    this.mapper(t1, t2, t3);
 
 }

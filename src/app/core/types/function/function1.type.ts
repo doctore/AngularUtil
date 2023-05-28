@@ -138,7 +138,8 @@ export class Function1<T, R> {
    *
    * @return new instance of R
    */
-  apply = (t: NullableOrUndefined<T>): R => this.mapper(t);
+  apply = (t: NullableOrUndefined<T>): R =>
+    this.mapper(t);
 
 
   /**

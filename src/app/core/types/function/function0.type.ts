@@ -103,6 +103,7 @@ export class Function0<R> {
    *
    * @return new instance of R
    */
-  apply = (): R => this.mapper();
+  apply = (): R =>
+    this.mapper();
 
 }

@@ -116,6 +116,7 @@ export class Consumer0 {
   /**
    * Applies this {@link Consumer0}.
    */
-  apply = (): void => this.action();
+  apply = (): void =>
+    this.action();
 
 }
