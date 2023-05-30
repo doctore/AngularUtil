@@ -4,7 +4,7 @@ import { Nullable } from '@app-core/types';
 /**
  * Defines global properties and methods that different declared classes can use as parent one.
  */
-export abstract class PObject {
+export abstract class BaseObject {
 
   /**
    * Returns {@code true} if the current instance is equals to {@code other}, {@link false} otherwise.

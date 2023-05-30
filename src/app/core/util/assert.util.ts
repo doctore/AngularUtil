@@ -1,5 +1,5 @@
 import { IllegalArgumentError } from '@app-core/errors';
-import {isFFunction0, Function0, TFunction0, Nullable, NullableOrUndefined} from '@app-core/types';
+import { isFFunction0, Function0, TFunction0, Nullable, NullableOrUndefined } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**

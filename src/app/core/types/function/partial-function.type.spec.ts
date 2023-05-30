@@ -38,13 +38,13 @@ describe('PartialFunction', () => {
 
 
     it('when a partial function is provided then true is returned', () => {
-      const plus2ForEven: PartialFunction<number, number> =
+      const multiply2ForEven: PartialFunction<number, number> =
         PartialFunction.of(
           (n: NullableOrUndefined<number>) => 0 == n! % 2,
           (n: NullableOrUndefined<number>) => 2 * n!
         );
 
-      expect(PartialFunction.isPartialFunction(plus2ForEven)).toBeTrue();
+      expect(PartialFunction.isPartialFunction(multiply2ForEven)).toBeTrue();
     });
 
   });
@@ -57,10 +57,10 @@ describe('PartialFunction', () => {
       const isEven: FPredicate1<number> =
         (n: NullableOrUndefined<number>) => 0 == n! % 2;
 
-      const plus2: FFunction1<number, number> =
+      const multiply2: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 2 * n!;
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.apply(2)).toEqual(4);
@@ -72,10 +72,10 @@ describe('PartialFunction', () => {
       const isEven: Predicate1<number> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.apply(2)).toEqual(4);
@@ -94,17 +94,17 @@ describe('PartialFunction', () => {
       const stringLength: Function1<string, number> =
         Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
-      const plus2: FFunction1<number, number> =
+      const multiply2: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 2 * n!;
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
-      const stringLengthIfLongerThan3AndThenPlus2 = stringLengthIfLongerThan3.andThen(plus2);
+      const stringLengthIfLongerThan3AndThenMultiply2 = stringLengthIfLongerThan3.andThen(multiply2);
 
-      expect(stringLengthIfLongerThan3AndThenPlus2.isDefinedAt('0')).toBeFalse();
-      expect(stringLengthIfLongerThan3AndThenPlus2.isDefinedAt('abcd')).toBeTrue();
+      expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('0')).toBeFalse();
+      expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('abcd')).toBeTrue();
 
-      expect(stringLengthIfLongerThan3AndThenPlus2.apply('0')).toEqual(2);
-      expect(stringLengthIfLongerThan3AndThenPlus2.apply('abcd')).toEqual(8);
+      expect(stringLengthIfLongerThan3AndThenMultiply2.apply('0')).toEqual(2);
+      expect(stringLengthIfLongerThan3AndThenMultiply2.apply('abcd')).toEqual(8);
     });
 
 
@@ -115,17 +115,17 @@ describe('PartialFunction', () => {
       const stringLength: Function1<string, number> =
         Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
-      const stringLengthIfLongerThan3AndThenPlus2 = stringLengthIfLongerThan3.andThen(plus2);
+      const stringLengthIfLongerThan3AndThenMultiply2 = stringLengthIfLongerThan3.andThen(multiply2);
 
-      expect(stringLengthIfLongerThan3AndThenPlus2.isDefinedAt('0')).toBeFalse();
-      expect(stringLengthIfLongerThan3AndThenPlus2.isDefinedAt('abcd')).toBeTrue();
+      expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('0')).toBeFalse();
+      expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('abcd')).toBeTrue();
 
-      expect(stringLengthIfLongerThan3AndThenPlus2.apply('0')).toEqual(2);
-      expect(stringLengthIfLongerThan3AndThenPlus2.apply('abcd')).toEqual(8);
+      expect(stringLengthIfLongerThan3AndThenMultiply2.apply('0')).toEqual(2);
+      expect(stringLengthIfLongerThan3AndThenMultiply2.apply('abcd')).toEqual(8);
     });
 
 
@@ -139,21 +139,21 @@ describe('PartialFunction', () => {
       const stringLength: Function1<string, number> =
         Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
-      const plus2IfLowerThan10 = PartialFunction.of(lowerThan10, plus2);
+      const multiply2IfLowerThan10 = PartialFunction.of(lowerThan10, multiply2);
 
-      const stringLengthIfLongerThan3AndThenPlus2IfLowerThan10 = stringLengthIfLongerThan3.andThen(plus2IfLowerThan10);
+      const stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10 = stringLengthIfLongerThan3.andThen(multiply2IfLowerThan10);
 
-      expect(stringLengthIfLongerThan3AndThenPlus2IfLowerThan10.isDefinedAt('0')).toBeFalse();
-      expect(stringLengthIfLongerThan3AndThenPlus2IfLowerThan10.isDefinedAt('0123456789')).toBeFalse();
-      expect(stringLengthIfLongerThan3AndThenPlus2IfLowerThan10.isDefinedAt('abcd')).toBeTrue();
+      expect(stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10.isDefinedAt('0')).toBeFalse();
+      expect(stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10.isDefinedAt('0123456789')).toBeFalse();
+      expect(stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10.isDefinedAt('abcd')).toBeTrue();
 
-      expect(stringLengthIfLongerThan3AndThenPlus2IfLowerThan10.apply('0')).toEqual(2);
-      expect(stringLengthIfLongerThan3AndThenPlus2IfLowerThan10.apply('0123456789')).toEqual(20);
-      expect(stringLengthIfLongerThan3AndThenPlus2IfLowerThan10.apply('abcd')).toEqual(8);
+      expect(stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10.apply('0')).toEqual(2);
+      expect(stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10.apply('0123456789')).toEqual(20);
+      expect(stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10.apply('abcd')).toEqual(8);
     });
 
   });
@@ -166,10 +166,10 @@ describe('PartialFunction', () => {
       const isEven: Predicate1<number> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
       expect(partialFunction.apply(5)).toEqual(10);
       expect(partialFunction.apply(8)).toEqual(16);
@@ -184,16 +184,16 @@ describe('PartialFunction', () => {
       const isEven: Predicate1<number> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const sum10: Function1<number, number> =
+      const plus10: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 10 + n!);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
-      expect(partialFunction.applyOrElse(2, sum10)).toEqual(4);
-      expect(partialFunction.applyOrElse(8, sum10)).toEqual(16);
+      expect(partialFunction.applyOrElse(2, plus10)).toEqual(4);
+      expect(partialFunction.applyOrElse(8, plus10)).toEqual(16);
     });
 
 
@@ -201,16 +201,16 @@ describe('PartialFunction', () => {
       const isEven: Predicate1<number> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const sum10: FFunction1<number, number> =
+      const plus10: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 10 + n!;
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
-      expect(partialFunction.applyOrElse(1, sum10)).toEqual(11);
-      expect(partialFunction.applyOrElse(9, sum10)).toEqual(19);
+      expect(partialFunction.applyOrElse(1, plus10)).toEqual(11);
+      expect(partialFunction.applyOrElse(9, plus10)).toEqual(19);
     });
 
 
@@ -218,16 +218,16 @@ describe('PartialFunction', () => {
       const isEven: Predicate1<number> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const sum10: Function1<number, number> =
+      const plus10: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 10 + n!);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
-      expect(partialFunction.applyOrElse(3, sum10)).toEqual(13);
-      expect(partialFunction.applyOrElse(7, sum10)).toEqual(17);
+      expect(partialFunction.applyOrElse(3, plus10)).toEqual(13);
+      expect(partialFunction.applyOrElse(7, plus10)).toEqual(17);
     });
 
   });
@@ -315,10 +315,10 @@ describe('PartialFunction', () => {
       const isEven: Predicate1<number> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
       expect(partialFunction.isDefinedAt(1)).toBeFalse();
       expect(partialFunction.isDefinedAt(5)).toBeFalse();
@@ -329,10 +329,10 @@ describe('PartialFunction', () => {
       const isEven: Predicate1<number> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const partialFunction = PartialFunction.of(isEven, multiply2);
 
       expect(partialFunction.isDefinedAt(10)).toBeTrue();
       expect(partialFunction.isDefinedAt(12)).toBeTrue();
@@ -345,10 +345,13 @@ describe('PartialFunction', () => {
   describe('lift', () => {
 
     it('when input does not belong to domain of PartialFunction then Function1 returns an empty Optional', () => {
-      const isEven: Predicate1<number> = Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
-      const plus2: Function1<number, number> = Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const multiply2: Function1<number, number> =
+        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+
+      const partialFunction = PartialFunction.of(isEven, multiply2);
       const function1: Function1<number, Optional<number>> = partialFunction.lift();
 
       expect(function1.apply(1).isPresent()).toBeFalse();
@@ -357,10 +360,13 @@ describe('PartialFunction', () => {
 
 
     it('when input belongs to domain of PartialFunction then Function1 returns a not empty Optional', () => {
-      const isEven: Predicate1<number> = Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
-      const plus2: Function1<number, number> = Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const partialFunction = PartialFunction.of(isEven, plus2);
+      const multiply2: Function1<number, number> =
+        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+
+      const partialFunction = PartialFunction.of(isEven, multiply2);
       const function1: Function1<number, Optional<number>> = partialFunction.lift();
 
       expect(function1.apply(10).isPresent()).toBeTrue();

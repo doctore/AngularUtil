@@ -1,6 +1,16 @@
-import { FConsumer1, FFunction0, FPredicate1, Function0, NullableOrUndefined, Optional, PObject } from '@app-core/types';
+import {
+  BaseObject,
+  FConsumer1,
+  FFunction0,
+  FFunction1,
+  FPredicate1,
+  Function0,
+  NullableOrUndefined,
+  Optional,
+  PartialFunction
+} from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 /**
  * To invoke only this test:
@@ -8,6 +18,61 @@ import * as _ from "lodash";
  *    ng test --include src/app/core/types/optional.type.spec.ts
  */
 describe('Optional', () => {
+
+
+  describe('collect', () => {
+
+    it('when the Optional is empty then an empty Optional is returned', () => {
+      const isOdd: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 1 == n! % 2;
+
+      const multiply5: FFunction1<number, number> =
+        (n: NullableOrUndefined<number>) => 5 * n!;
+
+      const partialFunction = PartialFunction.of(isOdd, multiply5);
+
+      const optional = Optional.empty<number>().collect(partialFunction);
+
+      expect(optional.isPresent()).toBeFalse();
+    });
+
+
+    it('when the Optional is not empty but does not belong to the domain of PartialFunction then an empty Optional is returned', () => {
+      const isOdd: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 1 == n! % 2;
+
+      const multiply5: FFunction1<number, number> =
+        (n: NullableOrUndefined<number>) => 5 * n!;
+
+      const partialFunction = PartialFunction.of(isOdd, multiply5);
+
+      expect(Optional.of(2).collect(partialFunction).isPresent()).toBeFalse();
+      expect(Optional.of(16).collect(partialFunction).isPresent()).toBeFalse();
+      expect(Optional.of(24).collect(partialFunction).isPresent()).toBeFalse();
+    });
+
+
+    it('when the Optional is not empty and belongs to the domain of PartialFunction then an empty Optional is returned', () => {
+      const isOdd: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 1 == n! % 2;
+
+      const multiply5: FFunction1<number, number> =
+        (n: NullableOrUndefined<number>) => 5 * n!;
+
+      const partialFunction = PartialFunction.of(isOdd, multiply5);
+
+      const optional1 = Optional.of(5).collect(partialFunction);
+      const optional2 = Optional.of(9).collect(partialFunction);
+
+      expect(optional1.isPresent()).toBeTrue();
+      expect(optional1.get()).toEqual(25);
+
+      expect(optional2.isPresent()).toBeTrue();
+      expect(optional2.get()).toEqual(45);
+    });
+
+  });
+
 
 
   describe('empty', () => {
@@ -205,6 +270,56 @@ describe('Optional', () => {
 
 
 
+  describe('flatMap', () => {
+
+    it('when the Optional is empty then mapper is not invoked', () => {
+      const fromNumToString: FFunction1<number, Optional<string>> =
+        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      Optional.empty<number>().flatMap(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is not empty then mapper is invoked', () => {
+      const fromNumToString: FFunction1<number, Optional<string>> =
+        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      Optional.of(1).flatMap(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Optional is empty then empty Optional is returned', () => {
+      const fromNumToString: FFunction1<number, Optional<string>> =
+        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+
+      const optional = Optional.empty<number>().flatMap(fromNumToString);
+
+      expect(optional.isPresent()).toBeFalse();
+    });
+
+
+    it('when the Optional is not empty then new mapped Optional is returned', () => {
+      const fromNumToString: FFunction1<number, Optional<string>> =
+        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+
+      const optional = Optional.of(9).flatMap(fromNumToString);
+
+      expect(optional.isPresent()).toBeTrue();
+      expect(optional.get()).toEqual('9');
+    });
+
+  });
+
+
+
   describe('get', () => {
 
     it('when the Optional is empty then an error is thrown', () => {
@@ -301,12 +416,14 @@ describe('Optional', () => {
     it('when the Optional is not empty then action is invoked and the values of the Optional updated', () => {
       const objectForTesting = { name: 'ForTestPurpose' };
       const objNameV2 = objectForTesting.name + 'V2';
-      const actionFunction = (obj: NullableOrUndefined<{ name: string }>) => obj!.name = objNameV2;
 
-      const optionalObject = Optional.of(objectForTesting);
-      optionalObject.ifPresent(actionFunction);
+      const actionFunction = (obj: NullableOrUndefined<{ name: string }>) =>
+        obj!.name = objNameV2;
 
-      expect(optionalObject.get().name).toEqual(objNameV2);
+      const optional = Optional.of(objectForTesting);
+      optional.ifPresent(actionFunction);
+
+      expect(optional.get().name).toEqual(objNameV2);
     });
 
   });
@@ -325,6 +442,56 @@ describe('Optional', () => {
     it('when a value is provided then true is returned', () => {
       expect(Optional.ofNullable(12).isPresent()).toBeTrue();
       expect(Optional.of('abc').isPresent()).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('map', () => {
+
+    it('when the Optional is empty then mapper is not invoked', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: NullableOrUndefined<number>): string => '' + n!;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      Optional.empty<number>().map(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is not empty then mapper is invoked', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: NullableOrUndefined<number>): string => '' + n!;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      Optional.of(1).map(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Optional is empty then empty Optional is returned', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: NullableOrUndefined<number>): string => '' + n!;
+
+      const optional = Optional.empty<number>().map(fromNumToString);
+
+      expect(optional.isPresent()).toBeFalse();
+    });
+
+
+    it('when the Optional is not empty then new mapped Optional is returned', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: NullableOrUndefined<number>): string => '' + n!;
+
+      const optional = Optional.of(12).map(fromNumToString);
+
+      expect(optional.isPresent()).toBeTrue();
+      expect(optional.get()).toEqual('12');
     });
 
   });
@@ -415,7 +582,7 @@ describe('Optional', () => {
 
 
   // Used only for testing purpose
-  class User extends PObject {
+  class User extends BaseObject {
     private _id: number;
     private _description: string;
 

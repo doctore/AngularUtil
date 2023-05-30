@@ -91,13 +91,13 @@ describe('Function2', () => {
       const stringLengthPlusNumber: Function2<string, number, number> =
         Function2.of((s: NullableOrUndefined<string>, n: NullableOrUndefined<number>) => s!.length + n!);
 
-      const plus2: FFunction1<number, number> =
+      const multiply2: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 2 * n!;
 
-      const stringLengthPlusNumberAndThenPlus2 = stringLengthPlusNumber.andThen(plus2);
+      const stringLengthPlusNumberAndThenMultiply2 = stringLengthPlusNumber.andThen(multiply2);
 
-      expect(stringLengthPlusNumberAndThenPlus2.apply('0', 2)).toEqual(6);
-      expect(stringLengthPlusNumberAndThenPlus2.apply('abc', 4)).toEqual(14);
+      expect(stringLengthPlusNumberAndThenMultiply2.apply('0', 2)).toEqual(6);
+      expect(stringLengthPlusNumberAndThenMultiply2.apply('abc', 4)).toEqual(14);
     });
 
 
@@ -105,13 +105,13 @@ describe('Function2', () => {
       const stringLengthPlusNumber: Function2<string, number, number> =
         Function2.of((s: NullableOrUndefined<string>, n: NullableOrUndefined<number>) => s!.length + n!);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const stringLengthPlusNumberAndThenPlus2 = stringLengthPlusNumber.andThen(plus2);
+      const stringLengthPlusNumberAndThenMultiply2 = stringLengthPlusNumber.andThen(multiply2);
 
-      expect(stringLengthPlusNumberAndThenPlus2.apply('0', 2)).toEqual(6);
-      expect(stringLengthPlusNumberAndThenPlus2.apply('abc', 4)).toEqual(14);
+      expect(stringLengthPlusNumberAndThenMultiply2.apply('0', 2)).toEqual(6);
+      expect(stringLengthPlusNumberAndThenMultiply2.apply('abc', 4)).toEqual(14);
     });
 
   });

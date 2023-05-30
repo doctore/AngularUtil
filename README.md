@@ -35,7 +35,7 @@ Different new types related with functional programming like:
 * [Predicate](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/predicate) represents an operation that accepts zero or more input arguments and returns a boolean result based on provided data.
 * [Generic subject](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/subject/generic-subject.type.ts) wrapper of RxJS [Subject](https://rxjs.dev/guide/subject) adding several customizations.
 * [Optional](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/optional.type.ts) a container object which may or may not contain a non-null value.
-* [PObject](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/pobject.class.ts) defines global properties and methods that the classes can use as parent one.
+* [BaseObject](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/base-object.class.ts) defines global properties and methods that the classes can use as parent one.
 
 
 ### Util classes

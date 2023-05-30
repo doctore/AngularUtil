@@ -91,13 +91,13 @@ describe('Function4', () => {
       const stringLengthPlusNumbers: Function4<string, number, number, number, number> =
         Function4.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>) => s!.length + n1! + n2! + n3!);
 
-      const plus2: FFunction1<number, number> =
+      const multiply2: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 2 * n!;
 
-      const stringLengthPlusNumbersAndThenPlus2 = stringLengthPlusNumbers.andThen(plus2);
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('0', 2, 5, -1)).toEqual(14);
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('abc', 4, 2, -1)).toEqual(16);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1)).toEqual(14);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1)).toEqual(16);
     });
 
 
@@ -105,13 +105,13 @@ describe('Function4', () => {
       const stringLengthPlusNumbers: Function4<string, number, number, number, number> =
         Function4.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>) => s!.length + n1! + n2! + n3!);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const stringLengthPlusNumbersAndThenPlus2 = stringLengthPlusNumbers.andThen(plus2);
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('0', 2, 5, -1)).toEqual(14);
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('abc', 4, 2, -1)).toEqual(16);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1)).toEqual(14);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1)).toEqual(16);
     });
 
   });

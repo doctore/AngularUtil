@@ -13,17 +13,17 @@ import * as _ from 'lodash';
  *
  * <pre>
  * Example:
- *    const plus2ForEven: PartialFunction<number, number> = PartialFunction.of(
+ *    const multiply2ForEven: PartialFunction<number, number> = PartialFunction.of(
  *      (n: number) => 0 == n % 2
  *      (n: number) => 2 * n
  *    );
  *
- *    plus2ForEvenResult1 = plus2ForEven.applyOrElse(
+ *    multiply2ForEvenResult1 = multiply2ForEven.applyOrElse(
  *      3,
  *      (n: number) => 1 + n,
  *    );   // Will return 4
  *
- *    plus2ForEvenResult2 = plus2ForEven.applyOrElse(
+ *    multiply2ForEvenResult2 = multiply2ForEven.applyOrElse(
  *      8,
  *      (n: number) => 1 + n,
  *    );   // Will return 16
@@ -36,7 +36,7 @@ import * as _ from 'lodash';
  */
 export class PartialFunction<T, R> {
 
-  private constructor(private readonly condition: Predicate1<T>,
+  private constructor(private readonly verifier: Predicate1<T>,
                       private readonly mapper: Function1<T, R>) { }
 
 
@@ -74,39 +74,39 @@ export class PartialFunction<T, R> {
 
 
   /**
-   *    Returns a new {@link PartialFunction} based on provided {@link FPredicate1} {@code condition} and
+   *    Returns a new {@link PartialFunction} based on provided {@link FPredicate1} {@code verifier} and
    * {@link FFunction1} {@code mapper}
    *
-   * @param condition
+   * @param verifier
    *    {@link FPredicate1} used to know new {@link PartialFunction}'s domain
    * @param mapper
    *    {@link FFunction1} required for {@link PartialFunction#apply}
    *
    * @return {@link PartialFunction}
    */
-  static of<T, R>(condition: FPredicate1<T>,
+  static of<T, R>(verifier: FPredicate1<T>,
                   mapper: FFunction1<T, R>): PartialFunction<T, R>;
 
 
   /**
-   *    Returns a new {@link PartialFunction} based on provided {@link TPredicate1} {@code condition} and
+   *    Returns a new {@link PartialFunction} based on provided {@link TPredicate1} {@code verifier} and
    * {@link TFunction1} {@code mapper}
    *
-   * @param condition
+   * @param verifier
    *    {@link TPredicate1} used to know new {@link PartialFunction}'s domain
    * @param mapper
    *    {@link TFunction1} required for {@link PartialFunction#apply}
    *
    * @return {@link PartialFunction}
    */
-  static of<T, R>(condition: TPredicate1<T>,
+  static of<T, R>(verifier: TPredicate1<T>,
                   mapper: TFunction1<T, R>): PartialFunction<T, R>;
 
 
-  static of<T, R>(condition: FPredicate1<T> | TPredicate1<T>,
+  static of<T, R>(verifier: FPredicate1<T> | TPredicate1<T>,
                   mapper: FFunction1<T, R> | TFunction1<T, R>): PartialFunction<T, R> {
     return new PartialFunction(
-      Predicate1.of(condition),
+      Predicate1.of(verifier),
       Function1.of(mapper)
     );
   }
@@ -143,8 +143,8 @@ export class PartialFunction<T, R> {
       return new PartialFunction(
         Predicate1.of(
           (t: NullableOrUndefined<T>) =>
-            this.condition.apply(t) &&
-            (<PartialFunction<R, V>>after).condition.apply(
+            this.verifier.apply(t) &&
+            (<PartialFunction<R, V>>after).verifier.apply(
               this.mapper.apply(t)
             )
         ),
@@ -152,7 +152,7 @@ export class PartialFunction<T, R> {
       );
     }
     return new PartialFunction(
-      this.condition,
+      this.verifier,
       this.mapper.andThen(<TFunction1<R, V>>after)
     );
   }
@@ -165,7 +165,6 @@ export class PartialFunction<T, R> {
    *    The input argument
    *
    * @return new instance of R
-   *
    */
   apply = (t: NullableOrUndefined<T>): R =>
     this.mapper.apply(t);
@@ -222,7 +221,7 @@ export class PartialFunction<T, R> {
         Predicate1.of(
           (v: NullableOrUndefined<V>) =>
             before.isDefinedAt(v) &&
-            this.condition.apply(
+            this.verifier.apply(
               (<PartialFunction<V, T>>before).apply(v)
             )
         ),
@@ -232,7 +231,7 @@ export class PartialFunction<T, R> {
     return new PartialFunction(
       Predicate1.of(
         (v: NullableOrUndefined<V>) =>
-          this.condition.apply(
+          this.verifier.apply(
             Function1.of(<TFunction1<V, T>>before).apply(v)
           )
       ),
@@ -251,7 +250,7 @@ export class PartialFunction<T, R> {
    *         {@code false} otherwise
    */
   isDefinedAt = (t: NullableOrUndefined<T>): boolean =>
-    this.condition.apply(t);
+    this.verifier.apply(t);
 
 
   /**
@@ -284,7 +283,7 @@ export class PartialFunction<T, R> {
    */
   orElse = (defaultPartialFunction: PartialFunction<T, R>): PartialFunction<T, R> =>
     new PartialFunction(
-      this.condition.or(defaultPartialFunction.condition),
+      this.verifier.or(defaultPartialFunction.verifier),
       Function1.of(
       (t: NullableOrUndefined<T>) =>
         this.applyOrElse(

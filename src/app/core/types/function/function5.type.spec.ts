@@ -96,13 +96,13 @@ describe('Function5', () => {
         Function5.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
           s!.length + n1! + n2! + n3! + n4!);
 
-      const plus2: FFunction1<number, number> =
+      const multiply2: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 2 * n!;
 
-      const stringLengthPlusNumbersAndThenPlus2 = stringLengthPlusNumbers.andThen(plus2);
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('0', 2, 5, -1, 0)).toEqual(14);
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('abc', 4, 2, -1, 0)).toEqual(16);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1, 0)).toEqual(14);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1, 0)).toEqual(16);
     });
 
 
@@ -111,13 +111,13 @@ describe('Function5', () => {
         Function5.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
           s!.length + n1! + n2! + n3! + n4!);
 
-      const plus2: Function1<number, number> =
+      const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const stringLengthPlusNumbersAndThenPlus2 = stringLengthPlusNumbers.andThen(plus2);
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('0', 2, 5, -1, 0)).toEqual(14);
-      expect(stringLengthPlusNumbersAndThenPlus2.apply('abc', 4, 2, -1, 0)).toEqual(16);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1, 0)).toEqual(14);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1, 0)).toEqual(16);
     });
 
   });
