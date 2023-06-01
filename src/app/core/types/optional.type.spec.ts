@@ -1,5 +1,4 @@
 import {
-  BaseObject,
   FConsumer1,
   FFunction0,
   FFunction1,
@@ -96,22 +95,18 @@ describe('Optional', () => {
       const intValue = 10;
       const stringValue = 'ForTestPurpose';
       const user = new User(10, 'user1');
-      const address = new Address(20, 'address1');
       const role = { id: 30, description: 'role1' } as Role;
 
-      expect(Optional.empty().equals(Optional.of(intValue))).toBeFalse()
+      expect(Optional.empty<number>().equals(Optional.of(intValue))).toBeFalse();
       expect(Optional.of(intValue).equals(Optional.empty())).toBeFalse();
 
-      expect(Optional.empty().equals(Optional.of(stringValue))).toBeFalse();
+      expect(Optional.empty<string>().equals(Optional.of(stringValue))).toBeFalse();
       expect(Optional.of(stringValue).equals(Optional.empty())).toBeFalse();
 
-      expect(Optional.empty().equals(Optional.of(user))).toBeFalse();
+      expect(Optional.empty<User>().equals(Optional.of(user))).toBeFalse();
       expect(Optional.of(user).equals(Optional.empty())).toBeFalse();
 
-      expect(Optional.empty().equals(Optional.of(address))).toBeFalse();
-      expect(Optional.of(address).equals(Optional.empty())).toBeFalse();
-
-      expect(Optional.empty().equals(Optional.of(role))).toBeFalse();
+      expect(Optional.empty<Role>().equals(Optional.of(role))).toBeFalse();
       expect(Optional.of(role).equals(Optional.empty())).toBeFalse();
     });
 
@@ -120,7 +115,6 @@ describe('Optional', () => {
       const intValue = 10;
       const stringValue = 'ForTestPurpose';
       const user = new User(10, 'user1');
-      const address = new Address(20, 'address1');
       const role = { id: 30, description: 'role1' } as Role;
 
       expect(Optional.empty().equals()).toBeFalse();
@@ -134,9 +128,6 @@ describe('Optional', () => {
 
       expect(Optional.of(user).equals()).toBeFalse();
       expect(Optional.of(user).equals(null)).toBeFalse();
-
-      expect(Optional.of(address).equals()).toBeFalse();
-      expect(Optional.of(address).equals(null)).toBeFalse();
 
       expect(Optional.of(role).equals()).toBeFalse();
       expect(Optional.of(role).equals(null)).toBeFalse();
@@ -153,9 +144,6 @@ describe('Optional', () => {
       const user1 = new User(10, 'user1');
       const user2 = new User(11, 'user1');
 
-      const address1 = new Address(20, 'address1');
-      const address2 = new Address(21, 'address1');
-
       const role1 = { id: 30, description: 'role1' } as Role;
       const role2 = { id: 31, description: 'role2' } as Role;
 
@@ -167,9 +155,6 @@ describe('Optional', () => {
 
       expect(Optional.of(user1).equals(Optional.of(user2))).toBeFalse();
       expect(Optional.of(user2).equals(Optional.of(user1))).toBeFalse();
-
-      expect(Optional.of(address1).equals(Optional.of(address2))).toBeFalse();
-      expect(Optional.of(address2).equals(Optional.of(address1))).toBeFalse();
 
       expect(Optional.of(role1).equals(Optional.of(role2))).toBeFalse();
       expect(Optional.of(role2).equals(Optional.of(role1))).toBeFalse();
@@ -195,17 +180,11 @@ describe('Optional', () => {
       const user1 = new User(10, 'user1');
       const user2 = new User(10, 'user2');
 
-      const address1 = new Address(20, 'address1');
-      const address2 = new Address(20, 'address2');
-
       const role1 = { id: 30, description: 'role1' } as Role;
       const role2 = { id: 30, description: 'role1' } as Role;
 
       expect(Optional.of(user1).equals(Optional.of(user2))).toBeTrue();
       expect(Optional.of(user2).equals(Optional.of(user1))).toBeTrue();
-
-      expect(Optional.of(address1).equals(Optional.of(address2))).toBeTrue();
-      expect(Optional.of(address2).equals(Optional.of(address1))).toBeTrue();
 
       expect(Optional.of(role1).equals(Optional.of(role2))).toBeTrue();
       expect(Optional.of(role2).equals(Optional.of(role1))).toBeTrue();
@@ -580,40 +559,43 @@ describe('Optional', () => {
 
 
 
+  describe('orElseThrow', () => {
+
+    it('when the Optional is not empty then errorSupplier is not invoked', () => {
+      const notValidArgument: FFunction0<IllegalArgumentError> =
+        () => new IllegalArgumentError('Not valid argument');
+
+      const notValidArgumentSpy = jasmine.createSpy('notValidArgument', notValidArgument);
+
+      expect(Optional.of(11).orElseThrow(notValidArgumentSpy)).toEqual(11);
+
+      expect(notValidArgumentSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is not empty then errorSupplier is not invoked and the internal value is returned', () => {
+      const notValidArgument: Function0<IllegalArgumentError> =
+        Function0.of(() => new IllegalArgumentError('Not valid argument'));
+
+      expect(Optional.of(9).orElseThrow(notValidArgument)).toEqual(9);
+      expect(Optional.of(11).orElseThrow(notValidArgument)).toEqual(11);
+    });
+
+
+    it('when the Optional is empty then errorSupplier is invoked and an error is returned', () => {
+      const notValidArgument: FFunction0<IllegalArgumentError> =
+        () => new IllegalArgumentError('Not valid argument');
+
+      expect(() => Optional.empty().orElseThrow(notValidArgument)).toThrowError(IllegalArgumentError);
+    });
+
+  });
+
+
+
 
   // Used only for testing purpose
-  class User extends BaseObject {
-    private _id: number;
-    private _description: string;
-
-    constructor(id: number, description: string) {
-      super();
-      this._id = id;
-      this._description = description;
-    }
-
-    get id(): number {
-      return this._id;
-    }
-    set id(id: number) {
-      this._id = id;
-    }
-
-    get description(): string {
-      return this._description;
-    }
-    set description(description: string) {
-      this._description = description;
-    }
-
-    override equals = (other?: User | null): boolean =>
-      _.isNil(other)
-        ? false
-        : this.id === other.id;
-  }
-
-
-  class Address {
+  class User {
     private _id: number;
     private _description: string;
 
@@ -636,7 +618,7 @@ describe('Optional', () => {
       this._description = description;
     }
 
-    equals = (other?: Address | null): boolean =>
+    equals = (other?: User | null): boolean =>
       _.isNil(other)
         ? false
         : this.id === other.id;

@@ -1,11 +1,11 @@
-import { AssertUtil } from '@app-core/util';
+import {AssertUtil, ObjectUtil} from '@app-core/util';
 import {
-  BaseObject,
   Consumer1,
   Function0,
   Function1,
   isFFunction0,
-  Nullable, PartialFunction,
+  Nullable,
+  PartialFunction,
   Predicate1,
   TConsumer1,
   TFunction0,
@@ -110,14 +110,17 @@ export class Optional<T> {
    * @return {@code true} if the {@code other} is equal to this {@link Optional},
    *         {@code false} otherwise.
    */
-  equals = <U>(other?: Nullable<Optional<U>>): boolean => {
+  equals = (other?: Nullable<Optional<T>>): boolean => {
     if (_.isNil(other) ||
         (this.isPresent() !== other.isPresent())) {
       return false;
     }
     return !this.isPresent()
       ? true
-      : this.internalEqualResult(other);
+      : ObjectUtil.typedEquals(
+          this.value!,
+          other!.get()
+        )
   }
 
 
@@ -206,7 +209,8 @@ export class Optional<T> {
       return other.apply();
     }
     if (isFFunction0(other)) {
-      return Function0.of(other).apply();
+      return Function0.of(other)
+        .apply();
     }
     return other;
   }
@@ -272,33 +276,20 @@ export class Optional<T> {
 
 
   /**
-   *    Checks if the given {@link Optional} with a non-{@code null} internal value is
-   * equal to the current one. If both values have {@code equals} function will use it,
-   * otherwise will use '==='.
+   * If the {@link Optional} is not empty, returns the value, {@link Error} using provided {@link TFunction0} otherwise.
    *
-   * @param other
-   *    {@link Optional} with the internal value to compare
+   * @param errorSupplier
+   *    The supplying {@link TFunction0} that produces an error to be thrown
    *
-   * @return {@code true} if both internal values are equals
+   * @return the {@link Optional}'s value if non-{@code null},
+   *         otherwise {@link Error} using provided {@link TFunction0}
    */
-  private internalEqualResult<U>(other: Optional<U>): boolean {
-    if (this.value instanceof BaseObject) {
-      return this.value.equals(other.get());
+  orElseThrow = <X extends Error>(errorSupplier: TFunction0<X>): T => {
+    if (this.isPresent()) {
+      return this.value!;
     }
-    if ('object' === typeof this.value) {
-
-      // @ts-ignore
-      return 'function' === typeof this.value!['equals']
-
-        // @ts-ignore
-        ? this.value!['equals'](other.get())
-        : _.isEqual(
-            this.value,
-            other.get()
-          );
-    }
-    // @ts-ignore
-    return this.value === other.get();
+    throw Function0.of(errorSupplier)
+      .apply();
   }
 
 }

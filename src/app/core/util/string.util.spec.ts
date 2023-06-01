@@ -20,20 +20,20 @@ describe('StringUtil', () => {
 
   describe('isEmpty', () => {
 
-    it('when given inputToCheck is null or undefined then true will be returned', () => {
+    it('when given inputToCheck is null or undefined then true is returned', () => {
       expect(StringUtil.isEmpty()).toBeTrue();
       expect(StringUtil.isEmpty(undefined)).toBeTrue();
       expect(StringUtil.isEmpty(null)).toBeTrue();
     });
 
 
-    it('when given inputToCheck is empty or has only blank characters then true will be returned', () => {
+    it('when given inputToCheck is empty or has only blank characters then true is returned', () => {
       expect(StringUtil.isEmpty('')).toBeTrue();
       expect(StringUtil.isEmpty('    ')).toBeTrue();
     });
 
 
-    it('when given inputToCheck is not empty then false will be returned', () => {
+    it('when given inputToCheck is not empty then false is returned', () => {
       expect(StringUtil.isEmpty('112')).toBeFalse();
       expect(StringUtil.isEmpty('  a  ')).toBeFalse();
     });
