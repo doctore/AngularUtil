@@ -338,7 +338,7 @@ describe('Optional', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
-      const getOrElseIntResult = Optional.empty().getOrElse(otherIntValue);
+      const getOrElseIntResult = Optional.empty<number>().getOrElse(otherIntValue);
       const getOrElseStringResult = Optional.ofNullable<string>(null).getOrElse(otherStringValue);
 
       expect(getOrElseIntResult).toEqual(otherIntValue);
@@ -346,14 +346,14 @@ describe('Optional', () => {
     });
 
 
-    it('when the Optional is empty and provided other is a value then other will be returned', () => {
+    it('when the Optional is empty and provided other is a TFunction0 then other will be returned', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
       const otherIntFunc: FFunction0<number> = () => otherIntValue;
       const otherStringFunc: Function0<string> = Function0.of(() => otherStringValue);
 
-      const getOrElseIntResult = Optional.empty().getOrElse(otherIntFunc);
+      const getOrElseIntResult = Optional.empty<number>().getOrElse(otherIntFunc);
       const getOrElseStringResult = Optional.ofNullable<string>(null).getOrElse(otherStringFunc);
 
       expect(getOrElseIntResult).toEqual(otherIntValue);

@@ -1,4 +1,4 @@
-import {AssertUtil, ObjectUtil} from '@app-core/util';
+import { AssertUtil, ObjectUtil } from '@app-core/util';
 import {
   Consumer1,
   Function0,
@@ -117,7 +117,7 @@ export class Optional<T> {
     }
     return !this.isPresent()
       ? true
-      : ObjectUtil.typedEquals(
+      : ObjectUtil.equals(
           this.value!,
           other!.get()
         )

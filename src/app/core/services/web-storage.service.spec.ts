@@ -56,8 +56,9 @@ describe('WebStorageService', () => {
     it('when the key does not exist then it will not be deleted', () => {
       localStorage.setItem('key', 'value');
 
-      service.delete('does not exist');
+      const wasRemoved = service.delete('does not exist');
 
+      expect(wasRemoved).toBeFalse();
       expect(localStorage.getItem('key')).toEqual('value');
     });
 
@@ -65,8 +66,9 @@ describe('WebStorageService', () => {
     it('when the key exists then it will be removed from storage', () => {
       localStorage.setItem('key', 'value');
 
-      service.delete('key');
+      const wasRemoved = service.delete('key');
 
+      expect(wasRemoved).toBeTrue();
       expect(localStorage.getItem('key')).toBeNull();
     });
 

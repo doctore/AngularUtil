@@ -1,4 +1,5 @@
 import { ObjectUtil } from '@app-core/util';
+import { FFunction0, Function0 } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -53,7 +54,7 @@ describe('ObjectUtil', () => {
     });
 
 
-    it('when comparing objects with equals method then expected result is returned', () => {
+    it('when comparing objects with equals method then the result of such method is returned', () => {
       const user1 = new User(10, 'user1');
       const user2 = new User(11, 'user2');
       const user3 = new User(10, 'user3');
@@ -66,87 +67,128 @@ describe('ObjectUtil', () => {
     });
 
 
-    it('when comparing objects without equals method then expected result is returned', () => {
-      const role1 = { id: 10, description: 'role1' } as Role;
-      const role2 = { id: 10, description: 'role2' } as Role;
-      const role3 = { id: 11, description: 'role1' } as Role;
-      const role4 = { id: 10, description: 'role1' } as Role;
+    it('when comparing objects without equals method then verifies their equivalence based on their own', () => {
+      const role1 = { id: 10, description: 'description1' } as Role;
+      const role2 = { id: 11, description: 'description2' } as Role;
+      const role3 = { id: 10, description: 'description1' } as Role;
 
       expect(ObjectUtil.equals(role1, role2)).toBeFalse();
       expect(ObjectUtil.equals(role2, role1)).toBeFalse();
 
-      expect(ObjectUtil.equals(role1, role3)).toBeFalse();
-      expect(ObjectUtil.equals(role3, role1)).toBeFalse();
-
-      expect(ObjectUtil.equals(role1, role4)).toBeTrue();
-      expect(ObjectUtil.equals(role4, role1)).toBeTrue();
+      expect(ObjectUtil.equals(role1, role3)).toBeTrue();
+      expect(ObjectUtil.equals(role3, role1)).toBeTrue();
     });
 
   });
 
 
 
-  describe('typedEquals', () => {
+  describe('getOrElse', () => {
+
+    it('when valueToVerify is neither null not undefined then such one is returned', () => {
+      const intValue = 11;
+      const stringValue = 'abd';
+
+      const stringSupplier: Function0<string> = Function0.of(() => 'yxz');
+
+      const getOrElseIntResult = ObjectUtil.getOrElse(intValue, 14);
+      const getOrElseStringResult = ObjectUtil.getOrElse(stringValue, stringSupplier);
+
+      expect(getOrElseIntResult).toEqual(intValue);
+      expect(getOrElseStringResult).toEqual(stringValue);
+    });
+
+
+    it('when valueToVerify is null or undefined and defaultValue is a value then defaultValue will be returned', () => {
+      const otherIntValue = 11;
+      const otherStringValue = 'abd';
+
+      const getOrElseIntResult = ObjectUtil.getOrElse<number>(undefined, otherIntValue);
+      const getOrElseStringResult = ObjectUtil.getOrElse<string>(null, otherStringValue);
+
+      expect(getOrElseIntResult).toEqual(otherIntValue);
+      expect(getOrElseStringResult).toEqual(otherStringValue);
+    });
+
+
+    it('when valueToVerify is null or undefined and defaultValue is a TFunction0 then defaultValue will be returned', () => {
+      const otherIntValue = 11;
+      const otherStringValue = 'abd';
+
+      const otherIntFunc: FFunction0<number> = () => otherIntValue;
+      const otherStringFunc: Function0<string> = Function0.of(() => otherStringValue);
+
+      const getOrElseIntResult = ObjectUtil.getOrElse<number>(undefined, otherIntFunc);
+      const getOrElseStringResult = ObjectUtil.getOrElse<string>(null, otherStringFunc);
+
+      expect(getOrElseIntResult).toEqual(otherIntValue);
+      expect(getOrElseStringResult).toEqual(otherStringValue);
+    });
+
+  });
+
+
+
+  describe('rawEquals', () => {
 
     it('when both values are null or undefined then true is be returned', () => {
-      expect(ObjectUtil.typedEquals()).toBeTrue();
-      expect(ObjectUtil.typedEquals(null, null)).toBeTrue();
+      expect(ObjectUtil.rawEquals()).toBeTrue();
+      expect(ObjectUtil.rawEquals(null, null)).toBeTrue();
     });
 
 
     it('when one of the provided values is null or undefined then false will be returned', () => {
       let a, b;
 
-      expect(ObjectUtil.typedEquals(a, null)).toBeFalse();
-      expect(ObjectUtil.typedEquals(null, b)).toBeFalse();
+      expect(ObjectUtil.rawEquals(a, null)).toBeFalse();
+      expect(ObjectUtil.rawEquals(null, b)).toBeFalse();
 
-      expect(ObjectUtil.typedEquals(12, null)).toBeFalse();
-      expect(ObjectUtil.typedEquals(null, 'test')).toBeFalse();
+      expect(ObjectUtil.rawEquals(12, null)).toBeFalse();
+      expect(ObjectUtil.rawEquals(null, 'test')).toBeFalse();
     });
 
 
     it('when comparing native values then expected result is returned', () => {
-      expect(ObjectUtil.typedEquals(1, 2)).toBeFalse();
-      expect(ObjectUtil.typedEquals(2, 1)).toBeFalse();
-      expect(ObjectUtil.typedEquals(1, 1)).toBeTrue();
+      expect(ObjectUtil.rawEquals(1, 2)).toBeFalse();
+      expect(ObjectUtil.rawEquals(2, 1)).toBeFalse();
+      expect(ObjectUtil.rawEquals(1, 1)).toBeTrue();
 
-      expect(ObjectUtil.typedEquals('1', '2')).toBeFalse();
-      expect(ObjectUtil.typedEquals('2', '1')).toBeFalse();
-      expect(ObjectUtil.typedEquals('1', '1')).toBeTrue();
+      expect(ObjectUtil.rawEquals('1', '2')).toBeFalse();
+      expect(ObjectUtil.rawEquals('2', '1')).toBeFalse();
+      expect(ObjectUtil.rawEquals('1', '1')).toBeTrue();
 
-      expect(ObjectUtil.typedEquals(true, false)).toBeFalse();
-      expect(ObjectUtil.typedEquals(false, true)).toBeFalse();
-      expect(ObjectUtil.typedEquals(true, true)).toBeTrue();
+      expect(ObjectUtil.rawEquals(true, false)).toBeFalse();
+      expect(ObjectUtil.rawEquals(false, true)).toBeFalse();
+      expect(ObjectUtil.rawEquals(true, true)).toBeTrue();
     });
 
 
-    it('when comparing objects with equals method then expected result is returned', () => {
-      const user1 = new User(10, 'user1');
-      const user2 = new User(11, 'user2');
-      const user3 = new User(10, 'user3');
+    it('when comparing objects then they are compared by their own', () => {
+      const user1 = new User(10, 'description1');
+      const user2 = new User(11, 'description2');
+      const user3 = new User(10, 'description1');
 
-      expect(ObjectUtil.typedEquals(user1, user2)).toBeFalse();
-      expect(ObjectUtil.typedEquals(user2, user1)).toBeFalse();
+      const role1 = { id: 10, description: 'description1' } as Role;
+      const role2 = { id: 11, description: 'description2' } as Role;
+      const role3 = { id: 10, description: 'description1' } as Role;
 
-      expect(ObjectUtil.typedEquals(user1, user3)).toBeTrue();
-      expect(ObjectUtil.typedEquals(user3, user1)).toBeTrue();
-    });
+      const rawRole1 = { id: 10, description: 'description1' };
 
+      expect(ObjectUtil.rawEquals(user1, user2)).toBeFalse();
+      expect(ObjectUtil.rawEquals(user2, user1)).toBeFalse();
 
-    it('when comparing objects without equals method then expected result is returned', () => {
-      const role1 = { id: 10, description: 'role1' } as Role;
-      const role2 = { id: 10, description: 'role2' } as Role;
-      const role3 = { id: 11, description: 'role1' } as Role;
-      const role4 = { id: 10, description: 'role1' } as Role;
+      expect(ObjectUtil.rawEquals(role1, role2)).toBeFalse();
+      expect(ObjectUtil.rawEquals(role2, role1)).toBeFalse();
 
-      expect(ObjectUtil.typedEquals(role1, role2)).toBeFalse();
-      expect(ObjectUtil.typedEquals(role2, role1)).toBeFalse();
+      // IMPORTANT: This is because User's properties are not public
+      expect(ObjectUtil.rawEquals(user1, user3)).toBeFalse();
+      expect(ObjectUtil.rawEquals(user3, user1)).toBeFalse();
 
-      expect(ObjectUtil.typedEquals(role1, role3)).toBeFalse();
-      expect(ObjectUtil.typedEquals(role3, role1)).toBeFalse();
+      expect(ObjectUtil.rawEquals(role1, role3)).toBeTrue();
+      expect(ObjectUtil.rawEquals(role3, role1)).toBeTrue();
 
-      expect(ObjectUtil.typedEquals(role1, role4)).toBeTrue();
-      expect(ObjectUtil.typedEquals(role4, role1)).toBeTrue();
+      expect(ObjectUtil.rawEquals(rawRole1, role1)).toBeTrue();
+      expect(ObjectUtil.rawEquals(role1, rawRole1)).toBeTrue();
     });
 
   });

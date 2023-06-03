@@ -35,13 +35,14 @@ Different new types related with functional programming like:
 * [Predicate](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/predicate) represents an operation that accepts zero or more input arguments and returns a boolean result based on provided data.
 * [Generic subject](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/subject/generic-subject.type.ts) wrapper of RxJS [Subject](https://rxjs.dev/guide/subject) adding several customizations.
 * [Optional](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/optional.type.ts) a container object which may or may not contain a non-null value.
-* [BaseObject](https://github.com/doctore/AngularUtil/blob/master/src/app/core/types/base-object.class.ts) defines global properties and methods that the classes can use as parent one.
 
 
 ### Util classes
 
 * [ArrayUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/array.util.ts)
 * [AssertUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/assert.util.ts)
+* [NumberUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/number.util.ts)
+* [ObjectUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/object.util.ts)
 * [StringUtil](https://github.com/doctore/AngularUtil/blob/master/src/app/core/util/string.util.ts)
 <br><br>
 

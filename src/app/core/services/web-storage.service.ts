@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Nullable } from '@app-core/types';
 
 /**
  * Utility to help manage storage in the browser.
@@ -14,9 +15,8 @@ export class WebStorageService {
   /**
    * Removes all key/value pairs, if there are any.
    */
-  public clear(): void {
+  clear = (): void =>
     localStorage.clear();
-  }
 
 
   /**
@@ -25,9 +25,16 @@ export class WebStorageService {
    *
    * @param key
    *    {@link String} containing the name of the key you want to remove
+   *
+   * @return {@code true} if the {@code key} exists in the browser's storage and was removed,
+   *         {@code false} otherwise
    */
-  public delete(key: string): void {
-    localStorage.removeItem(key);
+  delete = (key: string): boolean => {
+    if (this.exist(key)) {
+      localStorage.removeItem(key);
+      return true;
+    }
+    return false;
   }
 
 
@@ -40,9 +47,8 @@ export class WebStorageService {
    * @return {@code true} if the {@code key} exists in the browser's storage,
    *         {@code false} otherwise
    */
-  public exist(key: string): boolean {
-    return null !== localStorage.getItem(key);
-  }
+  exist = (key: string): boolean =>
+    null !== this.get(key);
 
 
   /**
@@ -53,9 +59,8 @@ export class WebStorageService {
    *
    * @return {@link String} containing the value of the {@code key}. If the {@code key} does not exist, {@code null} is returned.
    */
-  public get(key: string): string | null {
-    return localStorage.getItem(key);
-  }
+  get = (key: string): Nullable<string> =>
+    localStorage.getItem(key);
 
 
   /**
@@ -67,12 +72,11 @@ export class WebStorageService {
    * @param value
    *    {@link String} containing the value you want to give the key you are creating/updating
    */
-  public set(key: string,
-             value: string): void {
+  set = (key: string,
+         value: string): void =>
     localStorage.setItem(
       key,
       value
     );
-  }
 
 }
