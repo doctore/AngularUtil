@@ -218,6 +218,12 @@ export class Success<T> extends Try<T> {
 
 
 
+/**
+ * The unsuccessful computation of a {@link Try} operation.
+ *
+ * @typeParam<T>
+ *    Value type in the case of {@link Success}
+ */
 export class Failure<T> extends Try<T> {
 
   private constructor(private readonly error: Error) {
