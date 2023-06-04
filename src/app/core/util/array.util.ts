@@ -1,4 +1,4 @@
-import { Function2, Nullable, NullableOrUndefined, Predicate1, TFunction2, TPredicate1 } from '@app-core/types';
+import { Function2, Nullable, NullableOrUndefined, Optional, Predicate1, TFunction2, TPredicate1 } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -113,7 +113,7 @@ export class ArrayUtil {
    *   const u2 = { id: 2, description: 'user2' } as User;
    *   const u3 = { id: 3, description: 'user3' } as User;
    *
-   *   // Will return [u1]
+   *   // Will return u1
    *   ArrayUtil.findFirst(
    *      [u1, u2, u3],
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
@@ -128,14 +128,97 @@ export class ArrayUtil {
    * @return {@code undefined} if {@code objectArray} has no elements or no one verifies provided {@code filterPredicate},
    *         first element that verifies {@code filterPredicate} otherwise.
    */
-  static findFirst = <T>(objectArray: NullableOrUndefined<T[]>,
-                         filterPredicate: TPredicate1<T>): T | undefined => {
+  static find = <T>(objectArray: NullableOrUndefined<T[]>,
+                    filterPredicate: TPredicate1<T>): T | undefined => {
     if (this.isEmpty(objectArray)) {
       return undefined;
     }
     const finalFilterPredicate = Predicate1.of(filterPredicate);
     return objectArray!.find(
       (obj: T) => finalFilterPredicate.apply(obj)
+    );
+  }
+
+
+  /**
+   * Returns from the given {@code objectArray} the first element that verifies the provided {@code filterPredicate}.
+   *
+   * <pre>
+   * Example:
+   *
+   *   interface User {
+   *      id: number;
+   *      name: string;
+   *   }
+   *   const u1 = { id: 1, description: 'user1' } as User;
+   *   const u2 = { id: 3, description: 'user2' } as User;
+   *
+   *   // Will return Optional(u1)
+   *   ArrayUtil.findFirst(
+   *      [u1, u2],
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *   );
+   * </pre>
+   *
+   * @param objectArray
+   *    Array to search provided property value
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter
+   *
+   * @return {@link Optional} containing the first element that satisfies {@code filterPredicate},
+   *         {@link Optional#empty} otherwise.
+   */
+  static findOptional = <T>(objectArray: NullableOrUndefined<T[]>,
+                            filterPredicate: TPredicate1<T>): Optional<T> =>
+    Optional.ofNullable(
+      this.find(
+        objectArray,
+        filterPredicate
+      )
+    );
+
+
+  /**
+   *    Returns from the given {@code objectArray} the first element which {@code key} value matches with the provided
+   * {@code keyValueToFind}.
+   *
+   * <pre>
+   * Example:
+   *
+   *   interface User {
+   *      id: number;
+   *      name: string;
+   *   }
+   *   const u1 = { id: 1, description: 'John' } as User;
+   *   const u2 = { id: 2, description: 'John' } as User;
+   *
+   *   // Will return u1
+   *   ArrayUtil.findFirstByKey(
+   *      [u1, u2],
+   *      'description',
+   *      ['John']
+   *   );
+   * </pre>
+   *
+   * @param objectArray
+   *    Array to search provided property value
+   * @param key
+   *    Property used to find given value
+   * @param keyValuesToFind
+   *    Array of key values to search inside {@code objectArray}
+   *
+   * @return {@code undefined} if {@code objectArray} has no elements or does not contain provided {@code keyValueToFind},
+   *         first element which {@code key} has the same value as {@code keyValueToFind} otherwise
+   */
+  static findByKey = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
+                                            key: K,
+                                            keyValuesToFind: NullableOrUndefined<T[K][]>): T | undefined => {
+    if (this.isEmpty(objectArray) ||
+        this.isEmpty(keyValuesToFind)) {
+      return undefined;
+    }
+    return objectArray!.find(
+      (obj: T) => -1 !== keyValuesToFind!.indexOf(obj[key])
     );
   }
 
@@ -154,7 +237,7 @@ export class ArrayUtil {
    *   const u1 = { id: 1, description: 'John' } as User;
    *   const u2 = { id: 2, description: 'John' } as User;
    *
-   *   // Will return [u1]
+   *   // Will return Optional(u1)
    *   ArrayUtil.findFirstByKey(
    *      [u1, u2],
    *      'description',
@@ -169,20 +252,19 @@ export class ArrayUtil {
    * @param keyValuesToFind
    *    Array of key values to search inside {@code objectArray}
    *
-   * @return {@code undefined} if {@code objectArray} has no elements or does not contain provided {@code keyValueToFind},
-   *         first element which {@code key} has the same value as {@code keyValueToFind} otherwise
+   * @return {@link Optional#empty} if {@code objectArray} has no elements or does not contain provided {@code keyValueToFind},
+   *         {@link Optional} containing the first element which {@code key} has the same value as {@code keyValueToFind} otherwise
    */
-  static findFirstByKey = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
-                                                 key: K,
-                                                 keyValuesToFind: NullableOrUndefined<T[K][]>): T | undefined => {
-    if (this.isEmpty(objectArray) ||
-        this.isEmpty(keyValuesToFind)) {
-      return undefined;
-    }
-    return objectArray!.find(
-      (obj: T) => -1 !== keyValuesToFind!.indexOf(obj[key])
+  static findByKeyOptional = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
+                                                    key: K,
+                                                    keyValuesToFind: NullableOrUndefined<T[K][]>): Optional<T> =>
+    Optional.ofNullable(
+      this.findByKey(
+        objectArray,
+        key,
+        keyValuesToFind
+      )
     );
-  }
 
 
   /**

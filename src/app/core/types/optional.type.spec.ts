@@ -485,7 +485,7 @@ describe('Optional', () => {
     });
 
 
-    it('when a valid value is given then no exception is thrown and it will be stored internally', () => {
+    it('when a valid value is given then no error is thrown and it will be stored internally', () => {
       const intValue = 11;
       const stringValue = 'abd';
 

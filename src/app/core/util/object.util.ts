@@ -107,7 +107,7 @@ export class ObjectUtil {
    * Example:
    *
    *   // Will return 'DEFAULT VALUE'
-   *   getSupplierOrElse(
+   *   getOrElse(
    *      null,
    *      () => 'DEFAULT VALUE'
    *   );

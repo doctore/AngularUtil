@@ -39,6 +39,8 @@ export class Optional<T> {
 
   /**
    * Returns an empty {@link Optional} instance. No value is present for this one.
+   *
+   * @return an empty {@link Optional}
    */
   static empty = <T>(): Optional<T> =>
     new Optional<T>(null);

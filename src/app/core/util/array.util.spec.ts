@@ -1,5 +1,5 @@
 import { ArrayUtil } from '@app-core/util';
-import {FFunction2, Function2, NullableOrUndefined, Predicate1} from '@app-core/types';
+import { FFunction2, Function2, NullableOrUndefined, Predicate1 } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -187,7 +187,7 @@ describe('ArrayUtil', () => {
 
 
 
-  describe('findFirst', () => {
+  describe('find', () => {
 
     it('when given objectArray is undefined, null or is an empty array then undefined will be returned', () => {
       let undefinedArray: Role[];
@@ -198,9 +198,9 @@ describe('ArrayUtil', () => {
       const isIdOdd: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
 
       // @ts-ignore
-      expect(ArrayUtil.findFirst(undefinedArray, isIdOdd)).toBeUndefined();
-      expect(ArrayUtil.findFirst(nullArray, isIdOdd)).toBeUndefined();
-      expect(ArrayUtil.findFirst(emptyArray, isIdOdd)).toBeUndefined();
+      expect(ArrayUtil.find(undefinedArray, isIdOdd)).toBeUndefined();
+      expect(ArrayUtil.find(nullArray, isIdOdd)).toBeUndefined();
+      expect(ArrayUtil.find(emptyArray, isIdOdd)).toBeUndefined();
     });
 
 
@@ -213,8 +213,7 @@ describe('ArrayUtil', () => {
 
       const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 10 < role!.id);
 
-      expect(ArrayUtil.findFirst(objectArray, isIdGreaterThan10)).toBeUndefined();
-      expect(ArrayUtil.findFirst(objectArray, isIdGreaterThan10)).toBeUndefined();
+      expect(ArrayUtil.find(objectArray, isIdGreaterThan10)).toBeUndefined();
     });
 
 
@@ -227,8 +226,7 @@ describe('ArrayUtil', () => {
 
       const isIdGreaterThan10: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 10 < user!.id);
 
-      expect(ArrayUtil.findFirst(objectArray, isIdGreaterThan10)).toBeUndefined();
-      expect(ArrayUtil.findFirst(objectArray, isIdGreaterThan10)).toBeUndefined();
+      expect(ArrayUtil.find(objectArray, isIdGreaterThan10)).toBeUndefined();
     });
 
 
@@ -243,8 +241,7 @@ describe('ArrayUtil', () => {
 
       const expectedResult = r2;
 
-      expect(ArrayUtil.findFirst(objectArray, isIdEven)).toEqual(expectedResult);
-      expect(ArrayUtil.findFirst(objectArray, isIdEven)).toEqual(expectedResult);
+      expect(ArrayUtil.find(objectArray, isIdEven)).toEqual(expectedResult);
     });
 
 
@@ -259,15 +256,96 @@ describe('ArrayUtil', () => {
 
       const expectedResult = u1;
 
-      expect(ArrayUtil.findFirst(objectArray, isIdOdd)).toEqual(expectedResult);
-      expect(ArrayUtil.findFirst(objectArray, isIdOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.find(objectArray, isIdOdd)).toEqual(expectedResult);
     });
 
   });
 
 
 
-  describe('findFirstByKey', () => {
+  describe('findOptional', () => {
+
+    it('when given objectArray is undefined, null or is an empty array then empty Optional is returned', () => {
+      let undefinedArray: Role[];
+      // @ts-ignore
+      let nullArray: Role[] = null;
+      let emptyArray: Role[] = [];
+
+      const isIdOdd: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
+
+      // @ts-ignore
+      expect(ArrayUtil.findOptional(undefinedArray, isIdOdd).isPresent()).toBeFalse();
+      expect(ArrayUtil.findOptional(nullArray, isIdOdd).isPresent()).toBeFalse();
+      expect(ArrayUtil.findOptional(emptyArray, isIdOdd).isPresent()).toBeFalse();
+    });
+
+
+    it('using interfaces, when given key value is not found then empty Optional is returned', () => {
+      const r1 = { id: 1, description: 'role1' } as Role;
+      const r2 = { id: 2, description: 'role2' } as Role;
+      const r3 = { id: 2, description: 'role3' } as Role;
+      const r4 = { id: 4, description: 'role2' } as Role;
+      const objectArray = [r1, r2, r3, r4];
+
+      const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 10 < role!.id);
+
+      expect(ArrayUtil.findOptional(objectArray, isIdGreaterThan10).isPresent()).toBeFalse();
+    });
+
+
+    it('using classes, when given key value is not found then empty Optional is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const objectArray = [u1, u2, u3, u4];
+
+      const isIdGreaterThan10: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 10 < user!.id);
+
+      expect(ArrayUtil.findOptional(objectArray, isIdGreaterThan10).isPresent()).toBeFalse();
+    });
+
+
+    it('using interfaces, when given key value is found then expected element will be returned', () => {
+      const r1 = { id: 1, description: 'role1' } as Role;
+      const r2 = { id: 2, description: 'role2' } as Role;
+      const r3 = { id: 2, description: 'role3' } as Role;
+      const r4 = { id: 4, description: 'role2' } as Role;
+      const objectArray = [r1, r2, r3, r4];
+
+      const isIdEven: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 0 == role!.id % 2);
+
+      const expectedResult = r2;
+
+      const optional = ArrayUtil.findOptional(objectArray, isIdEven);
+
+      expect(optional.isPresent()).toBeTrue();
+      expect(optional.get()).toEqual(expectedResult);
+    });
+
+
+    it('using classes, when given key value is found then expected element will be returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const objectArray = [u1, u2, u3, u4];
+
+      const isIdOdd: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 1 == user!.id % 2);
+
+      const expectedResult = u1;
+
+      const optional = ArrayUtil.findOptional(objectArray, isIdOdd);
+
+      expect(optional.isPresent()).toBeTrue();
+      expect(optional.get()).toEqual(expectedResult);
+    });
+
+  });
+
+
+
+  describe('findByKey', () => {
 
     it('when given objectArray is undefined, null or is an empty array then undefined will be returned', () => {
       let undefinedArray: Role[];
@@ -276,9 +354,9 @@ describe('ArrayUtil', () => {
       let emptyArray: Role[] = [];
 
       // @ts-ignore
-      expect(ArrayUtil.findFirstByKey(undefinedArray, 'id', [0])).toBeUndefined();
-      expect(ArrayUtil.findFirstByKey(nullArray, 'id', [0])).toBeUndefined();
-      expect(ArrayUtil.findFirstByKey(emptyArray, 'id', [0])).toBeUndefined();
+      expect(ArrayUtil.findByKey(undefinedArray, 'id', [0])).toBeUndefined();
+      expect(ArrayUtil.findByKey(nullArray, 'id', [0])).toBeUndefined();
+      expect(ArrayUtil.findByKey(emptyArray, 'id', [0])).toBeUndefined();
     });
 
 
@@ -289,8 +367,8 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, description: 'role2' } as Role;
       const objectArray = [r1, r2, r3, r4];
 
-      expect(ArrayUtil.findFirstByKey(objectArray, 'id', [0])).toBeUndefined();
-      expect(ArrayUtil.findFirstByKey(objectArray, 'description', [''])).toBeUndefined();
+      expect(ArrayUtil.findByKey(objectArray, 'id', [0])).toBeUndefined();
+      expect(ArrayUtil.findByKey(objectArray, 'description', [''])).toBeUndefined();
     });
 
 
@@ -301,8 +379,8 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const objectArray = [u1, u2, u3, u4];
 
-      expect(ArrayUtil.findFirstByKey(objectArray, 'id', [0])).toBeUndefined();
-      expect(ArrayUtil.findFirstByKey(objectArray, 'description', [''])).toBeUndefined();
+      expect(ArrayUtil.findByKey(objectArray, 'id', [0])).toBeUndefined();
+      expect(ArrayUtil.findByKey(objectArray, 'description', [''])).toBeUndefined();
     });
 
 
@@ -315,8 +393,8 @@ describe('ArrayUtil', () => {
 
       const expectedResult = r2;
 
-      expect(ArrayUtil.findFirstByKey(objectArray, 'id', [2])).toEqual(expectedResult);
-      expect(ArrayUtil.findFirstByKey(objectArray, 'description', ['role2'])).toEqual(expectedResult);
+      expect(ArrayUtil.findByKey(objectArray, 'id', [2])).toEqual(expectedResult);
+      expect(ArrayUtil.findByKey(objectArray, 'description', ['role2'])).toEqual(expectedResult);
     });
 
 
@@ -329,8 +407,90 @@ describe('ArrayUtil', () => {
 
       const expectedResult = u1;
 
-      expect(ArrayUtil.findFirstByKey(objectArray, 'id', [1])).toEqual(expectedResult);
-      expect(ArrayUtil.findFirstByKey(objectArray, 'description', ['user1'])).toEqual(expectedResult);
+      expect(ArrayUtil.findByKey(objectArray, 'id', [1])).toEqual(expectedResult);
+      expect(ArrayUtil.findByKey(objectArray, 'description', ['user1'])).toEqual(expectedResult);
+    });
+
+  });
+
+
+
+  describe('findByKeyOptional', () => {
+
+    it('when given objectArray is undefined, null or is an empty array then empty Optional is returned', () => {
+      let undefinedArray: Role[];
+      // @ts-ignore
+      let nullArray: Role[] = null;
+      let emptyArray: Role[] = [];
+
+      // @ts-ignore
+      expect(ArrayUtil.findByKeyOptional(undefinedArray, 'id', [0]).isPresent()).toBeFalse();
+      expect(ArrayUtil.findByKeyOptional(nullArray, 'id', [0]).isPresent()).toBeFalse();
+      expect(ArrayUtil.findByKeyOptional(emptyArray, 'id', [0]).isPresent()).toBeFalse();
+    });
+
+
+    it('using interfaces, when given key value is not found then empty Optional is returned', () => {
+      const r1 = { id: 1, description: 'role1' } as Role;
+      const r2 = { id: 2, description: 'role2' } as Role;
+      const r3 = { id: 2, description: 'role3' } as Role;
+      const r4 = { id: 4, description: 'role2' } as Role;
+      const objectArray = [r1, r2, r3, r4];
+
+      expect(ArrayUtil.findByKeyOptional(objectArray, 'id', [0]).isPresent()).toBeFalse();
+      expect(ArrayUtil.findByKeyOptional(objectArray, 'description', ['']).isPresent()).toBeFalse();
+    });
+
+
+    it('using classes, when given key value is not found then empty Optional is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const objectArray = [u1, u2, u3, u4];
+
+      expect(ArrayUtil.findByKeyOptional(objectArray, 'id', [0]).isPresent()).toBeFalse();
+      expect(ArrayUtil.findByKeyOptional(objectArray, 'description', ['']).isPresent()).toBeFalse();
+    });
+
+
+    it('using interfaces, when given key value is found then expected element will be returned', () => {
+      const r1 = { id: 1, description: 'role1' } as Role;
+      const r2 = { id: 2, description: 'role2' } as Role;
+      const r3 = { id: 2, description: 'role3' } as Role;
+      const r4 = { id: 4, description: 'role2' } as Role;
+      const objectArray = [r1, r2, r3, r4];
+
+      const expectedResult = r2;
+
+      const optionalById = ArrayUtil.findByKeyOptional(objectArray, 'id', [2]);
+      const optionalByDescription = ArrayUtil.findByKeyOptional(objectArray, 'description', ['role2']);
+
+      expect(optionalById.isPresent()).toBeTrue();
+      expect(optionalById.get()).toEqual(expectedResult);
+
+      expect(optionalByDescription.isPresent()).toBeTrue();
+      expect(optionalByDescription.get()).toEqual(expectedResult);
+    });
+
+
+    it('using classes, when given key value is found then expected element will be returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const objectArray = [u1, u2, u3, u4];
+
+      const expectedResult = u1;
+
+      const optionalById = ArrayUtil.findByKeyOptional(objectArray, 'id', [1]);
+      const optionalByDescription = ArrayUtil.findByKeyOptional(objectArray, 'description', ['user1']);
+
+      expect(optionalById.isPresent()).toBeTrue();
+      expect(optionalById.get()).toEqual(expectedResult);
+
+      expect(optionalByDescription.isPresent()).toBeTrue();
+      expect(optionalByDescription.get()).toEqual(expectedResult);
     });
 
   });
