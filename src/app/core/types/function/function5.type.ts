@@ -1,4 +1,5 @@
-import { Function1, NullableOrUndefined, TFunction1 } from '@app-core/types';
+import { Function1, TFunction1 } from '@app-core/types';
+import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -24,11 +25,11 @@ export type TFunction5<T1, T2, T3, T4, T5, R> = FFunction5<T1, T2, T3, T4, T5, R
  *   Type of the result of the {@link FFunction5}
  */
 export type FFunction5<T1, T2, T3, T4, T5, R> =
-  (t1: NullableOrUndefined<T1>,
-   t2: NullableOrUndefined<T2>,
-   t3: NullableOrUndefined<T3>,
-   t4: NullableOrUndefined<T4>,
-   t5: NullableOrUndefined<T5>) => R;
+  (t1: T1,
+   t2: T2,
+   t3: T3,
+   t4: T4,
+   t5: T5) => R;
 
 
 /**
@@ -95,29 +96,37 @@ export class Function5<T1, T2, T3, T4, T5, R> {
   /**
    * Returns a {@link Function5} describing the given {@link FFunction5}.
    *
-   * @param input
+   * @param func
    *    {@link FFunction5} used to evaluates the given instances of T and return an R one
    *
    * @return an {@link Function5} as wrapper of {@code mapper}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T1, T2, T3, T4, T5, R>(input: FFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R>;
+  static of<T1, T2, T3, T4, T5, R>(func: FFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R>;
 
 
   /**
    * Returns a {@link Function5} based on provided {@link TFunction5} parameter.
    *
-   * @param input
+   * @param func
    *    {@link TFunction5} instance to convert to a {@link Function5} one
    *
    * @return {@link Function5} based on provided {@link TFunction5}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T1, T2, T3, T4, T5, R>(input: TFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R>;
+  static of<T1, T2, T3, T4, T5, R>(func: TFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R>;
 
 
-  static of<T1, T2, T3, T4, T5, R>(input: FFunction5<T1, T2, T3, T4, T5, R> | TFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R> {
-    return (input instanceof Function5)
-      ? input
-      : new Function5(input);
+  static of<T1, T2, T3, T4, T5, R>(func: FFunction5<T1, T2, T3, T4, T5, R> | TFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R> {
+    AssertUtil.notNullOrUndefined(
+      func,
+      'func must be not null and not undefined'
+    );
+    return (func instanceof Function5)
+      ? func
+      : new Function5(func);
   }
 
 
@@ -130,19 +139,26 @@ export class Function5<T1, T2, T3, T4, T5, R> {
    *
    * @return composed {@link Function5} that first applies this {@link Function5} and then applies the
    *         {@code after} {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
    */
-  andThen = <V>(after: TFunction1<R, V>): Function5<T1, T2, T3, T4, T5, V> =>
-    new Function5(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>,
-       t3: NullableOrUndefined<T3>,
-       t4: NullableOrUndefined<T4>,
-       t5: NullableOrUndefined<T5>) =>
+  andThen = <V>(after: TFunction1<R, V>): Function5<T1, T2, T3, T4, T5, V> => {
+    AssertUtil.notNullOrUndefined(
+      after,
+      'after must be not null and not undefined'
+    );
+    return new Function5(
+      (t1: T1,
+       t2: T2,
+       t3: T3,
+       t4: T4,
+       t5: T5) =>
         Function1.of(after)
           .apply(
             this.apply(t1, t2, t3, t4, t5)
           )
     );
+  }
 
 
   /**
@@ -161,11 +177,11 @@ export class Function5<T1, T2, T3, T4, T5, R> {
    *
    * @return new instance of R
    */
-  apply = (t1: NullableOrUndefined<T1>,
-           t2: NullableOrUndefined<T2>,
-           t3: NullableOrUndefined<T3>,
-           t4: NullableOrUndefined<T4>,
-           t5: NullableOrUndefined<T5>): R =>
+  apply = (t1: T1,
+           t2: T2,
+           t3: T3,
+           t4: T4,
+           t5: T5): R =>
     this.mapper(t1, t2, t3, t4, t5);
 
 }

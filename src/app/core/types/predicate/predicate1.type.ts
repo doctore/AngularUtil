@@ -1,5 +1,5 @@
-import { ArrayUtil } from '@app-core/util';
-import { Nullable, NullableOrUndefined } from '@app-core/types';
+import { ArrayUtil, AssertUtil } from '@app-core/util';
+import { Nullable } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -15,7 +15,7 @@ export type TPredicate1<T> = FPredicate1<T> | Predicate1<T>;
  *   Type of parameter received by this {@link FPredicate1}
  */
 export type FPredicate1<T> =
-  (t: NullableOrUndefined<T>) => boolean;
+  (t: T) => boolean;
 
 
 /**
@@ -77,7 +77,7 @@ export class Predicate1<T> {
       return Predicate1.alwaysTrue();
     }
     return Predicate1.of(
-      (t: NullableOrUndefined<T>) =>
+      (t: T) =>
         ArrayUtil.foldLeft(
           predicates,
           true,
@@ -131,7 +131,7 @@ export class Predicate1<T> {
       return Predicate1.alwaysFalse();
     }
     return Predicate1.of(
-      (t: NullableOrUndefined<T>) => {
+      (t: T) => {
         for (let i = 0; i < predicates!.length; i++) {
           if (Predicate1.of(predicates![i]).apply(t)) {
             return true;
@@ -163,29 +163,37 @@ export class Predicate1<T> {
   /**
    * Returns a {@link Predicate1} describing the given {@link FPredicate1}.
    *
-   * @param input
+   * @param predicate
    *    {@link FPredicate1} used to evaluates the given instances of T
    *
    * @return an {@link Predicate1} as wrapper of {@code verifier}
+   *
+   * @throws {@link IllegalArgumentError} if {@code predicate} is {@code null} or {@code undefined}
    */
-  static of<T>(input: FPredicate1<T>): Predicate1<T>;
+  static of<T>(predicate: FPredicate1<T>): Predicate1<T>;
 
 
   /**
    * Returns a {@link Predicate1} based on provided {@link TPredicate1} parameter.
    *
-   * @param input
+   * @param predicate
    *    {@link TPredicate1} instance to convert to a {@link Predicate1} one
    *
    * @return {@link Predicate1} based on provided {@link TPredicate1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code predicate} is {@code null} or {@code undefined}
    */
-  static of<T>(input: TPredicate1<T>): Predicate1<T>;
+  static of<T>(predicate: TPredicate1<T>): Predicate1<T>;
 
 
-  static of<T>(input: TPredicate1<T>): Predicate1<T> {
-    return (input instanceof Predicate1)
-      ? input
-      : new Predicate1(input);
+  static of<T>(predicate: TPredicate1<T>): Predicate1<T> {
+    AssertUtil.notNullOrUndefined(
+      predicate,
+      'predicate must be not null and not undefined'
+    );
+    return (predicate instanceof Predicate1)
+      ? predicate
+      : new Predicate1(predicate);
   }
 
 
@@ -194,18 +202,26 @@ export class Predicate1<T> {
    * and another. When evaluating the composed {@link Predicate1}, if this {@link Predicate1} is {@code false}, then
    * the other {@link Predicate1} is not evaluated.
    *
-   * @param input
+   * @apiNote
+   *    If {@code predicate} is {@code null} or {@code undefined} then only this {@link Predicate1} will be applied.
+   *
+   * @param predicate
    *    {@link TPredicate1} that will be logically-ANDed with this {@link Predicate1}
    *
    * @return a composed {@link Predicate1} that represents the short-circuiting logical AND of this {@link Predicate1}
-   *         and {@code input}
+   *         and {@code predicate}
    */
-  and = (input: TPredicate1<T>): Predicate1<T> =>
-    new Predicate1(
-      (t: NullableOrUndefined<T>) =>
-        this.apply(t) &&
-        Predicate1.of(input).apply(t)
-    );
+  and = (predicate: TPredicate1<T>): Predicate1<T> =>
+    _.isNil(predicate)
+      ? new Predicate1(
+          (t: T) =>
+            this.apply(t)
+        )
+      : new Predicate1(
+          (t: T) =>
+            this.apply(t) &&
+              Predicate1.of(predicate).apply(t)
+        );
 
 
   /**
@@ -217,7 +233,7 @@ export class Predicate1<T> {
    * @return {@code true} if the input argument matches the predicate,
    *         {@code false} otherwise
    */
-  apply = (t: NullableOrUndefined<T>): boolean =>
+  apply = (t: T): boolean =>
     this.verifier(t);
 
 
@@ -228,7 +244,7 @@ export class Predicate1<T> {
    */
   not = (): Predicate1<T> =>
     new Predicate1(
-      (t: NullableOrUndefined<T>) =>
+      (t: T) =>
         !this.apply(t)
     );
 
@@ -238,17 +254,25 @@ export class Predicate1<T> {
    * and another. When evaluating the composed {@link Predicate1}, if this {@link Predicate1} is {@code true}, then
    * the other {@link Predicate1} is not evaluated.
    *
-   * @param input
+   * @apiNote
+   *    If {@code predicate} is {@code null} or {@code undefined} then only this {@link Predicate1} will be applied.
+   *
+   * @param predicate
    *    {@link TPredicate1} that will be logically-ORed with this {@link Predicate1}
    *
    * @return a composed {@link Predicate1} that represents the short-circuiting logical OR of this {@link Predicate1}
-   *         and {@code input}
+   *         and {@code predicate}
    */
-  or = (input: TPredicate1<T>): Predicate1<T> =>
-    new Predicate1(
-      (t: NullableOrUndefined<T>) =>
-        this.apply(t) ||
-        Predicate1.of(input).apply(t)
-    );
+  or = (predicate: TPredicate1<T>): Predicate1<T> =>
+    _.isNil(predicate)
+      ? new Predicate1(
+          (t: T) =>
+            this.apply(t)
+        )
+      : new Predicate1(
+          (t: T) =>
+            this.apply(t) ||
+              Predicate1.of(predicate).apply(t)
+        );
 
 }

@@ -1,6 +1,5 @@
+import { Function0, Optional, TFunction0 } from '@app-core/types';
 import { AssertUtil } from '@app-core/util';
-import { Function0, Nullable, Optional, TFunction0 } from '@app-core/types';
-import * as _ from 'lodash';
 
 /**
  *    Represents a computation that may either result in an error, or return a successfully computed value. It's
@@ -23,7 +22,7 @@ export abstract class Try<T> {
    *
    * @throws {@code Failure#error} if this is an {@link Failure}
    */
-  abstract get(): Nullable<T>;
+  abstract get(): T;
 
 
   /**
@@ -35,8 +34,8 @@ export abstract class Try<T> {
   /**
    * Gets the value of this {@link Try} if is a {@link Success} or throws if this is an {@link Failure}.
    *
-   * @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-{@code null},
-   *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is {@code null},
+   * @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-{@code null} and non-{@code undefined},
+   *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is {@code null} or {@code undefined},
    *         {@code Failure#error} if this is an {@link Failure}
    *
    * @throws {@code Failure#error} if this is an {@link Failure}
@@ -89,8 +88,8 @@ export abstract class Try<T> {
    *
    * @return {@link Success} with the provided {@code value}
    */
-  static success = <T>(value?: Nullable<T>): Try<T> =>
-    Success.ofNullable(value);
+  static success = <T>(value: T): Try<T> =>
+    Success.of(value);
 
 
   /**
@@ -113,10 +112,10 @@ export abstract class Try<T> {
    * @param defaultValue
    *    Returned value if current instance is an {@link Failure} one
    *
-   * @return {@code T} (or {@code null}) value stored in {@link Success} instance,
+   * @return {@code T} with value stored in {@link Success} instance,
    *         {@code defaultValue} otherwise
    */
-  getOrElse = (defaultValue: Nullable<T>): Nullable<T> =>
+  getOrElse = (defaultValue: T): T =>
     this.isSuccess()
       ? this.get()
       : defaultValue;
@@ -128,11 +127,11 @@ export abstract class Try<T> {
    * @param defaultValue
    *    Returned value if current instance is an {@link Failure} one
    *
-   * @return {@link Optional#empty} if this {@link Try} is an empty {@link Success} instance or provided {@code defaultValue} is {@code null},
+   * @return {@link Optional#empty} if this {@link Try} is an empty {@link Success} instance or provided {@code defaultValue} is {@code null} or {@code undefined},
    *         {@link Optional} with the internal value if this {@link Try} is non empty {@link Success} instance,
    *         {@link Optional} with provided {@code defaultValue} otherwise
    */
-  getOrElseOptional = (defaultValue: Nullable<T>): Optional<T> =>
+  getOrElseOptional = (defaultValue: T): Optional<T> =>
     Optional.ofNullable(
       this.getOrElse(
         defaultValue
@@ -146,59 +145,36 @@ export abstract class Try<T> {
 
 /**
  * The successful result of a {@link Try} operation.
+ * <p>
+ *    Both {@code null} and {@code undefined} could be stored in the internal {@code value} if defined {@code T}
+ * allows them. Methods providing {@link Optional} as result, like {@link Success#getOptional} with take into account,
+ * that is, is this {@link Success} instance is empty ({@code value} is {@code null} or {@code undefined}), then
+ * {@link Optional#empty} will be returned.
  *
  * @typeParam<T>
  *    Value type in the case of {@link Success}
  */
 export class Success<T> extends Try<T> {
 
-  private constructor(private readonly value: Nullable<T> = null) {
+  private constructor(private readonly value: T) {
     super();
   }
 
 
   /**
-   * Returns an empty {@link Success} instance. No value is present for this one.
-   *
-   * @return an empty {@link Success}
-   */
-  static empty = <T>(): Success<T> =>
-    new Success<T>(null);
-
-
-  /**
-   * Returns an {@link Success} adding the given non-{@code null} and non-{@code undefined} value.
+   * Returns an {@link Success} adding the given {@code value}.
    *
    * @param value
-   *    The value to store, which must be non-{@code null} and non-{@code undefined}
+   *    The value to store
    *
    * @return an {@link Success} with the value present
-   *
-   * @throws {@link IllegalArgumentError} if {@code value} is {@code null} or {@code undefined}
    */
   static of = <T>(value: T): Success<T> => {
-    AssertUtil.notNullOrUndefined(value);
     return new Success<T>(value);
   }
 
 
-  /**
-   *    Returns an {@link Success} adding the given value, if non-{@code null} and non-{@code undefined},
-   * otherwise returns an empty {@link Success}.
-   *
-   * @param value
-   *    The possibly-{@code null} or possibly-{@code undefined} value to store
-   *
-   * @return an {@link Success} with a present value if the specified value is non-{@code null} and non-{@code undefined},
-   *         an empty {@link Success} otherwise
-   */
-  static ofNullable = <T>(value?: Nullable<T>): Success<T> =>
-    _.isNil(value)
-      ? Success.empty<T>()
-      : Success.of(value);
-
-
-  override get = (): Nullable<T> =>
+  override get = (): T =>
     this.value;
 
 
@@ -247,7 +223,7 @@ export class Failure<T> extends Try<T> {
   }
 
 
-  override get = (): Nullable<T> => {
+  override get = (): T => {
     throw this.error;
   }
 

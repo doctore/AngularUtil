@@ -1,4 +1,5 @@
-import { FFunction1, FFunction5, Function1, Function5, isFFunction5, NullableOrUndefined } from '@app-core/types';
+import { FFunction1, FFunction5, Function1, Function5, isFFunction5 } from '@app-core/types';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -50,8 +51,8 @@ describe('Function5', () => {
 
     it('when a function is provided then true is returned', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
-          s!.length + n1! + n2! + n3! + n4!);
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
 
       expect(Function5.isFunction(stringLengthPlusNumbers)).toBeTrue();
     });
@@ -62,10 +63,18 @@ describe('Function5', () => {
 
   describe('of', () => {
 
+    it('when null or undefined func is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Function5.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Function5.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when an instance of FFunction5 is provided then a valid Function5 is returned', () => {
       const stringLengthPlusNumbers: FFunction5<string, number, number, number, number, number> =
-        (s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
-          s!.length + n1! + n2! + n3! + n4!;
+        (s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4;
 
       const func = Function5.of(stringLengthPlusNumbers);
 
@@ -76,8 +85,8 @@ describe('Function5', () => {
 
     it('when an instance of Function5 is provided then the same one is returned', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
-          s!.length + n1! + n2! + n3! + n4!);
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
 
       const func = Function5.of(stringLengthPlusNumbers);
 
@@ -91,13 +100,25 @@ describe('Function5', () => {
 
   describe('andThen', () => {
 
+    it('when null or undefined after is given then an error is thrown', () => {
+      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
+
+      // @ts-ignore
+      expect(() => stringLengthPlusNumbers.andThen(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => stringLengthPlusNumbers.andThen(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when a Function1 is provided then it will be applied after current one', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
-          s!.length + n1! + n2! + n3! + n4!);
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
 
       const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
+        (n: number) => 2 * n;
 
       const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
@@ -108,11 +129,11 @@ describe('Function5', () => {
 
     it('when a Function1 is provided then it will be applied after current one', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
-          s!.length + n1! + n2! + n3! + n4!);
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
@@ -127,8 +148,8 @@ describe('Function5', () => {
 
     it('when a Function2 is provided then the received input will be transformed', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>, n3: NullableOrUndefined<number>, n4: NullableOrUndefined<number>) =>
-          s!.length + n1! + n2! + n3! + n4!);
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
 
       expect(stringLengthPlusNumbers.apply('', 2, 7, -1, 0)).toEqual(8);
       expect(stringLengthPlusNumbers.apply('abc', 5, 11, -1, 0)).toEqual(18);

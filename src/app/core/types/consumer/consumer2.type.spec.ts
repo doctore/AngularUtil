@@ -1,4 +1,5 @@
 import { Consumer2, FConsumer2, isFConsumer2, NullableOrUndefined } from '@app-core/types';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -47,7 +48,7 @@ describe('Consumer2', () => {
 
 
     it('when a function is provided then true is returned', () => {
-      const consumer: Consumer2<number, string> =
+      const consumer: Consumer2<NullableOrUndefined<number>, NullableOrUndefined<string>> =
         Consumer2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { n! += 2; s! += 'V2'; });
 
       expect(Consumer2.isConsumer(consumer)).toBeTrue();
@@ -58,6 +59,14 @@ describe('Consumer2', () => {
 
 
   describe('of', () => {
+
+    it('when null or undefined consumer is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Consumer2.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Consumer2.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
 
     it('when an instance of FConsumer2 is provided then a valid Consumer2 is returned', () => {
       let externalInt = 10;
@@ -80,7 +89,7 @@ describe('Consumer2', () => {
       let externalString = 'abc';
 
       const plusNAndAddS: Consumer2<number, string> =
-        Consumer2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { externalInt += n!; externalString += s!; });
+        Consumer2.of((n: number, s: string) => { externalInt += n; externalString += s; });
 
       const consumer = Consumer2.of(plusNAndAddS);
       consumer.apply(5, 'V2');
@@ -96,12 +105,29 @@ describe('Consumer2', () => {
 
   describe('andThen', () => {
 
+    it('when given Consumer1 is null or undefined then only this will be applied', () => {
+      let externalInt = 2;
+      let externalString = 'abc';
+
+      const plusNAndAddS: Consumer2<number, string> =
+        Consumer2.of((n: number, s: string) => { externalInt += n; externalString += s; });
+
+      // @ts-ignore
+      const consumer = plusNAndAddS.andThen(undefined);
+      consumer.apply(5, 'V2');
+
+      expect(Consumer2.isConsumer(consumer)).toBeTrue();
+      expect(externalInt).toEqual(7);
+      expect(externalString).toEqual('abcV2');
+    });
+
+
     it('when a FConsumer2 is provided then it will be applied after current one', () => {
       let externalInt = 2;
       let externalString = 'abc';
 
       const plusNAndAddS: Consumer2<number, string> =
-        Consumer2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { externalInt += n!; externalString += s!; });
+        Consumer2.of((n: number, s: string) => { externalInt += n; externalString += s; });
 
       const multiplyNAddS: FConsumer2<number, string> =
         (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { externalInt *= n!; externalString += s!; };
@@ -120,10 +146,10 @@ describe('Consumer2', () => {
       let externalString = 'abc';
 
       const plusNAndAddS: Consumer2<number, string> =
-        Consumer2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { externalInt += n!; externalString += s!; });
+        Consumer2.of((n: number, s: string) => { externalInt += n; externalString += s; });
 
       const multiplyNAddS: Consumer2<number, string> =
-        Consumer2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { externalInt *= n!; externalString += s!; });
+        Consumer2.of((n: number, s: string) => { externalInt *= n!; externalString += s!; });
 
       const consumer = plusNAndAddS.andThen(multiplyNAddS);
       consumer.apply(5, 'V2');
@@ -144,7 +170,7 @@ describe('Consumer2', () => {
       let externalString = 'abc';
 
       const plusNAndAddS: Consumer2<number, string> =
-        Consumer2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { externalInt += n!; externalString += s!; });
+        Consumer2.of((n: number, s: string) => { externalInt += n; externalString += s; });
 
       const consumer = Consumer2.of(plusNAndAddS);
       consumer.apply(5, 'V2');

@@ -1,4 +1,5 @@
 import { Consumer1, FConsumer1, isFConsumer1, NullableOrUndefined } from '@app-core/types';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -47,7 +48,7 @@ describe('Consumer1', () => {
 
 
     it('when a function is provided then true is returned', () => {
-      const consumer: Consumer1<number> =
+      const consumer: Consumer1<NullableOrUndefined<number>> =
         Consumer1.of((n: NullableOrUndefined<number>) => { n! += 2; });
 
       expect(Consumer1.isConsumer(consumer)).toBeTrue();
@@ -58,6 +59,14 @@ describe('Consumer1', () => {
 
 
   describe('of', () => {
+
+    it('when null or undefined consumer is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Consumer1.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Consumer1.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
 
     it('when an instance of FConsumer1 is provided then a valid Consumer1 is returned', () => {
       let externalInt = 10;
@@ -77,7 +86,7 @@ describe('Consumer1', () => {
       let externalInt = 10;
 
       const plusN: Consumer1<number> =
-        Consumer1.of((n: NullableOrUndefined<number>) => { externalInt += n!; });
+        Consumer1.of((n: number) => { externalInt += n; });
 
       const consumer = Consumer1.of(plusN);
       consumer.apply(5);
@@ -92,11 +101,25 @@ describe('Consumer1', () => {
 
   describe('andThen', () => {
 
+    it('when given Consumer1 is null or undefined then only this will be applied', () => {
+      let externalInt = 1;
+
+      const plusN: Consumer1<number> =
+        Consumer1.of((n: number) => { externalInt += n });
+
+      // @ts-ignore
+      const consumer = plusN.andThen(undefined);
+      consumer.apply(2);
+
+      expect(externalInt).toEqual(3);
+    });
+
+
     it('when a FConsumer1 is provided then it will be applied after current one', () => {
       let externalInt = 1;
 
       const plusN: Consumer1<number> =
-        Consumer1.of((n: NullableOrUndefined<number>) => { externalInt += n! });
+        Consumer1.of((n: number) => { externalInt += n });
 
       const multiplyN: FConsumer1<number> =
         (n: NullableOrUndefined<number>) => { externalInt *= n! };
@@ -112,10 +135,10 @@ describe('Consumer1', () => {
       let externalInt = 1;
 
       const plusN: Consumer1<number> =
-        Consumer1.of((n: NullableOrUndefined<number>) => { externalInt += n! });
+        Consumer1.of((n: number) => { externalInt += n });
 
       const multiplyN: Consumer1<number> =
-        Consumer1.of((n: NullableOrUndefined<number>) => { externalInt *= n! });
+        Consumer1.of((n: number) => { externalInt *= n });
 
       const consumer = plusN.andThen(multiplyN);
       consumer.apply(2);
@@ -133,7 +156,7 @@ describe('Consumer1', () => {
       let externalString = 'abc';
 
       const stringAddS: Consumer1<string> =
-        Consumer1.of((s: NullableOrUndefined<string>) => { externalString += s!; });
+        Consumer1.of((s: string) => { externalString += s; });
 
       const consumer = Consumer1.of(stringAddS);
       consumer.apply('V2');

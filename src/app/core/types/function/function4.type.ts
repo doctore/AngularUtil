@@ -1,4 +1,5 @@
-import { Function1, NullableOrUndefined, TFunction1 } from '@app-core/types';
+import { Function1, TFunction1 } from '@app-core/types';
+import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -22,10 +23,10 @@ export type TFunction4<T1, T2, T3, T4, R> = FFunction4<T1, T2, T3, T4, R> | Func
  *   Type of the result of the {@link FFunction4}
  */
 export type FFunction4<T1, T2, T3, T4, R> =
-  (t1: NullableOrUndefined<T1>,
-   t2: NullableOrUndefined<T2>,
-   t3: NullableOrUndefined<T3>,
-   t4: NullableOrUndefined<T4>) => R;
+  (t1: T1,
+   t2: T2,
+   t3: T3,
+   t4: T4) => R;
 
 
 /**
@@ -90,29 +91,37 @@ export class Function4<T1, T2, T3, T4, R> {
   /**
    * Returns a {@link Function4} describing the given {@link FFunction4}.
    *
-   * @param input
+   * @param func
    *    {@link FFunction4} used to evaluates the given instances of T and return an R one
    *
    * @return an {@link Function4} as wrapper of {@code mapper}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T1, T2, T3, T4, R>(input: FFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
+  static of<T1, T2, T3, T4, R>(func: FFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
 
 
   /**
    * Returns a {@link Function4} based on provided {@link TFunction4} parameter.
    *
-   * @param input
+   * @param func
    *    {@link TFunction4} instance to convert to a {@link Function4} one
    *
    * @return {@link Function4} based on provided {@link TFunction4}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T1, T2, T3, T4, R>(input: TFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
+  static of<T1, T2, T3, T4, R>(func: TFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
 
 
-  static of<T1, T2, T3, T4, R>(input: FFunction4<T1, T2, T3, T4, R> | TFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R> {
-    return (input instanceof Function4)
-      ? input
-      : new Function4(input);
+  static of<T1, T2, T3, T4, R>(func: FFunction4<T1, T2, T3, T4, R> | TFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R> {
+    AssertUtil.notNullOrUndefined(
+      func,
+      'func must be not null and not undefined'
+    );
+    return (func instanceof Function4)
+      ? func
+      : new Function4(func);
   }
 
 
@@ -125,18 +134,25 @@ export class Function4<T1, T2, T3, T4, R> {
    *
    * @return composed {@link Function4} that first applies this {@link Function4} and then applies the
    *         {@code after} {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
    */
-  andThen = <V>(after: TFunction1<R, V>): Function4<T1, T2, T3, T4, V> =>
-    new Function4(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>,
-       t3: NullableOrUndefined<T3>,
-       t4: NullableOrUndefined<T4>) =>
+  andThen = <V>(after: TFunction1<R, V>): Function4<T1, T2, T3, T4, V> => {
+    AssertUtil.notNullOrUndefined(
+      after,
+      'after must be not null and not undefined'
+    );
+    return new Function4(
+      (t1: T1,
+       t2: T2,
+       t3: T3,
+       t4: T4) =>
         Function1.of(after)
           .apply(
             this.apply(t1, t2, t3, t4)
           )
     );
+  }
 
 
   /**
@@ -153,10 +169,10 @@ export class Function4<T1, T2, T3, T4, R> {
    *
    * @return new instance of R
    */
-  apply = (t1: NullableOrUndefined<T1>,
-           t2: NullableOrUndefined<T2>,
-           t3: NullableOrUndefined<T3>,
-           t4: NullableOrUndefined<T4>): R =>
+  apply = (t1: T1,
+           t2: T2,
+           t3: T3,
+           t4: T4): R =>
     this.mapper(t1, t2, t3, t4);
 
 }

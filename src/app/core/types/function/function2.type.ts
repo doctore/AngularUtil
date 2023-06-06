@@ -1,4 +1,5 @@
-import { Function1, NullableOrUndefined, TFunction1 } from '@app-core/types';
+import { Function1, TFunction1 } from '@app-core/types';
+import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -18,8 +19,8 @@ export type TFunction2<T1, T2, R> = FFunction2<T1, T2, R> | Function2<T1, T2, R>
  *   Type of the result of the {@link FFunction2}
  */
 export type FFunction2<T1, T2, R> =
-  (t1: NullableOrUndefined<T1>,
-   t2: NullableOrUndefined<T2>) => R;
+  (t1: T1,
+   t2: T2) => R;
 
 
 /**
@@ -80,29 +81,37 @@ export class Function2<T1, T2, R> {
   /**
    * Returns a {@link Function2} describing the given {@link FFunction2}.
    *
-   * @param input
+   * @param func
    *    {@link FFunction2} used to evaluates the given instances of T and return an R one
    *
    * @return an {@link Function2} as wrapper of {@code mapper}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T1, T2, R>(input: FFunction2<T1, T2, R>): Function2<T1, T2, R>;
+  static of<T1, T2, R>(func: FFunction2<T1, T2, R>): Function2<T1, T2, R>;
 
 
   /**
    * Returns a {@link Function2} based on provided {@link TFunction2} parameter.
    *
-   * @param input
+   * @param func
    *    {@link TFunction2} instance to convert to a {@link Function2} one
    *
    * @return {@link Function2} based on provided {@link TFunction2}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T1, T2, R>(input: TFunction2<T1, T2, R>): Function2<T1, T2, R>;
+  static of<T1, T2, R>(func: TFunction2<T1, T2, R>): Function2<T1, T2, R>;
 
 
-  static of<T1, T2, R>(input: FFunction2<T1, T2, R> | TFunction2<T1, T2, R>): Function2<T1, T2, R> {
-    return (input instanceof Function2)
-      ? input
-      : new Function2(input);
+  static of<T1, T2, R>(func: FFunction2<T1, T2, R> | TFunction2<T1, T2, R>): Function2<T1, T2, R> {
+    AssertUtil.notNullOrUndefined(
+      func,
+      'func must be not null and not undefined'
+    );
+    return (func instanceof Function2)
+      ? func
+      : new Function2(func);
   }
 
 
@@ -115,16 +124,22 @@ export class Function2<T1, T2, R> {
    *
    * @return composed {@link Function2} that first applies this {@link Function2} and then applies the
    *         {@code after} {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
    */
-  andThen = <V>(after: TFunction1<R, V>): Function2<T1, T2, V> =>
-    new Function2(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>) =>
-        Function1.of(after)
-          .apply(
-            this.apply(t1, t2)
-          )
+  andThen = <V>(after: TFunction1<R, V>): Function2<T1, T2, V> => {
+    AssertUtil.notNullOrUndefined(
+      after,
+      'after must be not null and not undefined'
     );
+    return new Function2(
+      (t1: T1,
+       t2: T2) =>
+        Function1.of(after).apply(
+          this.apply(t1, t2)
+        )
+    );
+  }
 
 
   /**
@@ -137,8 +152,8 @@ export class Function2<T1, T2, R> {
    *
    * @return new instance of R
    */
-  apply = (t1: NullableOrUndefined<T1>,
-           t2: NullableOrUndefined<T2>): R =>
+  apply = (t1: T1,
+           t2: T2): R =>
     this.mapper(t1, t2);
 
 }

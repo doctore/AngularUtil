@@ -23,7 +23,7 @@ describe('ObjectUtil', () => {
   describe('equals', () => {
 
     it('when both values are null or undefined then true is be returned', () => {
-      expect(ObjectUtil.equals()).toBeTrue();
+      expect(ObjectUtil.equals(undefined, undefined)).toBeTrue();
       expect(ObjectUtil.equals(null, null)).toBeTrue();
     });
 
@@ -132,7 +132,7 @@ describe('ObjectUtil', () => {
   describe('rawEquals', () => {
 
     it('when both values are null or undefined then true is be returned', () => {
-      expect(ObjectUtil.rawEquals()).toBeTrue();
+      expect(ObjectUtil.rawEquals(undefined, undefined)).toBeTrue();
       expect(ObjectUtil.rawEquals(null, null)).toBeTrue();
     });
 

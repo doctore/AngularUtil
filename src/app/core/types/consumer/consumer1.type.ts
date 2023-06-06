@@ -1,4 +1,4 @@
-import { NullableOrUndefined } from '@app-core/types';
+import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -15,7 +15,7 @@ export type TConsumer1<T> = FConsumer1<T> | Consumer1<T>;
  *   Type of the input to the {@link FConsumer1}
  */
 export type FConsumer1<T> =
-  (t: NullableOrUndefined<T>) => void;
+  (t: T) => void;
 
 
 /**
@@ -74,35 +74,46 @@ export class Consumer1<T> {
   /**
    * Returns a {@link Consumer1} describing the given {@link FConsumer1}.
    *
-   * @param input
+   * @param consumer
    *    {@link FConsumer1} used to perform an operation over the given instance of T
    *
    * @return an {@link Consumer1} as wrapper of {@code mapper}
+   *
+   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
    */
-  static of<T>(input: FConsumer1<T>): Consumer1<T>;
+  static of<T>(consumer: FConsumer1<T>): Consumer1<T>;
 
 
   /**
    * Returns a {@link Consumer1} based on provided {@link TConsumer1} parameter.
    *
-   * @param input
+   * @param consumer
    *    {@link TConsumer1} instance to convert to a {@link Consumer1} one
    *
    * @return {@link Consumer1} based on provided {@link TConsumer1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
    */
-  static of<T>(input: TConsumer1<T>): Consumer1<T>;
+  static of<T>(consumer: TConsumer1<T>): Consumer1<T>;
 
 
-  static of<T>(input: FConsumer1<T> | TConsumer1<T>): Consumer1<T> {
-    return (input instanceof Consumer1)
-      ? input
-      : new Consumer1(input);
+  static of<T>(consumer: FConsumer1<T> | TConsumer1<T>): Consumer1<T> {
+    AssertUtil.notNullOrUndefined(
+      consumer,
+      'consumer must be not null and not undefined'
+    );
+    return (consumer instanceof Consumer1)
+      ? consumer
+      : new Consumer1(consumer);
   }
 
 
   /**
    *    Returns a composed {@link Consumer1} that first applies this {@link Consumer1} to its input, and then
    * applies the {@code after} {@link TConsumer1}.
+   *
+   * @apiNote
+   *    If {@code after} is {@code null} or {@code undefined} then only this {@link TConsumer1} will be applied.
    *
    * @param after
    *    {@link TConsumer1} to apply after this {@link Consumer1} is applied
@@ -111,13 +122,17 @@ export class Consumer1<T> {
    *         {@code after} {@link TConsumer1}
    */
   andThen = (after: TConsumer1<T>): Consumer1<T> =>
-    new Consumer1(
-      (t: NullableOrUndefined<T>) => {
-        this.apply(t);
-        Consumer1.of(after)
-          .apply(t);
-      }
-    );
+    _.isNil(after)
+      ? new Consumer1(
+          (t: T) =>
+            this.apply(t)
+        )
+      : new Consumer1(
+          (t: T) => {
+            this.apply(t);
+            Consumer1.of(after).apply(t);
+          }
+        );
 
 
   /**
@@ -126,7 +141,7 @@ export class Consumer1<T> {
    * @param t
    *    The input argument
    */
-  apply = (t: NullableOrUndefined<T>): void =>
+  apply = (t: T): void =>
     this.action(t);
 
 }

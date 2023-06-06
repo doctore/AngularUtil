@@ -1,4 +1,4 @@
-import { Function0, isFFunction0, Nullable, NullableOrUndefined, TFunction0 } from '@app-core/types';
+import { Function0, isFFunction0, NullableOrUndefined, TFunction0 } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -64,8 +64,8 @@ export class ObjectUtil {
    * @return {@code true} if {@code a} is equals to {@code b},
    *         {@code false} otherwise.
    */
-  static equals = <T>(a?: Nullable<T>,
-                      b?: Nullable<T>): boolean => {
+  static equals = <T>(a: NullableOrUndefined<T>,
+                      b: NullableOrUndefined<T>): boolean => {
     if ((_.isNil(a) && !_.isNil(b)) ||
         (!_.isNil(a) && _.isNil(b))) {
       return false;
@@ -184,8 +184,8 @@ export class ObjectUtil {
    * @return {@code true} if {@code a} is equals to {@code b},
    *         {@code false} otherwise.
    */
-  static rawEquals = (a?: Nullable<any>,
-                      b?: Nullable<any>): boolean =>
+  static rawEquals = (a: NullableOrUndefined<any>,
+                      b: NullableOrUndefined<any>): boolean =>
     _.isEqual(a, b);
 
 }

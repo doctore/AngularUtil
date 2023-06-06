@@ -64,6 +64,14 @@ describe('Function0', () => {
 
   describe('of', () => {
 
+    it('when null or undefined func is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Function0.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Function0.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when an instance of FFunction0 is provided then a valid Function0 is returned', () => {
       const message = 'message';
       const getMessage: FFunction0<string> = () => 'message';

@@ -1,3 +1,4 @@
+import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -69,37 +70,42 @@ export class Function0<R> {
   /**
    * Returns a {@link Function0} describing the given {@link FFunction0}.
    *
-   * @param input
+   * @param func
    *    {@link FFunction0} used to return instances of R
    *
    * @return an {@link Function0} as wrapper of {@code mapper}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<R>(input: FFunction0<R>): Function0<R>;
+  static of<R>(func: FFunction0<R>): Function0<R>;
 
 
   /**
    * Returns a {@link Function0} based on provided {@link TFunction0} parameter.
    *
-   * @param input
+   * @param func
    *    {@link TFunction0} instance to convert to a {@link Function0} one
    *
    * @return {@link Function0} based on provided {@link TFunction0}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<R>(input: TFunction0<R>): Function0<R>;
+  static of<R>(func: TFunction0<R>): Function0<R>;
 
 
-  static of<R>(input: FFunction0<R> | TFunction0<R>): Function0<R> {
-    return (input instanceof Function0)
-      ? input
-      : new Function0(input);
+  static of<R>(func: FFunction0<R> | TFunction0<R>): Function0<R> {
+    AssertUtil.notNullOrUndefined(
+      func,
+      'func must be not null and not undefined'
+    );
+    return (func instanceof Function0)
+      ? func
+      : new Function0(func);
   }
 
 
   /**
    * Applies this {@link Function0} to the given argument.
-   *
-   * @param t
-   *    The input argument
    *
    * @return new instance of R
    */

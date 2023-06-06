@@ -1,4 +1,5 @@
-import {NullableOrUndefined, Predicate1, FPredicate1, isFPredicate1} from '@app-core/types';
+import { NullableOrUndefined, Predicate1, FPredicate1, isFPredicate1 } from '@app-core/types';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -46,7 +47,7 @@ describe('Predicate1', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const isEven: Predicate1<number> = Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2)
+      const isEven: Predicate1<number> = Predicate1.of((n: number) => 0 == n % 2)
       const isLowerThan20: FPredicate1<number> = (n: NullableOrUndefined<number>) => 20 > n!;
 
       expect(Predicate1.allOf([isEven, isLowerThan20]).apply(11)).toBeFalse();
@@ -96,7 +97,7 @@ describe('Predicate1', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const isEven: Predicate1<number> = Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2)
+      const isEven: Predicate1<number> = Predicate1.of((n: number) => 0 == n % 2)
       const isLowerThan20: FPredicate1<number> = (n: NullableOrUndefined<number>) => 20 > n!;
 
       expect(Predicate1.anyOf([isEven, isLowerThan20]).apply(11)).toBeTrue();
@@ -121,10 +122,10 @@ describe('Predicate1', () => {
 
 
     it('when a predicate is provided then true is returned', () => {
-      const isEven: Predicate1<number> =
+      const isEven: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const isNotNullOrUndefined: Predicate1<string> =
+      const isNotNullOrUndefined: Predicate1<NullableOrUndefined<string>> =
         Predicate1.of((s: NullableOrUndefined<string>) => undefined !== s && null !== s);
 
       expect(Predicate1.isPredicate(isEven)).toBeTrue();
@@ -136,6 +137,14 @@ describe('Predicate1', () => {
 
 
   describe('of', () => {
+
+    it('when null or undefined predicate is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Predicate1.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Predicate1.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
 
     it('when an instance of FPredicate1 is provided then a valid Predicate1 is returned', () => {
       const isEven: FPredicate1<number> =
@@ -151,7 +160,7 @@ describe('Predicate1', () => {
 
     it('when an instance of Predicate1 is provided then the same one is returned', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const predicate = Predicate1.of(isEven);
 
@@ -166,11 +175,23 @@ describe('Predicate1', () => {
 
   describe('and', () => {
 
-    it('when one of the Predicates to evaluate returns false then false is returned', () => {
+    it('when given Predicate is null or undefined then only this will be evaluated', () => {
       const isEven: Predicate1<number> =
+        Predicate1.of((n: number) => 0 == n! % 2);
+
+      // @ts-ignore
+      const andPredicates = isEven.and(null);
+
+      expect(andPredicates.apply(22)).toBeTrue();
+      expect(andPredicates.apply(11)).toBeFalse();
+    });
+
+
+    it('when one of the Predicates to evaluate returns false then false is returned', () => {
+      const isEven: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const isLowerThan20: Predicate1<number> =
+      const isLowerThan20: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 20 > n!);
 
       const andPredicates1 = isEven.and(isLowerThan20);
@@ -186,10 +207,10 @@ describe('Predicate1', () => {
 
     it('when both Predicates return true then true is returned', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const isLowerThan20: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 20 > n!);
+        Predicate1.of((n: number) => 20 > n);
 
       const andPredicates1 = isEven.and(isLowerThan20);
       const andPredicates2 = isLowerThan20.and(isEven);
@@ -209,10 +230,10 @@ describe('Predicate1', () => {
 
     it('when a Predicate1 is provided then the received input will be evaluated', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const isNotEmpty: Predicate1<string> =
-        Predicate1.of((s: NullableOrUndefined<string>) => undefined !== s && null !== s && '' !== s.trim());
+        Predicate1.of((s: string) => undefined !== s && null !== s && '' !== s.trim());
 
       expect(isEven.apply(1)).toBeFalse();
       expect(isEven.apply(2)).toBeTrue();
@@ -228,10 +249,10 @@ describe('Predicate1', () => {
 
     it('when a Predicate1 is provided then logical negation will be returned', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const isEmpty: Predicate1<string> =
-        Predicate1.of((s: NullableOrUndefined<string>) => undefined === s || null === s || '' === s.trim());
+        Predicate1.of((s: string) => undefined === s || null === s || '' === s.trim());
 
       const notIsEven = isEven.not();
       const notIsEmpty = isEmpty.not();
@@ -248,12 +269,24 @@ describe('Predicate1', () => {
 
   describe('or', () => {
 
+    it('when given Predicate is null or undefined then only this will be evaluated', () => {
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: number) => 0 == n! % 2);
+
+      // @ts-ignore
+      const orPredicates = isEven.or(undefined);
+
+      expect(orPredicates.apply(22)).toBeTrue();
+      expect(orPredicates.apply(11)).toBeFalse();
+    });
+
+
     it('when one of the Predicates to evaluate returns true then true is returned', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const isLowerThan20: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 20 > n!);
+        Predicate1.of((n: number) => 20 > n);
 
       const orPredicates1 = isEven.or(isLowerThan20);
       const orPredicates2 = isLowerThan20.or(isEven);
@@ -267,10 +300,10 @@ describe('Predicate1', () => {
 
 
     it('when both Predicates return false then false is returned', () => {
-      const isEven: Predicate1<number> =
+      const isEven: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const isLowerThan20: Predicate1<number> =
+      const isLowerThan20: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 20 > n!);
 
       const orPredicates1 = isEven.or(isLowerThan20);

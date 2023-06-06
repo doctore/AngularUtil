@@ -1,4 +1,13 @@
-import { Function2, Nullable, NullableOrUndefined, Optional, Predicate1, TFunction2, TPredicate1 } from '@app-core/types';
+import {
+  Function2,
+  Nullable,
+  NullableOrUndefined,
+  Optional,
+  OrUndefined,
+  Predicate1,
+  TFunction2,
+  TPredicate1
+} from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -129,7 +138,7 @@ export class ArrayUtil {
    *         first element that verifies {@code filterPredicate} otherwise.
    */
   static find = <T>(objectArray: NullableOrUndefined<T[]>,
-                    filterPredicate: TPredicate1<T>): T | undefined => {
+                    filterPredicate: TPredicate1<T>): OrUndefined<T> => {
     if (this.isEmpty(objectArray)) {
       return undefined;
     }
@@ -212,7 +221,7 @@ export class ArrayUtil {
    */
   static findByKey = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
                                             key: K,
-                                            keyValuesToFind: NullableOrUndefined<T[K][]>): T | undefined => {
+                                            keyValuesToFind: NullableOrUndefined<T[K][]>): OrUndefined<T> => {
     if (this.isEmpty(objectArray) ||
         this.isEmpty(keyValuesToFind)) {
       return undefined;

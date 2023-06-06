@@ -1,4 +1,4 @@
-import { Nullable, Optional, Try } from '@app-core/types';
+import { Nullable, Optional, OrUndefined, Try } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -32,7 +32,7 @@ export class JsonUtil {
    * @return an instance of type {@code T} if the {@code json} could be converted,
    *         {@code undefined} otherwise
    */
-  static fromJSON = <T>(json?: Nullable<string>): T | undefined => {
+  static fromJSON = <T>(json?: Nullable<string>): OrUndefined<T> => {
     if (!_.isNil(json)) {
       const tryFromJson = Try.ofFunction0<T>(
         () => JSON.parse(json)

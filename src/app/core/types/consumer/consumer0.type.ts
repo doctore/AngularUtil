@@ -1,3 +1,4 @@
+import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -67,35 +68,46 @@ export class Consumer0 {
   /**
    * Returns a {@link Consumer0} describing the given {@link FConsumer0}.
    *
-   * @param input
+   * @param consumer
    *    {@link FConsumer0}
    *
    * @return an {@link Consumer0} as wrapper of {@code mapper}
+   *
+   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
    */
-  static of(input: FConsumer0): Consumer0;
+  static of(consumer: FConsumer0): Consumer0;
 
 
   /**
    * Returns a {@link Consumer0} based on provided {@link TConsumer0} parameter.
    *
-   * @param input
+   * @param consumer
    *    {@link TConsumer0} instance to convert to a {@link Consumer0} one
    *
    * @return {@link Consumer0} based on provided {@link TConsumer0}
+   *
+   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
    */
-  static of(input: TConsumer0): Consumer0;
+  static of(consumer: TConsumer0): Consumer0;
 
 
-  static of(input: FConsumer0 | TConsumer0): Consumer0 {
-    return (input instanceof Consumer0)
-      ? input
-      : new Consumer0(input);
+  static of(consumer: FConsumer0 | TConsumer0): Consumer0 {
+    AssertUtil.notNullOrUndefined(
+      consumer,
+      'consumer must be not null and not undefined'
+    );
+    return (consumer instanceof Consumer0)
+      ? consumer
+      : new Consumer0(consumer);
   }
 
 
   /**
    *    Returns a composed {@link Consumer0} that first applies this {@link Consumer0} to its input, and then
    * applies the {@code after} {@link TConsumer0}.
+   *
+   * @apiNote
+   *    If {@code after} is {@code null} or {@code undefined} then only this {@link Consumer0} will be applied.
    *
    * @param after
    *    {@link TConsumer0} to apply after this {@link Consumer0} is applied
@@ -104,13 +116,17 @@ export class Consumer0 {
    *         {@code after} {@link TConsumer0}
    */
   andThen = (after: TConsumer0): Consumer0 =>
-    new Consumer0(
-      () => {
-        this.apply();
-        Consumer0.of(after)
-          .apply();
-      }
-    );
+    _.isNil(after)
+      ? new Consumer0(
+          () =>
+            this.apply()
+        )
+      : new Consumer0(
+          () => {
+            this.apply();
+            Consumer0.of(after).apply();
+          }
+        );
 
 
   /**

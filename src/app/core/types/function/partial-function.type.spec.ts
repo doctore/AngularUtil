@@ -1,4 +1,5 @@
 import { FFunction1, FPredicate1, Function1, NullableOrUndefined, Optional, PartialFunction, Predicate1 } from '@app-core/types';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -11,7 +12,7 @@ describe('PartialFunction', () => {
   describe('identity', () => {
 
     it('when an input parameter is used then such parameter is returned', () => {
-      const identityPartialFunction: PartialFunction<string, NullableOrUndefined<string>> =
+      const identityPartialFunction: PartialFunction<string, string> =
         PartialFunction.identity();
 
       expect(identityPartialFunction.isDefinedAt('12')).toBeTrue();
@@ -40,8 +41,8 @@ describe('PartialFunction', () => {
     it('when a partial function is provided then true is returned', () => {
       const multiply2ForEven: PartialFunction<number, number> =
         PartialFunction.of(
-          (n: NullableOrUndefined<number>) => 0 == n! % 2,
-          (n: NullableOrUndefined<number>) => 2 * n!
+          (n: number) => 0 == n % 2,
+          (n: number) => 2 * n
         );
 
       expect(PartialFunction.isPartialFunction(multiply2ForEven)).toBeTrue();
@@ -53,7 +54,38 @@ describe('PartialFunction', () => {
 
   describe('of', () => {
 
-    it('when instances of FFunction1 anf FPredicate1 are provided then a valid PartialFunction is returned', () => {
+    it('when null or undefined mapper is given then an error is thrown', () => {
+      const isEven: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+
+      // @ts-ignore
+      expect(() => PartialFunction.of(isEven, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => PartialFunction.of(isEven, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when null or undefined verifier is given then alwaysTrue Predicate1 will be used', () => {
+      const multiply2: FFunction1<number, number> =
+        (n: NullableOrUndefined<number>) => 2 * n!;
+
+      // @ts-ignore
+      const undefinedVerifierPF = PartialFunction.of(undefined, multiply2);
+
+      // @ts-ignore
+      const nullVerifierPF = PartialFunction.of(null, multiply2);
+
+      expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
+      expect(undefinedVerifierPF.isDefinedAt(2)).toBeTrue();
+      expect(undefinedVerifierPF.apply(3)).toEqual(6);
+
+      expect(PartialFunction.isPartialFunction(nullVerifierPF)).toBeTrue();
+      expect(undefinedVerifierPF.isDefinedAt(3)).toBeTrue();
+      expect(nullVerifierPF.apply(2)).toEqual(4);
+    });
+
+
+    it('when instances of FFunction1 and FPredicate1 are provided then a valid PartialFunction is returned', () => {
       const isEven: FPredicate1<number> =
         (n: NullableOrUndefined<number>) => 0 == n! % 2;
 
@@ -68,11 +100,11 @@ describe('PartialFunction', () => {
     });
 
 
-    it('when instances of FFunction1 anf Predicate1 are provided then a valid PartialFunction is returned', () => {
-      const isEven: Predicate1<number> =
+    it('when instances of Function1 and Predicate1 are provided then a valid PartialFunction is returned', () => {
+      const isEven: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const multiply2: Function1<number, number> =
+      const multiply2: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
@@ -87,15 +119,31 @@ describe('PartialFunction', () => {
 
   describe('andThen', () => {
 
-    it('when a FFunction1 is provided then it will be applied after current PartialFunction', () => {
+    it('when null or undefined after is given then an error is thrown', () => {
       const longerThan3: Predicate1<string> =
-        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
+        Predicate1.of((s: string) => 3 < s.length);
 
       const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+        Function1.of((s: string) => s.length);
+
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+
+      // @ts-ignore
+      expect(() => stringLengthIfLongerThan3.andThen(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => stringLengthIfLongerThan3.andThen(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when a FFunction1 is provided then it will be applied after current PartialFunction', () => {
+      const longerThan3: Predicate1<string> =
+        Predicate1.of((s: string) => 3 < s.length);
+
+      const stringLength: Function1<string, number> =
+        Function1.of((s: string) => s.length);
 
       const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
+        (n: number) => 2 * n;
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
       const stringLengthIfLongerThan3AndThenMultiply2 = stringLengthIfLongerThan3.andThen(multiply2);
@@ -109,13 +157,13 @@ describe('PartialFunction', () => {
 
 
     it('when a Function1 is provided then it will be applied after current PartialFunction', () => {
-      const longerThan3: Predicate1<string> =
+      const longerThan3: Predicate1<NullableOrUndefined<string>> =
         Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
 
-      const stringLength: Function1<string, number> =
+      const stringLength: Function1<NullableOrUndefined<string>, NullableOrUndefined<number>> =
         Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
-      const multiply2: Function1<number, number> =
+      const multiply2: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
@@ -131,16 +179,16 @@ describe('PartialFunction', () => {
 
     it('when a PartialFunction is provided then it will be applied after current one', () => {
       const longerThan3: Predicate1<string> =
-        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
+        Predicate1.of((s: string) => 3 < s.length);
 
       const lowerThan10: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 10 > n!);
+        Predicate1.of((n: number) => 10 > n);
 
       const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+        Function1.of((s: string) => s.length);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
       const multiply2IfLowerThan10 = PartialFunction.of(lowerThan10, multiply2);
@@ -164,10 +212,10 @@ describe('PartialFunction', () => {
 
     it('when a PartialFunction is provided then the received input will be transformed', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
 
@@ -178,16 +226,33 @@ describe('PartialFunction', () => {
   });
 
 
+
   describe('applyOrElse', () => {
 
+    it('when input does not belong to domain of PartialFunction and defaultFunction null or undefined then an error is thrown', () => {
+      const longerThan3: Predicate1<string> =
+        Predicate1.of((s: string) => 3 < s.length);
+
+      const stringLength: Function1<string, number> =
+        Function1.of((s: string) => s.length);
+
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+
+      // @ts-ignore
+      expect(() => stringLengthIfLongerThan3.applyOrElse('a', null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => stringLengthIfLongerThan3.applyOrElse('ab', undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when input belongs to domain of PartialFunction then the received it will be transformed', () => {
-      const isEven: Predicate1<number> =
+      const isEven: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 
-      const multiply2: Function1<number, number> =
+      const multiply2: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const plus10: Function1<number, number> =
+      const plus10: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
         Function1.of((n: NullableOrUndefined<number>) => 10 + n!);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
@@ -199,10 +264,10 @@ describe('PartialFunction', () => {
 
     it('when input does not belong to domain of PartialFunction and defaultFunction is a FFunction1 then defaultFunction will be applied', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const plus10: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 10 + n!;
@@ -216,13 +281,13 @@ describe('PartialFunction', () => {
 
     it('when input does not belong to domain of PartialFunction and defaultFunction is a Function1 then defaultFunction will be applied', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const plus10: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 10 + n!);
+        Function1.of((n: number) => 10 + n);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
 
@@ -236,11 +301,27 @@ describe('PartialFunction', () => {
 
   describe('compose', () => {
 
-    it('when a FFunction1 is provided then it will be applied before current PartialFunction', () => {
+    it('when null or undefined before is given then an error is thrown', () => {
       const longerThan3: Predicate1<string> =
-        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
+        Predicate1.of((s: string) => 3 < s.length);
 
       const stringLength: Function1<string, number> =
+        Function1.of((s: string) => s.length);
+
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+
+      // @ts-ignore
+      expect(() => stringLengthIfLongerThan3.compose(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => stringLengthIfLongerThan3.compose(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when a FFunction1 is provided then it will be applied before current PartialFunction', () => {
+      const longerThan3: Predicate1<NullableOrUndefined<string>> =
+        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
+
+      const stringLength: Function1<NullableOrUndefined<string>, NullableOrUndefined<number>> =
         Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
       const addV2AsSuffix: FFunction1<string, string> =
@@ -259,13 +340,13 @@ describe('PartialFunction', () => {
 
     it('when a Function1 is provided then it will be applied before current PartialFunction', () => {
       const longerThan3: Predicate1<string> =
-        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
+        Predicate1.of((s: string) => 3 < s.length);
 
       const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+        Function1.of((s: string) => s.length);
 
       const addV2AsSuffix: Function1<string, string> =
-        Function1.of((s: NullableOrUndefined<string>) => 'v2' + s);
+        Function1.of((s: string) => 'v2' + s);
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
       const addV2AsSuffixComposeStringLengthIfLongerThan3 = stringLengthIfLongerThan3.compose(addV2AsSuffix);
@@ -280,16 +361,16 @@ describe('PartialFunction', () => {
 
     it('when a PartialFunction is provided then it will be applied before current one', () => {
       const longerThan3: Predicate1<string> =
-        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
+        Predicate1.of((s: string) => 3 < s.length);
 
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+        Function1.of((s: string) => s.length);
 
       const toString: Function1<number, string> =
-        Function1.of((n: NullableOrUndefined<number>) => '' + n!);
+        Function1.of((n: number) => '' + n);
 
       const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
       const toStringIfIsEven = PartialFunction.of(isEven, toString);
@@ -313,10 +394,10 @@ describe('PartialFunction', () => {
 
     it('when input does not belong to domain of PartialFunction then false is returned', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
 
@@ -327,10 +408,10 @@ describe('PartialFunction', () => {
 
     it('when input belongs to domain of PartialFunction then true is returned', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
 
@@ -346,10 +427,10 @@ describe('PartialFunction', () => {
 
     it('when input does not belong to domain of PartialFunction then Function1 returns an empty Optional', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
       const function1: Function1<number, Optional<number>> = partialFunction.lift();
@@ -361,10 +442,10 @@ describe('PartialFunction', () => {
 
     it('when input belongs to domain of PartialFunction then Function1 returns a not empty Optional', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n! % 2);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n!);
 
       const partialFunction = PartialFunction.of(isEven, multiply2);
       const function1: Function1<number, Optional<number>> = partialFunction.lift();
@@ -381,16 +462,16 @@ describe('PartialFunction', () => {
 
     it('when input belongs to domain of current PartialFunction then current will applied', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const isLowerThan20: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 20 > n!);
+        Predicate1.of((n: number) => 20 > n);
 
       const toString: Function1<number, string> =
-        Function1.of((n: NullableOrUndefined<number>) => '' + n!);
+        Function1.of((n: number) => '' + n);
 
       const addV2AndToString: Function1<number, string> =
-        Function1.of((n: NullableOrUndefined<number>) => 'v2' + n!);
+        Function1.of((n: number) => 'v2' + n);
 
       const partialFunction = PartialFunction.of(isEven, toString);
       const defaultPartialFunction = PartialFunction.of(isLowerThan20, addV2AndToString);
@@ -417,16 +498,16 @@ describe('PartialFunction', () => {
 
     it('when input belongs to domain of defaultPartialFunction then defaultPartialFunction will applied', () => {
       const isEven: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+        Predicate1.of((n: number) => 0 == n % 2);
 
       const isLowerThan20: Predicate1<number> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 20 > n!);
+        Predicate1.of((n: number) => 20 > n);
 
       const toString: Function1<number, string> =
-        Function1.of((n: NullableOrUndefined<number>) => '' + n!);
+        Function1.of((n: number) => '' + n);
 
       const addV2AndToString: Function1<number, string> =
-        Function1.of((n: NullableOrUndefined<number>) => 'v2' + n!);
+        Function1.of((n: number) => 'v2' + n);
 
       const partialFunction = PartialFunction.of(isEven, toString);
       const defaultPartialFunction = PartialFunction.of(isLowerThan20, addV2AndToString);

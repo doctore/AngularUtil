@@ -1,4 +1,4 @@
-import { NullableOrUndefined } from '@app-core/types';
+import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -16,7 +16,7 @@ export type TFunction1<T, R> = FFunction1<T, R> | Function1<T, R>;
  *   Type of the result of the {@link FFunction1}
  */
 export type FFunction1<T, R> =
-  (t: NullableOrUndefined<T>) => R;
+  (t: T) => R;
 
 
 /**
@@ -57,12 +57,11 @@ export class Function1<T, R> {
   protected constructor(protected readonly mapper: FFunction1<T, R>) {}
 
 
-
   /**
    * Returns a {@link Function1} that always returns its input argument.
    */
-  static identity = <T>(): Function1<T, NullableOrUndefined<T>> =>
-    new Function1((t: NullableOrUndefined<T>) => t);
+  static identity = <T>(): Function1<T, T> =>
+    new Function1((t: T) => t);
 
 
   /**
@@ -84,29 +83,37 @@ export class Function1<T, R> {
   /**
    * Returns a {@link Function1} describing the given {@link FFunction1}.
    *
-   * @param input
+   * @param func
    *    {@link FFunction1} used to evaluates the given instance of T and return an R one
    *
    * @return an {@link Function1} as wrapper of {@code mapper}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T, R>(input: FFunction1<T, R>): Function1<T, R>;
+  static of<T, R>(func: FFunction1<T, R>): Function1<T, R>;
 
 
   /**
    * Returns a {@link Function1} based on provided {@link TFunction1} parameter.
    *
-   * @param input
+   * @param func
    *    {@link TFunction1} instance to convert to a {@link Function1} one
    *
    * @return {@link Function1} based on provided {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
    */
-  static of<T, R>(input: TFunction1<T, R>): Function1<T, R>;
+  static of<T, R>(func: TFunction1<T, R>): Function1<T, R>;
 
 
-  static of<T, R>(input: FFunction1<T, R> | TFunction1<T, R>): Function1<T, R> {
-    return (input instanceof Function1)
-      ? input
-      : new Function1(input);
+  static of<T, R>(func: FFunction1<T, R> | TFunction1<T, R>): Function1<T, R> {
+    AssertUtil.notNullOrUndefined(
+      func,
+      'func must be not null and not undefined'
+    );
+    return (func instanceof Function1)
+      ? func
+      : new Function1(func);
   }
 
 
@@ -119,15 +126,21 @@ export class Function1<T, R> {
    *
    * @return composed {@link Function1} that first applies this {@link Function1} and then applies the
    *         {@code after} {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
    */
-  andThen = <V>(after: TFunction1<R, V>): Function1<T, V> =>
-    new Function1(
-      (t: NullableOrUndefined<T>) =>
-        Function1.of(after)
-          .apply(
-            this.apply(t)
-          )
+  andThen = <V>(after: TFunction1<R, V>): Function1<T, V> => {
+    AssertUtil.notNullOrUndefined(
+      after,
+      'after must be not null and not undefined'
     );
+    return new Function1(
+      (t: T) =>
+        Function1.of(after).apply(
+          this.apply(t)
+        )
+    );
+  }
 
 
   /**
@@ -138,7 +151,7 @@ export class Function1<T, R> {
    *
    * @return new instance of R
    */
-  apply = (t: NullableOrUndefined<T>): R =>
+  apply = (t: T): R =>
     this.mapper(t);
 
 
@@ -151,14 +164,20 @@ export class Function1<T, R> {
    *
    * @return composed {@link Function1} that first applies the {@code before} {@link TFunction1} and then applies
    *         this {@link Function1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code before} is {@code null} or {@code undefined}
    */
-  compose = <V>(before: TFunction1<V, T>): Function1<V, R> =>
-    new Function1(
-      (v: NullableOrUndefined<V>) =>
+  compose = <V>(before: TFunction1<V, T>): Function1<V, R> => {
+    AssertUtil.notNullOrUndefined(
+      before,
+      'before must be not null and not undefined'
+    );
+    return new Function1(
+      (v: V) =>
         this.apply(
-          Function1.of(before)
-            .apply(v)
+          Function1.of(before).apply(v)
         )
     );
+  }
 
 }

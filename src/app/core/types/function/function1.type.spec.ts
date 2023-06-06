@@ -1,4 +1,5 @@
 import { FFunction1, Function1, isFFunction1, NullableOrUndefined } from '@app-core/types';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -72,6 +73,14 @@ describe('Function1', () => {
 
   describe('of', () => {
 
+    it('when null or undefined func is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Function1.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Function1.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when an instance of FFunction1 is provided then a valid Function1 is returned', () => {
       const stringLength: FFunction1<string, number> =
         (s: NullableOrUndefined<string>) => s!.length;
@@ -98,6 +107,17 @@ describe('Function1', () => {
 
 
   describe('andThen', () => {
+
+    it('when null or undefined after is given then an error is thrown', () => {
+      const stringLength: Function1<string, number> =
+        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+
+      // @ts-ignore
+      expect(() => stringLength.andThen(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => stringLength.andThen(undefined)).toThrowError(IllegalArgumentError);
+    });
+
 
     it('when a FFunction1 is provided then it will be applied after current one', () => {
       const stringLength: Function1<string, number> =
@@ -133,10 +153,10 @@ describe('Function1', () => {
 
     it('when a Function1 is provided then the received input will be transformed', () => {
       const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+        Function1.of((s: string) => s.length);
 
       const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+        Function1.of((n: number) => 2 * n);
 
       expect(stringLength.apply('abc')).toEqual(3);
       expect(multiply2.apply(11)).toEqual(22);
@@ -146,6 +166,17 @@ describe('Function1', () => {
 
 
   describe('compose', () => {
+
+    it('when null or undefined before is given then an error is thrown', () => {
+      const stringLength: Function1<string, number> =
+        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+
+      // @ts-ignore
+      expect(() => stringLength.compose(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => stringLength.compose(undefined)).toThrowError(IllegalArgumentError);
+    });
+
 
     it('when a FFunction1 is provided then it will be applied before current one', () => {
       const stringLength: FFunction1<string, number> =
@@ -175,6 +206,5 @@ describe('Function1', () => {
     });
 
   });
-
 
 });

@@ -24,7 +24,7 @@ describe('ArrayUtil', () => {
 
     it('when given objectArray has no elements then empty array will be returned', () => {
       let emptyArray: Role[] = [];
-      const isIdEven: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 0 == role!.id % 2);
+      const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
 
       const expectedResult: Role[] = [];
 
@@ -40,7 +40,7 @@ describe('ArrayUtil', () => {
       const r3 = { id: 3, description: 'role3' } as Role;
       const objectArray = [r1, r2, r3];
 
-      const isIdOdd: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
+      const isIdOdd: Predicate1<NullableOrUndefined<Role>> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
 
       verifyArrays(
         ArrayUtil.dropWhile(objectArray, isIdOdd),
@@ -55,7 +55,7 @@ describe('ArrayUtil', () => {
       const u3 = new User(3, 'user3');
       const objectArray = [u1, u2, u3];
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 1 == user!.id % 2);
+      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
 
       verifyArrays(
         ArrayUtil.dropWhile(objectArray, isIdOdd),
@@ -195,7 +195,7 @@ describe('ArrayUtil', () => {
       let nullArray: Role[] = null;
       let emptyArray: Role[] = [];
 
-      const isIdOdd: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
+      const isIdOdd: Predicate1<Role> = Predicate1.of((role: Role) => 1 == role.id % 2);
 
       // @ts-ignore
       expect(ArrayUtil.find(undefinedArray, isIdOdd)).toBeUndefined();
@@ -211,7 +211,7 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, description: 'role2' } as Role;
       const objectArray = [r1, r2, r3, r4];
 
-      const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 10 < role!.id);
+      const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: Role) => 10 < role.id);
 
       expect(ArrayUtil.find(objectArray, isIdGreaterThan10)).toBeUndefined();
     });
@@ -224,7 +224,7 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const objectArray = [u1, u2, u3, u4];
 
-      const isIdGreaterThan10: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 10 < user!.id);
+      const isIdGreaterThan10: Predicate1<NullableOrUndefined<User>> = Predicate1.of((user: NullableOrUndefined<User>) => 10 < user!.id);
 
       expect(ArrayUtil.find(objectArray, isIdGreaterThan10)).toBeUndefined();
     });
@@ -237,7 +237,7 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, description: 'role2' } as Role;
       const objectArray = [r1, r2, r3, r4];
 
-      const isIdEven: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 0 == role!.id % 2);
+      const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role!.id % 2);
 
       const expectedResult = r2;
 
@@ -252,7 +252,7 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const objectArray = [u1, u2, u3, u4];
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 1 == user!.id % 2);
+      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
 
       const expectedResult = u1;
 
@@ -271,7 +271,7 @@ describe('ArrayUtil', () => {
       let nullArray: Role[] = null;
       let emptyArray: Role[] = [];
 
-      const isIdOdd: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
+      const isIdOdd: Predicate1<Role> = Predicate1.of((role: Role) => 1 == role.id % 2);
 
       // @ts-ignore
       expect(ArrayUtil.findOptional(undefinedArray, isIdOdd).isPresent()).toBeFalse();
@@ -287,7 +287,7 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, description: 'role2' } as Role;
       const objectArray = [r1, r2, r3, r4];
 
-      const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 10 < role!.id);
+      const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: Role) => 10 < role.id);
 
       expect(ArrayUtil.findOptional(objectArray, isIdGreaterThan10).isPresent()).toBeFalse();
     });
@@ -300,7 +300,7 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const objectArray = [u1, u2, u3, u4];
 
-      const isIdGreaterThan10: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 10 < user!.id);
+      const isIdGreaterThan10: Predicate1<User> = Predicate1.of((user: User) => 10 < user.id);
 
       expect(ArrayUtil.findOptional(objectArray, isIdGreaterThan10).isPresent()).toBeFalse();
     });
@@ -313,7 +313,7 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, description: 'role2' } as Role;
       const objectArray = [r1, r2, r3, r4];
 
-      const isIdEven: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 0 == role!.id % 2);
+      const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
 
       const expectedResult = r2;
 
@@ -331,7 +331,7 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const objectArray = [u1, u2, u3, u4];
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 1 == user!.id % 2);
+      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
 
       const expectedResult = u1;
 
@@ -571,7 +571,7 @@ describe('ArrayUtil', () => {
 
     it('when given objectArray has no elements then empty array will be returned', () => {
       let emptyArray: Role[] = [];
-      const isIdEven: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 0 == role!.id % 2);
+      const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
 
       const expectedResult: Role[] = [];
 
@@ -587,7 +587,7 @@ describe('ArrayUtil', () => {
       const r3 = { id: 3, description: 'role3' } as Role;
       const objectArray = [r1, r2, r3];
 
-      const isIdOdd: Predicate1<Role> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
+      const isIdOdd: Predicate1<Role> = Predicate1.of((role: Role) => 1 == role.id % 2);
 
       verifyArrays(
         ArrayUtil.takeWhile(objectArray, isIdOdd),
@@ -602,7 +602,7 @@ describe('ArrayUtil', () => {
       const u3 = new User(3, 'user3');
       const objectArray = [u1, u2, u3];
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: NullableOrUndefined<User>) => 1 == user!.id % 2);
+      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
 
       verifyArrays(
         ArrayUtil.takeWhile(objectArray, isIdOdd),

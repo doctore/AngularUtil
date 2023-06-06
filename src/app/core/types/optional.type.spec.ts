@@ -117,19 +117,29 @@ describe('Optional', () => {
       const user = new User(10, 'user1');
       const role = { id: 30, description: 'role1' } as Role;
 
-      expect(Optional.empty().equals()).toBeFalse();
+      // @ts-ignore
+      expect(Optional.empty().equals(undefined)).toBeFalse();
+      // @ts-ignore
       expect(Optional.empty().equals(null)).toBeFalse();
 
-      expect(Optional.of(intValue).equals()).toBeFalse();
+      // @ts-ignore
+      expect(Optional.of(intValue).equals(undefined)).toBeFalse();
+      // @ts-ignore
       expect(Optional.of(intValue).equals(null)).toBeFalse();
 
-      expect(Optional.of(stringValue).equals()).toBeFalse();
+      // @ts-ignore
+      expect(Optional.of(stringValue).equals(undefined)).toBeFalse();
+      // @ts-ignore
       expect(Optional.of(stringValue).equals(null)).toBeFalse();
 
-      expect(Optional.of(user).equals()).toBeFalse();
+      // @ts-ignore
+      expect(Optional.of(user).equals(undefined)).toBeFalse();
+      // @ts-ignore
       expect(Optional.of(user).equals(null)).toBeFalse();
 
-      expect(Optional.of(role).equals()).toBeFalse();
+      // @ts-ignore
+      expect(Optional.of(role).equals(undefined)).toBeFalse();
+      // @ts-ignore
       expect(Optional.of(role).equals(null)).toBeFalse();
     });
 
@@ -413,7 +423,7 @@ describe('Optional', () => {
 
     it('when no value is provided then false is returned', () => {
       expect(Optional.empty().isPresent()).toBeFalse();
-      expect(Optional.ofNullable().isPresent()).toBeFalse();
+      expect(Optional.ofNullable(undefined).isPresent()).toBeFalse();
       expect(Optional.ofNullable(null).isPresent()).toBeFalse();
     });
 

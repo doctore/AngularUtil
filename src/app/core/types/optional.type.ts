@@ -54,7 +54,7 @@ export class Optional<T> {
    *
    * @return an {@link Optional} with the value present
    *
-   * @throws {@link IllegalArgumentError} if value is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if {@code value} is {@code null} or {@code undefined}
    */
   static of = <T>(value: T): Optional<T> => {
     AssertUtil.notNullOrUndefined(value);
@@ -94,7 +94,7 @@ export class Optional<T> {
     this.isPresent() &&
       partialFunction.isDefinedAt(this.value!)
         ? Optional.ofNullable(
-            partialFunction.apply(this.value)
+            partialFunction.apply(this.value!)
           )
         : Optional.empty<U>();
 
@@ -112,9 +112,9 @@ export class Optional<T> {
    * @return {@code true} if the {@code other} is equal to this {@link Optional},
    *         {@code false} otherwise.
    */
-  equals = (other?: Nullable<Optional<T>>): boolean => {
+  equals = (other: Optional<T>): boolean => {
     if (_.isNil(other) ||
-        (this.isPresent() !== other.isPresent())) {
+       (this.isPresent() !== other.isPresent())) {
       return false;
     }
     return !this.isPresent()
@@ -137,10 +137,9 @@ export class Optional<T> {
    *         given {@link TPredicate1}, {@link Optional#empty} otherwise
    */
   filter = (predicate: TPredicate1<T>): Optional<T> =>
-    this.isPresent() &&
-      Predicate1.of(predicate).apply(this.value)
-        ? Optional.of<T>(this.value!)
-        : Optional.empty<T>();
+    this.isPresent() && Predicate1.of(predicate).apply(this.value!)
+      ? Optional.of<T>(this.value!)
+      : Optional.empty<T>();
 
 
   /**
@@ -228,7 +227,7 @@ export class Optional<T> {
   ifPresent = (action: TConsumer1<T>): void => {
     if (this.isPresent()) {
       Consumer1.of(action)
-        .apply(this.value);
+        .apply(this.value!);
     }
   }
 

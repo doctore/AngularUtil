@@ -1,5 +1,5 @@
-import { ArrayUtil } from '@app-core/util';
-import { Nullable, NullableOrUndefined } from '@app-core/types';
+import { ArrayUtil, AssertUtil } from '@app-core/util';
+import { Nullable } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -17,8 +17,8 @@ export type TPredicate2<T1, T2> = FPredicate2<T1, T2> | Predicate2<T1, T2>;
  *   Type of second parameter received by this {@link FPredicate2}
  */
 export type FPredicate2<T1, T2> =
-  (t1: NullableOrUndefined<T1>,
-   t2: NullableOrUndefined<T2>) => boolean;
+  (t1: T1,
+   t2: T2) => boolean;
 
 
 /**
@@ -82,8 +82,8 @@ export class Predicate2<T1, T2> {
       return Predicate2.alwaysTrue();
     }
     return Predicate2.of(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>) =>
+      (t1: T1,
+       t2: T2) =>
         ArrayUtil.foldLeft(
           predicates,
           true,
@@ -140,8 +140,8 @@ export class Predicate2<T1, T2> {
       return Predicate2.alwaysFalse();
     }
     return Predicate2.of(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>) => {
+      (t1: T1,
+       t2: T2) => {
         for (let i = 0; i < predicates!.length; i++) {
           if (Predicate2.of(predicates![i]).apply(t1, t2)) {
             return true;
@@ -173,29 +173,37 @@ export class Predicate2<T1, T2> {
   /**
    * Returns a {@link Predicate2} describing the given {@link FPredicate2}.
    *
-   * @param input
+   * @param predicate
    *    {@link FPredicate2} used to evaluates the given instances of T
    *
    * @return an {@link Predicate2} as wrapper of {@code verifier}
+   *
+   * @throws {@link IllegalArgumentError} if {@code predicate} is {@code null} or {@code undefined}
    */
-  static of<T1, T2>(input: FPredicate2<T1, T2>): Predicate2<T1, T2>;
+  static of<T1, T2>(predicate: FPredicate2<T1, T2>): Predicate2<T1, T2>;
 
 
   /**
    * Returns a {@link Predicate2} based on provided {@link TPredicate2} parameter.
    *
-   * @param input
+   * @param predicate
    *    {@link TPredicate2} instance to convert to a {@link Predicate2} one
    *
    * @return {@link Predicate2} based on provided {@link TPredicate2}
+   *
+   * @throws {@link IllegalArgumentError} if {@code predicate} is {@code null} or {@code undefined}
    */
-  static of<T1, T2>(input: TPredicate2<T1, T2>): Predicate2<T1, T2>;
+  static of<T1, T2>(predicate: TPredicate2<T1, T2>): Predicate2<T1, T2>;
 
 
-  static of<T1, T2>(input: TPredicate2<T1, T2>): Predicate2<T1, T2> {
-    return (input instanceof Predicate2)
-      ? input
-      : new Predicate2(input);
+  static of<T1, T2>(predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> {
+    AssertUtil.notNullOrUndefined(
+      predicate,
+      'predicate must be not null and not undefined'
+    );
+    return (predicate instanceof Predicate2)
+      ? predicate
+      : new Predicate2(predicate);
   }
 
 
@@ -204,19 +212,28 @@ export class Predicate2<T1, T2> {
    * and another. When evaluating the composed {@link Predicate2}, if this {@link Predicate2} is {@code false}, then
    * the other {@link Predicate2} is not evaluated.
    *
-   * @param input
+   * @apiNote
+   *    If {@code predicate} is {@code null} or {@code undefined} then only this {@link Predicate1} will be applied.
+   *
+   * @param predicate
    *    {@link TPredicate2} that will be logically-ANDed with this {@link Predicate2}
    *
    * @return a composed {@link Predicate2} that represents the short-circuiting logical AND of this {@link Predicate2}
-   *         and {@code input}
+   *         and {@code predicate}
    */
-  and = (input: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
-    new Predicate2(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>) =>
-        this.apply(t1, t2) &&
-        Predicate2.of(input).apply(t1, t2)
-    );
+  and = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
+    _.isNil(predicate)
+      ? new Predicate2(
+          (t1: T1,
+           t2: T2) =>
+            this.apply(t1, t2)
+        )
+      : new Predicate2(
+          (t1: T1,
+           t2: T2) =>
+            this.apply(t1, t2) &&
+              Predicate2.of(predicate).apply(t1, t2)
+        );
 
 
   /**
@@ -230,8 +247,8 @@ export class Predicate2<T1, T2> {
    * @return {@code true} if the input argument matches the predicate,
    *         {@code false} otherwise
    */
-  apply = (t1: NullableOrUndefined<T1>,
-           t2: NullableOrUndefined<T2>): boolean =>
+  apply = (t1: T1,
+           t2: T2): boolean =>
     this.verifier(t1, t2);
 
 
@@ -242,8 +259,8 @@ export class Predicate2<T1, T2> {
    */
   not = (): Predicate2<T1, T2> =>
     new Predicate2(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>) =>
+      (t1: T1,
+       t2: T2) =>
         !this.apply(t1, t2)
     );
 
@@ -253,18 +270,27 @@ export class Predicate2<T1, T2> {
    * and another. When evaluating the composed {@link Predicate2}, if this {@link Predicate2} is {@code true}, then
    * the other {@link Predicate2} is not evaluated.
    *
-   * @param input
+   * @apiNote
+   *    If {@code predicate} is {@code null} or {@code undefined} then only this {@link Predicate1} will be applied.
+   *
+   * @param predicate
    *    {@link TPredicate2} that will be logically-ORed with this {@link Predicate2}
    *
    * @return a composed {@link Predicate2} that represents the short-circuiting logical OR of this {@link Predicate2}
-   *         and {@code input}
+   *         and {@code predicate}
    */
-  or = (input: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
-    new Predicate2(
-      (t1: NullableOrUndefined<T1>,
-       t2: NullableOrUndefined<T2>) =>
-        this.apply(t1, t2) ||
-        Predicate2.of(input).apply(t1, t2)
-    );
+  or = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
+    _.isNil(predicate)
+      ? new Predicate2(
+          (t1: T1,
+           t2: T2) =>
+            this.apply(t1, t2)
+        )
+      : new Predicate2(
+          (t1: T1,
+           t2: T2) =>
+            this.apply(t1, t2) ||
+              Predicate2.of(predicate).apply(t1, t2)
+        );
 
 }

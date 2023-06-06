@@ -1,3 +1,4 @@
+import { OrUndefined } from '@app-core/types';
 import * as _ from 'lodash';
 
 /**
@@ -60,7 +61,7 @@ export class NumberUtil {
    *         {@code undefined} otherwise.
    */
   static toFloatWithFixedPointNotation = (inputToFix?: string | number | null,
-                                          fixedPoints?: number | string | null): string | undefined => {
+                                          fixedPoints?: string | number | null): OrUndefined<string> => {
     const finalInputToFix = !_.isNil(inputToFix)
       ? '' + inputToFix
       : '';

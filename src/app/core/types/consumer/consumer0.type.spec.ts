@@ -1,4 +1,5 @@
 import { Consumer0, FConsumer0, isFConsumer0 } from '@app-core/types';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -59,6 +60,14 @@ describe('Consumer0', () => {
 
   describe('of', () => {
 
+    it('when null or undefined consumer is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Consumer0.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Consumer0.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when an instance of FConsumer0 is provided then a valid Consumer0 is returned', () => {
       let externalInt = 10;
 
@@ -91,6 +100,20 @@ describe('Consumer0', () => {
 
 
   describe('andThen', () => {
+
+    it('when given Consumer0 is null or undefined then only this will be applied', () => {
+      let externalInt = 1;
+
+      const plus10: Consumer0 =
+        Consumer0.of(() => { externalInt += 10 });
+
+      // @ts-ignore
+      const consumer = plus10.andThen(null);
+      consumer.apply();
+
+      expect(externalInt).toEqual(11);
+    });
+
 
     it('when a Consumer0 is provided then it will be applied after current one', () => {
       let externalInt = 1;
