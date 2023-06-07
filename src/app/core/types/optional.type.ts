@@ -155,6 +155,29 @@ export class Optional<T> {
 
 
   /**
+   *    If the {@link Optional} is not empty, returns the result of applying the {@link TFunction1} {@code ifNonEmpty}.
+   * Otherwise, evaluates the {@link TFunction0} {@code ifEmpty}.
+   *
+   * @param ifEmpty
+   *    {@link TFunction0} to apply if this {@link Optional} is empty
+   * @param ifNonEmpty
+   *    {@link TFunction1} to apply if this {@link Optional} is not empty
+   *
+   * @return the result of applying the right function
+   *
+   * @throws {@link IllegalArgumentError} if {@code ifEmpty} is {@code null} or {@code undefined} and this {@link Optional} is empty
+   *                                      or {@code ifNonEmpty} is {@code null} or {@code undefined} and this {@link Optional} is not empty
+   */
+  fold = <U>(ifEmpty: TFunction0<U>,
+             ifNonEmpty: TFunction1<T, U>): U =>
+    this.isPresent()
+      ? Function1.of(ifNonEmpty)
+          .apply(this.value!)
+      : Function0.of(ifEmpty)
+        .apply();
+
+
+  /**
    * If the {@link Optional} is not empty, returns the value, {@link IllegalArgumentError} otherwise.
    *
    * @apiNote

@@ -1,5 +1,18 @@
 import { Failure, Nullable, NullableOrUndefined, Success, Try } from '@app-core/types';
-import { FFunction0, Function0 } from '@app-core/types/function';
+import {
+  FFunction0,
+  FFunction1,
+  FFunction2,
+  FFunction3,
+  FFunction4,
+  FFunction5,
+  Function0,
+  Function1,
+  Function2,
+  Function3,
+  Function4,
+  Function5
+} from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -12,7 +25,7 @@ describe('Try', () => {
 
   describe('ofFunction0', () => {
 
-    it('when no supplier is provided then a Failure with the error is returned', () => {
+    it('when no func is provided then a Failure with the error is returned', () => {
       // @ts-ignore
       const tryResult = Try.ofFunction0(null);
 
@@ -21,26 +34,221 @@ describe('Try', () => {
     });
 
 
-    it('when applying providing supplier no error if thrown then a Success with the result value is returned', () => {
+    it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
       const returnedValue: string = 'abc';
-      const supplier: FFunction0<string> =
+      const func: FFunction0<string> =
         () => returnedValue;
 
-      const tryResult = Try.ofFunction0(supplier);
+      const tryResult = Try.ofFunction0(func);
 
       expect(tryResult.isSuccess()).toBeTrue();
       expect(tryResult.get()).toEqual(returnedValue);
     });
 
 
-    it('when applying providing supplier an error if thrown then a Failure with the error is returned', () => {
+    it('when applying func supplier an error is thrown then a Failure with the error is returned', () => {
       const returnedError: Error = new SyntaxError('There was an error');
-      const supplier: Function0<number> =
+      const func: Function0<number> =
         Function0.of(
           () => { throw returnedError; }
         );
 
-      const tryResult = Try.ofFunction0(supplier);
+      const tryResult = Try.ofFunction0(func);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError()).toEqual(returnedError);
+    });
+
+  });
+
+
+
+  describe('ofFunction1', () => {
+
+    it('when no func is provided then a Failure with the error is returned', () => {
+      // @ts-ignore
+      const tryResult = Try.ofFunction1(null);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError() instanceof IllegalArgumentError).toBeTrue();
+    });
+
+
+    it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
+      const func: FFunction1<string, number> =
+        (s) => parseInt(s);
+
+      const tryResult = Try.ofFunction1('1', func);
+
+      expect(tryResult.isSuccess()).toBeTrue();
+      expect(tryResult.get()).toEqual(1);
+    });
+
+
+    it('when applying providing func an error is thrown then a Failure with the error is returned', () => {
+      const returnedError: Error = new SyntaxError('There was an error');
+      const func: Function1<string, number> =
+        Function1.of(
+          (s) => { throw returnedError; }
+        );
+
+      const tryResult = Try.ofFunction1('1', func);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError()).toEqual(returnedError);
+    });
+
+  });
+
+
+
+  describe('ofFunction2', () => {
+
+    it('when no func is provided then a Failure with the error is returned', () => {
+      // @ts-ignore
+      const tryResult = Try.ofFunction2(null);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError() instanceof IllegalArgumentError).toBeTrue();
+    });
+
+
+    it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
+      const func: FFunction2<string, string, number> =
+        (s1, s2) => parseInt(s1 + s2);
+
+      const tryResult = Try.ofFunction2('1', '2', func);
+
+      expect(tryResult.isSuccess()).toBeTrue();
+      expect(tryResult.get()).toEqual(12);
+    });
+
+
+    it('when applying providing func an error is thrown then a Failure with the error is returned', () => {
+      const returnedError: Error = new SyntaxError('There was an error');
+      const func: Function2<string, string, number> =
+        Function2.of(
+          (s1, s2) => { throw returnedError; }
+        );
+
+      const tryResult = Try.ofFunction2('1', '2', func);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError()).toEqual(returnedError);
+    });
+
+  });
+
+
+
+  describe('ofFunction3', () => {
+
+    it('when no func is provided then a Failure with the error is returned', () => {
+      // @ts-ignore
+      const tryResult = Try.ofFunction3(null);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError() instanceof IllegalArgumentError).toBeTrue();
+    });
+
+
+    it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
+      const func: FFunction3<string, string, string, number> =
+        (s1, s2, s3) => parseInt(s1 + s2 + s3);
+
+      const tryResult = Try.ofFunction3('1', '2', '3', func);
+
+      expect(tryResult.isSuccess()).toBeTrue();
+      expect(tryResult.get()).toEqual(123);
+    });
+
+
+    it('when applying providing func an error is thrown then a Failure with the error is returned', () => {
+      const returnedError: Error = new SyntaxError('There was an error');
+      const func: Function3<string, string, string, number> =
+        Function3.of(
+          (s1, s2, s3) => { throw returnedError; }
+        );
+
+      const tryResult = Try.ofFunction3('1', '2', '3', func);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError()).toEqual(returnedError);
+    });
+
+  });
+
+
+
+  describe('ofFunction4', () => {
+
+    it('when no func is provided then a Failure with the error is returned', () => {
+      // @ts-ignore
+      const tryResult = Try.ofFunction4(null);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError() instanceof IllegalArgumentError).toBeTrue();
+    });
+
+
+    it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
+      const func: FFunction4<string, string, string, string, number> =
+        (s1, s2, s3, s4) => parseInt(s1 + s2 + s3 + s4);
+
+      const tryResult = Try.ofFunction4('1', '2', '3', '4', func);
+
+      expect(tryResult.isSuccess()).toBeTrue();
+      expect(tryResult.get()).toEqual(1234);
+    });
+
+
+    it('when applying providing func an error is thrown then a Failure with the error is returned', () => {
+      const returnedError: Error = new SyntaxError('There was an error');
+      const func: Function4<string, string, string, string, number> =
+        Function4.of(
+          (s1, s2, s3, s4) => { throw returnedError; }
+        );
+
+      const tryResult = Try.ofFunction4('1', '2', '3', '4', func);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError()).toEqual(returnedError);
+    });
+
+  });
+
+
+
+  describe('ofFunction5', () => {
+
+    it('when no func is provided then a Failure with the error is returned', () => {
+      // @ts-ignore
+      const tryResult = Try.ofFunction5(null);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError() instanceof IllegalArgumentError).toBeTrue();
+    });
+
+
+    it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
+      const func: FFunction5<string, string, string, string, string, number> =
+        (s1, s2, s3, s4, s5) => parseInt(s1 + s2 + s3 + s4 + s5);
+
+      const tryResult = Try.ofFunction5('1', '2', '3', '4', '5', func);
+
+      expect(tryResult.isSuccess()).toBeTrue();
+      expect(tryResult.get()).toEqual(12345);
+    });
+
+
+    it('when applying providing func an error is thrown then a Failure with the error is returned', () => {
+      const returnedError: Error = new SyntaxError('There was an error');
+      const func: Function5<string, string, string, string, string, number> =
+        Function5.of(
+          (s1, s2, s3, s4, s5) => { throw returnedError; }
+        );
+
+      const tryResult = Try.ofFunction5('1', '2', '3', '4', '5', func);
 
       expect(tryResult.isSuccess()).toBeFalse();
       expect(tryResult.getError()).toEqual(returnedError);

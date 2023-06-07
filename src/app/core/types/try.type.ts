@@ -1,5 +1,18 @@
 import { Optional } from '@app-core/types';
-import { Function0, TFunction0 } from '@app-core/types/function';
+import {
+  Function0,
+  Function1,
+  Function2,
+  Function3,
+  Function4,
+  Function5,
+  TFunction0,
+  TFunction1,
+  TFunction2,
+  TFunction3,
+  TFunction4,
+  TFunction5
+} from '@app-core/types/function';
 import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
@@ -45,19 +58,194 @@ export abstract class Try<T> {
 
 
   /**
-   * Creates a {@link Success} that contains the given {@code supplier}.
+   * Creates a {@link Success} invoking the provided {@link TFunction0}.
    *
-   * @param supplier
+   * @param func
    *    {@link TFunction0} used to get the value to store in the returned {@link Success}
    *
-   * @return {@link Success} if there was no error applying {@link TFunction0},
+   * @return {@link Success} if there was no error invoking {@link TFunction0},
    *         {@link Failure} otherwise
    */
-  static ofFunction0 = <T>(supplier: TFunction0<T>): Try<T> => {
+  static ofFunction0 = <T>(func: TFunction0<T>): Try<T> => {
     try {
       return this.success(
-        Function0.of(supplier)
+        Function0.of(func)
           .apply()
+      );
+
+    } catch (error) {
+      const finalError = error instanceof Error
+        ? error
+        : new Error('An unknown error was thrown, error = ' + error);
+
+      return this.failure(finalError);
+    }
+  }
+
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction1} with given {@code t1}.
+   *
+   * @param t1
+   *    Input parameter used by given {@link TFunction1}
+   * @param func
+   *    {@link TFunction1} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction1},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction1 = <T1, R>(t1: T1,
+                               func: TFunction1<T1, R>): Try<R> => {
+    try {
+      return this.success(
+        Function1.of(func)
+          .apply(t1)
+      );
+
+    } catch (error) {
+      const finalError = error instanceof Error
+        ? error
+        : new Error('An unknown error was thrown, error = ' + error);
+
+      return this.failure(finalError);
+    }
+  }
+
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction2} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction2}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction2}
+   * @param func
+   *    {@link TFunction2} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction2},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction2 = <T1, T2, R>(t1: T1,
+                                   t2: T2,
+                                   func: TFunction2<T1, T2, R>): Try<R> => {
+    try {
+      return this.success(
+        Function2.of(func)
+          .apply(t1, t2)
+      );
+
+    } catch (error) {
+      const finalError = error instanceof Error
+        ? error
+        : new Error('An unknown error was thrown, error = ' + error);
+
+      return this.failure(finalError);
+    }
+  }
+
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction3} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction3}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction3}
+   * @param t3
+   *    Third input parameter used by given {@link TFunction3}
+   * @param func
+   *    {@link TFunction3} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction3},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction3 = <T1, T2, T3, R>(t1: T1,
+                                       t2: T2,
+                                       t3: T3,
+                                       func: TFunction3<T1, T2, T3, R>): Try<R> => {
+    try {
+      return this.success(
+        Function3.of(func)
+          .apply(t1, t2, t3)
+      );
+
+    } catch (error) {
+      const finalError = error instanceof Error
+        ? error
+        : new Error('An unknown error was thrown, error = ' + error);
+
+      return this.failure(finalError);
+    }
+  }
+
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction4} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction4}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction4}
+   * @param t3
+   *    Third input parameter used by given {@link TFunction4}
+   * @param t4
+   *    Fourth input parameter used by given {@link TFunction4}
+   * @param func
+   *    {@link TFunction4} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction4},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction4 = <T1, T2, T3, T4, R>(t1: T1,
+                                           t2: T2,
+                                           t3: T3,
+                                           t4: T4,
+                                           func: TFunction4<T1, T2, T3, T4, R>): Try<R> => {
+    try {
+      return this.success(
+        Function4.of(func)
+          .apply(t1, t2, t3, t4)
+      );
+
+    } catch (error) {
+      const finalError = error instanceof Error
+        ? error
+        : new Error('An unknown error was thrown, error = ' + error);
+
+      return this.failure(finalError);
+    }
+  }
+
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction5} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction5}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction5}
+   * @param t3
+   *    Third input parameter used by given {@link TFunction5}
+   * @param t4
+   *    Fourth input parameter used by given {@link TFunction5}
+   * @param t5
+   *    Fifth input parameter used by given {@link TFunction5}
+   * @param func
+   *    {@link TFunction4} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction5},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction5 = <T1, T2, T3, T4, T5, R>(t1: T1,
+                                               t2: T2,
+                                               t3: T3,
+                                               t4: T4,
+                                               t5: T5,
+                                               func: TFunction5<T1, T2, T3, T4, T5, R>): Try<R> => {
+    try {
+      return this.success(
+        Function5.of(func)
+          .apply(t1, t2, t3, t4, t5)
       );
 
     } catch (error) {
@@ -94,6 +282,64 @@ export abstract class Try<T> {
    */
   static failure = <T>(error: Error): Try<T> =>
     Failure.of(error);
+
+
+  /**
+   *    Applies {@code mapperSuccess} if this {@link Try} is a {@link Success} instance, {@code mapperFailure} if
+   * it is an {@link Failure}, transforming internal values into another one. If {@code mapperSuccess} is initially
+   * applied and throws an {@link Error}, then {@code mapperFailure} is applied with this {@link Error}.
+   *
+   * <pre>
+   * Example:
+   *   const tryResult = Try.ofFunction1(
+   *      p1,
+   *      (n) => {
+   *         if (0 > n) {
+   *           throw new SyntaxError('Invalid number');
+   *         } else {
+   *            return 2 * n;
+   *         }
+   *      }
+   *   );
+   *   tryResultToString = tryResult.fold((e) => e.message, (n) => 'Valid number: ' + n);
+   * </pre>
+   *
+   * @param mapperFailure
+   *    The mapping {@link TFunction1} to apply the value of a {@link Failure} instance
+   * @param mapperSuccess
+   *    The mapping {@link TFunction1} to apply the value of a {@link Success} instance
+   *
+   * @return the result of applying the right {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if {@code mapperSuccess} is {@code null} or {@code undefined} and this {@link Try} is {@link Success}
+   *                                      or {@code mapperFailure} is {@code null} or {@code undefined} and this {@link Try} is {@link Failure}
+   */
+  fold = <U>(mapperFailure: TFunction1<Error, U>,
+             mapperSuccess: TFunction1<T, U>): U => {
+    if (this.isSuccess()) {
+      try {
+        return Function1.of(mapperSuccess)
+          .apply(
+            this.get()
+          );
+
+      } catch (error) {
+        const finalError = error instanceof Error
+          ? error
+          : new Error('An unknown error was thrown, error = ' + error);
+
+        return Function1.of(mapperFailure)
+          .apply(
+            finalError
+          );
+      }
+    } else {
+      return Function1.of(mapperFailure)
+        .apply(
+          this.getError()
+        );
+    }
+  }
 
 
   /**
