@@ -1,4 +1,6 @@
-import { FFunction1, FPredicate1, Function1, NullableOrUndefined, Optional, PartialFunction, Predicate1 } from '@app-core/types';
+import { NullableOrUndefined, Optional } from '@app-core/types';
+import { FFunction1, Function1, PartialFunction } from '@app-core/types/function';
+import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**

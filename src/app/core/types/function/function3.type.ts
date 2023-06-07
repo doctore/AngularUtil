@@ -1,4 +1,4 @@
-import { Function1, TFunction1 } from '@app-core/types';
+import { Function1, TFunction1 } from '@app-core/types/function';
 import { AssertUtil } from '@app-core/util';
 import * as _ from 'lodash';
 

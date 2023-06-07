@@ -9,6 +9,11 @@
       "@app-core/models": ["src/app/core/models/index.ts"],
       "@app-core/services": ["src/app/core/services/index.ts"],
       "@app-core/types": ["src/app/core/types/index.ts"],
+      "@app-core/types/consumer": ["src/app/core/types/consumer/index.ts"],
+      "@app-core/types/function": ["src/app/core/types/function/index.ts"],
+      "@app-core/types/predicate": ["src/app/core/types/predicate/index.ts"],
+      "@app-core/types/subject": ["src/app/core/types/subject/index.ts"],
+      "@app-core/types/tuple": ["src/app/core/types/tuple/index.ts"],
       "@app-core/util": ["src/app/core/util/index.ts"],
       "@app-shared/dialog": ["src/app/shared/dialog/index.ts"],
       "@app-env/*": ["src/environments/*"]

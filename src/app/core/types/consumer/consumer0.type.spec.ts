@@ -1,4 +1,4 @@
-import { Consumer0, FConsumer0, isFConsumer0 } from '@app-core/types';
+import { Consumer0, FConsumer0, isFConsumer0 } from '@app-core/types/consumer';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**

@@ -1,5 +1,5 @@
 import { ObjectUtil } from '@app-core/util';
-import { FFunction0, Function0 } from '@app-core/types';
+import { FFunction0, Function0 } from '@app-core/types/function';
 import * as _ from 'lodash';
 
 /**

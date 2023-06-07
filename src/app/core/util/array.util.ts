@@ -1,13 +1,6 @@
-import {
-  Function2,
-  Nullable,
-  NullableOrUndefined,
-  Optional,
-  OrUndefined,
-  Predicate1,
-  TFunction2,
-  TPredicate1
-} from '@app-core/types';
+import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
+import { Function2, TFunction2 } from '@app-core/types/function';
+import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import * as _ from 'lodash';
 
 /**

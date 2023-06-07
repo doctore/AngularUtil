@@ -1,5 +1,7 @@
-import { Function0, Optional, TFunction0 } from '@app-core/types';
+import { Optional } from '@app-core/types';
+import { Function0, TFunction0 } from '@app-core/types/function';
 import { AssertUtil } from '@app-core/util';
+import * as _ from 'lodash';
 
 /**
  *    Represents a computation that may either result in an error, or return a successfully computed value. It's
@@ -29,18 +31,6 @@ export abstract class Try<T> {
    * Returns {@code true} is this is a {@link Success}, {@code false} otherwise.
    */
   abstract isSuccess(): boolean;
-
-
-  /**
-   * Gets the value of this {@link Try} if is a {@link Success} or throws if this is an {@link Failure}.
-   *
-   * @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-{@code null} and non-{@code undefined},
-   *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is {@code null} or {@code undefined},
-   *         {@code Failure#error} if this is an {@link Failure}
-   *
-   * @throws {@code Failure#error} if this is an {@link Failure}
-   */
-  abstract getOptional(): Optional<T>;
 
 
   /**
@@ -138,6 +128,34 @@ export abstract class Try<T> {
       )
     );
 
+
+  /**
+   * Verifies in this {@link Try} has no value, that is:
+   * <p>
+   *    1. Is a {@link Failure} one.
+   *    2. Is a{@link Success} instance but its internal value is {@code null} or {@code undefined}.
+   *
+   * @return {@code true} is the current instance is empty, {@code false} otherwise
+   */
+  isEmpty = (): boolean =>
+    !this.isSuccess() || _.isNil(this.get());
+
+
+  /**
+   *    If the current {@link Try} is an instance of {@link Success} wraps the stored value into an {@link Optional} object.
+   * Otherwise return {@link Optional#empty()}
+   *
+   * @return @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-{@code null} and non-{@code undefined},
+   *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is {@code null} or {@code undefined},
+   *         {@code Optional#empty} if this is an {@link Failure}
+   */
+  toOptional = (): Optional<T> =>
+    this.isEmpty()
+       ? Optional.empty<T>()
+       : Optional.of(
+           this.get()
+         );
+
 }
 
 
@@ -147,7 +165,7 @@ export abstract class Try<T> {
  * The successful result of a {@link Try} operation.
  * <p>
  *    Both {@code null} and {@code undefined} could be stored in the internal {@code value} if defined {@code T}
- * allows them. Methods providing {@link Optional} as result, like {@link Success#getOptional} with take into account,
+ * allows them. Methods providing {@link Optional} as result, like {@link Success#toOptional} with take into account,
  * that is, is this {@link Success} instance is empty ({@code value} is {@code null} or {@code undefined}), then
  * {@link Optional#empty} will be returned.
  *
@@ -181,10 +199,6 @@ export class Success<T> extends Try<T> {
   override getError = (): Error => {
     throw new ReferenceError("Is not possible to get exception value of a 'Success' Try");
   }
-
-
-  override getOptional = (): Optional<T> =>
-    Optional.ofNullable(this.value);
 
 
   override isSuccess = (): boolean =>
@@ -230,11 +244,6 @@ export class Failure<T> extends Try<T> {
 
   override getError = (): Error =>
     this.error;
-
-
-  override getOptional = (): Optional<T> => {
-    throw this.error;
-  }
 
 
   override isSuccess = (): boolean =>

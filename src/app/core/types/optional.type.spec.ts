@@ -1,13 +1,7 @@
-import {
-  FConsumer1,
-  FFunction0,
-  FFunction1,
-  FPredicate1,
-  Function0,
-  NullableOrUndefined,
-  Optional,
-  PartialFunction
-} from '@app-core/types';
+import { NullableOrUndefined, Optional } from '@app-core/types';
+import { FConsumer1 } from '@app-core/types/consumer';
+import { FFunction0, FFunction1, Function0, PartialFunction } from '@app-core/types/function';
+import { FPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 import * as _ from 'lodash';
 

@@ -1,5 +1,7 @@
-import { FFunction1, FPredicate1, Function1, Optional, Predicate1, TFunction1, TPredicate1 } from '@app-core/types';
 import { AssertUtil } from '@app-core/util';
+import { Optional } from '@app-core/types';
+import { FFunction1, Function1, TFunction1 } from '@app-core/types/function';
+import { FPredicate1, Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import * as _ from 'lodash';
 
 /**

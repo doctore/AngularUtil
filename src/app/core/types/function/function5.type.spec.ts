@@ -1,4 +1,4 @@
-import { FFunction1, FFunction5, Function1, Function5, isFFunction5 } from '@app-core/types';
+import { FFunction1, FFunction5, Function1, Function5, isFFunction5 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**

@@ -1,5 +1,7 @@
 import { ArrayUtil } from '@app-core/util';
-import { FFunction2, Function2, NullableOrUndefined, Predicate1 } from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
+import { FFunction2, Function2 } from '@app-core/types/function';
+import { Predicate1 } from '@app-core/types/predicate';
 import * as _ from 'lodash';
 
 /**

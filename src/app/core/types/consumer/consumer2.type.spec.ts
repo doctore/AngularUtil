@@ -1,4 +1,5 @@
-import { Consumer2, FConsumer2, isFConsumer2, NullableOrUndefined } from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
+import { Consumer2, FConsumer2, isFConsumer2 } from '@app-core/types/consumer';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**

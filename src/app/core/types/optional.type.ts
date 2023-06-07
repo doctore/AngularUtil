@@ -1,17 +1,8 @@
 import { AssertUtil, ObjectUtil } from '@app-core/util';
-import {
-  Consumer1,
-  Function0,
-  Function1,
-  isFFunction0,
-  Nullable,
-  PartialFunction,
-  Predicate1,
-  TConsumer1,
-  TFunction0,
-  TFunction1,
-  TPredicate1
-} from '@app-core/types';
+import { Nullable } from '@app-core/types';
+import { Consumer1, TConsumer1 } from '@app-core/types/consumer';
+import { Function0, Function1, isFFunction0, PartialFunction, TFunction0, TFunction1 } from '@app-core/types/function';
+import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 import * as _ from 'lodash';
 

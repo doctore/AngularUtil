@@ -1,4 +1,5 @@
-import { Failure, FFunction0, Function0, Nullable, NullableOrUndefined, Success, Try } from '@app-core/types';
+import { Failure, Nullable, NullableOrUndefined, Success, Try } from '@app-core/types';
+import { FFunction0, Function0 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -145,6 +146,64 @@ describe('Try', () => {
 
   });
 
+
+
+  describe('isEmpty', () => {
+
+    it('when the Try instance is an empty Success one then true is returned', () => {
+      expect(Success.of(null).isEmpty()).toBeTrue();
+      expect(Success.of(undefined).isEmpty()).toBeTrue();
+
+      expect(Success.of<NullableOrUndefined<string>>(undefined).isEmpty()).toBeTrue();
+      expect(Success.of<Nullable<number>>(null).isEmpty()).toBeTrue();
+    });
+
+
+    it('when the Try instance is a non empty Success one then false is returned', () => {
+      expect(Success.of(12).isEmpty()).toBeFalse();
+      expect(Success.of('abc').isEmpty()).toBeFalse();
+    });
+
+
+    it('when the Try instance is a Failure one then false is returned', () => {
+      expect(Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error')).isEmpty()).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('toOptional', () => {
+
+    it('when the Try instance is an empty Success one then empty Optional is returned', () => {
+      expect(Success.of(null).toOptional().isPresent()).toBeFalse();
+      expect(Success.of(undefined).toOptional().isPresent()).toBeFalse();
+
+      expect(Success.of<NullableOrUndefined<string>>(undefined).toOptional().isPresent()).toBeFalse();
+      expect(Success.of<Nullable<number>>(null).toOptional().isPresent()).toBeFalse();
+    });
+
+
+    it('when the Try instance is a non empty Success one then non empty Optional is returned', () => {
+      const intSuccess = Success.of(12);
+      const stringSuccess = Success.of('abc');
+
+      expect(intSuccess.toOptional().isPresent()).toBeTrue();
+      expect(intSuccess.toOptional().get()).toEqual(intSuccess.get());
+
+      expect(stringSuccess.toOptional().isPresent()).toBeTrue();
+      expect(stringSuccess.toOptional().get()).toEqual(stringSuccess.get());
+    });
+
+
+    it('when the Try instance is a Failure one then empty Optional is returned', () => {
+      const failure = Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error'));
+
+      expect(failure.toOptional().isPresent()).toBeFalse();
+    });
+
+  });
+
 });
 
 
@@ -171,26 +230,6 @@ describe('Success', () => {
       expect(() => Success.of<NullableOrUndefined<string>>(undefined).getError()).toThrowError(ReferenceError);
       expect(() => Success.of<Nullable<number>>(null).getError()).toThrowError(ReferenceError);
       expect(() => Success.of(12).getError()).toThrowError(ReferenceError);
-    });
-
-  });
-
-
-
-  describe('getOptional', () => {
-
-    it('when internal value is null then empty Optional is returned', () => {
-      expect(Success.of<NullableOrUndefined<string>>(undefined).getOrElseOptional('11').isPresent()).toBeFalse();
-      expect(Success.of<Nullable<number>>(null).getOrElseOptional(20).isPresent()).toBeFalse();
-    });
-
-
-    it('when internal value is not null then an Optional storing such value is returned', () => {
-      expect(Success.of(12).getOptional().isPresent()).toBeTrue();
-      expect(Success.of(12).getOptional().get()).toEqual(12);
-
-      expect(Success.of('abc').getOptional().isPresent()).toBeTrue();
-      expect(Success.of('abc').getOptional().get()).toEqual('abc');
     });
 
   });
@@ -253,17 +292,6 @@ describe('Failure', () => {
 
       expect(Failure.of(illegalArgumentError).getError()).toEqual(illegalArgumentError);
       expect(Failure.of(referenceError).getError()).toEqual(referenceError);
-    });
-
-  });
-
-
-
-  describe('getOptional', () => {
-
-    it('then internal error is thrown', () => {
-      expect(() => Failure.of(new IllegalArgumentError('There was an error')).get()).toThrowError(IllegalArgumentError);
-      expect(() => Failure.of(new ReferenceError('There was an error')).get()).toThrowError(ReferenceError);
     });
 
   });

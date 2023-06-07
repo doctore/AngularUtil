@@ -1,4 +1,5 @@
-import { Function0, isFFunction0, NullableOrUndefined, TFunction0 } from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
+import { Function0, isFFunction0, TFunction0 } from '@app-core/types/function';
 import * as _ from 'lodash';
 
 /**

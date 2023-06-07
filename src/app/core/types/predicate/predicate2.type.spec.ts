@@ -1,4 +1,5 @@
-import { NullableOrUndefined, Predicate2, FPredicate2, isFPredicate2} from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
+import { Predicate2, FPredicate2, isFPredicate2} from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**

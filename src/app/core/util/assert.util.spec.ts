@@ -1,6 +1,6 @@
 import { AssertUtil } from '@app-core/util';
+import { FFunction0, Function0 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
-import { FFunction0, Function0 } from '@app-core/types';
 
 /**
  * To invoke only this test:
