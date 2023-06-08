@@ -174,7 +174,7 @@ export class Optional<T> {
       ? Function1.of(ifNonEmpty)
           .apply(this.value!)
       : Function0.of(ifEmpty)
-        .apply();
+          .apply();
 
 
   /**

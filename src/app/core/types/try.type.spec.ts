@@ -311,6 +311,90 @@ describe('Try', () => {
 
 
 
+  describe('fold', () => {
+
+    it('when the Try is Failure then mapperFailure is invoked and mapperSuccess is not', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnErrorMessage: FFunction1<Error, string> =
+        (error: Error): string => error.message;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const returnErrorMessageSpy = jasmine.createSpy('returnErrorMessage', returnErrorMessage);
+
+      Try.failure<number>(illegalArgumentError).fold(returnErrorMessageSpy, fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+      expect(returnErrorMessageSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Try is Success then mapperSuccess is invoked and mapperFailure is not', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnErrorMessage: FFunction1<Error, string> =
+        (error: Error): string => error.message;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const returnErrorMessageSpy = jasmine.createSpy('returnErrorMessage', returnErrorMessage);
+
+      Try.success(12).fold(returnErrorMessageSpy, fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+      expect(returnErrorMessageSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Try is Failure then mapperFailure result is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnErrorMessage: FFunction1<Error, string> =
+        (error: Error): string => error.message;
+
+      const result = Try.failure<number>(illegalArgumentError).fold(returnErrorMessage, fromNumToString);
+
+      expect(result).toEqual(illegalArgumentError.message);
+    });
+
+
+    it('when the Try is Success then mapperSuccess result is returned', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnErrorMessage: FFunction1<Error, string> =
+        (error: Error): string => error.message;
+
+      const result = Try.success(19).fold(returnErrorMessage, fromNumToString);
+
+      expect(result).toEqual('19');
+    });
+
+
+    it('when the Try is Success but mapperSuccess throws an error then mapperFailure result is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => { throw illegalArgumentError; }
+
+      const returnErrorMessage: FFunction1<Error, string> =
+        (error: Error): string => error.message;
+
+      const result = Try.success(19).fold(returnErrorMessage, fromNumToString);
+
+      expect(result).toEqual(illegalArgumentError.message);
+    });
+
+  });
+
+
+
   describe('getOrElse', () => {
 
     it('when the Try instance is a Success one then the content of Success is returned', () => {

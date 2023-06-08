@@ -303,6 +303,67 @@ describe('Optional', () => {
 
 
 
+  describe('fold', () => {
+
+    it('when the Optional is empty then ifEmpty is invoked and ifNonEmpty is not', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnEmptyString: FFunction0<string> =
+        (): string => '';
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyString);
+
+      Optional.empty<number>().fold(returnEmptyStringSpy, fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+      expect(returnEmptyStringSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Optional is not empty then ifNonEmpty is invoked and ifEmpty is not', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnEmptyString: FFunction0<string> =
+        (): string => '';
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyString);
+
+      Optional.of(12).fold(returnEmptyStringSpy, fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+      expect(returnEmptyStringSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is empty then ifEmpty result is returned', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnEmptyString: FFunction0<string> =
+        (): string => '';
+
+      expect(Optional.empty<number>().fold(returnEmptyString, fromNumToString)).toEqual('');
+    });
+
+
+    it('when the Optional is not empty then ifNonEmpty result is returned', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number): string => '' + n;
+
+      const returnEmptyString: FFunction0<string> =
+        (): string => '';
+
+      expect(Optional.of(11).fold(returnEmptyString, fromNumToString)).toEqual('11');
+    });
+
+  });
+
+
+
   describe('get', () => {
 
     it('when the Optional is empty then an error is thrown', () => {
