@@ -10,9 +10,9 @@ export type TConsumer2<T1, T2> = FConsumer2<T1, T2> | Consumer2<T1, T2>;
  *    Represents an operation that accepts two input arguments and returns no result. Unlike most other
  * functional interfaces, {@link FConsumer2} is expected to operate via side effects.
  *
- * @typeParam<T1>
+ * @typeParam <T1>
  *   Type of the first input to the {@link FConsumer2}
- * @typeParam<T2>
+ * @typeParam <T2>
  *   Type of the second input to the {@link FConsumer2}
  */
 export type FConsumer2<T1, T2> =
@@ -50,9 +50,9 @@ export function isFConsumer2<T1, T2>(input?: any): input is FConsumer2<T1, T2> {
  * <p>
  * This is a functional interface whose functional method is {@link Consumer2#apply}.
  *
- * @typeParam<T1>
+ * @typeParam <T1>
  *   Type of the first input to the {@link FConsumer2}
- * @typeParam<T2>
+ * @typeParam <T2>
  *   Type of the second input to the {@link FConsumer2}
  */
 export class Consumer2<T1, T2> {

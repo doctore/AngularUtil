@@ -24,7 +24,7 @@ import {
  *    For example, {@link Try} can be used to perform division on a user-defined input, without the need to do
  * explicit error-handling in all the places that an error might occur.
  *
- * @typeParam<T>
+ * @typeParam <T>
  *    Value type in the case of {@link Success}
  */
 export abstract class Try<T> {
@@ -541,7 +541,7 @@ export abstract class Try<T> {
  * that is, is this {@link Success} instance is empty ({@code value} is {@code null} or {@code undefined}), then
  * {@link Optional#empty} will be returned.
  *
- * @typeParam<T>
+ * @typeParam <T>
  *    Value type in the case of {@link Success}
  */
 export class Success<T> extends Try<T> {
@@ -583,7 +583,7 @@ export class Success<T> extends Try<T> {
 /**
  * The unsuccessful computation of a {@link Try} operation.
  *
- * @typeParam<T>
+ * @typeParam <T>
  *    Value type in the case of {@link Success}
  */
 export class Failure<T> extends Try<T> {

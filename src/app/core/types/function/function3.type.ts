@@ -10,11 +10,11 @@ export type TFunction3<T1, T2, T3, R> = FFunction3<T1, T2, T3, R> | Function3<T1
 /**
  * Represents the function approach of a function that accepts three arguments and produces a result.
  *
- * @typeParam<T1>
+ * @typeParam <T1>
  *   Type of the first input to the {@link FFunction3}
- * @typeParam<T2>
+ * @typeParam <T2>
  *   Type of the second input to the {@link FFunction3}
- * @typeParam<T3>
+ * @typeParam <T3>
  *   Type of the third input to the {@link FFunction3}
  * @typeParam <R>
  *   Type of the result of the {@link FFunction3}

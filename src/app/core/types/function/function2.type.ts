@@ -10,9 +10,9 @@ export type TFunction2<T1, T2, R> = FFunction2<T1, T2, R> | Function2<T1, T2, R>
 /**
  * Represents the function approach of a function that accepts two arguments and produces a result.
  *
- * @typeParam<T1>
+ * @typeParam <T1>
  *   Type of the first input to the {@link FFunction2}
- * @typeParam<T2>
+ * @typeParam <T2>
  *   Type of the second input to the {@link FFunction2}
  * @typeParam <R>
  *   Type of the result of the {@link FFunction2}
