@@ -1,8 +1,9 @@
-import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
-import { Function2, TFunction2 } from '@app-core/types/function';
+import { Function2, PartialFunction, TFunction2 } from '@app-core/types/function';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
+import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
+import { AssertUtil, ObjectUtil } from '@app-core/util';
 import * as _ from 'lodash';
-import {ObjectUtil} from "./object.util";
+
 
 /**
  * Helper functions to manage arrays.
@@ -11,6 +12,54 @@ export class ArrayUtil {
 
   constructor() {
     throw new SyntaxError('ArrayUtil is an utility class');
+  }
+
+
+  /**
+   * Returns a new array after:
+   * <p>
+   *  - Filter its elements using {@link PartialFunction#isDefinedAt} of {@code partialFunction}
+   *  - Transform its filtered elements using {@link PartialFunction#apply} of {@code partialFunction}
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3, 6]                         ['4', '12']
+   *    PartialFunction.of(
+   *      (n: number) => 0 == n % 2
+   *      (n: number) => '' + (2 * n)
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform elements of {@code sourceArray}
+   *
+   * @return {@link Collection}
+   *
+   * @throws {@link IllegalArgumentError} if {@code partialFunction} is {@code null} or {@code undefined} with a not empty {@code sourceArray}
+   */
+  static collect = <T, U>(sourceArray: NullableOrUndefined<T[]>,
+                          partialFunction: PartialFunction<T, U>): U[] => {
+    let result: U[] = [];
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        partialFunction,
+        'partialFunction must be not null and not undefined'
+      );
+      for (let item of sourceArray!) {
+        if (partialFunction.isDefinedAt(item)) {
+          result.push(
+            partialFunction.apply(
+              item
+            )
+          );
+        }
+      }
+    }
+    return result;
   }
 
 

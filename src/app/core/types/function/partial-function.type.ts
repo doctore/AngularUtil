@@ -89,7 +89,7 @@ export class PartialFunction<T, R> {
    *
    * @return {@link PartialFunction}
    *
-   * @throws {@link IllegalArgumentError} if {{@code mapper} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if {@code mapper} is {@code null} or {@code undefined}
    */
   static of<T, R>(verifier: FPredicate1<T>,
                   mapper: FFunction1<T, R>): PartialFunction<T, R>;

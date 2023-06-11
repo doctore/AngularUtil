@@ -1,6 +1,6 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction2, Function2 } from '@app-core/types/function';
+import { FFunction2, Function2, PartialFunction } from '@app-core/types/function';
 import { Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
@@ -22,17 +22,62 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('collect', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      let emptyArray: number[] = [];
+      const multiply2AndStringForEven: PartialFunction<number, string> =
+        PartialFunction.of(
+          (n: number) => 0 == n % 2,
+          (n: number) => '' + (2 * n)
+        );
+
+      const expectedResult: string[] = [];
+
+      expect(ArrayUtil.collect(null, multiply2AndStringForEven)).toEqual(expectedResult);
+      expect(ArrayUtil.collect(undefined, multiply2AndStringForEven)).toEqual(expectedResult);
+      expect(ArrayUtil.collect(emptyArray, multiply2AndStringForEven)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.collect([1], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.collect([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed array is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6];
+      const multiply2AndStringForEven: PartialFunction<number, string> =
+        PartialFunction.of(
+          (n: number) => 0 == n % 2,
+          (n: number) => '' + (2 * n)
+        );
+
+      const expectedResult: string[] = ['4', '12'];
+
+      verifyArrays(
+        ArrayUtil.collect(sourceArray, multiply2AndStringForEven),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('dropWhile', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       let emptyArray: Role[] = [];
       const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
 
-      const expectedResult: Role[] = [];
-
-      expect(ArrayUtil.dropWhile(null, isIdEven)).toEqual(expectedResult);
-      expect(ArrayUtil.dropWhile(undefined, isIdEven)).toEqual(expectedResult);
-      expect(ArrayUtil.dropWhile(emptyArray, isIdEven)).toEqual(expectedResult);
+      expect(ArrayUtil.dropWhile(null, isIdEven)).toEqual(emptyArray);
+      expect(ArrayUtil.dropWhile(undefined, isIdEven)).toEqual(emptyArray);
+      expect(ArrayUtil.dropWhile(emptyArray, isIdEven)).toEqual(emptyArray);
     });
 
 
@@ -149,9 +194,7 @@ describe('ArrayUtil', () => {
 
       const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role!.id % 2);
 
-      const expectedResult = r2;
-
-      expect(ArrayUtil.find(sourceArray, isIdEven)).toEqual(expectedResult);
+      expect(ArrayUtil.find(sourceArray, isIdEven)).toEqual(r2);
     });
 
 
@@ -164,9 +207,7 @@ describe('ArrayUtil', () => {
 
       const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
 
-      const expectedResult = u1;
-
-      expect(ArrayUtil.find(sourceArray, isIdOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.find(sourceArray, isIdOdd)).toEqual(u1);
     });
 
   });
@@ -342,11 +383,9 @@ describe('ArrayUtil', () => {
       let emptyArray: Role[] = [];
       const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
 
-      const expectedResult: Role[] = [];
-
-      expect(ArrayUtil.takeWhile(null, isIdEven)).toEqual(expectedResult);
-      expect(ArrayUtil.takeWhile(undefined, isIdEven)).toEqual(expectedResult);
-      expect(ArrayUtil.takeWhile(emptyArray, isIdEven)).toEqual(expectedResult);
+      expect(ArrayUtil.takeWhile(null, isIdEven)).toEqual(emptyArray);
+      expect(ArrayUtil.takeWhile(undefined, isIdEven)).toEqual(emptyArray);
+      expect(ArrayUtil.takeWhile(emptyArray, isIdEven)).toEqual(emptyArray);
     });
 
 

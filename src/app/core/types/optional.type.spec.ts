@@ -45,7 +45,7 @@ describe('Optional', () => {
     });
 
 
-    it('when the Optional is not empty and belongs to the domain of PartialFunction then an empty Optional is returned', () => {
+    it('when the Optional is not empty and belongs to the domain of PartialFunction then new non empty Optional is returned', () => {
       const isOdd: FPredicate1<number> =
         (n: NullableOrUndefined<number>) => 1 == n! % 2;
 
