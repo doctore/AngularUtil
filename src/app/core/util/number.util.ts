@@ -1,5 +1,5 @@
+import { ObjectUtil } from '@app-core/util';
 import { OrUndefined } from '@app-core/types';
-import * as _ from 'lodash';
 
 /**
  * Helper functions to manage common operations related with numbers: integer, float, etc.
@@ -21,7 +21,7 @@ export class NumberUtil {
    *         {@code false} otherwise
    */
   static isValidFloat = (inputToCheck?: string | number | null): boolean => {
-    if (!_.isNil(inputToCheck)) {
+    if (ObjectUtil.nonNullOrUndefined(inputToCheck)) {
       const finalInputToCheck = 'number' === inputToCheck
         ? inputToCheck
         : ('' + inputToCheck).replace(/,/g, '').trim();
@@ -42,7 +42,7 @@ export class NumberUtil {
    *         {@code false} otherwise
    */
   static isValidInt = (inputToCheck?: string | number | null): boolean => {
-    if (!_.isNil(inputToCheck)) {
+    if (ObjectUtil.nonNullOrUndefined(inputToCheck)) {
       return inputToCheck == parseInt('' + inputToCheck);
     }
     return false;
@@ -62,11 +62,11 @@ export class NumberUtil {
    */
   static toFloatWithFixedPointNotation = (inputToFix?: string | number | null,
                                           fixedPoints?: string | number | null): OrUndefined<string> => {
-    const finalInputToFix = !_.isNil(inputToFix)
+    const finalInputToFix = ObjectUtil.nonNullOrUndefined(inputToFix)
       ? '' + inputToFix
       : '';
 
-    const finalFixedPoints = !_.isNil(fixedPoints)
+    const finalFixedPoints = ObjectUtil.nonNullOrUndefined(fixedPoints)
       ? '' + fixedPoints
       : '2';
 

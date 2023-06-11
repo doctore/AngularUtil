@@ -1,8 +1,7 @@
-import { AssertUtil } from '@app-core/util';
+import { AssertUtil, ObjectUtil } from '@app-core/util';
 import { Optional } from '@app-core/types';
 import { FFunction1, Function1, TFunction1 } from '@app-core/types/function';
 import { FPredicate1, Predicate1, TPredicate1 } from '@app-core/types/predicate';
-import * as _ from 'lodash';
 
 /**
  *    Unary function where the domain does not necessarily include all values of type T. The method {@link PartialFunction#isDefinedAt}
@@ -68,7 +67,7 @@ export class PartialFunction<T, R> {
    *         {@code false} otherwise
    */
   static isPartialFunction = <T, R>(input?: any): input is PartialFunction<T, R> =>
-    !_.isNil(input) &&
+    ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as PartialFunction<T, R>).andThen &&
     undefined !== (input as PartialFunction<T, R>).apply &&
     undefined !== (input as PartialFunction<T, R>).applyOrElse &&
@@ -122,7 +121,7 @@ export class PartialFunction<T, R> {
       mapper,
       'mapper must be not null and not undefined'
     );
-    const finalVerifier = _.isNil(verifier)
+    const finalVerifier = ObjectUtil.isNullOrUndefined(verifier)
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(verifier);
 
@@ -331,11 +330,11 @@ export class PartialFunction<T, R> {
    *         where this is defined, and to {@code defaultPartialFunction(x)} where it is not.
    */
   orElse = (defaultPartialFunction: PartialFunction<T, R>): PartialFunction<T, R> => {
-    const finalVerifier = _.isNil(defaultPartialFunction)
+    const finalVerifier = ObjectUtil.isNullOrUndefined(defaultPartialFunction)
       ? this.verifier
       : this.verifier.or(defaultPartialFunction.verifier);
 
-    const finalMapper = _.isNil(defaultPartialFunction)
+    const finalMapper = ObjectUtil.isNullOrUndefined(defaultPartialFunction)
       ? Function1.of(
         (t: T) =>
           this.apply(t)

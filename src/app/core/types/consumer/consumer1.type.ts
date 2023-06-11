@@ -1,5 +1,4 @@
-import { AssertUtil } from '@app-core/util';
-import * as _ from 'lodash';
+import { AssertUtil, ObjectUtil } from '@app-core/util';
 
 /**
  * Union type of {@link FConsumer1} and {@link FConsumer1}
@@ -34,7 +33,7 @@ export type FConsumer1<T> =
  *         {@code false} otherwise
  */
 export function isFConsumer1<T>(input?: any): input is FConsumer1<T> {
-  return !_.isNil(input) &&
+  return ObjectUtil.nonNullOrUndefined(input) &&
     'function' === typeof input &&
     1 === input.length;
 }
@@ -66,7 +65,7 @@ export class Consumer1<T> {
    *         {@code false} otherwise
    */
   static isConsumer = <T>(input?: any): input is Consumer1<T> =>
-    !_.isNil(input) &&
+    ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Consumer1<T>).andThen &&
     undefined !== (input as Consumer1<T>).apply;
 
@@ -122,7 +121,7 @@ export class Consumer1<T> {
    *         {@code after} {@link TConsumer1}
    */
   andThen = (after: TConsumer1<T>): Consumer1<T> =>
-    _.isNil(after)
+    ObjectUtil.isNullOrUndefined(after)
       ? new Consumer1(
           (t: T) =>
             this.apply(t)

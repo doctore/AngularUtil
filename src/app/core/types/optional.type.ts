@@ -4,7 +4,6 @@ import { Consumer1, TConsumer1 } from '@app-core/types/consumer';
 import { Function0, Function1, isFFunction0, PartialFunction, TFunction0, TFunction1 } from '@app-core/types/function';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
-import * as _ from 'lodash';
 
 /**
  *    A container object which may or may not contain a non-{@code null} value. If a value is present,
@@ -64,7 +63,7 @@ export class Optional<T> {
    *         is non-{@code null}, otherwise an empty {@link Optional}
    */
   static ofNullable = <T>(value?: Nullable<T>): Optional<T> =>
-    _.isNil(value)
+    ObjectUtil.isNullOrUndefined(value)
       ? Optional.empty<T>()
       : Optional.of(value);
 
@@ -104,7 +103,7 @@ export class Optional<T> {
    *         {@code false} otherwise.
    */
   equals = (other: Optional<T>): boolean => {
-    if (_.isNil(other) ||
+    if (ObjectUtil.isNullOrUndefined(other) ||
        (this.isPresent() !== other.isPresent())) {
       return false;
     }
@@ -250,7 +249,7 @@ export class Optional<T> {
    * Returns {@code true} if the {@link Optional} is not empty, {@code false} otherwise.
    */
   isPresent = (): boolean =>
-    !_.isNil(this.value);
+    ObjectUtil.nonNullOrUndefined(this.value);
 
 
   /**

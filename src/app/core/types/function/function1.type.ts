@@ -1,5 +1,4 @@
-import { AssertUtil } from '@app-core/util';
-import * as _ from 'lodash';
+import { AssertUtil, ObjectUtil } from '@app-core/util';
 
 /**
  * Union type of {@link FFunction1} and {@link Function1}
@@ -35,7 +34,7 @@ export type FFunction1<T, R> =
  *         {@code false} otherwise
  */
 export function isFFunction1<T, R>(input?: any): input is FFunction1<T, R> {
-  return !_.isNil(input) &&
+  return ObjectUtil.nonNullOrUndefined(input) &&
     'function' === typeof input &&
     1 === input.length;
 }
@@ -74,7 +73,7 @@ export class Function1<T, R> {
    *         {@code false} otherwise
    */
   static isFunction = <T, R>(input?: any): input is Function1<T, R> =>
-    !_.isNil(input) &&
+    ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Function1<T, R>).andThen &&
     undefined !== (input as Function1<T, R>).apply &&
     undefined !== (input as Function1<T, R>).compose;

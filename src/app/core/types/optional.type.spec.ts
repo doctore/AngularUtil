@@ -1,9 +1,9 @@
+import { ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import { FConsumer1 } from '@app-core/types/consumer';
 import { FFunction0, FFunction1, Function0, PartialFunction } from '@app-core/types/function';
 import { FPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
-import * as _ from 'lodash';
 
 /**
  * To invoke only this test:
@@ -89,7 +89,7 @@ describe('Optional', () => {
       const intValue = 10;
       const stringValue = 'ForTestPurpose';
       const user = new User(10, 'user1');
-      const role = { id: 30, description: 'role1' } as Role;
+      const role = { id: 30, name: 'role1' } as Role;
 
       expect(Optional.empty<number>().equals(Optional.of(intValue))).toBeFalse();
       expect(Optional.of(intValue).equals(Optional.empty())).toBeFalse();
@@ -109,7 +109,7 @@ describe('Optional', () => {
       const intValue = 10;
       const stringValue = 'ForTestPurpose';
       const user = new User(10, 'user1');
-      const role = { id: 30, description: 'role1' } as Role;
+      const role = { id: 30, name: 'role1' } as Role;
 
       // @ts-ignore
       expect(Optional.empty().equals(undefined)).toBeFalse();
@@ -148,8 +148,8 @@ describe('Optional', () => {
       const user1 = new User(10, 'user1');
       const user2 = new User(11, 'user1');
 
-      const role1 = { id: 30, description: 'role1' } as Role;
-      const role2 = { id: 31, description: 'role2' } as Role;
+      const role1 = { id: 30, name: 'role1' } as Role;
+      const role2 = { id: 31, name: 'role2' } as Role;
 
       expect(Optional.of(intValue1).equals(Optional.of(intValue2))).toBeFalse();
       expect(Optional.of(intValue2).equals(Optional.of(intValue1))).toBeFalse();
@@ -184,8 +184,8 @@ describe('Optional', () => {
       const user1 = new User(10, 'user1');
       const user2 = new User(10, 'user2');
 
-      const role1 = { id: 30, description: 'role1' } as Role;
-      const role2 = { id: 30, description: 'role1' } as Role;
+      const role1 = { id: 30, name: 'role1' } as Role;
+      const role2 = { id: 30, name: 'role1' } as Role;
 
       expect(Optional.of(user1).equals(Optional.of(user2))).toBeTrue();
       expect(Optional.of(user2).equals(Optional.of(user1))).toBeTrue();
@@ -399,7 +399,7 @@ describe('Optional', () => {
     });
 
 
-    it('when the Optional is empty and provided other is a value then other will be returned', () => {
+    it('when the Optional is empty and provided other is a value then other is returned', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
@@ -411,7 +411,7 @@ describe('Optional', () => {
     });
 
 
-    it('when the Optional is empty and provided other is a TFunction0 then other will be returned', () => {
+    it('when the Optional is empty and provided other is a TFunction0 then other is returned', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
@@ -591,7 +591,7 @@ describe('Optional', () => {
 
   describe('orElse', () => {
 
-    it('when the Optional is not empty then it will be returned', () => {
+    it('when the Optional is not empty then it is returned', () => {
       const intValue = 11;
       const stringValue = 'abd';
 
@@ -606,7 +606,7 @@ describe('Optional', () => {
     });
 
 
-    it('when the Optional is empty then other will be returned', () => {
+    it('when the Optional is empty then other is returned', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
@@ -662,11 +662,11 @@ describe('Optional', () => {
   // Used only for testing purpose
   class User {
     private _id: number;
-    private _description: string;
+    private _name: string;
 
-    constructor(id: number, description: string) {
+    constructor(id: number, name: string) {
       this._id = id;
-      this._description = description;
+      this._name = name;
     }
 
     get id(): number {
@@ -676,15 +676,15 @@ describe('Optional', () => {
       this._id = id;
     }
 
-    get description(): string {
-      return this._description;
+    get name(): string {
+      return this._name;
     }
-    set description(description: string) {
-      this._description = description;
+    set name(name: string) {
+      this._name = name;
     }
 
     equals = (other?: User | null): boolean =>
-      _.isNil(other)
+      ObjectUtil.isNullOrUndefined(other)
         ? false
         : this.id === other.id;
   }
@@ -692,7 +692,7 @@ describe('Optional', () => {
 
   interface Role {
     id: number;
-    description: string;
+    name: string;
   }
 
 });

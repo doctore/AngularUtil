@@ -1,3 +1,4 @@
+import { AssertUtil, ObjectUtil } from '@app-core/util';
 import { Optional } from '@app-core/types';
 import {
   Function0,
@@ -13,8 +14,6 @@ import {
   TFunction4,
   TFunction5
 } from '@app-core/types/function';
-import { AssertUtil } from '@app-core/util';
-import * as _ from 'lodash';
 
 /**
  *    Represents a computation that may either result in an error, or return a successfully computed value. It's
@@ -285,6 +284,69 @@ export abstract class Try<T> {
 
 
   /**
+   * Merge given {@code t} with this {@link Try}, managing the following use cases:
+   * <p>
+   *   1. this = {@link Success}, t = {@link Success}  =>  return a {@link Success} instance applying {@code mapperSuccess}
+   *   2. this = {@link Success}, t = {@link Failure}  =>  return the {@link Failure}
+   *   3. this = {@link Failure}, t = {@link Success}  =>  return the {@link Failure}
+   *   4. this = {@link Failure}, t = {@link Failure}  =>  return a {@link Failure} instance applying {@code mapperLeft}
+   *
+   * If provided {@code t} is {@code null} or {@code undefined}, the current instance will be returned.
+   *
+   * @param t
+   *    New {@link Try} to merge with the current one
+   * @param mapperFailure
+   *    {@link TFunction2} used to map this {@link Try} and given {@code t}, both {@link Failure}
+   * @param mapperSuccess
+   *    {@link TFunction2} used to map this {@link Try} and given {@code t}, both {@link Success}
+   *
+   * @return {@link Try} merging {@code t} with this {@link Try}
+   */
+  ap = (t: Try<T>,
+        mapperFailure: TFunction2<Error, Error, Error>,
+        mapperSuccess: TFunction2<T, T, T>): Try<T> => {
+
+    if (ObjectUtil.isNullOrUndefined(t)) {
+      return this;
+    }
+    // This is a Success instance
+    if (this.isSuccess()) {
+
+      // Current and given t are Success, a new merged Success instance will be returned
+      if (t.isSuccess()) {
+        return this.mapTry(
+          t,
+          mapperSuccess
+        );
+
+      // This is Success but t is Failure
+      } else {
+        return Try.failure(
+          t.getError()
+        );
+      }
+
+    // This is a Failure instance
+    } else {
+
+      // Due to only this is Failure, returns this
+      if (t.isSuccess()) {
+        return Try.failure(
+          this.getError()
+        );
+
+      // Current and given t are Failure, a new merged Failure instance will be returned
+      } else {
+        return this.mapFailureTry(
+          t,
+          mapperFailure
+        );
+      }
+    }
+  }
+
+
+  /**
    *    Applies {@code mapperSuccess} if this {@link Try} is a {@link Success} instance, {@code mapperFailure} if
    * it is an {@link Failure}, transforming internal values into another one. If {@code mapperSuccess} is initially
    * applied and throws an {@link Error}, then {@code mapperFailure} is applied with this {@link Error}.
@@ -384,7 +446,7 @@ export abstract class Try<T> {
    * @return {@code true} is the current instance is empty, {@code false} otherwise
    */
   isEmpty = (): boolean =>
-    !this.isSuccess() || _.isNil(this.get());
+    !this.isSuccess() || ObjectUtil.isNullOrUndefined(this.get());
 
 
   /**
@@ -401,6 +463,70 @@ export abstract class Try<T> {
        : Optional.of(
            this.get()
          );
+
+
+  /**
+   *    When current {@link Try} is a {@link Success} instance and given {@code t} too, manages in a safe way the
+   * {@link TFunction2} invocation to map both values.
+   *
+   * @param t
+   *    New {@link Try} to merge with the current one
+   * @param mapper
+   *    {@link TFunction2} to apply the stored value and the one related with {@code t}
+   *
+   * @return {@link Try}
+   */
+  private mapTry = <U>(t: Try<T>,
+                       mapper: TFunction2<T, T, U>): Try<U> => {
+    try {
+      return Try.success(
+        Function2.of(mapper)
+          .apply(
+            this.get(),
+            t.get()
+          )
+      );
+
+    } catch (error) {
+      const finalError = error instanceof Error
+        ? error
+        : new Error('An unknown error was thrown, error = ' + error);
+
+      return Try.failure(finalError);
+    }
+  }
+
+
+  /**
+   *    When current {@link Try} is a {@link Failure} instance and given {@code t} too, manages in a safe way the
+   * {@link TFunction2} invocation to map both values.
+   *
+   * @param t
+   *    New {@link Try} to merge with the current one
+   * @param mapper
+   *    {@link TFunction2} to apply the stored exception and the one related with {@code t}
+   *
+   * @return {@link Try}
+   */
+  private mapFailureTry = (t: Try<T>,
+                           mapper: TFunction2<Error, Error, Error>): Try<T> => {
+    try {
+      return Try.failure(
+        Function2.of(mapper)
+          .apply(
+            this.getError(),
+            t.getError()
+          )
+      );
+
+    } catch (error) {
+      const finalError = error instanceof Error
+        ? error
+        : new Error('An unknown error was thrown, error = ' + error);
+
+      return Try.failure(finalError);
+    }
+  }
 
 }
 

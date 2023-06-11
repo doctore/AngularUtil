@@ -1,6 +1,5 @@
-import { ArrayUtil, AssertUtil } from '@app-core/util';
+import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { Nullable } from '@app-core/types';
-import * as _ from 'lodash';
 
 /**
  * Union type of {@link FPredicate1} and {@link Predicate1}
@@ -34,7 +33,7 @@ export type FPredicate1<T> =
  *         {@code false} otherwise
  */
 export function isFPredicate1<T>(input?: any): input is FPredicate1<T> {
-  return !_.isNil(input) &&
+  return ObjectUtil.nonNullOrUndefined(input) &&
     'function' === typeof input &&
     1 === input.length;
 }
@@ -153,7 +152,7 @@ export class Predicate1<T> {
    *         {@code false} otherwise
    */
   static isPredicate = <T>(input?: any): input is Predicate1<T> =>
-    !_.isNil(input) &&
+    ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Predicate1<T>).and &&
     undefined !== (input as Predicate1<T>).apply &&
     undefined !== (input as Predicate1<T>).not &&
@@ -212,7 +211,7 @@ export class Predicate1<T> {
    *         and {@code predicate}
    */
   and = (predicate: TPredicate1<T>): Predicate1<T> =>
-    _.isNil(predicate)
+    ObjectUtil.isNullOrUndefined(predicate)
       ? new Predicate1(
           (t: T) =>
             this.apply(t)
@@ -264,7 +263,7 @@ export class Predicate1<T> {
    *         and {@code predicate}
    */
   or = (predicate: TPredicate1<T>): Predicate1<T> =>
-    _.isNil(predicate)
+    ObjectUtil.isNullOrUndefined(predicate)
       ? new Predicate1(
           (t: T) =>
             this.apply(t)

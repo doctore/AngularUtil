@@ -1,5 +1,5 @@
+import { ObjectUtil } from '@app-core/util';
 import { Nullable } from '@app-core/types';
-import * as _ from 'lodash';
 
 /**
  * Helper functions to manage strings.
@@ -20,7 +20,7 @@ export class StringUtil {
    * @return {@code true} if {@code input} is {@code undefined}, {@code null} or has only blank characters
    */
   static isEmpty = (inputToCheck?: Nullable<string>): boolean =>
-    _.isNil(inputToCheck)
+    ObjectUtil.isNullOrUndefined(inputToCheck)
       ? true
       : 0 == inputToCheck.trim().length;
 

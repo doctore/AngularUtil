@@ -1,6 +1,5 @@
-import { ArrayUtil, AssertUtil } from '@app-core/util';
+import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { Nullable } from '@app-core/types';
-import * as _ from 'lodash';
 
 /**
  * Union type of {@link FPredicate2} and {@link Predicate2}
@@ -37,7 +36,7 @@ export type FPredicate2<T1, T2> =
  *         {@code false} otherwise
  */
 export function isFPredicate2<T1, T2>(input?: any): input is FPredicate2<T1, T2> {
-  return !_.isNil(input) &&
+  return ObjectUtil.nonNullOrUndefined(input) &&
     'function' === typeof input &&
     2 === input.length;
 }
@@ -163,7 +162,7 @@ export class Predicate2<T1, T2> {
    *         {@code false} otherwise
    */
   static isPredicate = <T1, T2>(input?: any): input is Predicate2<T1, T2> =>
-    !_.isNil(input) &&
+    ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Predicate2<T1, T2>).and &&
     undefined !== (input as Predicate2<T1, T2>).apply &&
     undefined !== (input as Predicate2<T1, T2>).not &&
@@ -222,7 +221,7 @@ export class Predicate2<T1, T2> {
    *         and {@code predicate}
    */
   and = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
-    _.isNil(predicate)
+    ObjectUtil.isNullOrUndefined(predicate)
       ? new Predicate2(
           (t1: T1,
            t2: T2) =>
@@ -280,7 +279,7 @@ export class Predicate2<T1, T2> {
    *         and {@code predicate}
    */
   or = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
-    _.isNil(predicate)
+    ObjectUtil.isNullOrUndefined(predicate)
       ? new Predicate2(
           (t1: T1,
            t2: T2) =>

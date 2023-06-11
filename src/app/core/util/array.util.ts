@@ -2,6 +2,7 @@ import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/
 import { Function2, TFunction2 } from '@app-core/types/function';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import * as _ from 'lodash';
+import {ObjectUtil} from "./object.util";
 
 /**
  * Helper functions to manage arrays.
@@ -14,8 +15,11 @@ export class ArrayUtil {
 
 
   /**
-   *    Returns a new array using {@code objectArray} as source, removing from the result the elements that verify the
+   *    Returns a new array using {@code sourceArray} as source, removing from the result the elements that verify the
    * given {@link TPredicate1} {@code filterPredicate}.
+   *
+   * @apiNote
+   *    If {@code filterPredicate} is {@code null} or {@code undefined} then {@link Predicate1#alwaysFalse} will be applied.
    *
    * <pre>
    * Example:
@@ -24,9 +28,9 @@ export class ArrayUtil {
    *      id: number;
    *      name: string;
    *   }
-   *   const u1 = { id: 1, description: 'user1' } as User;
-   *   const u2 = { id: 2, description: 'user2' } as User;
-   *   const u3 = { id: 3, description: 'user3' } as User;
+   *   const u1 = { id: 1, name: 'user1' } as User;
+   *   const u2 = { id: 2, name: 'user2' } as User;
+   *   const u3 = { id: 3, name: 'user3' } as User;
    *
    *   // Will return [u2]
    *   ArrayUtil.takeWhile(
@@ -35,74 +39,30 @@ export class ArrayUtil {
    *   );
    * </pre>
    *
-   * @param objectArray
-   *    Array to filter provided property values
+   * @param sourceArray
+   *    Array to filter
    * @param filterPredicate
    *    {@link TPredicate1} used to find given elements to filter
    *
-   * @return empty array if {@code objectArray} has no elements,
-   *         a new array with the elements of {@code objectArray} which do not verify {@code filterPredicate} otherwise
+   * @return empty array if {@code sourceArray} has no elements,
+   *         otherwise a new array with the elements of {@code sourceArray} which do not verify {@code filterPredicate}
    */
-  static dropWhile = <T>(objectArray: NullableOrUndefined<T[]>,
-                         filterPredicate: TPredicate1<T>): T[] =>
-    this.takeWhile(
-      objectArray,
-      Predicate1.of(filterPredicate).not()
-    );
+  static dropWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
+                         filterPredicate: TPredicate1<T>): T[] => {
 
+    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      ? Predicate1.alwaysFalse<T>()
+      : Predicate1.of(filterPredicate);
 
-  /**
-   *    Returns a new array using {@code objectArray} as source, removing from the result the elements which property
-   * {@code key} contains any of values included in {@code keyValuesToRemoveIfFound}.
-   *
-   * <pre>
-   * Example:
-   *
-   *   interface User {
-   *      id: number;
-   *      name: string;
-   *   }
-   *   const u1 = { id: 1, description: 'user1' } as User;
-   *   const u2 = { id: 2, description: 'user2' } as User;
-   *   const u3 = { id: 3, description: 'user3' } as User;
-   *
-   *   // Will return [u1]
-   *   ArrayUtil.dropWhileByKey(
-   *      [u1, u2],
-   *      'id',
-   *      [2, 3]
-   *   );
-   * </pre>
-   *
-   * @param objectArray
-   *    Array to filter provided property values
-   * @param key
-   *    Property used to find given values to filter
-   * @param keyValuesToRemoveIfFound
-   *    Key values used to know which object instances will be removed in the result
-   *
-   * @return empty array if {@code objectArray} has no elements,
-   *         {@code objectArray} if {@code keyValuesToRemoveIfFound} has no elements,
-   *         a new array with the elements of {@code objectArray} which property {@code key} contains any of values
-   *         included in {@code valuesOfKeyToKeepIfFound} otherwise
-   */
-  static dropWhileByKey = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
-                                                 key: K,
-                                                 keyValuesToRemoveIfFound: NullableOrUndefined<T[K][]>): T[] => {
-    if (this.isEmpty(objectArray)) {
-      return [];
-    }
-    if (this.isEmpty(keyValuesToRemoveIfFound)) {
-      return objectArray!;
-    }
-    return objectArray!.filter(
-      (obj: T) => -1 === keyValuesToRemoveIfFound!.indexOf(obj[key])
+    return this.takeWhile(
+      sourceArray,
+      finalFilterPredicate.not()
     );
   }
 
 
   /**
-   * Returns from the given {@code objectArray} the first element that verifies the provided {@code filterPredicate}.
+   * Returns from the given {@code sourceArray} the first element that verifies the provided {@code filterPredicate}.
    *
    * <pre>
    * Example:
@@ -111,39 +71,41 @@ export class ArrayUtil {
    *      id: number;
    *      name: string;
    *   }
-   *   const u1 = { id: 1, description: 'user1' } as User;
-   *   const u2 = { id: 2, description: 'user2' } as User;
-   *   const u3 = { id: 3, description: 'user3' } as User;
+   *   const u1 = { id: 1, name: 'user1' } as User;
+   *   const u2 = { id: 2, name: 'user2' } as User;
+   *   const u3 = { id: 3, name: 'user3' } as User;
    *
    *   // Will return u1
-   *   ArrayUtil.findFirst(
+   *   ArrayUtil.find(
    *      [u1, u2, u3],
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *   );
    * </pre>
    *
-   * @param objectArray
-   *    Array to search provided property value
+   * @param sourceArray
+   *    Array to search
    * @param filterPredicate
    *    {@link TPredicate1} used to find given elements to filter
    *
-   * @return {@code undefined} if {@code objectArray} has no elements or no one verifies provided {@code filterPredicate},
-   *         first element that verifies {@code filterPredicate} otherwise.
+   * @return {@code undefined} if {@code sourceArray} has no elements, {@code filterPredicate} is {@code null} or {@code undefined}
+   *         or no one verifies provided {@code filterPredicate}.
+   *         Otherwise, the first element that verifies {@code filterPredicate}.
    */
-  static find = <T>(objectArray: NullableOrUndefined<T[]>,
+  static find = <T>(sourceArray: NullableOrUndefined<T[]>,
                     filterPredicate: TPredicate1<T>): OrUndefined<T> => {
-    if (this.isEmpty(objectArray)) {
+    if (this.isEmpty(sourceArray) ||
+        ObjectUtil.isNullOrUndefined(filterPredicate)) {
       return undefined;
     }
     const finalFilterPredicate = Predicate1.of(filterPredicate);
-    return objectArray!.find(
+    return sourceArray!.find(
       (obj: T) => finalFilterPredicate.apply(obj)
     );
   }
 
 
   /**
-   * Returns from the given {@code objectArray} the first element that verifies the provided {@code filterPredicate}.
+   * Returns from the given {@code sourceArray} the first element that verifies the provided {@code filterPredicate}.
    *
    * <pre>
    * Example:
@@ -152,119 +114,30 @@ export class ArrayUtil {
    *      id: number;
    *      name: string;
    *   }
-   *   const u1 = { id: 1, description: 'user1' } as User;
-   *   const u2 = { id: 3, description: 'user2' } as User;
+   *   const u1 = { id: 1, name: 'user1' } as User;
+   *   const u2 = { id: 3, name: 'user2' } as User;
    *
    *   // Will return Optional(u1)
-   *   ArrayUtil.findFirst(
+   *   ArrayUtil.findOptional(
    *      [u1, u2],
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *   );
    * </pre>
    *
-   * @param objectArray
-   *    Array to search provided property value
+   * @param sourceArray
+   *    Array to search
    * @param filterPredicate
    *    {@link TPredicate1} used to find given elements to filter
    *
    * @return {@link Optional} containing the first element that satisfies {@code filterPredicate},
    *         {@link Optional#empty} otherwise.
    */
-  static findOptional = <T>(objectArray: NullableOrUndefined<T[]>,
+  static findOptional = <T>(sourceArray: NullableOrUndefined<T[]>,
                             filterPredicate: TPredicate1<T>): Optional<T> =>
     Optional.ofNullable(
       this.find(
-        objectArray,
+        sourceArray,
         filterPredicate
-      )
-    );
-
-
-  /**
-   *    Returns from the given {@code objectArray} the first element which {@code key} value matches with the provided
-   * {@code keyValueToFind}.
-   *
-   * <pre>
-   * Example:
-   *
-   *   interface User {
-   *      id: number;
-   *      name: string;
-   *   }
-   *   const u1 = { id: 1, description: 'John' } as User;
-   *   const u2 = { id: 2, description: 'John' } as User;
-   *
-   *   // Will return u1
-   *   ArrayUtil.findFirstByKey(
-   *      [u1, u2],
-   *      'description',
-   *      ['John']
-   *   );
-   * </pre>
-   *
-   * @param objectArray
-   *    Array to search provided property value
-   * @param key
-   *    Property used to find given value
-   * @param keyValuesToFind
-   *    Array of key values to search inside {@code objectArray}
-   *
-   * @return {@code undefined} if {@code objectArray} has no elements or does not contain provided {@code keyValueToFind},
-   *         first element which {@code key} has the same value as {@code keyValueToFind} otherwise
-   */
-  static findByKey = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
-                                            key: K,
-                                            keyValuesToFind: NullableOrUndefined<T[K][]>): OrUndefined<T> => {
-    if (this.isEmpty(objectArray) ||
-        this.isEmpty(keyValuesToFind)) {
-      return undefined;
-    }
-    return objectArray!.find(
-      (obj: T) => -1 !== keyValuesToFind!.indexOf(obj[key])
-    );
-  }
-
-
-  /**
-   *    Returns from the given {@code objectArray} the first element which {@code key} value matches with the provided
-   * {@code keyValueToFind}.
-   *
-   * <pre>
-   * Example:
-   *
-   *   interface User {
-   *      id: number;
-   *      name: string;
-   *   }
-   *   const u1 = { id: 1, description: 'John' } as User;
-   *   const u2 = { id: 2, description: 'John' } as User;
-   *
-   *   // Will return Optional(u1)
-   *   ArrayUtil.findFirstByKey(
-   *      [u1, u2],
-   *      'description',
-   *      ['John']
-   *   );
-   * </pre>
-   *
-   * @param objectArray
-   *    Array to search provided property value
-   * @param key
-   *    Property used to find given value
-   * @param keyValuesToFind
-   *    Array of key values to search inside {@code objectArray}
-   *
-   * @return {@link Optional#empty} if {@code objectArray} has no elements or does not contain provided {@code keyValueToFind},
-   *         {@link Optional} containing the first element which {@code key} has the same value as {@code keyValueToFind} otherwise
-   */
-  static findByKeyOptional = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
-                                                    key: K,
-                                                    keyValuesToFind: NullableOrUndefined<T[K][]>): Optional<T> =>
-    Optional.ofNullable(
-      this.findByKey(
-        objectArray,
-        key,
-        keyValuesToFind
       )
     );
 
@@ -291,6 +164,8 @@ export class ArrayUtil {
    *
    * @return result of inserting {@code accumulator} between consecutive elements {@code sourceArray}, going
    *         left to right with the start value {@code initialValue} on the left.
+   *
+   * @throws {@link IllegalArgumentError} if {@code accumulator} is {@code null} or {@code undefined} and {@code sourceArray} is not empty
    */
   static foldLeft = <T, R>(sourceArray: NullableOrUndefined<T[]>,
                            initialValue: R,
@@ -324,8 +199,11 @@ export class ArrayUtil {
 
 
   /**
-   *    Returns a new array using {@code objectArray} as source, adding from the result the elements that verify the
+   *    Returns a new array using {@code sourceArray} as source, adding from the result the elements that verify the
    * given {@link TPredicate1} {@code filterPredicate}.
+   *
+   * @apiNote
+   *    If {@code filterPredicate} is {@code null} or {@code undefined} then {@link Predicate1#alwaysTrue} will be applied.
    *
    * <pre>
    * Example:
@@ -334,9 +212,9 @@ export class ArrayUtil {
    *      id: number;
    *      name: string;
    *   }
-   *   const u1 = { id: 1, description: 'user1' } as User;
-   *   const u2 = { id: 2, description: 'user2' } as User;
-   *   const u3 = { id: 3, description: 'user3' } as User;
+   *   const u1 = { id: 1, name: 'user1' } as User;
+   *   const u2 = { id: 2, name: 'user2' } as User;
+   *   const u3 = { id: 3, name: 'user3' } as User;
    *
    *   // Will return [u1, u3]
    *   ArrayUtil.takeWhile(
@@ -345,71 +223,25 @@ export class ArrayUtil {
    *   );
    * </pre>
    *
-   * @param objectArray
-   *    Array to filter provided property values
+   * @param sourceArray
+   *    Array to filter
    * @param filterPredicate
    *    {@link TPredicate1} used to find given elements to filter
    *
-   * @return empty array if {@code objectArray} has no elements or no one verifies provided {@code filterPredicate},
-   *         a new array with the elements of {@code objectArray} which verify {@code filterPredicate} otherwise
+   * @return empty array if {@code sourceArray} has no elements or no one verifies provided {@code filterPredicate},
+   *         otherwise a new array with the elements of {@code sourceArray} which verify {@code filterPredicate}
    */
-  static takeWhile = <T>(objectArray: NullableOrUndefined<T[]>,
+  static takeWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
                          filterPredicate: TPredicate1<T>): T[] => {
-    if (this.isEmpty(objectArray)) {
+    if (this.isEmpty(sourceArray)) {
       return [];
     }
-    const finalFilterPredicate = Predicate1.of(filterPredicate);
+    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      ? Predicate1.alwaysTrue<T>()
+      : Predicate1.of(filterPredicate);
 
-    return objectArray!.filter(
+    return sourceArray!.filter(
       (obj: T) => finalFilterPredicate.apply(obj)
-    );
-  }
-
-
-  /**
-   *    Returns a new array using {@code objectArray} as source, adding from the result the elements which property
-   * {@code key} contains any of values included in {@code keyValuesToKeepIfFound}.
-   *
-   * <pre>
-   * Example:
-   *
-   *   interface User {
-   *      id: number;
-   *      name: string;
-   *   }
-   *   const u1 = { id: 1, description: 'user1' } as User;
-   *   const u2 = { id: 2, description: 'user2' } as User;
-   *   const u3 = { id: 3, description: 'user3' } as User;
-   *
-   *   // Will return [u2, u3]
-   *   ArrayUtil.takeWhileByKey(
-   *      [u1, u2],
-   *      'id',
-   *      [2, 3]
-   *   );
-   * </pre>
-   *
-   * @param objectArray
-   *    Array to filter provided property values
-   * @param key
-   *    Property used to find given values to filter
-   * @param keyValuesToKeepIfFound
-   *    Key values used to know which object instances will be added in the result
-   *
-   * @return empty array if {@code objectArray} or {@code keyValuesToKeepIfFound} has no elements or no one is found in
-   *         {@code keyValuesToKeepIfFound},
-   *         a new array with the elements of {@code objectArray} which property {@code key} contains any of values
-   *         included in {@code valuesOfKeyToKeepIfFound} otherwise
-   */
-  static takeWhileByKey = <T, K extends keyof T>(objectArray: NullableOrUndefined<T[]>,
-                                                 key: K,
-                                                 keyValuesToKeepIfFound: NullableOrUndefined<T[K][]>): T[] => {
-    if (this.isEmpty(objectArray) ||
-        this.isEmpty(keyValuesToKeepIfFound)) {
-      return [];
-    }
-    return objectArray!.filter(
-      (obj: T) => -1 !== keyValuesToKeepIfFound!.indexOf(obj[key])
     );
   }
 

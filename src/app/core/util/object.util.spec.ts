@@ -1,6 +1,5 @@
 import { ObjectUtil } from '@app-core/util';
 import { FFunction0, Function0 } from '@app-core/types/function';
-import * as _ from 'lodash';
 
 /**
  * To invoke only this test:
@@ -28,7 +27,7 @@ describe('ObjectUtil', () => {
     });
 
 
-    it('when one of the provided values is null or undefined then false will be returned', () => {
+    it('when one of the provided values is null or undefined then false is returned', () => {
       let a, b;
 
       expect(ObjectUtil.equals(a, null)).toBeFalse();
@@ -68,9 +67,9 @@ describe('ObjectUtil', () => {
 
 
     it('when comparing objects without equals method then verifies their equivalence based on their own', () => {
-      const role1 = { id: 10, description: 'description1' } as Role;
-      const role2 = { id: 11, description: 'description2' } as Role;
-      const role3 = { id: 10, description: 'description1' } as Role;
+      const role1 = { id: 10, name: 'name1' } as Role;
+      const role2 = { id: 11, name: 'name2' } as Role;
+      const role3 = { id: 10, name: 'name1' } as Role;
 
       expect(ObjectUtil.equals(role1, role2)).toBeFalse();
       expect(ObjectUtil.equals(role2, role1)).toBeFalse();
@@ -85,7 +84,7 @@ describe('ObjectUtil', () => {
 
   describe('getOrElse', () => {
 
-    it('when valueToVerify is neither null not undefined then such one is returned', () => {
+    it('when valueToVerify is neither null nor undefined then such one is returned', () => {
       const intValue = 11;
       const stringValue = 'abd';
 
@@ -99,7 +98,7 @@ describe('ObjectUtil', () => {
     });
 
 
-    it('when valueToVerify is null or undefined and defaultValue is a value then defaultValue will be returned', () => {
+    it('when valueToVerify is null or undefined and defaultValue is a value then defaultValue is returned', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
@@ -111,7 +110,7 @@ describe('ObjectUtil', () => {
     });
 
 
-    it('when valueToVerify is null or undefined and defaultValue is a TFunction0 then defaultValue will be returned', () => {
+    it('when valueToVerify is null or undefined and defaultValue is a TFunction0 then defaultValue is returned', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
@@ -129,6 +128,58 @@ describe('ObjectUtil', () => {
 
 
 
+  describe('isNullOrUndefined', () => {
+
+    it('when valueToVerify is null or undefined then true is returned', () => {
+      let undefinedVariable;
+      let nullVariable = null;
+
+      expect(ObjectUtil.isNullOrUndefined(undefined)).toBeTrue();
+      expect(ObjectUtil.isNullOrUndefined(null)).toBeTrue();
+      expect(ObjectUtil.isNullOrUndefined(undefinedVariable)).toBeTrue();
+      expect(ObjectUtil.isNullOrUndefined(nullVariable)).toBeTrue();
+    });
+
+
+    it('when valueToVerify is neither null nor undefined then false is returned', () => {
+      const intValue = 11;
+      const stringValue = 'abd';
+
+      expect(ObjectUtil.isNullOrUndefined(true)).toBeFalse();
+      expect(ObjectUtil.isNullOrUndefined(intValue)).toBeFalse();
+      expect(ObjectUtil.isNullOrUndefined(stringValue)).toBeFalse();
+    });
+
+  });
+
+
+
+  describe('nonNullOrUndefined', () => {
+
+    it('when valueToVerify is null or undefined then false is returned', () => {
+      let undefinedVariable;
+      let nullVariable = null;
+
+      expect(ObjectUtil.nonNullOrUndefined(undefined)).toBeFalse();
+      expect(ObjectUtil.nonNullOrUndefined(null)).toBeFalse();
+      expect(ObjectUtil.nonNullOrUndefined(undefinedVariable)).toBeFalse();
+      expect(ObjectUtil.nonNullOrUndefined(nullVariable)).toBeFalse();
+    });
+
+
+    it('when valueToVerify is neither null nor undefined then true is returned', () => {
+      const intValue = 11;
+      const stringValue = 'abd';
+
+      expect(ObjectUtil.nonNullOrUndefined(true)).toBeTrue();
+      expect(ObjectUtil.nonNullOrUndefined(intValue)).toBeTrue();
+      expect(ObjectUtil.nonNullOrUndefined(stringValue)).toBeTrue();
+    });
+
+  });
+
+
+
   describe('rawEquals', () => {
 
     it('when both values are null or undefined then true is be returned', () => {
@@ -137,7 +188,7 @@ describe('ObjectUtil', () => {
     });
 
 
-    it('when one of the provided values is null or undefined then false will be returned', () => {
+    it('when one of the provided values is null or undefined then false is returned', () => {
       let a, b;
 
       expect(ObjectUtil.rawEquals(a, null)).toBeFalse();
@@ -164,15 +215,15 @@ describe('ObjectUtil', () => {
 
 
     it('when comparing objects then they are compared by their own', () => {
-      const user1 = new User(10, 'description1');
-      const user2 = new User(11, 'description2');
-      const user3 = new User(10, 'description1');
+      const user1 = new User(10, 'name1');
+      const user2 = new User(11, 'name2');
+      const user3 = new User(10, 'name1');
 
-      const role1 = { id: 10, description: 'description1' } as Role;
-      const role2 = { id: 11, description: 'description2' } as Role;
-      const role3 = { id: 10, description: 'description1' } as Role;
+      const role1 = { id: 10, name: 'name1' } as Role;
+      const role2 = { id: 11, name: 'name2' } as Role;
+      const role3 = { id: 10, name: 'name1' } as Role;
 
-      const rawRole1 = { id: 10, description: 'description1' };
+      const rawRole1 = { id: 10, name: 'name1' };
 
       expect(ObjectUtil.rawEquals(user1, user2)).toBeFalse();
       expect(ObjectUtil.rawEquals(user2, user1)).toBeFalse();
@@ -199,11 +250,11 @@ describe('ObjectUtil', () => {
   // Used only for testing purpose
   class User {
     private _id: number;
-    private _description: string;
+    private _name: string;
 
-    constructor(id: number, description: string) {
+    constructor(id: number, name: string) {
       this._id = id;
-      this._description = description;
+      this._name = name;
     }
 
     get id(): number {
@@ -213,15 +264,15 @@ describe('ObjectUtil', () => {
       this._id = id;
     }
 
-    get description(): string {
-      return this._description;
+    get name(): string {
+      return this._name;
     }
-    set description(description: string) {
-      this._description = description;
+    set name(name: string) {
+      this._name = name;
     }
 
     equals = (other?: User | null): boolean =>
-      _.isNil(other)
+      ObjectUtil.isNullOrUndefined(other)
         ? false
         : this.id === other.id;
   }
@@ -229,7 +280,7 @@ describe('ObjectUtil', () => {
 
   interface Role {
     id: number;
-    description: string;
+    name: string;
   }
 
 });

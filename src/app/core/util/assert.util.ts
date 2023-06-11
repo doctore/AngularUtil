@@ -1,7 +1,7 @@
+import { ObjectUtil } from '@app-core/util';
 import { Nullable, NullableOrUndefined } from '@app-core/types';
 import { Function0, isFFunction0, TFunction0 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
-import * as _ from 'lodash';
 
 /**
  * Helper functions to validate given information.
@@ -52,7 +52,7 @@ export class AssertUtil {
 
   static notNullOrUndefined(value: NullableOrUndefined<any>,
                             errorSupplierOrMessage?: Nullable<TFunction0<Error> | string>): boolean {
-    if (!_.isNil(value)) {
+    if (ObjectUtil.nonNullOrUndefined(value)) {
       return true;
     }
     if (Function0.isFunction(errorSupplierOrMessage)) {

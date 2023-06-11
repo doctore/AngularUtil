@@ -11,7 +11,7 @@ import {
   Function2,
   Function3,
   Function4,
-  Function5
+  Function5, TFunction2
 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
@@ -305,6 +305,150 @@ describe('Try', () => {
 
       expect(Try.failure(referenceError).isSuccess()).toBeFalse();
       expect(Try.failure(referenceError).getError()).toEqual(referenceError);
+    });
+
+  });
+
+
+
+  describe('ap', () => {
+
+    it('when given Try is null or undefined then this Try is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const sumValues: FFunction2<number, number, number> =
+        (n1: number, n2: number): number => n1 + n2;
+
+      const mergeErrors: TFunction2<Error, Error, Error> =
+        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+
+      const sumValuesSpy = jasmine.createSpy('sumValues', sumValues);
+      const mergeErrorsSpy = jasmine.createSpy('mergeErrors', mergeErrors);
+
+      const successTry = Try.success(11);
+      const failureTry = Try.failure(illegalArgumentError);
+
+      // @ts-ignore
+      expect(successTry.ap(null, mergeErrorsSpy, sumValuesSpy)).toEqual(successTry);
+      // @ts-ignore
+      expect(successTry.ap(undefined, mergeErrorsSpy, sumValuesSpy)).toEqual(successTry);
+
+      // @ts-ignore
+      expect(failureTry.ap(null, mergeErrorsSpy, sumValuesSpy)).toEqual(failureTry);
+      // @ts-ignore
+      expect(failureTry.ap(undefined, mergeErrorsSpy, sumValuesSpy)).toEqual(failureTry);
+    });
+
+
+    it('when given Try and this one are Failure then mapperFailure is invoked and mapperSuccess is not', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const sumValues: FFunction2<number, number, number> =
+        (n1: number, n2: number): number => n1 + n2;
+
+      const mergeErrors: TFunction2<Error, Error, Error> =
+        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+
+      const sumValuesSpy = jasmine.createSpy('sumValues', sumValues);
+      const mergeErrorsSpy = jasmine.createSpy('mergeErrors', mergeErrors);
+
+      const t1: Try<number> = Try.failure(illegalArgumentError);
+      const t2: Try<number> = Try.failure(illegalArgumentError);
+
+      t1.ap(t2, mergeErrorsSpy, sumValuesSpy);
+
+      expect(sumValuesSpy.calls.count()).toBe(0);
+      expect(mergeErrorsSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when given Try and this one are Success then mapperSuccess is invoked and mapperFailure is not', () => {
+      const sumValues: FFunction2<number, number, number> =
+        (n1: number, n2: number): number => n1 + n2;
+
+      const mergeErrors: TFunction2<Error, Error, Error> =
+        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+
+      const sumValuesSpy = jasmine.createSpy('sumValues', sumValues);
+      const mergeErrorsSpy = jasmine.createSpy('mergeErrors', mergeErrors);
+
+      const t1 = Try.success(11);
+      const t2 = Try.success(19);
+
+      t1.ap(t2, mergeErrorsSpy, sumValuesSpy);
+
+      expect(sumValuesSpy.calls.count()).toBe(1);
+      expect(mergeErrorsSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when only of the Try is Failure then Failure is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const sumValues: FFunction2<number, number, number> =
+        (n1: number, n2: number): number => n1 + n2;
+
+      const mergeErrors: TFunction2<Error, Error, Error> =
+        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+
+      const successTry = Try.success(11);
+      const failureTry = Try.failure<number>(illegalArgumentError);
+
+      const successApFailureResult = successTry.ap(failureTry, mergeErrors, sumValues);
+      const failureApFailureResult = failureTry.ap(successTry, mergeErrors, sumValues);
+
+      expect(successApFailureResult.isSuccess()).toBeFalse();
+      expect(successApFailureResult.getError()).toEqual(illegalArgumentError);
+
+      expect(failureApFailureResult.isSuccess()).toBeFalse();
+      expect(failureApFailureResult.getError()).toEqual(illegalArgumentError);
+    });
+
+
+    it('when given Try and this one are Failure then mapperFailure result is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+      const syntaxError = new SyntaxError('SyntaxError: there was an error');
+
+      const sumValues: FFunction2<number, number, number> =
+        (n1: number, n2: number): number => n1 + n2;
+
+      const mergeErrors: TFunction2<Error, Error, Error> =
+        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+
+      const t1 = Try.failure<number>(illegalArgumentError);
+      const t2 = Try.failure<number>(syntaxError);
+
+      const t1Apt2 = t1.ap(t2, mergeErrors, sumValues);
+      const t2Apt1 = t2.ap(t1, mergeErrors, sumValues);
+
+      expect(t1Apt2.isSuccess()).toBeFalse();
+      expect(t1Apt2.getError() instanceof Error).toBeTrue();
+      expect(t1Apt2.getError().message).toEqual(illegalArgumentError.message + syntaxError.message);
+
+      expect(t2Apt1.isSuccess()).toBeFalse();
+      expect(t2Apt1.getError() instanceof Error).toBeTrue();
+      expect(t2Apt1.getError().message).toEqual(syntaxError.message + illegalArgumentError.message);
+    });
+
+
+    it('when given Try and this one are Success then mapperSuccess result is returned', () => {
+      const sumValues: FFunction2<number, number, number> =
+        (n1: number, n2: number): number => n1 + n2;
+
+      const mergeErrors: TFunction2<Error, Error, Error> =
+        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+
+      const t1 = Try.success(11);
+      const t2 = Try.success(19);
+
+      const t1Apt2 = t1.ap(t2, mergeErrors, sumValues);
+      const t2Apt1 = t2.ap(t1, mergeErrors, sumValues);
+
+      expect(t1Apt2.isSuccess()).toBeTrue();
+      expect(t1Apt2.get()).toEqual(30);
+
+      expect(t2Apt1.isSuccess()).toBeTrue();
+      expect(t2Apt1.get()).toEqual(30);
     });
 
   });

@@ -31,15 +31,15 @@ export class ObjectUtil {
    *
    *   class User {
    *     public id: number;
-   *     public description: string;
+   *     public name: string;
    *
-   *     constructor(id: number, description: string) {
+   *     constructor(id: number, name: string) {
    *       this.id = id;
-   *       this.description = description;
+   *       this.name = name;
    *     }
    *
    *     equals = (other?: User | null): boolean =>
-   *       _.isNil(other)
+   *       ObjectUtil.isNullOrUndefined(other)
    *         ? false
    *         : this.id === other.id;
    *   }
@@ -67,14 +67,14 @@ export class ObjectUtil {
    */
   static equals = <T>(a: NullableOrUndefined<T>,
                       b: NullableOrUndefined<T>): boolean => {
-    if ((_.isNil(a) && !_.isNil(b)) ||
-        (!_.isNil(a) && _.isNil(b))) {
+    if ((this.isNullOrUndefined(a) && this.nonNullOrUndefined(b)) ||
+        (this.nonNullOrUndefined(a) && this.isNullOrUndefined(b))) {
       return false;
     }
     if ('object' === typeof a) {
 
       // @ts-ignore
-      return !_.isNil(a) && 'function' === typeof a['equals']
+      return this.nonNullOrUndefined(a) && 'function' === typeof a['equals']
 
         // @ts-ignore
         ? a['equals'](b)
@@ -128,7 +128,7 @@ export class ObjectUtil {
 
   static getOrElse<T>(valueToVerify: NullableOrUndefined<T>,
                       defaultValue: TFunction0<T> | T): T {
-    if (!_.isNil(valueToVerify)) {
+    if (this.nonNullOrUndefined(valueToVerify)) {
       return valueToVerify;
     }
     if (Function0.isFunction(defaultValue)) {
@@ -140,6 +140,32 @@ export class ObjectUtil {
     }
     return defaultValue;
   }
+
+
+  /**
+   * Verifies if the provided {@code valueToVerify} is {@code null} or {@code undefined}.
+   *
+   * @param valueToVerify
+   *    Value to return if it is {@code undefined} or {@code null}
+   *
+   * @return {@code true} if the provided {@code valueToVerify} is {@code null} or {@code undefined},
+   *         {@code false} otherwise.
+   */
+  static isNullOrUndefined = (valueToVerify: any): valueToVerify is null | undefined =>
+    _.isNil(valueToVerify);
+
+
+  /**
+   * Verifies if the provided {@code valueToVerify} is {@code null} or {@code undefined}.
+   *
+   * @param valueToVerify
+   *    Value to return if it is {@code undefined} or {@code null}
+   *
+   * @return {@code true} if the provided {@code valueToVerify} is not {@code null} and not {@code undefined},
+   *         {@code false} otherwise.
+   */
+  static nonNullOrUndefined = <T>(valueToVerify: NullableOrUndefined<T>): valueToVerify is Exclude<typeof valueToVerify, null | undefined> =>
+    !this.isNullOrUndefined(valueToVerify);
 
 
   /**
@@ -162,18 +188,18 @@ export class ObjectUtil {
    *
    *   interface User {
    *     id: number;
-   *     description: string;
+   *     name: string;
    *   }
    *
    *   interface Role {
    *     id: number;
-   *     description: string;
+   *     name: string;
    *   }
    *
    *   // Will return true
    *   ObjectUtil.rawEquals(
-   *      { id: 10, description: 'description value' } as User,
-   *      { id: 10, description: 'description value' } as Role
+   *      { id: 10, name: 'name value' } as User,
+   *      { id: 10, name: 'name value' } as Role
    *   );
    * </pre>
    *
