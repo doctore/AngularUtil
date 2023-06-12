@@ -53,6 +53,17 @@ describe('ObjectUtil', () => {
     });
 
 
+    it('when comparing arrays then expected result is returned', () => {
+      expect(ObjectUtil.equals([1, 2], [2, 1])).toBeFalse();
+      expect(ObjectUtil.equals([2, 1, 3], [2, 3, 1])).toBeFalse();
+      expect(ObjectUtil.equals([1, 5, 7, 9], [1, 5, 7, 9])).toBeTrue();
+
+      expect(ObjectUtil.equals(['1', '2'], ['2', '1'])).toBeFalse();
+      expect(ObjectUtil.equals(['2', '1', '3'], ['2', '3', '1'])).toBeFalse();
+      expect(ObjectUtil.equals(['1', '5', '7', '9'], ['1', '5', '7', '9'])).toBeTrue();
+    });
+
+
     it('when comparing objects with equals method then the result of such method is returned', () => {
       const user1 = new User(10, 'user1');
       const user2 = new User(11, 'user2');
@@ -174,72 +185,6 @@ describe('ObjectUtil', () => {
       expect(ObjectUtil.nonNullOrUndefined(true)).toBeTrue();
       expect(ObjectUtil.nonNullOrUndefined(intValue)).toBeTrue();
       expect(ObjectUtil.nonNullOrUndefined(stringValue)).toBeTrue();
-    });
-
-  });
-
-
-
-  describe('rawEquals', () => {
-
-    it('when both values are null or undefined then true is be returned', () => {
-      expect(ObjectUtil.rawEquals(undefined, undefined)).toBeTrue();
-      expect(ObjectUtil.rawEquals(null, null)).toBeTrue();
-    });
-
-
-    it('when one of the provided values is null or undefined then false is returned', () => {
-      let a, b;
-
-      expect(ObjectUtil.rawEquals(a, null)).toBeFalse();
-      expect(ObjectUtil.rawEquals(null, b)).toBeFalse();
-
-      expect(ObjectUtil.rawEquals(12, null)).toBeFalse();
-      expect(ObjectUtil.rawEquals(null, 'test')).toBeFalse();
-    });
-
-
-    it('when comparing native values then expected result is returned', () => {
-      expect(ObjectUtil.rawEquals(1, 2)).toBeFalse();
-      expect(ObjectUtil.rawEquals(2, 1)).toBeFalse();
-      expect(ObjectUtil.rawEquals(1, 1)).toBeTrue();
-
-      expect(ObjectUtil.rawEquals('1', '2')).toBeFalse();
-      expect(ObjectUtil.rawEquals('2', '1')).toBeFalse();
-      expect(ObjectUtil.rawEquals('1', '1')).toBeTrue();
-
-      expect(ObjectUtil.rawEquals(true, false)).toBeFalse();
-      expect(ObjectUtil.rawEquals(false, true)).toBeFalse();
-      expect(ObjectUtil.rawEquals(true, true)).toBeTrue();
-    });
-
-
-    it('when comparing objects then they are compared by their own', () => {
-      const user1 = new User(10, 'name1');
-      const user2 = new User(11, 'name2');
-      const user3 = new User(10, 'name1');
-
-      const role1 = { id: 10, name: 'name1' } as Role;
-      const role2 = { id: 11, name: 'name2' } as Role;
-      const role3 = { id: 10, name: 'name1' } as Role;
-
-      const rawRole1 = { id: 10, name: 'name1' };
-
-      expect(ObjectUtil.rawEquals(user1, user2)).toBeFalse();
-      expect(ObjectUtil.rawEquals(user2, user1)).toBeFalse();
-
-      expect(ObjectUtil.rawEquals(role1, role2)).toBeFalse();
-      expect(ObjectUtil.rawEquals(role2, role1)).toBeFalse();
-
-      // IMPORTANT: This is because User's properties are not public
-      expect(ObjectUtil.rawEquals(user1, user3)).toBeFalse();
-      expect(ObjectUtil.rawEquals(user3, user1)).toBeFalse();
-
-      expect(ObjectUtil.rawEquals(role1, role3)).toBeTrue();
-      expect(ObjectUtil.rawEquals(role3, role1)).toBeTrue();
-
-      expect(ObjectUtil.rawEquals(rawRole1, role1)).toBeTrue();
-      expect(ObjectUtil.rawEquals(role1, rawRole1)).toBeTrue();
     });
 
   });

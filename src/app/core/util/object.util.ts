@@ -16,15 +16,13 @@ export class ObjectUtil {
    * Returns {@code true} if {@code a} is equals to {@code b}, {@link false} otherwise.
    *
    * @apiNote
-   *    Due to Typescript is not a real strongly typed language, the behavior of this method could be the same
-   * that {@link ObjectUtil#rawEquals}.
+   *    This method supports comparing arrays, array buffers, booleans, date objects, error objects, maps, numbers,
+   * {@link Object} objects, regexes, sets, strings, symbols, and typed arrays.
    * <p>
-   *    If we are comparing Object objects, it will use its {@code equals} method if it exists, otherwise verifies
-   * if they are equivalent based on their own.
+   *    Comparing {@link Object} objects tries to find if the instance has defined the {@code equals} method, using it
+   * if exists. Otherwise, are compared by their own, not inherited, enumerable properties.
    * <p>
-   *    However, in definition of classes with private and/or protected properties, it is strongly recommended
-   * to include the {@code equals} method to avoid false negatives, since the internal method will not be able
-   * to access to their content.
+   *    Functions and DOM nodes are compared by strict equality, i.e. ===.
    *
    * <pre>
    * Example:
@@ -71,16 +69,15 @@ export class ObjectUtil {
         (this.nonNullOrUndefined(a) && this.isNullOrUndefined(b))) {
       return false;
     }
-    if ('object' === typeof a) {
+    if (this.nonNullOrUndefined(a) &&
+        'object' === typeof a &&
+        // @ts-ignore
+        'function' === typeof a['equals']) {
 
       // @ts-ignore
-      return this.nonNullOrUndefined(a) && 'function' === typeof a['equals']
-
-        // @ts-ignore
-        ? a['equals'](b)
-        : _.isEqual(a, b);
+      return a['equals'](b);
     }
-    return a === b;
+    return _.isEqual(a, b);
   }
 
 
@@ -166,53 +163,5 @@ export class ObjectUtil {
    */
   static nonNullOrUndefined = <T>(valueToVerify: NullableOrUndefined<T>): valueToVerify is Exclude<typeof valueToVerify, null | undefined> =>
     !this.isNullOrUndefined(valueToVerify);
-
-
-  /**
-   * Performs a deep comparison between two values to determine if they are equivalent.
-   *
-   * @apiNote
-   *    This method supports comparing arrays, array buffers, booleans, date objects, error objects, maps, numbers,
-   * Object objects, regexes, sets, strings, symbols, and typed arrays. Object objects are compared by their own,
-   * not inherited, enumerable properties. Functions and DOM nodes are compared by strict equality, i.e. ===.
-   * <p>
-   *    Due to Typescript is not a real strongly typed language, this function will return {@code true} if both
-   * values are {@code null} or {@code undefined}.
-   * <p>
-   *    Comparing Object objects with private and/or protected properties will return {@code false}, regardless
-   * of whether they all have the same values, because the method will not be able to access them. Define an
-   * {@code equals} method in their class definition and use {@link ObjectUtil#equals} as alternative.
-   *
-   * <pre>
-   * Example:
-   *
-   *   interface User {
-   *     id: number;
-   *     name: string;
-   *   }
-   *
-   *   interface Role {
-   *     id: number;
-   *     name: string;
-   *   }
-   *
-   *   // Will return true
-   *   ObjectUtil.rawEquals(
-   *      { id: 10, name: 'name value' } as User,
-   *      { id: 10, name: 'name value' } as Role
-   *   );
-   * </pre>
-   *
-   * @param a
-   *    First value to compare
-   * @param b
-   *    First value to compare
-   *
-   * @return {@code true} if {@code a} is equals to {@code b},
-   *         {@code false} otherwise.
-   */
-  static rawEquals = (a: NullableOrUndefined<any>,
-                      b: NullableOrUndefined<any>): boolean =>
-    _.isEqual(a, b);
 
 }
