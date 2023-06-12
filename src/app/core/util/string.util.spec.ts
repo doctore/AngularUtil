@@ -21,7 +21,6 @@ describe('StringUtil', () => {
   describe('isEmpty', () => {
 
     it('when given inputToCheck is null or undefined then true is returned', () => {
-      expect(StringUtil.isEmpty()).toBeTrue();
       expect(StringUtil.isEmpty(undefined)).toBeTrue();
       expect(StringUtil.isEmpty(null)).toBeTrue();
     });

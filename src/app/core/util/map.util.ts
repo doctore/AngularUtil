@@ -1,6 +1,6 @@
 import { Function3, TFunction3 } from '@app-core/types/function';
 import { Predicate2, TPredicate2} from '@app-core/types/predicate';
-import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
+import { Nullable, NullableOrUndefined, OrUndefined, Tuple2 } from '@app-core/types';
 import { ObjectUtil } from '@app-core/util';
 
 /**
@@ -68,16 +68,16 @@ export class MapUtil {
    *
    * @return {@code undefined} if {@code sourceMap} has no elements, {@code filterPredicate} is {@code null} or {@code undefined}
    *         or no one verifies provided {@code filterPredicate}.
-   *         Otherwise, the first element that verifies {@code filterPredicate}.
+   *         Otherwise, {@link Tuple2} with the first element that verifies {@code filterPredicate}.
    */
   static find = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                       filterPredicate: TPredicate2<K, V>): OrUndefined<[K, V]> => {
+                       filterPredicate: TPredicate2<K, V>): OrUndefined<Tuple2<K, V>> => {
     if (!this.isEmpty(sourceMap) &&
         ObjectUtil.nonNullOrUndefined(filterPredicate)) {
       const finalFilterPredicate = Predicate2.of(filterPredicate);
       for (let [key, value] of sourceMap!) {
         if (finalFilterPredicate.apply(key, value)) {
-          return [key, value];
+          return Tuple2.of(key, value);
         }
       }
     }

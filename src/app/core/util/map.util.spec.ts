@@ -1,7 +1,7 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
 import { FFunction3 } from '@app-core/types/function';
 import { Predicate2 } from '@app-core/types/predicate';
-import { NullableOrUndefined } from '@app-core/types';
+import { NullableOrUndefined, Tuple2 } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -178,10 +178,13 @@ describe('MapUtil', () => {
       sourceMap.set(r3.id, r3);
 
       const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+      const expectedResult = Tuple2.of(r1.id, r1);
 
-      const expectedResult: [number, Role] = [r1.id, r1];
+      const result = MapUtil.find(sourceMap, isKeyAndRoleIdOdd);
 
-      expect(MapUtil.find(sourceMap, isKeyAndRoleIdOdd)).toEqual(expectedResult);
+      expect(result).toBeDefined();
+      expect(result!._1).toEqual(expectedResult._1);
+      expect(result!._2).toEqual(expectedResult._2);
     });
 
 
@@ -198,10 +201,13 @@ describe('MapUtil', () => {
       sourceMap.set(u4.id, u4);
 
       const isKeyAndUserIdEven: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 0 == k % 2 && 0 == user.id % 2);
+      const expectedResult = Tuple2.of(u2.id, u2);
 
-      const expectedResult: [number, User] = [u2.id, u2];
+      const result = MapUtil.find(sourceMap, isKeyAndUserIdEven);
 
-      expect(MapUtil.find(sourceMap, isKeyAndUserIdEven)).toEqual(expectedResult);
+      expect(result).toBeDefined();
+      expect(result!._1).toEqual(expectedResult._1);
+      expect(result!._2).toEqual(expectedResult._2);
     });
 
   });
