@@ -12,16 +12,48 @@ export class StringUtil {
 
 
   /**
-   * Verifies if the given {@code input} is an empty string.
+   * Checks if the given {@code input} is {@code null}, {@code undefined}, an empty string ('') or whitespace.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:              Result:
+   *    null                     true
+   *    undefined                true
+   *    ''                       true
+   *    '   '                    true
+   * </pre>
    *
    * @param inputToCheck
    *    String to verify
    *
-   * @return {@code true} if {@code input} is {@code undefined}, {@code null} or has only blank characters
+   * @return {@code true} if {@code input} is {@code undefined}, {@code null} or has no characters
+   */
+  static isBlank = (inputToCheck: NullableOrUndefined<string>): boolean =>
+    ObjectUtil.isNullOrUndefined(inputToCheck) ||
+      0 == inputToCheck!.trim().length;
+
+
+  /**
+   * Checks if the given {@code input} is {@code null}, {@code undefined} or an empty string ('').
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:              Result:
+   *    null                     true
+   *    undefined                true
+   *    ''                       true
+   *    '   '                    false
+   * </pre>
+   *
+   * @param inputToCheck
+   *    String to verify
+   *
+   * @return {@code true} if {@code input} is {@code undefined}, {@code null} or has no characters
    */
   static isEmpty = (inputToCheck: NullableOrUndefined<string>): boolean =>
-    ObjectUtil.isNullOrUndefined(inputToCheck)
-      ? true
-      : 0 == inputToCheck.trim().length;
+    ObjectUtil.isNullOrUndefined(inputToCheck) ||
+      0 == inputToCheck.length;
 
 }

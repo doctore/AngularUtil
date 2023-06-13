@@ -231,6 +231,15 @@ describe('ArrayUtil', () => {
     });
 
 
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then empty Optional is returned', () => {
+      // @ts-ignore
+      expect(ArrayUtil.findOptional([1], undefined).isPresent()).toBeFalse();
+
+      // @ts-ignore
+      expect(ArrayUtil.findOptional([1], null).isPresent()).toBeFalse();
+    });
+
+
     it('using interfaces, when there is no element that matches provided filter then empty Optional is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
@@ -257,7 +266,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using interfaces, when there is an element that matches provided filter then expected element is returned', () => {
+    it('using interfaces, when there is an element that matches provided filter then Optional containing the element is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
@@ -275,7 +284,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using classes, when there is an element that matches provided filter then expected element is returned', () => {
+    it('using classes, when there is an element that matches provided filter then Optional containing the element is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');

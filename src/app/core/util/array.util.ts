@@ -37,7 +37,8 @@ export class ArrayUtil {
    * @param partialFunction
    *    {@link PartialFunction} to filter and transform elements of {@code sourceArray}
    *
-   * @return {@link Collection}
+   * @return new array from applying the given {@link PartialFunction} to each element of {@code sourceArray}
+   *         on which it is defined and collecting the results
    *
    * @throws {@link IllegalArgumentError} if {@code partialFunction} is {@code null} or {@code undefined} with a not empty {@code sourceArray}
    */
@@ -154,7 +155,8 @@ export class ArrayUtil {
 
 
   /**
-   * Returns from the given {@code sourceArray} the first element that verifies the provided {@code filterPredicate}.
+   *    Returns an {@link Optional} containing the first element of the given {@code sourceArray} hat verifies the provided
+   * {@code filterPredicate}, {@link Optional#empty} otherwise.
    *
    * <pre>
    * Example:

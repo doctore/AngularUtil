@@ -36,7 +36,6 @@ Different new types related with functional programming like:
 * [Generic subject](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/subject/generic-subject.type.ts) wrapper of RxJS [Subject](https://rxjs.dev/guide/subject) adding several customizations.
 * [Optional](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/optional.type.ts) a container object which may or may not contain a non-null value.
 * [Try](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/try.type.ts) computation representation that may either result in an error, or return a successfully computed value.
-* [Tuple](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/tuple.type.ts) immutable value that contains a fixed number of elements, each with its own type.
 
 
 ### Util classes

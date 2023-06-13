@@ -18,21 +18,36 @@ describe('StringUtil', () => {
 
 
 
-  describe('isEmpty', () => {
+  describe('isBlank', () => {
 
-    it('when given inputToCheck is null or undefined then true is returned', () => {
-      expect(StringUtil.isEmpty(undefined)).toBeTrue();
-      expect(StringUtil.isEmpty(null)).toBeTrue();
+    it('when given inputToCheck is null, undefined, empty or whitespace then true is returned', () => {
+      expect(StringUtil.isBlank(undefined)).toBeTrue();
+      expect(StringUtil.isBlank(null)).toBeTrue();
+      expect(StringUtil.isBlank('')).toBeTrue();
+      expect(StringUtil.isBlank('    ')).toBeTrue();
     });
 
 
-    it('when given inputToCheck is empty or has only blank characters then true is returned', () => {
+    it('when given inputToCheck is not empty and no whitespace then false is returned', () => {
+      expect(StringUtil.isBlank('112')).toBeFalse();
+      expect(StringUtil.isBlank('  a  ')).toBeFalse();
+    });
+
+  });
+
+
+
+  describe('isEmpty', () => {
+
+    it('when given inputToCheck is null, undefined or empty then true is returned', () => {
+      expect(StringUtil.isEmpty(undefined)).toBeTrue();
+      expect(StringUtil.isEmpty(null)).toBeTrue();
       expect(StringUtil.isEmpty('')).toBeTrue();
-      expect(StringUtil.isEmpty('    ')).toBeTrue();
     });
 
 
     it('when given inputToCheck is not empty then false is returned', () => {
+      expect(StringUtil.isEmpty('    ')).toBeFalse();
       expect(StringUtil.isEmpty('112')).toBeFalse();
       expect(StringUtil.isEmpty('  a  ')).toBeFalse();
     });

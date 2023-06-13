@@ -1,7 +1,7 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
-import { FFunction3 } from '@app-core/types/function';
+import { FFunction3, PartialFunction } from '@app-core/types/function';
 import { Predicate2 } from '@app-core/types/predicate';
-import { NullableOrUndefined, Tuple2 } from '@app-core/types';
+import { NullableOrUndefined, Optional } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -16,6 +16,62 @@ describe('MapUtil', () => {
 
     it('when trying to create a new instance then an error is thrown', () => {
       expect(() => new MapUtil()).toThrowError(SyntaxError);
+    });
+
+  });
+
+
+
+  describe('collect', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      let emptyMap = new Map<number, string>();
+      const keyAndValueLengthForOdd: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 1 == k % 2,
+          ([k, v]: [number, string]) => [k, v.length]
+        );
+
+      const expectedResult = new Map<number, number>();
+
+      expect(MapUtil.collect(null, keyAndValueLengthForOdd)).toEqual(expectedResult);
+      expect(MapUtil.collect(undefined, keyAndValueLengthForOdd)).toEqual(expectedResult);
+      expect(MapUtil.collect(emptyMap, keyAndValueLengthForOdd)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.collect(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.collect(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'Hola');
+
+      const keyAndValueLengthForOdd: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 1 == k % 2,
+          ([k, v]: [number, string]) => [k, v.length]
+        );
+
+      const expectedResult = new Map<number, number>();
+      expectedResult.set(1, 2);
+      expectedResult.set(3, 4);
+
+      verifyMaps(
+        MapUtil.collect(sourceMap, keyAndValueLengthForOdd),
+        expectedResult
+      );
     });
 
   });
@@ -178,13 +234,13 @@ describe('MapUtil', () => {
       sourceMap.set(r3.id, r3);
 
       const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
-      const expectedResult = Tuple2.of(r1.id, r1);
+      const expectedResult: [number, Role] = [r1.id, r1];
 
       const result = MapUtil.find(sourceMap, isKeyAndRoleIdOdd);
 
       expect(result).toBeDefined();
-      expect(result!._1).toEqual(expectedResult._1);
-      expect(result!._2).toEqual(expectedResult._2);
+      expect(result![0]).toEqual(expectedResult[0]);
+      expect(result![1]).toEqual(expectedResult[1]);
     });
 
 
@@ -201,13 +257,116 @@ describe('MapUtil', () => {
       sourceMap.set(u4.id, u4);
 
       const isKeyAndUserIdEven: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 0 == k % 2 && 0 == user.id % 2);
-      const expectedResult = Tuple2.of(u2.id, u2);
+      const expectedResult: [number, User] = [u2.id, u2];
 
       const result = MapUtil.find(sourceMap, isKeyAndUserIdEven);
 
       expect(result).toBeDefined();
-      expect(result!._1).toEqual(expectedResult._1);
-      expect(result!._2).toEqual(expectedResult._2);
+      expect(result![0]).toEqual(expectedResult[0]);
+      expect(result![1]).toEqual(expectedResult[1]);
+    });
+
+  });
+
+
+
+  describe('findOptional', () => {
+
+    it('when given sourceMap is undefined, null or is an empty Map then empty Optional is returned', () => {
+      let emptyMap = new Map<number, number>();
+      const areKeyValueEven: Predicate2<number, number> = Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+
+      expect(MapUtil.findOptional(null, areKeyValueEven).isPresent()).toBeFalse();
+      expect(MapUtil.findOptional(undefined, areKeyValueEven).isPresent()).toBeFalse();
+      expect(MapUtil.findOptional(emptyMap, areKeyValueEven).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then empty Optional is returned', () => {
+      const sourceMap = new Map<number, number>();
+      sourceMap.set(11, 19);
+
+      // @ts-ignore
+      expect(MapUtil.findOptional(sourceMap, undefined).isPresent()).toBeFalse();
+
+      // @ts-ignore
+      expect(MapUtil.findOptional(sourceMap, null).isPresent()).toBeFalse();
+    });
+
+
+    it('using interfaces, when there is no element that matches provided filter then undefined is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      let sourceMap = new Map<number, Role>();
+      sourceMap.set(r1.id, r1);
+      sourceMap.set(r2.id, r2);
+      sourceMap.set(r3.id, r3);
+
+      const isKeyAndIdGreaterThan10: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 10 < k && 10 < role.id);
+
+      expect(MapUtil.findOptional(sourceMap, isKeyAndIdGreaterThan10).isPresent()).toBeFalse();
+    });
+
+
+    it('using classes, when there is no element that matches provided filter then undefined is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      let sourceMap = new Map<number, User>();
+      sourceMap.set(u1.id, u1);
+      sourceMap.set(u2.id, u2);
+      sourceMap.set(u3.id, u3);
+
+      const isKeyAndIdGreaterThan10: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 10 < k && 10 < user.id);
+
+      expect(MapUtil.findOptional(sourceMap, isKeyAndIdGreaterThan10).isPresent()).toBeFalse();
+    });
+
+
+    it('using interfaces, when there is an element that matches provided filter then expected element is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      let sourceMap = new Map<number, Role>();
+      sourceMap.set(r1.id, r1);
+      sourceMap.set(r2.id, r2);
+      sourceMap.set(r3.id, r3);
+
+      const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+      const expectedResult: Optional<[number, Role]> = Optional.of([r1.id, r1]);
+
+      const result = MapUtil.findOptional(sourceMap, isKeyAndRoleIdOdd);
+
+      expect(result.isPresent()).toBeTrue();
+      expect(result!.get()[0]).toEqual(expectedResult.get()[0]);
+      expect(result!.get()[1]).toEqual(expectedResult.get()[1]);
+    });
+
+
+    it('using classes, when there is an element that matches provided filter then expected element is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+      const u4 = new User(4, 'user4');
+
+      let sourceMap = new Map<number, User>();
+      sourceMap.set(u1.id, u1);
+      sourceMap.set(u2.id, u2);
+      sourceMap.set(u3.id, u3);
+      sourceMap.set(u4.id, u4);
+
+      const isKeyAndUserIdEven: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 0 == k % 2 && 0 == user.id % 2);
+      const expectedResult: Optional<[number, User]> = Optional.of([u2.id, u2]);
+
+      const result = MapUtil.findOptional(sourceMap, isKeyAndUserIdEven);
+
+      expect(result.isPresent()).toBeTrue();
+      expect(result!.get()[0]).toEqual(expectedResult.get()[0]);
+      expect(result!.get()[1]).toEqual(expectedResult.get()[1]);
     });
 
   });
