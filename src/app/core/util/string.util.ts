@@ -17,11 +17,12 @@ export class StringUtil {
    * <pre>
    * Example:
    *
-   *   Parameters:              Result:
-   *    null                     true
-   *    undefined                true
-   *    ''                       true
-   *    '   '                    true
+   *   Parameters:          Result:
+   *    null                 true
+   *    undefined            true
+   *    ''                   true
+   *    '   '                true
+   *    '  a '               false
    * </pre>
    *
    * @param inputToCheck
@@ -40,11 +41,12 @@ export class StringUtil {
    * <pre>
    * Example:
    *
-   *   Parameters:              Result:
-   *    null                     true
-   *    undefined                true
-   *    ''                       true
-   *    '   '                    false
+   *   Parameters:          Result:
+   *    null                 true
+   *    undefined            true
+   *    ''                   true
+   *    '   '                false
+   *    '  a '               false
    * </pre>
    *
    * @param inputToCheck
