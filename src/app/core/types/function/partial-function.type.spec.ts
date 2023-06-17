@@ -1,6 +1,6 @@
 import { NullableOrUndefined, Optional } from '@app-core/types';
-import { FFunction1, Function1, PartialFunction } from '@app-core/types/function';
-import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
+import { FFunction1, FFunction2, Function1, Function2, PartialFunction } from '@app-core/types/function';
+import { FPredicate1, FPredicate2, Predicate1, Predicate2 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -82,7 +82,7 @@ describe('PartialFunction', () => {
       expect(undefinedVerifierPF.apply(3)).toEqual(6);
 
       expect(PartialFunction.isPartialFunction(nullVerifierPF)).toBeTrue();
-      expect(undefinedVerifierPF.isDefinedAt(3)).toBeTrue();
+      expect(nullVerifierPF.isDefinedAt(3)).toBeTrue();
       expect(nullVerifierPF.apply(2)).toEqual(4);
     });
 
@@ -97,6 +97,8 @@ describe('PartialFunction', () => {
       const partialFunction = PartialFunction.of(isEven, multiply2);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
+      expect(partialFunction.isDefinedAt(2)).toBeTrue();
+      expect(partialFunction.isDefinedAt(3)).toBeFalse();
       expect(partialFunction.apply(2)).toEqual(4);
       expect(partialFunction.apply(3)).toEqual(6);
     });
@@ -112,11 +114,84 @@ describe('PartialFunction', () => {
       const partialFunction = PartialFunction.of(isEven, multiply2);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
+      expect(partialFunction.isDefinedAt(2)).toBeTrue();
+      expect(partialFunction.isDefinedAt(3)).toBeFalse();
       expect(partialFunction.apply(2)).toEqual(4);
       expect(partialFunction.apply(3)).toEqual(6);
     });
 
   });
+
+
+
+  describe('of2', () => {
+
+    it('when null or undefined mapper is given then an error is thrown', () => {
+      const isAllEven =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
+
+      // @ts-ignore
+      expect(() => PartialFunction.of2(isAllEven, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => PartialFunction.of2(isAllEven, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when null or undefined verifier is given then alwaysTrue Predicate2 will be used', () => {
+      const multiply2: FFunction2<number, number, [number, number]> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => [2 * n1!, 2 * n2!];
+
+      // @ts-ignore
+      const undefinedVerifierPF = PartialFunction.of2(undefined, multiply2);
+
+      // @ts-ignore
+      const nullVerifierPF = PartialFunction.of2(null, multiply2);
+
+      expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
+      expect(undefinedVerifierPF.isDefinedAt([2, 3])).toBeTrue();
+      expect(undefinedVerifierPF.apply([2, 3])).toEqual([4, 6]);
+
+      expect(PartialFunction.isPartialFunction(nullVerifierPF)).toBeTrue();
+      expect(nullVerifierPF.isDefinedAt([5, 7])).toBeTrue();
+      expect(nullVerifierPF.apply([5, 7])).toEqual([10, 14]);
+    });
+
+
+    it('when instances of FFunction2 and FPredicate2 are provided then a valid PartialFunction is returned', () => {
+      const isAllEven: FPredicate2<number, number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
+
+      const multiply2: FFunction2<number, number, [number, number]> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => [2 * n1!, 2 * n2!];
+
+      const partialFunction = PartialFunction.of2(isAllEven, multiply2);
+
+      expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
+      expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
+      expect(partialFunction.apply([2, 4])).toEqual([4, 8]);
+      expect(partialFunction.isDefinedAt([5, 7])).toBeFalse();
+      expect(partialFunction.apply([5, 7])).toEqual([10, 14]);
+    });
+
+
+    it('when instances of Function2 and Predicate2 are provided then a valid PartialFunction is returned', () => {
+      const isAllEven: Predicate2<NullableOrUndefined<number>, NullableOrUndefined<number>> =
+        Predicate2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2);
+
+      const multiply2: Function2<NullableOrUndefined<number>, NullableOrUndefined<number>, [number, number]> =
+        Function2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => [2 * n1!, 2 * n2!]);
+
+      const partialFunction = PartialFunction.of2(isAllEven, multiply2);
+
+      expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
+      expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
+      expect(partialFunction.apply([2, 4])).toEqual([4, 8]);
+      expect(partialFunction.isDefinedAt([5, 7])).toBeFalse();
+      expect(partialFunction.apply([5, 7])).toEqual([10, 14]);
+    });
+
+  });
+
 
 
   describe('andThen', () => {

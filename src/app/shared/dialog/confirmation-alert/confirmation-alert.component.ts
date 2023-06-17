@@ -4,10 +4,10 @@ import { CommonModule } from '@angular/common';
 import * as _ from 'lodash';
 
 /**
- *    Simple dialog to display tittle and message in a modal, sending events when the user clicks on secondary button {@code onCloseClick}
- * or primary one {@code onOkClick}.
+ *    Simple dialog to display tittle and message in a modal, sending events when the user clicks on secondary button `onCloseClick`
+ * or primary one `onOkClick`.
  *
- * {@code textSecondaryButton} and {@code textPrimaryButton} manages if 2, 1 or 0 buttons will be displayed at modal's footer.
+ * `textSecondaryButton` and `textPrimaryButton` manages if 2, 1 or 0 buttons will be displayed at modal's footer.
  *
  * Use cases:
  *
@@ -113,7 +113,7 @@ export class ConfirmationAlertComponent implements OnInit {
 
 
   /**
-   * If {@code textPrimaryButton} was defined, manages the click event of the primary button.
+   * If `textPrimaryButton` was defined, manages the click event of the primary button.
    */
   public onOkClick() {
     this.onOk.emit();
@@ -127,7 +127,7 @@ export class ConfirmationAlertComponent implements OnInit {
 
 
   /**
-   * If {@code textSecondaryButton} was defined, manages the click event of the secondary button.
+   * If `textSecondaryButton` was defined, manages the click event of the secondary button.
    */
   public onCloseClick() {
     this.onClose.emit();

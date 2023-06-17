@@ -6,9 +6,9 @@ import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
- *    A container object which may or may not contain a non-{@code null} value. If a value is present,
- * {@link Optional#isPresent} returns {@code true}. If no value is present, the object is considered <i>empty</i>
- * and {@link Optional#isPresent} returns {@code false}. *
+ *    A container object which may or may not contain a non-`null` value. If a value is present,
+ * {@link Optional#isPresent} returns `true`. If no value is present, the object is considered <i>empty</i>
+ * and {@link Optional#isPresent} returns `false`. *
  * <p>
  *    Additional methods that depend on the presence or absence of a contained value are provided, such as
  * {@link Optional#orElse} (returns a default value if no value is present) and {@link Optional#ifPresent} (performs
@@ -16,8 +16,8 @@ import { IllegalArgumentError } from '@app-core/errors';
  *
  * @apiNote
  *    {@link Optional} is primarily intended for use as a method return type where there is a clear need to represent
- * "no result," and where using {@code null} is likely to cause errors. A variable whose type is {@link Optional}
- * should never itself be {@code null}; it should always point to an {@link Optional} instance.
+ * "no result," and where using `null` is likely to cause errors. A variable whose type is {@link Optional}
+ * should never itself be `null`; it should always point to an {@link Optional} instance.
  *
  * @param <T>
  *    The type of the internal value
@@ -37,14 +37,14 @@ export class Optional<T> {
 
 
   /**
-   * Returns an {@link Optional} describing the given non-{@code null} value.
+   * Returns an {@link Optional} describing the given non-`null` value.
    *
    * @param value
-   *    The value to describe, which must be non-{@code null}
+   *    The value to describe, which must be non-`null`
    *
    * @return an {@link Optional} with the value present
    *
-   * @throws {@link IllegalArgumentError} if {@code value} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `value` is `null` or `undefined`
    */
   static of = <T>(value: T): Optional<T> => {
     AssertUtil.notNullOrUndefined(value);
@@ -53,14 +53,14 @@ export class Optional<T> {
 
 
   /**
-   *    Returns an {@link Optional} describing the given value, if non-{@code null} and
-   * non-{@code undefined}, otherwise returns an empty {@link Optional}.
+   *    Returns an {@link Optional} describing the given value, if non-`null` and
+   * non-`undefined`, otherwise returns an empty {@link Optional}.
    *
    * @param value
-   *    The possibly-{@code null} or possibly-{@code undefined} value to describe
+   *    The possibly-`null` or possibly-`undefined` value to describe
    *
    * @return an {@link Optional} with a present value if the specified value
-   *         is non-{@code null}, otherwise an empty {@link Optional}
+   *         is non-`null`, otherwise an empty {@link Optional}
    */
   static ofNullable = <T>(value?: Nullable<T>): Optional<T> =>
     ObjectUtil.isNullOrUndefined(value)
@@ -90,17 +90,17 @@ export class Optional<T> {
 
 
   /**
-   * Returns {@code true} if {@code other} is equal to this {@link Optional}, {@code false} otherwise.
+   * Returns `true` if `other` is equal to this {@link Optional}, `false` otherwise.
    *
    * @apiNote
    *    Due to we cannot know the type of generics in runtime, this function will return
-   * {@code true} when both internal values will be {@code null} or {@code undefined}
+   * `true` when both internal values will be `null` or `undefined`
    *
    * @param other
    *    {@link Optional} to compare
    *
-   * @return {@code true} if the {@code other} is equal to this {@link Optional},
-   *         {@code false} otherwise.
+   * @return `true` if the `other` is equal to this {@link Optional},
+   *         `false` otherwise.
    */
   equals = (other: Optional<T>): boolean => {
     if (ObjectUtil.isNullOrUndefined(other) ||
@@ -154,8 +154,8 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional} is not empty, returns the result of applying the {@link TFunction1} {@code ifNonEmpty}.
-   * Otherwise, evaluates the {@link TFunction0} {@code ifEmpty}.
+   *    If the {@link Optional} is not empty, returns the result of applying the {@link TFunction1} `ifNonEmpty`.
+   * Otherwise, evaluates the {@link TFunction0} `ifEmpty`.
    *
    * @param ifEmpty
    *    {@link TFunction0} to apply if this {@link Optional} is empty
@@ -164,8 +164,8 @@ export class Optional<T> {
    *
    * @return the result of applying the right function
    *
-   * @throws {@link IllegalArgumentError} if {@code ifEmpty} is {@code null} or {@code undefined} and this {@link Optional} is empty
-   *                                      or {@code ifNonEmpty} is {@code null} or {@code undefined} and this {@link Optional} is not empty
+   * @throws {@link IllegalArgumentError} if `ifEmpty` is `null` or `undefined` and this {@link Optional} is empty
+   *                                      or `ifNonEmpty` is `null` or `undefined` and this {@link Optional} is not empty
    */
   fold = <U>(ifEmpty: TFunction0<U>,
              ifNonEmpty: TFunction1<T, U>): U =>
@@ -182,9 +182,9 @@ export class Optional<T> {
    * @apiNote
    *    The preferred alternative to this method is {@link Optional#getOrElse}.
    *
-   * @return the non-{@code null} value described by this {@link Optional}
+   * @return the non-`null` value described by this {@link Optional}
    *
-   * @throws {@link IllegalArgumentError} if {@link Optional}'s value is {@code null}
+   * @throws {@link IllegalArgumentError} if {@link Optional}'s value is `null`
    */
   get = (): T => {
     AssertUtil.notNullOrUndefined(this.value);
@@ -193,12 +193,12 @@ export class Optional<T> {
 
 
   /**
-   * If the {@link Optional} is not empty, returns the value, {@code other} otherwise.
+   * If the {@link Optional} is not empty, returns the value, `other` otherwise.
    *
    * @param other
-   *    The value to be returned if {@link Optional}'s value is {@code null}
+   *    The value to be returned if {@link Optional}'s value is `null`
    *
-   * @return the {@link Optional}'s value if non-{@code null}, otherwise {@code other}
+   * @return the {@link Optional}'s value if non-`null`, otherwise `other`
    */
   getOrElse(other: T): T;
 
@@ -210,7 +210,7 @@ export class Optional<T> {
    * @param other
    *    {@link TFunction0} that produces a value to be returned
    *
-   * @return the {@link Optional}'s value if non-{@code null}, otherwise the result of {@code other}
+   * @return the {@link Optional}'s value if non-`null`, otherwise the result of `other`
    */
   getOrElse(other: TFunction0<T>): T;
 
@@ -246,7 +246,7 @@ export class Optional<T> {
 
 
   /**
-   * Returns {@code true} if the {@link Optional} is not empty, {@code false} otherwise.
+   * Returns `true` if the {@link Optional} is not empty, `false` otherwise.
    */
   isPresent = (): boolean =>
     ObjectUtil.nonNullOrUndefined(this.value);
@@ -257,7 +257,7 @@ export class Optional<T> {
    * {@link Optional#ofNullable}) the result of applying the given {@link TFunction1} to the
    * {@link Optional}'s value, otherwise returns an empty {@link Optional}.
    * <p>
-   *    If the {@link TFunction1} returns a {@code null} result then this method returns an empty
+   *    If the {@link TFunction1} returns a `null` result then this method returns an empty
    * {@link Optional}.
    *
    * @param mapper
@@ -276,12 +276,12 @@ export class Optional<T> {
 
 
   /**
-   * If the {@link Optional} is not empty, returns the value, {@code other} otherwise.
+   * If the {@link Optional} is not empty, returns the value, `other` otherwise.
    *
    * @param other
-   *    The value to be returned if {@link Optional}'s value is {@code null}
+   *    The value to be returned if {@link Optional}'s value is `null`
    *
-   * @return the {@link Optional}'s value if non-{@code null}, otherwise {@code other}
+   * @return the {@link Optional}'s value if non-`null`, otherwise `other`
    */
   orElse = (other: Optional<T>): Optional<T> =>
     this.isPresent()
@@ -295,7 +295,7 @@ export class Optional<T> {
    * @param errorSupplier
    *    The supplying {@link TFunction0} that produces an error to be thrown
    *
-   * @return the {@link Optional}'s value if non-{@code null},
+   * @return the {@link Optional}'s value if non-`null`,
    *         otherwise {@link Error} using provided {@link TFunction0}
    */
   orElseThrow = <X extends Error>(errorSupplier: TFunction0<X>): T => {

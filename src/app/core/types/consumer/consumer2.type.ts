@@ -21,19 +21,19 @@ export type FConsumer2<T1, T2> =
 
 
 /**
- * Verifies if the given {@code input} is potentially an instance of {@link FConsumer2}.
+ * Verifies if the given `input` is potentially an instance of {@link FConsumer2}.
  * <p>
- *    It is important to know {@code input} could be 'something' different from {@link FConsumer2}. To improve
+ *    It is important to know `input` could be 'something' different from {@link FConsumer2}. To improve
  * the performance:
  * <p>
  *   1. Its type has been compared to a function.
- *   2. Check its number of parameters, however the default ones are not considered by the {@code length} function.
+ *   2. Check its number of parameters, however the default ones are not considered by the `length` function.
  *
  * @param input
  *    Object to verify
  *
- * @return {@code true} if {@code input} is potentially an instance of {@link FConsumer2},
- *         {@code false} otherwise
+ * @return `true` if `input` is potentially an instance of {@link FConsumer2},
+ *         `false` otherwise
  */
 export function isFConsumer2<T1, T2>(input?: any): input is FConsumer2<T1, T2> {
   return ObjectUtil.nonNullOrUndefined(input) &&
@@ -61,13 +61,13 @@ export class Consumer2<T1, T2> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link Consumer2}.
+   * Verifies if the given `input` is an instance of {@link Consumer2}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link Consumer2},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link Consumer2},
+   *         `false` otherwise
    */
   static isConsumer = <T1, T2>(input?: any): input is Consumer2<T1, T2> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -81,9 +81,9 @@ export class Consumer2<T1, T2> {
    * @param consumer
    *    {@link FConsumer2} used to perform an operation over the given instances of T
    *
-   * @return an {@link Consumer2} as wrapper of {@code mapper}
+   * @return an {@link Consumer2} as wrapper of `mapper`
    *
-   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
   static of<T1, T2>(consumer: FConsumer2<T1, T2>): Consumer2<T1, T2>;
 
@@ -96,17 +96,17 @@ export class Consumer2<T1, T2> {
    *
    * @return {@link Consumer2} based on provided {@link TConsumer2}
    *
-   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
   static of<T1, T2>(consumer: TConsumer2<T1, T2>): Consumer2<T1, T2>;
 
 
-  static of<T1, T2>(consumer: FConsumer2<T1, T2> | TConsumer2<T1, T2>): Consumer2<T1, T2> {
+  static of<T1, T2>(consumer: TConsumer2<T1, T2>): Consumer2<T1, T2> {
     AssertUtil.notNullOrUndefined(
       consumer,
       'consumer must be not null and not undefined'
     );
-    return (consumer instanceof Consumer2)
+    return Consumer2.isConsumer<T1, T2>(consumer)
       ? consumer
       : new Consumer2(consumer);
   }
@@ -114,16 +114,16 @@ export class Consumer2<T1, T2> {
 
   /**
    *    Returns a composed {@link Consumer2} that first applies this {@link Consumer2} to its input, and then
-   * applies the {@code after} {@link TConsumer2}.
+   * applies the `after` {@link TConsumer2}.
    *
    * @apiNote
-   *    If {@code after} is {@code null} or {@code undefined} then only this {@link TConsumer2} will be applied.
+   *    If `after` is `null` or `undefined` then only this {@link TConsumer2} will be applied.
    *
    * @param after
    *    {@link TConsumer2} to apply after this {@link Consumer2 is applied
    *
    * @return composed {@link Consumer2} that first applies this {@link Consumer2} and then applies the
-   *         {@code after} {@link TConsumer2}
+   *         `after` {@link TConsumer2}
    */
   andThen = (after: TConsumer2<T1, T2>): Consumer2<T1, T2> =>
     ObjectUtil.isNullOrUndefined(after)

@@ -1,12 +1,12 @@
 import { AssertUtil, ObjectUtil } from '@app-core/util';
 import { Optional } from '@app-core/types';
-import { FFunction1, Function1, TFunction1 } from '@app-core/types/function';
-import { FPredicate1, Predicate1, TPredicate1 } from '@app-core/types/predicate';
+import { FFunction1, FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/types/function';
+import { FPredicate1, FPredicate2, Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/types/predicate';
 
 /**
  *    Unary function where the domain does not necessarily include all values of type T. The method {@link PartialFunction#isDefinedAt}
  * allows to test dynamically if a value is in the domain of the function, it is the responsibility of the caller to call it
- * before {@link PartialFunction#apply}, because if {@link PartialFunction#isDefinedAt} is {@code false}, it is not guaranteed
+ * before {@link PartialFunction#apply}, because if {@link PartialFunction#isDefinedAt} is `false`, it is not guaranteed
  * {@link PartialFunction#apply} will throw an error to indicate a wrong condition. If an error is not thrown, evaluation
  * may result in an arbitrary value.
  * <p>
@@ -45,7 +45,7 @@ export class PartialFunction<T, R> {
   /**
    * Returns a {@link PartialFunction} with:
    * <p>
-   *  - {@link PartialFunction#isDefinedAt} always returns {@code true}
+   *  - {@link PartialFunction#isDefinedAt} always returns `true`
    *  - {@link Function#apply} always returns its input argument
    *
    * @return {@link PartialFunction} that always returns its input argument
@@ -58,13 +58,13 @@ export class PartialFunction<T, R> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link PartialFunction}.
+   * Verifies if the given `input` is an instance of {@link PartialFunction}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link PartialFunction},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link PartialFunction},
+   *         `false` otherwise
    */
   static isPartialFunction = <T, R>(input?: any): input is PartialFunction<T, R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -76,47 +76,47 @@ export class PartialFunction<T, R> {
 
 
   /**
-   *    Returns a new {@link PartialFunction} based on provided {@link FPredicate1} {@code verifier} and
-   * {@link FFunction1} {@code mapper}.
+   *    Returns a new {@link PartialFunction} based on provided {@link FPredicate1} `verifier` and
+   * {@link FFunction1} `mapper`.
    *
    * @apiNote
-   *    If {@code verifier} is {@code null} or {@code undefined} then {@link Predicate1#alwaysTrue} will be applied.
+   *    If `verifier` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
    *
    * @param verifier
    *    {@link FPredicate1} used to know new {@link PartialFunction}'s domain
    * @param mapper
    *    {@link FFunction1} required for {@link PartialFunction#apply}
    *
-   * @return {@link PartialFunction}
+   * @return {@link PartialFunction} to convert values of @type {T} to @type {R}
    *
-   * @throws {@link IllegalArgumentError} if {@code mapper} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
   static of<T, R>(verifier: FPredicate1<T>,
                   mapper: FFunction1<T, R>): PartialFunction<T, R>;
 
 
   /**
-   *    Returns a new {@link PartialFunction} based on provided {@link TPredicate1} {@code verifier} and
-   * {@link TFunction1} {@code mapper}.
+   *    Returns a new {@link PartialFunction} based on provided {@link TPredicate1} `verifier` and
+   * {@link TFunction1} `mapper`.
    *
    * @apiNote
-   *    If {@code verifier} is {@code null} or {@code undefined} then {@link Predicate1#alwaysTrue} will be applied.
+   *    If `verifier` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
    *
    * @param verifier
    *    {@link TPredicate1} used to know new {@link PartialFunction}'s domain
    * @param mapper
    *    {@link TFunction1} required for {@link PartialFunction#apply}
    *
-   * @return {@link PartialFunction}
+   * @return {@link PartialFunction} to convert values of @type {T} to @type {R}
    *
-   * @throws {@link IllegalArgumentError} if {@code mapper} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
   static of<T, R>(verifier: TPredicate1<T>,
                   mapper: TFunction1<T, R>): PartialFunction<T, R>;
 
 
-  static of<T, R>(verifier: FPredicate1<T> | TPredicate1<T>,
-                  mapper: FFunction1<T, R> | TFunction1<T, R>): PartialFunction<T, R> {
+  static of<T, R>(verifier: TPredicate1<T>,
+                  mapper: TFunction1<T, R>): PartialFunction<T, R> {
     AssertUtil.notNullOrUndefined(
       mapper,
       'mapper must be not null and not undefined'
@@ -125,7 +125,7 @@ export class PartialFunction<T, R> {
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(verifier);
 
-    return new PartialFunction(
+    return new PartialFunction<T,R>(
       finalVerifier,
       Function1.of(mapper)
     );
@@ -133,31 +133,92 @@ export class PartialFunction<T, R> {
 
 
   /**
+   *    Returns a new {@link PartialFunction} based on provided {@link FPredicate2} `verifier` and
+   * {@link FFunction2} `mapper`.
+   *
+   * @apiNote
+   *    If `verifier` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *
+   * @param verifier
+   *    {@link FPredicate2} used to know new {@link PartialFunction}'s domain
+   * @param mapper
+   *    {@link FFunction2} required for {@link PartialFunction#apply}
+   *
+   * @return {@link PartialFunction} to convert tuples of [@type {T1}, @type {R1}] to [@type {T2}, @type {R2}]
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
+   */
+  static of2<T1, T2, R1, R2>(verifier: FPredicate2<T1, R1>,
+                             mapper: FFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]>;
+
+
+  /**
+   *    Returns a new {@link PartialFunction} based on provided {@link TPredicate2} `verifier` and
+   * {@link TFunction2} `mapper`.
+   *
+   * @apiNote
+   *    If `verifier` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *
+   * @param verifier
+   *    {@link TPredicate2} used to know new {@link PartialFunction}'s domain
+   * @param mapper
+   *    {@link TFunction2} required for {@link PartialFunction#apply}
+   *
+   * @return {@link PartialFunction} to convert tuples of [@type {T1}, @type {R1}] to [@type {T2}, @type {R2}]
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
+   */
+  static of2<T1, T2, R1, R2>(verifier: TPredicate2<T1, R1>,
+                             mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]>;
+
+
+  static of2<T1, T2, R1, R2>(verifier: TPredicate2<T1, R1>,
+                             mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]> {
+    AssertUtil.notNullOrUndefined(
+      mapper,
+      'mapper must be not null and not undefined'
+    );
+    const finalVerifier = ObjectUtil.isNullOrUndefined(verifier)
+      ? Predicate2.alwaysTrue<T1, R1>()
+      : Predicate2.of(verifier);
+
+    return new PartialFunction(
+      Predicate1.of(
+        ([t1, r1]) => finalVerifier.apply(t1, r1)
+      ),
+      Function1.of(
+        ([t1, r1]) => Function2.of(mapper).apply(t1, r1)
+      )
+    );
+  }
+
+
+  /**
    *    Returns a composed {@link PartialFunction} that first applies this {@link PartialFunction} to its input, and
-   * then applies the {@code after} {@link TFunction1} to the result.
+   * then applies the `after` {@link TFunction1} to the result.
    *
    * @param after
    *    {@link TFunction1} to apply after this {@link PartialFunction} is applied
    *
    * @return composed {@link PartialFunction} that first applies this {@link PartialFunction} and then applies the
-   *         {@code after} {@link TFunction1}
+   *         `after` {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen<V>(after: TFunction1<R, V>): PartialFunction<T, V>;
 
 
   /**
    *    Returns a composed {@link PartialFunction} that first applies this {@link PartialFunction} to its input, and
-   * then applies the {@code after} {@link PartialFunction} to the result.
+   * then applies the `after` {@link PartialFunction} to the result.
    *
    * @param after
    *    {@link PartialFunction} to apply after this {@link PartialFunction} is applied
    *
    * @return composed {@link PartialFunction} that first applies this {@link PartialFunction} and then applies the
-   *         {@code after} {@link PartialFunction}
+   *         `after` {@link PartialFunction}
    *
-   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen<V>(after: PartialFunction<R, V>): PartialFunction<T, V>;
 
@@ -199,19 +260,19 @@ export class PartialFunction<T, R> {
 
 
   /**
-   *    Applies this {@link PartialFunction} to the given {@code t} when it is contained in the {@link PartialFunction}'s
-   * domain. Otherwise, applies {@code defaultFunction}
+   *    Applies this {@link PartialFunction} to the given `t` when it is contained in the {@link PartialFunction}'s
+   * domain. Otherwise, applies `defaultFunction`
    *
    * @param t
    *    The function argument
    * @param defaultFunction
-   *    {@link TFunction1} to apply if provided {@code t} is not contained in the {@link PartialFunction}'s domain
+   *    {@link TFunction1} to apply if provided `t` is not contained in the {@link PartialFunction}'s domain
    *
-   * @return the result of this {@link PartialFunction} is {@code t} belongs to the {@link PartialFunction}'s domain,
-   *         {@code defaultFunction} application otherwise.
+   * @return the result of this {@link PartialFunction} if `t` belongs to the {@link PartialFunction}'s domain,
+   *         `defaultFunction` application otherwise.
    *
-   * @throws {@link IllegalArgumentError} if {@code defaultFunction} is {@code null} or {@code undefined} and {@code t}
-   *         is not contained in the {@link PartialFunction}'s domain
+   * @throws {@link IllegalArgumentError} if `defaultFunction` is `null` or `undefined` and `t` is not
+   *         contained in the {@link PartialFunction}'s domain
    */
   applyOrElse = (t: T,
                  defaultFunction: TFunction1<T, R>): R => {
@@ -227,31 +288,31 @@ export class PartialFunction<T, R> {
 
 
   /**
-   *    Returns a composed {@link PartialFunction} that first applies the {@code before} {@link TFunction1} to its input,
+   *    Returns a composed {@link PartialFunction} that first applies the `before` {@link TFunction1} to its input,
    * and then this {@link PartialFunction} to the result.
    *
    * @param before
    *    {@link TFunction1} to apply before this {@link PartialFunction} is applied
    *
-   * @return composed {@link PartialFunction} that first applies the {@code before} {@link TFunction1} and then applies
+   * @return composed {@link PartialFunction} that first applies the `before` {@link TFunction1} and then applies
    *         this {@link PartialFunction}
    *
-   * @throws {@link IllegalArgumentError} if {@code before} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `before` is `null` or `undefined`
    */
   compose<V>(before: TFunction1<V, T>): PartialFunction<V, R>;
 
 
   /**
-   *    Returns a composed {@link PartialFunction} that first applies the {@code before} {@link PartialFunction} to its input,
+   *    Returns a composed {@link PartialFunction} that first applies the `before` {@link PartialFunction} to its input,
    * and then this {@link PartialFunction} to the result.
    *
    * @param before
    *    {@link PartialFunction} to apply before this {@link PartialFunction} is applied
    *
-   * @return composed {@link PartialFunction} that first applies the {@code before} {@link PartialFunction} and then applies
+   * @return composed {@link PartialFunction} that first applies the `before` {@link PartialFunction} and then applies
    *         this {@link PartialFunction}
    *
-   * @throws {@link IllegalArgumentError} if {@code before} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `before` is `null` or `undefined`
    */
   compose<V>(before: PartialFunction<V, T>): PartialFunction<V, R>;
 
@@ -286,13 +347,13 @@ export class PartialFunction<T, R> {
 
 
   /**
-   * Tests if the provided {@code t} is contained in the {@link PartialFunction}'s domain.
+   * Tests if the provided `t` is contained in the {@link PartialFunction}'s domain.
    *
    * @param t
    *    A potential function argument
    *
-   * @return {@code true} if the given value is contained in the {@link PartialFunction}'s domain,
-   *         {@code false} otherwise
+   * @return `true` if the given value is contained in the {@link PartialFunction}'s domain,
+   *         `false` otherwise
    */
   isDefinedAt = (t: T): boolean =>
     this.verifier.apply(t);
@@ -301,8 +362,8 @@ export class PartialFunction<T, R> {
   /**
    * Turns this {@link PartialFunction} into a {@link Function1} returning an {@link Optional} result.
    *
-   * @return {@link Function1} that takes an argument {@code t} to {@link Optional} of {@link PartialFunction#apply}
-   *         if {@code t} belongs to the {@link PartialFunction}'s domain, {@link Optional#empty} otherwise.
+   * @return {@link Function1} that takes an argument `t` to {@link Optional} of {@link PartialFunction#apply}
+   *         if `t` belongs to the {@link PartialFunction}'s domain, {@link Optional#empty} otherwise.
    */
   lift = (): Function1<T, Optional<R>> =>
     Function1.of(
@@ -320,14 +381,14 @@ export class PartialFunction<T, R> {
    * is not defined.
    *
    * @apiNote
-   *    If {@code defaultPartialFunction} is {@code null} or {@code undefined} then only this {@link PartialFunction} will be applied.
+   *    If `defaultPartialFunction` is `null` or `undefined` then only this {@link PartialFunction} will be applied.
    *
    * @param defaultPartialFunction
    *    {@link PartialFunction} to apply when current value is not contained in this {@link PartialFunction}'s domain
    *
    * @return {@link PartialFunction} which has as domain the union of the domains of this {@link PartialFunction} and
-   *         {@code defaultPartialFunction}. The resulting {@link PartialFunction} takes {@code x} to {@code this(x)}
-   *         where this is defined, and to {@code defaultPartialFunction(x)} where it is not.
+   *         `defaultPartialFunction`. The resulting {@link PartialFunction} takes `x` to `this(x)`
+   *         where this is defined, and to `defaultPartialFunction(x)` where it is not.
    */
   orElse = (defaultPartialFunction: PartialFunction<T, R>): PartialFunction<T, R> => {
     const finalVerifier = ObjectUtil.isNullOrUndefined(defaultPartialFunction)

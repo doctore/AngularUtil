@@ -12,13 +12,13 @@ export class NumberUtil {
 
 
   /**
-   * Verifies if the given {@code inputToCheck} is a valid float value.
+   * Verifies if the given `inputToCheck` is a valid float value.
    *
    * @param inputToCheck
    *    Input to verify
    *
-   * @return {@code true} if provided {@code inputToCheck} is a valid float value,
-   *         {@code false} otherwise
+   * @return `true` if provided `inputToCheck` is a valid float value,
+   *         `false` otherwise
    */
   static isValidFloat = (inputToCheck?: string | number | null): boolean => {
     if (ObjectUtil.nonNullOrUndefined(inputToCheck)) {
@@ -33,24 +33,21 @@ export class NumberUtil {
 
 
   /**
-   * Verifies if the given {@code inputToCheck} is a valid integer value.
+   * Verifies if the given `inputToCheck` is a valid integer value.
    *
    * @param inputToCheck
    *    Input to verify
    *
-   * @return {@code true} if provided {@code inputToCheck} is a valid integer value,
-   *         {@code false} otherwise
+   * @return `true` if provided `inputToCheck` is a valid integer value,
+   *         `false` otherwise
    */
-  static isValidInt = (inputToCheck?: string | number | null): boolean => {
-    if (ObjectUtil.nonNullOrUndefined(inputToCheck)) {
-      return inputToCheck == parseInt('' + inputToCheck);
-    }
-    return false;
-  }
+  static isValidInt = (inputToCheck?: string | number | null): boolean =>
+    ObjectUtil.nonNullOrUndefined(inputToCheck) &&
+    inputToCheck == parseInt('' + inputToCheck);
 
 
   /**
-   * Formats the given {@code inputToFix} in a float value with provided {@code fixedPoints} notation.
+   * Formats the given `inputToFix` in a float value with provided `fixedPoints` notation.
    *
    * @param inputToFix
    *    Input to convert into a fixed-point float. If no value is provided, empty string will be the default.
@@ -58,7 +55,7 @@ export class NumberUtil {
    *    Value of the expected fixed-point notation. If no value is provided or negative, 2 will be the default.
    *
    * @return a string representing the given number using fixed-point notation if there was no problem in the conversion,
-   *         {@code undefined} otherwise.
+   *         `undefined` otherwise.
    */
   static toFloatWithFixedPointNotation = (inputToFix?: string | number | null,
                                           fixedPoints?: string | number | null): OrUndefined<string> => {

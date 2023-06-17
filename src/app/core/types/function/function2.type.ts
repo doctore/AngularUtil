@@ -23,19 +23,19 @@ export type FFunction2<T1, T2, R> =
 
 
 /**
- * Verifies if the given {@code input} is potentially an instance of {@link FFunction2}.
+ * Verifies if the given `input` is potentially an instance of {@link FFunction2}.
  * <p>
- *    It is important to know {@code input} could be 'something' different from {@link FFunction2}. To improve
+ *    It is important to know `input` could be 'something' different from {@link FFunction2}. To improve
  * the performance:
  * <p>
  *   1. Its type has been compared to a function.
- *   2. Check its number of parameters, however the default ones are not considered by the {@code length} function.
+ *   2. Check its number of parameters, however the default ones are not considered by the `length` function.
  *
  * @param input
  *    Object to verify
  *
- * @return {@code true} if {@code input} is potentially an instance of {@link FFunction2},
- *         {@code false} otherwise
+ * @return `true` if `input` is potentially an instance of {@link FFunction2},
+ *         `false` otherwise
  */
 export function isFFunction2<T1, T2, R>(input?: any): input is FFunction2<T1, T2, R> {
   return ObjectUtil.nonNullOrUndefined(input) &&
@@ -63,13 +63,13 @@ export class Function2<T1, T2, R> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link Function2}.
+   * Verifies if the given `input` is an instance of {@link Function2}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link Function2},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link Function2},
+   *         `false` otherwise
    */
   static isFunction = <T1, T2, R>(input?: any): input is Function2<T1, T2, R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -83,9 +83,9 @@ export class Function2<T1, T2, R> {
    * @param func
    *    {@link FFunction2} used to evaluates the given instances of T and return an R one
    *
-   * @return an {@link Function2} as wrapper of {@code mapper}
+   * @return an {@link Function2} as wrapper of `mapper`
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T1, T2, R>(func: FFunction2<T1, T2, R>): Function2<T1, T2, R>;
 
@@ -98,17 +98,17 @@ export class Function2<T1, T2, R> {
    *
    * @return {@link Function2} based on provided {@link TFunction2}
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T1, T2, R>(func: TFunction2<T1, T2, R>): Function2<T1, T2, R>;
 
 
-  static of<T1, T2, R>(func: FFunction2<T1, T2, R> | TFunction2<T1, T2, R>): Function2<T1, T2, R> {
+  static of<T1, T2, R>(func: TFunction2<T1, T2, R>): Function2<T1, T2, R> {
     AssertUtil.notNullOrUndefined(
       func,
       'func must be not null and not undefined'
     );
-    return (func instanceof Function2)
+    return Function2.isFunction<T1, T2, R>(func)
       ? func
       : new Function2(func);
   }
@@ -116,15 +116,15 @@ export class Function2<T1, T2, R> {
 
   /**
    *    Returns a composed {@link Function2} that first applies this {@link Function2} to its input, and then
-   * applies the {@code after} {@link TFunction1} to the result.
+   * applies the `after` {@link TFunction1} to the result.
    *
    * @param after
    *    {@link TFunction1} to apply after this {@link Function2} is applied
    *
    * @return composed {@link Function2} that first applies this {@link Function2} and then applies the
-   *         {@code after} {@link TFunction1}
+   *         `after` {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen = <V>(after: TFunction1<R, V>): Function2<T1, T2, V> => {
     AssertUtil.notNullOrUndefined(

@@ -14,36 +14,36 @@ export class AssertUtil {
 
 
   /**
-   * Checks if the given {@code value} is {@code undefined} or {@code null}.
+   * Checks if the given `value` is `undefined` or `null`.
    *
    * @param value
    *    Value to check
    * @param message
    *    Custom message to include more information about the error
    *
-   * @return {@code true} if it is neither {@code undefined} nor {@code null},
+   * @return `true` if it is neither `undefined` nor `null`,
    *         {@link IllegalArgumentError} otherwise
    *
-   * @throws {@link IllegalArgumentError} if {@code value} is {@code undefined} or {@code null}
+   * @throws {@link IllegalArgumentError} if `value` is `undefined` or `null`
    */
   static notNullOrUndefined(value: NullableOrUndefined<any>,
                             message?: Nullable<string>): boolean;
 
 
   /**
-   * Checks if the given {@code value} is {@code undefined} or {@code null}.
+   * Checks if the given `value` is `undefined` or `null`.
    *
    * @param value
    *    Value to check
    * @param errorSupplier
    *    {@link TFunction0} used to provide the returned {@link Error}
    *
-   * @return {@code true} if it is neither {@code undefined} nor {@code null},
-   *         if {@code value} is {@code undefined} or {@code null}:
-   *            Custom {@link Error} if {@code errorSupplier} is defined,
+   * @return `true` if it is neither `undefined` nor `null`,
+   *         if `value` is `undefined` or `null`:
+   *            Custom {@link Error} if `errorSupplier` is defined,
    *            {@link IllegalArgumentError} otherwise
    *
-   * @throws if {@code value} is {@code undefined} or {@code null}: custom {@link Error} if {@code errorSupplier} is defined,
+   * @throws if `value` is `undefined` or `null`: custom {@link Error} if `errorSupplier` is defined,
    *         {@link IllegalArgumentError} otherwise
    */
   static notNullOrUndefined(value: NullableOrUndefined<any>,

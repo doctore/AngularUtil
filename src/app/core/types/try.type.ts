@@ -34,13 +34,13 @@ export abstract class Try<T> {
    *
    * @return the {@link Success} value
    *
-   * @throws {@code Failure#error} if this is an {@link Failure}
+   * @throws {@link Failure#error} if this is an {@link Failure}
    */
   abstract get(): T;
 
 
   /**
-   * Returns {@code true} is this is a {@link Success}, {@code false} otherwise.
+   * Returns `true` is this is a {@link Success}, `false` otherwise.
    */
   abstract isSuccess(): boolean;
 
@@ -83,7 +83,7 @@ export abstract class Try<T> {
 
 
   /**
-   * Creates a {@link Success} invoking the provided {@link TFunction1} with given {@code t1}.
+   * Creates a {@link Success} invoking the provided {@link TFunction1} with given `t1`.
    *
    * @param t1
    *    Input parameter used by given {@link TFunction1}
@@ -258,49 +258,49 @@ export abstract class Try<T> {
 
 
   /**
-   * Creates a {@link Success} that contains the given {@code value}.
+   * Creates a {@link Success} that contains the given `value`.
    *
    * @param value
    *    The value to store in the returned {@link Success}
    *
-   * @return {@link Success} with the provided {@code value}
+   * @return {@link Success} with the provided `value`
    */
   static success = <T>(value: T): Try<T> =>
     Success.of(value);
 
 
   /**
-   * Creates a {@link Failure} describing the given non-{@code null} and non-{@code undefined} error.
+   * Creates a {@link Failure} describing the given non-`null` and non-`undefined` error.
    *
    * @param error
-   *    {@link Error} to store, which must be non-{@code null} and non-{@code undefined}
+   *    {@link Error} to store, which must be non-`null` and non-`undefined`
    *
-   * @return {@link Failure} with the provided {@code error}
+   * @return {@link Failure} with the provided `error`
    *
-   * @throws {@link IllegalArgumentError} if {@code error} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `error` is `null` or `undefined`
    */
   static failure = <T>(error: Error): Try<T> =>
     Failure.of(error);
 
 
   /**
-   * Merge given {@code t} with this {@link Try}, managing the following use cases:
+   * Merge given `t` with this {@link Try}, managing the following use cases:
    * <p>
-   *   1. this = {@link Success}, t = {@link Success}  =>  return a {@link Success} instance applying {@code mapperSuccess}
+   *   1. this = {@link Success}, t = {@link Success}  =>  return a {@link Success} instance applying `mapperSuccess`
    *   2. this = {@link Success}, t = {@link Failure}  =>  return the {@link Failure}
    *   3. this = {@link Failure}, t = {@link Success}  =>  return the {@link Failure}
-   *   4. this = {@link Failure}, t = {@link Failure}  =>  return a {@link Failure} instance applying {@code mapperLeft}
+   *   4. this = {@link Failure}, t = {@link Failure}  =>  return a {@link Failure} instance applying `mapperLeft`
    *
-   * If provided {@code t} is {@code null} or {@code undefined}, the current instance will be returned.
+   * If provided `t` is `null` or `undefined`, the current instance will be returned.
    *
    * @param t
    *    New {@link Try} to merge with the current one
    * @param mapperFailure
-   *    {@link TFunction2} used to map this {@link Try} and given {@code t}, both {@link Failure}
+   *    {@link TFunction2} used to map this {@link Try} and given `t`, both {@link Failure}
    * @param mapperSuccess
-   *    {@link TFunction2} used to map this {@link Try} and given {@code t}, both {@link Success}
+   *    {@link TFunction2} used to map this {@link Try} and given `t`, both {@link Success}
    *
-   * @return {@link Try} merging {@code t} with this {@link Try}
+   * @return {@link Try} merging `t` with this {@link Try}
    */
   ap = (t: Try<T>,
         mapperFailure: TFunction2<Error, Error, Error>,
@@ -347,9 +347,9 @@ export abstract class Try<T> {
 
 
   /**
-   *    Applies {@code mapperSuccess} if this {@link Try} is a {@link Success} instance, {@code mapperFailure} if
-   * it is an {@link Failure}, transforming internal values into another one. If {@code mapperSuccess} is initially
-   * applied and throws an {@link Error}, then {@code mapperFailure} is applied with this {@link Error}.
+   *    Applies `mapperSuccess` if this {@link Try} is a {@link Success} instance, `mapperFailure` if
+   * it is an {@link Failure}, transforming internal values into another one. If `mapperSuccess` is initially
+   * applied and throws an {@link Error}, then `mapperFailure` is applied with this {@link Error}.
    *
    * <pre>
    * Example:
@@ -373,8 +373,8 @@ export abstract class Try<T> {
    *
    * @return the result of applying the right {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if {@code mapperSuccess} is {@code null} or {@code undefined} and this {@link Try} is {@link Success}
-   *                                      or {@code mapperFailure} is {@code null} or {@code undefined} and this {@link Try} is {@link Failure}
+   * @throws {@link IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` and this {@link Try} is {@link Success}
+   *                                      or `mapperFailure` is `null` or `undefined` and this {@link Try} is {@link Failure}
    */
   fold = <U>(mapperFailure: TFunction1<Error, U>,
              mapperSuccess: TFunction1<T, U>): U => {
@@ -405,13 +405,13 @@ export abstract class Try<T> {
 
 
   /**
-   * Returns the stored value if the underline instance is {@link Success}, otherwise returns {@code defaultValue}.
+   * Returns the stored value if the underline instance is {@link Success}, otherwise returns `defaultValue`.
    *
    * @param defaultValue
    *    Returned value if current instance is an {@link Failure} one
    *
-   * @return {@code T} with value stored in {@link Success} instance,
-   *         {@code defaultValue} otherwise
+   * @return @type {T} with value stored in {@link Success} instance,
+   *         `defaultValue` otherwise
    */
   getOrElse = (defaultValue: T): T =>
     this.isSuccess()
@@ -420,14 +420,14 @@ export abstract class Try<T> {
 
 
   /**
-   * Returns the stored value if the underline instance is {@link Success}, otherwise returns {@code defaultValue}.
+   * Returns the stored value if the underline instance is {@link Success}, otherwise returns `defaultValue`.
    *
    * @param defaultValue
    *    Returned value if current instance is an {@link Failure} one
    *
-   * @return {@link Optional#empty} if this {@link Try} is an empty {@link Success} instance or provided {@code defaultValue} is {@code null} or {@code undefined},
+   * @return {@link Optional#empty} if this {@link Try} is an empty {@link Success} instance or provided `defaultValue` is `null` or `undefined`,
    *         {@link Optional} with the internal value if this {@link Try} is non empty {@link Success} instance,
-   *         {@link Optional} with provided {@code defaultValue} otherwise
+   *         {@link Optional} with provided `defaultValue` otherwise
    */
   getOrElseOptional = (defaultValue: T): Optional<T> =>
     Optional.ofNullable(
@@ -441,9 +441,9 @@ export abstract class Try<T> {
    * Verifies in this {@link Try} has no value, that is:
    * <p>
    *    1. Is a {@link Failure} one.
-   *    2. Is a{@link Success} instance but its internal value is {@code null} or {@code undefined}.
+   *    2. Is a{@link Success} instance but its internal value is `null` or `undefined`.
    *
-   * @return {@code true} is the current instance is empty, {@code false} otherwise
+   * @return `true` is the current instance is empty, `false` otherwise
    */
   isEmpty = (): boolean =>
     !this.isSuccess() || ObjectUtil.isNullOrUndefined(this.get());
@@ -451,11 +451,11 @@ export abstract class Try<T> {
 
   /**
    *    If the current {@link Try} is an instance of {@link Success} wraps the stored value into an {@link Optional} object.
-   * Otherwise return {@link Optional#empty()}
+   * Otherwise return {@link Optional#empty}
    *
-   * @return @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-{@code null} and non-{@code undefined},
-   *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is {@code null} or {@code undefined},
-   *         {@code Optional#empty} if this is an {@link Failure}
+   * @return @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-`null` and non-`undefined`,
+   *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is `null` or `undefined`,
+   *         {link Optional#empty} if this is an {@link Failure}
    */
   toOptional = (): Optional<T> =>
     this.isEmpty()
@@ -466,13 +466,13 @@ export abstract class Try<T> {
 
 
   /**
-   *    When current {@link Try} is a {@link Success} instance and given {@code t} too, manages in a safe way the
+   *    When current {@link Try} is a {@link Success} instance and given `t` too, manages in a safe way the
    * {@link TFunction2} invocation to map both values.
    *
    * @param t
    *    New {@link Try} to merge with the current one
    * @param mapper
-   *    {@link TFunction2} to apply the stored value and the one related with {@code t}
+   *    {@link TFunction2} to apply the stored value and the one related with `t`
    *
    * @return {@link Try}
    */
@@ -498,13 +498,13 @@ export abstract class Try<T> {
 
 
   /**
-   *    When current {@link Try} is a {@link Failure} instance and given {@code t} too, manages in a safe way the
+   *    When current {@link Try} is a {@link Failure} instance and given `t` too, manages in a safe way the
    * {@link TFunction2} invocation to map both values.
    *
    * @param t
    *    New {@link Try} to merge with the current one
    * @param mapper
-   *    {@link TFunction2} to apply the stored exception and the one related with {@code t}
+   *    {@link TFunction2} to apply the stored exception and the one related with `t`
    *
    * @return {@link Try}
    */
@@ -536,9 +536,9 @@ export abstract class Try<T> {
 /**
  * The successful result of a {@link Try} operation.
  * <p>
- *    Both {@code null} and {@code undefined} could be stored in the internal {@code value} if defined {@code T}
+ *    Both `null` and `undefined` could be stored in the internal `value` if defined @type {T}
  * allows them. Methods providing {@link Optional} as result, like {@link Success#toOptional} with take into account,
- * that is, is this {@link Success} instance is empty ({@code value} is {@code null} or {@code undefined}), then
+ * that is, is this {@link Success} instance is empty (`value` is `null` or `undefined`), then
  * {@link Optional#empty} will be returned.
  *
  * @typeParam <T>
@@ -552,7 +552,7 @@ export class Success<T> extends Try<T> {
 
 
   /**
-   * Returns an {@link Success} adding the given {@code value}.
+   * Returns an {@link Success} adding the given `value`.
    *
    * @param value
    *    The value to store
@@ -594,14 +594,14 @@ export class Failure<T> extends Try<T> {
 
 
   /**
-   * Returns a {@link Failure} describing the given non-{@code null} and non-{@code undefined} error.
+   * Returns a {@link Failure} describing the given non-`null` and non-`undefined` error.
    *
    * @param error
-   *    {@link Error} to store, which must be non-{@code null} and non-{@code undefined}
+   *    {@link Error} to store, which must be non-`null` and non-`undefined`
    *
    * @return {@link Failure}
    *
-   * @throws {@link IllegalArgumentError} if {@code error} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `error` is `null` or `undefined`
    */
   static of = <T>(error: Error): Failure<T> => {
     AssertUtil.notNullOrUndefined(error);

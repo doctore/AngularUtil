@@ -18,19 +18,19 @@ export type FConsumer1<T> =
 
 
 /**
- * Verifies if the given {@code input} is potentially an instance of {@link FConsumer1}.
+ * Verifies if the given `input` is potentially an instance of {@link FConsumer1}.
  * <p>
- *    It is important to know {@code input} could be 'something' different from {@link FConsumer1}. To improve
+ *    It is important to know `input` could be 'something' different from {@link FConsumer1}. To improve
  * the performance:
  * <p>
  *   1. Its type has been compared to a function.
- *   2. Check its number of parameters, however the default ones are not considered by the {@code length} function.
+ *   2. Check its number of parameters, however the default ones are not considered by the `length` function.
  *
  * @param input
  *    Object to verify
  *
- * @return {@code true} if {@code input} is potentially an instance of {@link FConsumer1},
- *         {@code false} otherwise
+ * @return `true` if `input` is potentially an instance of {@link FConsumer1},
+ *         `false` otherwise
  */
 export function isFConsumer1<T>(input?: any): input is FConsumer1<T> {
   return ObjectUtil.nonNullOrUndefined(input) &&
@@ -56,13 +56,13 @@ export class Consumer1<T> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link Consumer1}.
+   * Verifies if the given `input` is an instance of {@link Consumer1}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link Consumer1},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link Consumer1},
+   *         `false` otherwise
    */
   static isConsumer = <T>(input?: any): input is Consumer1<T> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -76,9 +76,9 @@ export class Consumer1<T> {
    * @param consumer
    *    {@link FConsumer1} used to perform an operation over the given instance of T
    *
-   * @return an {@link Consumer1} as wrapper of {@code mapper}
+   * @return an {@link Consumer1} as wrapper of `mapper`
    *
-   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
   static of<T>(consumer: FConsumer1<T>): Consumer1<T>;
 
@@ -91,17 +91,17 @@ export class Consumer1<T> {
    *
    * @return {@link Consumer1} based on provided {@link TConsumer1}
    *
-   * @throws {@link IllegalArgumentError} if {@code consumer} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
   static of<T>(consumer: TConsumer1<T>): Consumer1<T>;
 
 
-  static of<T>(consumer: FConsumer1<T> | TConsumer1<T>): Consumer1<T> {
+  static of<T>(consumer: TConsumer1<T>): Consumer1<T> {
     AssertUtil.notNullOrUndefined(
       consumer,
       'consumer must be not null and not undefined'
     );
-    return (consumer instanceof Consumer1)
+    return Consumer1.isConsumer<T>(consumer)
       ? consumer
       : new Consumer1(consumer);
   }
@@ -109,16 +109,16 @@ export class Consumer1<T> {
 
   /**
    *    Returns a composed {@link Consumer1} that first applies this {@link Consumer1} to its input, and then
-   * applies the {@code after} {@link TConsumer1}.
+   * applies the `after` {@link TConsumer1}.
    *
    * @apiNote
-   *    If {@code after} is {@code null} or {@code undefined} then only this {@link TConsumer1} will be applied.
+   *    If `after` is `null` or `undefined` then only this {@link TConsumer1} will be applied.
    *
    * @param after
    *    {@link TConsumer1} to apply after this {@link Consumer1} is applied
    *
    * @return composed {@link Consumer1} that first applies this {@link Consumer1} and then applies the
-   *         {@code after} {@link TConsumer1}
+   *         `after` {@link TConsumer1}
    */
   andThen = (after: TConsumer1<T>): Consumer1<T> =>
     ObjectUtil.isNullOrUndefined(after)

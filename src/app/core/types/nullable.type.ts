@@ -1,14 +1,14 @@
 /**
- * Type that allows {@code null} values.
+ * Type that allows `null` values.
  */
 export type Nullable<T> = T | null;
 
 /**
- * Type that allows {@code undefined} values.
+ * Type that allows `undefined` values.
  */
 export type OrUndefined<T> = T | undefined;
 
 /**
- * Type that allows {@code undefined} and {@code null} values.
+ * Type that allows `undefined` and `null` values.
  */
 export type NullableOrUndefined<T> = T | null | undefined;

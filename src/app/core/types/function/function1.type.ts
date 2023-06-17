@@ -19,19 +19,19 @@ export type FFunction1<T, R> =
 
 
 /**
- * Verifies if the given {@code input} is potentially an instance of {@link FFunction1}.
+ * Verifies if the given `input` is potentially an instance of {@link FFunction1}.
  * <p>
- *    It is important to know {@code input} could be 'something' different from {@link FFunction1}. To improve
+ *    It is important to know `input` could be 'something' different from {@link FFunction1}. To improve
  * the performance:
  * <p>
  *   1. Its type has been compared to a function.
- *   2. Check its number of parameters, however the default ones are not considered by the {@code length} function.
+ *   2. Check its number of parameters, however the default ones are not considered by the `length` function.
  *
  * @param input
  *    Object to verify
  *
- * @return {@code true} if {@code input} is potentially an instance of {@link FFunction1},
- *         {@code false} otherwise
+ * @return `true` if `input` is potentially an instance of {@link FFunction1},
+ *         `false` otherwise
  */
 export function isFFunction1<T, R>(input?: any): input is FFunction1<T, R> {
   return ObjectUtil.nonNullOrUndefined(input) &&
@@ -64,13 +64,13 @@ export class Function1<T, R> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link Function1}.
+   * Verifies if the given `input` is an instance of {@link Function1}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link Function1},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link Function1},
+   *         `false` otherwise
    */
   static isFunction = <T, R>(input?: any): input is Function1<T, R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -85,9 +85,9 @@ export class Function1<T, R> {
    * @param func
    *    {@link FFunction1} used to evaluates the given instance of T and return an R one
    *
-   * @return an {@link Function1} as wrapper of {@code mapper}
+   * @return an {@link Function1} as wrapper of `mapper`
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T, R>(func: FFunction1<T, R>): Function1<T, R>;
 
@@ -100,17 +100,17 @@ export class Function1<T, R> {
    *
    * @return {@link Function1} based on provided {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T, R>(func: TFunction1<T, R>): Function1<T, R>;
 
 
-  static of<T, R>(func: FFunction1<T, R> | TFunction1<T, R>): Function1<T, R> {
+  static of<T, R>(func: TFunction1<T, R>): Function1<T, R> {
     AssertUtil.notNullOrUndefined(
       func,
       'func must be not null and not undefined'
     );
-    return (func instanceof Function1)
+    return Function1.isFunction<T, R>(func)
       ? func
       : new Function1(func);
   }
@@ -118,15 +118,15 @@ export class Function1<T, R> {
 
   /**
    *    Returns a composed {@link Function1} that first applies this {@link Function1} to its input, and then
-   * applies the {@code after} {@link TFunction1} to the result.
+   * applies the `after` {@link TFunction1} to the result.
    *
    * @param after
    *    {@link TFunction1} to apply after this {@link Function1} is applied
    *
    * @return composed {@link Function1} that first applies this {@link Function1} and then applies the
-   *         {@code after} {@link TFunction1}
+   *         `after` {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen = <V>(after: TFunction1<R, V>): Function1<T, V> => {
     AssertUtil.notNullOrUndefined(
@@ -155,16 +155,16 @@ export class Function1<T, R> {
 
 
   /**
-   *    Returns a composed {@link Function1} that first applies the {@code before} {@link TFunction1} to its input,
+   *    Returns a composed {@link Function1} that first applies the `before` {@link TFunction1} to its input,
    * and then this {@link Function1} to the result.
    *
    * @param before
    *    {@link TFunction1} to apply before this {@link Function1} is applied
    *
-   * @return composed {@link Function1} that first applies the {@code before} {@link TFunction1} and then applies
+   * @return composed {@link Function1} that first applies the `before` {@link TFunction1} and then applies
    *         this {@link Function1}
    *
-   * @throws {@link IllegalArgumentError} if {@code before} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `before` is `null` or `undefined`
    */
   compose = <V>(before: TFunction1<V, T>): Function1<V, R> => {
     AssertUtil.notNullOrUndefined(

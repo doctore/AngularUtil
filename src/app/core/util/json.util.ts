@@ -23,13 +23,13 @@ export class JsonUtil {
 
 
   /**
-   * Transforms the given JSON-formatted {@code jsonArray} into an array of instances of type {@code T} .
+   * Transforms the given JSON-formatted `jsonArray` into an array of instances of @type {T}.
    *
    * @param jsonArray
    *    JSON-formatted string to transform
    *
-   * @return an array of instances of type {@code T}  if the {@code jsonArray} could be converted,
-   *         an empty array if {@code jsonArray} is {@code undefined}
+   * @return an array of instances of type @type {T}  if the `jsonArray` could be converted,
+   *         an empty array if `jsonArray` is `undefined`
    */
   static arrayFromJSON = <T>(jsonArray?: Nullable<string>): T[] => {
     const finalJsonArray = jsonArray || JsonUtil.EMPTY_ARRAY;
@@ -38,13 +38,13 @@ export class JsonUtil {
 
 
   /**
-   * Converts the incoming {@code array} into a JSON-formatted string.
+   * Converts the incoming `array` into a JSON-formatted string.
    *
    * @param array
    *    Array to convert to a JSON-formatted string
    *
-   * @return string with JSON-formatted if the {@code array} could be converted,
-   *         an empty array JSON representation if {@code array} is {@code undefined}
+   * @return string with JSON-formatted if the `array` could be converted,
+   *         an empty array JSON representation if `array` is `undefined`
    */
   static arrayToJSON = <T>(array?: Nullable<T[]>): string => {
     const finalArray = array || [];
@@ -53,10 +53,10 @@ export class JsonUtil {
 
 
   /**
-   *    Converts the incoming {@code object} into a JSON-formatted string. This method is the right option instead of
+   *    Converts the incoming `object` into a JSON-formatted string. This method is the right option instead of
    * {@link JsonUtil#toJSON} if:
    *
-   *  1. {@code object} belongs to a class instance whose properties were defined using "_" as a prefix.
+   *  1. `object` belongs to a class instance whose properties were defined using "_" as a prefix.
    *  2. Typescript getter/setter accessors were added into the class' definition.
    *
    * <pre>
@@ -94,7 +94,7 @@ export class JsonUtil {
    *    Object to convert to a JSON-formatted string
    *
    * @return string with JSON-formatted if the object could be converted,
-   *         an empty JSON if {@code object} is {@code null} or {@code undefined}
+   *         an empty JSON if `object` is `null` or `undefined`
    */
   static fromClassInstanceToJSON<T>(object?: Nullable<T>): string {
     if (object) {
@@ -122,14 +122,14 @@ export class JsonUtil {
 
 
   /**
-   * Transforms the given JSON-formatted {@code json} into an instance of type {@code T}.
+   * Transforms the given JSON-formatted `json` into an instance of type @type {T}.
    *
    * @param json
    *    JSON-formatted string to transform
    *
-   * @return an instance of type {@code T} if the {@code json} could be converted.
+   * @return an instance of type @type {T} if the `json` could be converted.
    *
-   * @throws {@link SyntaxError} if provided {@code json} is not a valid JSON-formatted string
+   * @throws {@link SyntaxError} if provided `json` is not a valid JSON-formatted string
    */
   static fromJSON = <T>(json?: Nullable<string>): T => {
     const finalJson = json || JsonUtil.EMPTY;
@@ -138,13 +138,13 @@ export class JsonUtil {
 
 
   /**
-   * Converts the incoming {@code object} into a JSON-formatted string.
+   * Converts the incoming `object` into a JSON-formatted string.
    *
    * @param object
    *    Object to convert to a JSON-formatted string
    *
-   * @return string with JSON-formatted if the {@code object} could be converted,
-   *         an empty JSON if {@code object} is {@code null} or {@code undefined}
+   * @return string with JSON-formatted if the `object` could be converted,
+   *         an empty JSON if `object` is `null` or `undefined`
    */
   static toJSON = <T>(object?: Nullable<T>): string => {
     return object

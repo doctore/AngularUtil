@@ -1,5 +1,5 @@
-import { Function3, PartialFunction, TFunction3 } from '@app-core/types/function';
-import { Predicate2, TPredicate2} from '@app-core/types/predicate';
+import { Function3, PartialFunction, TFunction2, TFunction3 } from '@app-core/types/function';
+import { Predicate2, TPredicate2 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
 
@@ -16,8 +16,8 @@ export class MapUtil {
   /**
    * Returns a {@link Map} after:
    * <p>
-   *  - Filter its elements using {@link PartialFunction#isDefinedAt} of {@code partialFunction}
-   *  - Transform its filtered elements using {@link PartialFunction#apply} of {@code partialFunction}
+   *  - Filter its elements using {@link PartialFunction#isDefinedAt} of `partialFunction`
+   *  - Transform its filtered elements using {@link PartialFunction#apply} of `partialFunction`
    *
    * <pre>
    * Example:
@@ -33,24 +33,69 @@ export class MapUtil {
    * @param sourceMap
    *    Source {@link Map} with the elements to filter and transform
    * @param partialFunction
-   *    {@link PartialFunction} to filter and transform elements from {@code sourceMap}
+   *    {@link PartialFunction} to filter and transform elements from `sourceMap`
    *
-   * @return new {@link Map} from applying the given {@link PartialFunction} to each element of {@code sourceMap}
+   * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
    *         on which it is defined and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if {@code partialFunction} is {@code null} or {@code undefined} with a not empty {@code sourceMap}
+   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
    */
-  static collect = <K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
-                                    partialFunction: PartialFunction<[K1, V1], [K2, V2]>): Map<K2, V2> => {
+  static collect<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                 partialFunction: PartialFunction<[K1, V1], [K2, V2]>): Map<K2, V2>;
+
+  /**
+   * Returns a {@link Map} after:
+   * <p>
+   * - Filter its elements using the {@link TPredicate2} `filterPredicate`
+   *  - Transform its filtered elements using the {@link TFunction2} `mapFunction`
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                        Result:
+   *    [(1, 'Hi'), (2, 'Hello')]                          [(1, 2)]
+   *    ([k, v]: [number, string]) => [k, v.length]
+   *    ([k, v]: [number, string]) => 1 == k % 2
+   * </pre>
+   *
+   * @param sourceMap
+   *    Source {@link Map} with the elements to filter and transform
+   * @param mapFunction
+   *    {@link TFunction2} to transform filtered elements of the source `sourceMap`
+   * @param filterPredicate
+   *    {@link TPredicate2} to filter elements from `sourceMap`
+   *
+   * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap`
+   *         on which {@link TPredicate2} returns `true` and collecting the results
+   *
+   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static collect<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                 mapFunction: TFunction2<K1, V1, [K2, V2]>,
+                                 filterPredicate: TPredicate2<K1, V1>): Map<K2, V2>;
+
+
+  static collect<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                 partialFunctionOrMapFunction: PartialFunction<[K1, V1], [K2, V2]> | TFunction2<K1, V1, [K2, V2]>,
+                                 filterPredicate?: TPredicate2<K1, V1>): Map<K2, V2> {
     let result = new Map<K2, V2>();
     if (!this.isEmpty(sourceMap)) {
       AssertUtil.notNullOrUndefined(
-        partialFunction,
-        'partialFunction must be not null and not undefined'
+        partialFunctionOrMapFunction,
+        'partialFunctionOrMapFunction must be not null and not undefined'
       );
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrMapFunction)
+        ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrMapFunction
+        : PartialFunction.of2(
+            filterPredicate!,
+            <TFunction2<K1, V1, [K2, V2]>>partialFunctionOrMapFunction
+          );
       for (let [key, value] of sourceMap!) {
-        if (partialFunction.isDefinedAt([key, value])) {
-          const elementResult = partialFunction.apply([key, value]);
+        if (finalPartialFunction.isDefinedAt([key, value])) {
+          const elementResult = finalPartialFunction.apply([key, value]);
           result.set(
             elementResult[0],
             elementResult[1]
@@ -63,11 +108,11 @@ export class MapUtil {
 
 
   /**
-   *    Returns a new {@link Map} using {@code sourceMap} as source, removing from the result the elements that verify the
-   * given {@link TPredicate2} {@code filterPredicate}.
+   *    Returns a new {@link Map} using `sourceMap` as source, removing from the result the elements that verify the
+   * given {@link TPredicate2} `filterPredicate`.
    *
    * @apiNote
-   *    If {@code filterPredicate} is {@code null} or {@code undefined} then {@link Predicate2#alwaysFalse} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysFalse} will be applied.
    *
    * <pre>
    * Example:
@@ -82,8 +127,8 @@ export class MapUtil {
    * @param filterPredicate
    *    {@link TPredicate2} used to find given elements to filter
    *
-   * @return empty {@link Map} if {@code sourceMap} has no elements,
-   *         otherwise a new {@link Map} with the elements of {@code sourceMap} which do not verify {@code filterPredicate}
+   * @return empty {@link Map} if `sourceMap` has no elements,
+   *         otherwise a new {@link Map} with the elements of `sourceMap` which do not verify `filterPredicate`
    */
   static dropWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                             filterPredicate: TPredicate2<K, V>): Map<K, V> => {
@@ -100,7 +145,7 @@ export class MapUtil {
 
 
   /**
-   * Returns from the given {@code sourceMap} the first element that verifies the provided {@code filterPredicate}.
+   * Returns from the given `sourceMap` the first element that verifies the provided `filterPredicate`.
    *
    * <pre>
    * Example:
@@ -115,9 +160,9 @@ export class MapUtil {
    * @param filterPredicate
    *    {@link TPredicate2} used to find given elements to filter
    *
-   * @return {@code undefined} if {@code sourceMap} has no elements, {@code filterPredicate} is {@code null} or {@code undefined}
-   *         or no one verifies provided {@code filterPredicate}.
-   *         Otherwise, a tuple with the first element that verifies {@code filterPredicate}.
+   * @return `undefined` if `sourceMap` has no elements, `filterPredicate` is `null` or `undefined`
+   *         or no one verifies provided `filterPredicate`.
+   *         Otherwise, a tuple with the first element that verifies `filterPredicate`.
    */
   static find = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                        filterPredicate: TPredicate2<K, V>): OrUndefined<[K, V]> => {
@@ -136,8 +181,8 @@ export class MapUtil {
 
 
   /**
-   *   Returns an {@link Optional} containing the first element of the given {@code sourceMap} hat verifies the provided
-   * {@code filterPredicate}, {@link Optional#empty} otherwise.
+   *   Returns an {@link Optional} containing the first element of the given `sourceMap` hat verifies the provided
+   * `filterPredicate`, {@link Optional#empty} otherwise.
    *
    * <pre>
    * Example:
@@ -152,7 +197,7 @@ export class MapUtil {
    * @param filterPredicate
    *    {@link TPredicate2} used to find given elements to filter
    *
-   * @return {@link Optional} containing the first element that satisfies {@code filterPredicate},
+   * @return {@link Optional} containing the first element that satisfies `filterPredicate`,
    *         {@link Optional#empty} otherwise.
    */
   static findOptional = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
@@ -166,8 +211,8 @@ export class MapUtil {
 
 
   /**
-   *    Using the given value {@code initialValue} as initial one, applies the provided {@link TFunction3} to all
-   * elements of {@code sourceMap}, going left to right.
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction3} to all
+   * elements of `sourceMap`, going left to right.
    *
    * <pre>
    * Example:
@@ -185,10 +230,10 @@ export class MapUtil {
    * @param accumulator
    *    A {@link TFunction3} which combines elements
    *
-   * @return result of inserting {@code accumulator} between consecutive elements {@code sourceMap}, going
-   *         left to right with the start value {@code initialValue} on the left.
+   * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going
+   *         left to right with the start value `initialValue` on the left.
    *
-   * @throws {@link IllegalArgumentError} if {@code accumulator} is {@code null} or {@code undefined} and {@code sourceMap} is not empty
+   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
    */
   static foldLeft = <K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                               initialValue: R,
@@ -210,13 +255,13 @@ export class MapUtil {
 
 
   /**
-   * Verifies if the given {@code mapToVerify} contains at least one element.
+   * Verifies if the given `mapToVerify` contains at least one element.
    *
    * @param mapToVerify
    *    {@link Map} to verify
    *
-   * @return {@code true} if {@code mapToVerify} is {@code undefined}, {@code null} or empty.
-   *         {@code false} otherwise.
+   * @return `true` if `mapToVerify` is `undefined`, `null` or empty.
+   *         `false` otherwise.
    */
   static isEmpty = (mapToVerify?: Nullable<Map<any, any>>): boolean =>
     ObjectUtil.isNullOrUndefined(mapToVerify) ||
@@ -224,11 +269,11 @@ export class MapUtil {
 
 
   /**
-   *    Returns a new {@link Map} using {@code sourceMap} as source, adding from the result the elements that verify the
-   * given {@link TPredicate2} {@code filterPredicate}.
+   *    Returns a new {@link Map} using `sourceMap` as source, adding from the result the elements that verify the
+   * given {@link TPredicate2} `filterPredicate`.
    *
    * @apiNote
-   *    If {@code filterPredicate} is {@code null} or {@code undefined} then {@link Predicate2#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
    *
    * <pre>
    * Example:
@@ -243,8 +288,8 @@ export class MapUtil {
    * @param filterPredicate
    *    {@link TPredicate2} used to find given elements to filter
    *
-   * @return empty {@link Map} if {@code sourceMap} has no elements or no one verifies provided {@code filterPredicate},
-   *         otherwise a new {@link Map} with the elements of {@code sourceMap} which verify {@code filterPredicate}
+   * @return empty {@link Map} if `sourceMap` has no elements or no one verifies provided `filterPredicate`,
+   *         otherwise a new {@link Map} with the elements of `sourceMap` which verify `filterPredicate`
    */
   static takeWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                             filterPredicate: TPredicate2<K, V>): Map<K, V> => {

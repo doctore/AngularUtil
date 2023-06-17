@@ -12,12 +12,12 @@ export class GenericSubject<T> {
 
 
   /**
-   * Returns a new {@link GenericSubject} using provided {@code firstValue} as initial value to send.
+   * Returns a new {@link GenericSubject} using provided `firstValue` as initial value to send.
    *
    * @param firstValue
    *    Initial value to send using internal {@link Subject}
    *
-   * @return a new {@link GenericSubject}, internally using {@link BehaviorSubject} if a {@code firstValue} was provided,
+   * @return a new {@link GenericSubject}, internally using {@link BehaviorSubject} if a `firstValue` was provided,
    *         or {@link Subject} otherwise.
    */
   static of = <T>(firstValue?: T): GenericSubject<T> =>
@@ -74,8 +74,8 @@ export class GenericSubject<T> {
 
 
   /**
-   *    Creates a new {@link Observable} with this {@link Subject} as the source, but using provided {@code unsubscribe}
-   * to know when to stop managing new values.
+   *    Creates a new {@link Observable} with this {@link Subject} as the source, but using provided `unsubscribe` to know
+   * when to stop managing new values.
    *
    * <pre>
    * Example:
@@ -130,7 +130,7 @@ export class GenericSubject<T> {
 
 
   /**
-   * Sends provided {@code value} to the created {@link Observable}s from current {@link Subject}.
+   * Sends provided `value` to the created {@link Observable}s from current {@link Subject}.
    *
    * @param value
    *    Data to send
@@ -140,7 +140,7 @@ export class GenericSubject<T> {
 
 
   /**
-   * Sends provided {@code error} to the created {@link Observable}s from current {@link Subject}.
+   * Sends provided `error` to the created {@link Observable}s from current {@link Subject}.
    *
    * @param error
    *    Error to send

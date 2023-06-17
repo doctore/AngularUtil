@@ -32,19 +32,19 @@ export type FFunction5<T1, T2, T3, T4, T5, R> =
 
 
 /**
- * Verifies if the given {@code input} is potentially an instance of {@link FFunction5}.
+ * Verifies if the given `input` is potentially an instance of {@link FFunction5}.
  * <p>
- *    It is important to know {@code input} could be 'something' different from {@link FFunction5}. To improve
+ *    It is important to know `input` could be 'something' different from {@link FFunction5}. To improve
  * the performance:
  * <p>
  *   1. Its type has been compared to a function.
- *   2. Check its number of parameters, however the default ones are not considered by the {@code length} function.
+ *   2. Check its number of parameters, however the default ones are not considered by the `length` function.
  *
  * @param input
  *    Object to verify
  *
- * @return {@code true} if {@code input} is potentially an instance of {@link FFunction5},
- *         {@code false} otherwise
+ * @return `true` if `input` is potentially an instance of {@link FFunction5},
+ *         `false` otherwise
  */
 export function isFFunction5<T1, T2, T3, T4, T5, R>(input?: any): input is FFunction5<T1, T2, T3, T4, T5, R> {
   return ObjectUtil.nonNullOrUndefined(input) &&
@@ -78,13 +78,13 @@ export class Function5<T1, T2, T3, T4, T5, R> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link Function5}.
+   * Verifies if the given `input` is an instance of {@link Function5}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link Function5},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link Function5},
+   *         `false` otherwise
    */
   static isFunction = <T1, T2, T3, T4, T5, R>(input?: any): input is Function5<T1, T2, T3, T4, T5, R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -98,9 +98,9 @@ export class Function5<T1, T2, T3, T4, T5, R> {
    * @param func
    *    {@link FFunction5} used to evaluates the given instances of T and return an R one
    *
-   * @return an {@link Function5} as wrapper of {@code mapper}
+   * @return an {@link Function5} as wrapper of `mapper`
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T1, T2, T3, T4, T5, R>(func: FFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R>;
 
@@ -113,17 +113,17 @@ export class Function5<T1, T2, T3, T4, T5, R> {
    *
    * @return {@link Function5} based on provided {@link TFunction5}
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T1, T2, T3, T4, T5, R>(func: TFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R>;
 
 
-  static of<T1, T2, T3, T4, T5, R>(func: FFunction5<T1, T2, T3, T4, T5, R> | TFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R> {
+  static of<T1, T2, T3, T4, T5, R>(func: TFunction5<T1, T2, T3, T4, T5, R>): Function5<T1, T2, T3, T4, T5, R> {
     AssertUtil.notNullOrUndefined(
       func,
       'func must be not null and not undefined'
     );
-    return (func instanceof Function5)
+    return Function5.isFunction<T1, T2, T3, T4, T5, R>(func)
       ? func
       : new Function5(func);
   }
@@ -131,15 +131,15 @@ export class Function5<T1, T2, T3, T4, T5, R> {
 
   /**
    *    Returns a composed {@link Function5} that first applies this {@link Function5} to its input, and then
-   * applies the {@code after} {@link TFunction1} to the result.
+   * applies the `after` {@link TFunction1} to the result.
    *
    * @param after
    *    {@link TFunction1} to apply after this {@link Function5} is applied
    *
    * @return composed {@link Function5} that first applies this {@link Function5} and then applies the
-   *         {@code after} {@link TFunction1}
+   *         `after` {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if {@code after} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen = <V>(after: TFunction1<R, V>): Function5<T1, T2, T3, T4, T5, V> => {
     AssertUtil.notNullOrUndefined(

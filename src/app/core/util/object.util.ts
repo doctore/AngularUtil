@@ -13,13 +13,13 @@ export class ObjectUtil {
 
 
   /**
-   * Returns {@code true} if {@code a} is equals to {@code b}, {@link false} otherwise.
+   * Returns `true` if `a` is equals to `b`, {@link false} otherwise.
    *
    * @apiNote
    *    This method supports comparing arrays, array buffers, booleans, date objects, error objects, maps, numbers,
    * {@link Object} objects, regexes, sets, strings, symbols, and typed arrays.
    * <p>
-   *    Comparing {@link Object} objects tries to find if the instance has defined the {@code equals} method, using it
+   *    Comparing {@link Object} objects tries to find if the instance has defined the `equals` method, using it
    * if exists. Otherwise, are compared by their own, not inherited, enumerable properties.
    * <p>
    *    Functions and DOM nodes are compared by strict equality, i.e. ===.
@@ -60,8 +60,8 @@ export class ObjectUtil {
    * @param b
    *    First value to compare
    *
-   * @return {@code true} if {@code a} is equals to {@code b},
-   *         {@code false} otherwise.
+   * @return `true` if `a` is equals to `b`,
+   *         `false` otherwise.
    */
   static equals = <T>(a: NullableOrUndefined<T>,
                       b: NullableOrUndefined<T>): boolean => {
@@ -82,42 +82,40 @@ export class ObjectUtil {
 
 
   /**
-   *    Returns the given {@code valueToVerify} if it is neither {@code undefined} nor {@code null},
-   * {@code defaultValue} otherwise.
+   *    Returns the given `valueToVerify` if it is neither `undefined` nor `null`,
+   * `defaultValue` otherwise.
    *
    * @param valueToVerify
-   *    Value to return if it is neither {@code undefined} nor {@code null}
+   *    Value to return if it is neither `undefined` nor `null`
    * @param defaultValue
-   *    Returned value if {@code valueToVerify} is {@code undefined} or {@code null}
+   *    Returned value if `valueToVerify` is `undefined` or `null`
    *
-   * @return {@code valueToVerify} if it is neither {@code undefined} nor {@code null},
-   *         {@code defaultValue} otherwise
+   * @return `valueToVerify` if it is neither `undefined` nor `null`,
+   *         `defaultValue` otherwise
    */
   static getOrElse<T>(valueToVerify: NullableOrUndefined<T>,
                       defaultValue: T): T;
 
 
   /**
-   *    Returns the given {@code valueToVerify} if it is neither {@code undefined} nor {@code null},
-   * the result after invoking {@code defaultValue} otherwise.
+   *    Returns the given `valueToVerify` if it is neither `undefined` nor `null`,
+   * the result after invoking `defaultValue` otherwise.
    *
    * <pre>
    * Example:
    *
-   *   // Will return 'DEFAULT VALUE'
-   *   getOrElse(
-   *      null,
-   *      () => 'DEFAULT VALUE'
-   *   );
+   *   Parameters:                    Result:
+   *    null                           'DEFAULT VALUE'
+   *    () => 'DEFAULT VALUE'
    * </pre>
    *
    * @param valueToVerify
-   *    Value to return if it is neither {@code undefined} nor {@code null}
+   *    Value to return if it is neither `undefined` nor `null`
    * @param defaultValue
-   *    {@link TFunction0} to invoke if {@code valueToVerify} is {@code undefined} or {@code null}
+   *    {@link TFunction0} to invoke if `valueToVerify` is `undefined` or `null`
    *
-   * @return {@code valueToVerify} if it is neither {@code undefined} nor {@code null},
-   *         the result after invoking {@code defaultValue} otherwise
+   * @return `valueToVerify` if it is neither `undefined` nor `null`,
+   *         the result after invoking `defaultValue` otherwise
    */
   static getOrElse<T>(valueToVerify: NullableOrUndefined<T>,
                       defaultValue: TFunction0<T>): T;
@@ -140,26 +138,26 @@ export class ObjectUtil {
 
 
   /**
-   * Verifies if the provided {@code valueToVerify} is {@code null} or {@code undefined}.
+   * Verifies if the provided `valueToVerify` is `null` or `undefined`.
    *
    * @param valueToVerify
-   *    Value to return if it is {@code undefined} or {@code null}
+   *    Value to return if it is `undefined` or `null`
    *
-   * @return {@code true} if the provided {@code valueToVerify} is {@code null} or {@code undefined},
-   *         {@code false} otherwise.
+   * @return `true` if the provided `valueToVerify` is `null` or `undefined`,
+   *         `false` otherwise.
    */
   static isNullOrUndefined = (valueToVerify: any): valueToVerify is null | undefined =>
     _.isNil(valueToVerify);
 
 
   /**
-   * Verifies if the provided {@code valueToVerify} is {@code null} or {@code undefined}.
+   * Verifies if the provided `valueToVerify` is `null` or `undefined`.
    *
    * @param valueToVerify
-   *    Value to return if it is {@code undefined} or {@code null}
+   *    Value to return if it is `undefined` or `null`
    *
-   * @return {@code true} if the provided {@code valueToVerify} is not {@code null} and not {@code undefined},
-   *         {@code false} otherwise.
+   * @return `true` if the provided `valueToVerify` is not `null` and not `undefined`,
+   *         `false` otherwise.
    */
   static nonNullOrUndefined = <T>(valueToVerify: NullableOrUndefined<T>): valueToVerify is Exclude<typeof valueToVerify, null | undefined> =>
     !this.isNullOrUndefined(valueToVerify);

@@ -1,7 +1,7 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction2, Function2, PartialFunction } from '@app-core/types/function';
-import { Predicate1 } from '@app-core/types/predicate';
+import { FFunction1, FFunction2, Function2, PartialFunction } from '@app-core/types/function';
+import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -24,7 +24,7 @@ describe('ArrayUtil', () => {
 
   describe('collect', () => {
 
-    it('when given sourceArray has no elements then empty array is returned', () => {
+    it('when given sourceArray has no elements and partialFunction is provided then empty array is returned', () => {
       let emptyArray: number[] = [];
       const multiply2AndStringForEven: PartialFunction<number, string> =
         PartialFunction.of(
@@ -40,12 +40,37 @@ describe('ArrayUtil', () => {
     });
 
 
+    it('when given sourceArray has no elements and mapFunction and filterPredicate are provided then empty array is returned', () => {
+      let emptyArray: number[] = [];
+      const isIdEven: FPredicate1<number> = (n: number) => 0 == n % 2;
+      const multiply2AndString: FFunction1<number, string> = (n: number) => '' + (2 * n);
+
+      const expectedResult: string[] = [];
+
+      expect(ArrayUtil.collect(null, multiply2AndString, isIdEven)).toEqual(expectedResult);
+      expect(ArrayUtil.collect(undefined, multiply2AndString, isIdEven)).toEqual(expectedResult);
+      expect(ArrayUtil.collect(emptyArray, multiply2AndString, isIdEven)).toEqual(expectedResult);
+    });
+
+
     it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
       // @ts-ignore
       expect(() => ArrayUtil.collect([1], null)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
       expect(() => ArrayUtil.collect([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray is not empty but mapFunction is null or undefined then an error is thrown', () => {
+      const isIdEven: FPredicate1<number> =
+        (n: number) => 0 == n % 2;
+
+      // @ts-ignore
+      expect(() => ArrayUtil.collect([1], null, isIdEven)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.collect([1], undefined, isIdEven)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -65,6 +90,44 @@ describe('ArrayUtil', () => {
       );
     });
 
+
+    it('when given sourceArray has elements and mapFunction is valid but filterPredicate is null or undefined then all elements will be transformed', () => {
+      let sourceArray: number[] = [1, 2, 3, 6];
+      const multiply2AndString: FFunction1<number, string> =
+        (n: number) => '' + (2 * n);
+
+      const expectedResult: string[] = ['2', '4', '6', '12'];
+
+      verifyArrays(
+        // @ts-ignore
+        ArrayUtil.collect(sourceArray, multiply2AndString, null),
+        expectedResult
+      );
+
+      verifyArrays(
+        // @ts-ignore
+        ArrayUtil.collect(sourceArray, multiply2AndString, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and mapFunction and filterPredicate are valid then a new filtered and transformed array is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6];
+      const isIdEven: FPredicate1<number> =
+        (n: number) => 0 == n % 2;
+
+      const multiply2AndString: FFunction1<number, string> =
+        (n: number) => '' + (2 * n);
+
+      const expectedResult: string[] = ['4', '12'];
+
+      verifyArrays(
+        ArrayUtil.collect(sourceArray, multiply2AndString, isIdEven),
+        expectedResult
+      );
+    });
+
   });
 
 
@@ -73,7 +136,8 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       let emptyArray: Role[] = [];
-      const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
+      const isIdEven: Predicate1<Role> =
+        Predicate1.of((role: Role) => 0 == role.id % 2);
 
       expect(ArrayUtil.dropWhile(null, isIdEven)).toEqual(emptyArray);
       expect(ArrayUtil.dropWhile(undefined, isIdEven)).toEqual(emptyArray);
@@ -106,7 +170,8 @@ describe('ArrayUtil', () => {
       const r3 = { id: 3, name: 'role3' } as Role;
       const sourceArray = [r1, r2, r3];
 
-      const isIdOdd: Predicate1<NullableOrUndefined<Role>> = Predicate1.of((role: NullableOrUndefined<Role>) => 1 == role!.id % 2);
+      const isIdOdd: FPredicate1<NullableOrUndefined<Role>> =
+        (role: NullableOrUndefined<Role>) => 1 == role!.id % 2;
 
       verifyArrays(
         ArrayUtil.dropWhile(sourceArray, isIdOdd),
@@ -141,7 +206,8 @@ describe('ArrayUtil', () => {
       let nullArray: Role[] = null;
       let emptyArray: Role[] = [];
 
-      const isIdOdd: Predicate1<Role> = Predicate1.of((role: Role) => 1 == role.id % 2);
+      const isIdOdd: Predicate1<Role> =
+        Predicate1.of((role: Role) => 1 == role.id % 2);
 
       // @ts-ignore
       expect(ArrayUtil.find(undefinedArray, isIdOdd)).toBeUndefined();
@@ -166,7 +232,8 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, name: 'role2' } as Role;
       const sourceArray = [r1, r2, r3, r4];
 
-      const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: Role) => 10 < role.id);
+      const isIdGreaterThan10: Predicate1<Role> =
+        Predicate1.of((role: Role) => 10 < role.id);
 
       expect(ArrayUtil.find(sourceArray, isIdGreaterThan10)).toBeUndefined();
     });
@@ -179,7 +246,8 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const sourceArray = [u1, u2, u3, u4];
 
-      const isIdGreaterThan10: Predicate1<NullableOrUndefined<User>> = Predicate1.of((user: NullableOrUndefined<User>) => 10 < user!.id);
+      const isIdGreaterThan10: FPredicate1<NullableOrUndefined<User>> =
+        (user: NullableOrUndefined<User>) => 10 < user!.id;
 
       expect(ArrayUtil.find(sourceArray, isIdGreaterThan10)).toBeUndefined();
     });
@@ -205,7 +273,8 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const sourceArray = [u1, u2, u3, u4];
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
+      const isIdOdd: Predicate1<User> =
+        Predicate1.of((user: User) => 1 == user.id % 2);
 
       expect(ArrayUtil.find(sourceArray, isIdOdd)).toEqual(u1);
     });
@@ -222,7 +291,8 @@ describe('ArrayUtil', () => {
       let nullArray: Role[] = null;
       let emptyArray: Role[] = [];
 
-      const isIdOdd: Predicate1<Role> = Predicate1.of((role: Role) => 1 == role.id % 2);
+      const isIdOdd: Predicate1<Role> =
+        Predicate1.of((role: Role) => 1 == role.id % 2);
 
       // @ts-ignore
       expect(ArrayUtil.findOptional(undefinedArray, isIdOdd).isPresent()).toBeFalse();
@@ -247,7 +317,7 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, name: 'role2' } as Role;
       const sourceArray = [r1, r2, r3, r4];
 
-      const isIdGreaterThan10: Predicate1<Role> = Predicate1.of((role: Role) => 10 < role.id);
+      const isIdGreaterThan10 = (role: Role) => 10 < role.id;
 
       expect(ArrayUtil.findOptional(sourceArray, isIdGreaterThan10).isPresent()).toBeFalse();
     });
@@ -260,7 +330,8 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const sourceArray = [u1, u2, u3, u4];
 
-      const isIdGreaterThan10: Predicate1<User> = Predicate1.of((user: User) => 10 < user.id);
+      const isIdGreaterThan10: FPredicate1<User> =
+        (user: User) => 10 < user.id;
 
       expect(ArrayUtil.findOptional(sourceArray, isIdGreaterThan10).isPresent()).toBeFalse();
     });
@@ -291,7 +362,8 @@ describe('ArrayUtil', () => {
       const u4 = new User(4, 'user1');
       const sourceArray = [u1, u2, u3, u4];
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
+      const isIdOdd: Predicate1<User> =
+        Predicate1.of((user: User) => 1 == user.id % 2);
 
       const expectedResult = u1;
 
@@ -390,7 +462,7 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       let emptyArray: Role[] = [];
-      const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
+      const isIdEven = (role: Role) => 0 == role.id % 2;
 
       expect(ArrayUtil.takeWhile(null, isIdEven)).toEqual(emptyArray);
       expect(ArrayUtil.takeWhile(undefined, isIdEven)).toEqual(emptyArray);
@@ -423,7 +495,7 @@ describe('ArrayUtil', () => {
       const r3 = { id: 3, name: 'role3' } as Role;
       const sourceArray = [r1, r2, r3];
 
-      const isIdOdd: Predicate1<Role> = Predicate1.of((role: Role) => 1 == role.id % 2);
+      const isIdOdd = (role: Role) => 1 == role.id % 2;
 
       verifyArrays(
         ArrayUtil.takeWhile(sourceArray, isIdOdd),
@@ -438,7 +510,8 @@ describe('ArrayUtil', () => {
       const u3 = new User(3, 'user3');
       const sourceArray = [u1, u2, u3];
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
+      const isIdOdd: Predicate1<User> =
+        Predicate1.of((user: User) => 1 == user.id % 2);
 
       verifyArrays(
         ArrayUtil.takeWhile(sourceArray, isIdOdd),

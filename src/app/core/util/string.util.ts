@@ -12,7 +12,7 @@ export class StringUtil {
 
 
   /**
-   * Checks if the given {@code input} is {@code null}, {@code undefined}, an empty string ('') or whitespace.
+   * Checks if the given `input` is `null`, `undefined`, an empty string ('') or whitespace.
    *
    * <pre>
    * Example:
@@ -28,7 +28,7 @@ export class StringUtil {
    * @param inputToCheck
    *    String to verify
    *
-   * @return {@code true} if {@code input} is {@code undefined}, {@code null} or has no characters
+   * @return `true` if `input` is `undefined`, `null` or has no characters
    */
   static isBlank = (inputToCheck: NullableOrUndefined<string>): boolean =>
     ObjectUtil.isNullOrUndefined(inputToCheck) ||
@@ -36,7 +36,7 @@ export class StringUtil {
 
 
   /**
-   * Checks if the given {@code input} is {@code null}, {@code undefined} or an empty string ('').
+   * Checks if the given `input` is `null`, `undefined` or an empty string ('').
    *
    * <pre>
    * Example:
@@ -52,7 +52,7 @@ export class StringUtil {
    * @param inputToCheck
    *    String to verify
    *
-   * @return {@code true} if {@code input} is {@code undefined}, {@code null} or has no characters
+   * @return `true` if `input` is `undefined`, `null` or has no characters
    */
   static isEmpty = (inputToCheck: NullableOrUndefined<string>): boolean =>
     ObjectUtil.isNullOrUndefined(inputToCheck) ||

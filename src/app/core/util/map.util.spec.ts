@@ -1,6 +1,6 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
-import { FFunction3, PartialFunction } from '@app-core/types/function';
-import { Predicate2 } from '@app-core/types/predicate';
+import { FFunction3, Function2, PartialFunction } from '@app-core/types/function';
+import { FPredicate2, Predicate2 } from '@app-core/types/predicate';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
 
@@ -24,7 +24,7 @@ describe('MapUtil', () => {
 
   describe('collect', () => {
 
-    it('when given sourceMap has no elements then empty Map is returned', () => {
+    it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
       let emptyMap = new Map<number, string>();
       const keyAndValueLengthForOdd: PartialFunction<[number, string], [number, number]> =
         PartialFunction.of(
@@ -32,11 +32,20 @@ describe('MapUtil', () => {
           ([k, v]: [number, string]) => [k, v.length]
         );
 
-      const expectedResult = new Map<number, number>();
+      expect(MapUtil.collect(null, keyAndValueLengthForOdd)).toEqual(emptyMap);
+      expect(MapUtil.collect(undefined, keyAndValueLengthForOdd)).toEqual(emptyMap);
+      expect(MapUtil.collect(emptyMap, keyAndValueLengthForOdd)).toEqual(emptyMap);
+    });
 
-      expect(MapUtil.collect(null, keyAndValueLengthForOdd)).toEqual(expectedResult);
-      expect(MapUtil.collect(undefined, keyAndValueLengthForOdd)).toEqual(expectedResult);
-      expect(MapUtil.collect(emptyMap, keyAndValueLengthForOdd)).toEqual(expectedResult);
+
+    it('when given sourceMap has no elements and mapFunction and filterPredicate are provided then Map array is returned', () => {
+      let emptyMap = new Map<number, string>();
+      const isKeyEven = (k: number, v: string) => 1 == k % 2;
+      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
+
+      expect(MapUtil.collect(null, keyAndValueLength, isKeyEven)).toEqual(emptyMap);
+      expect(MapUtil.collect(undefined, keyAndValueLength, isKeyEven)).toEqual(emptyMap);
+      expect(MapUtil.collect(emptyMap, keyAndValueLength, isKeyEven)).toEqual(emptyMap);
     });
 
 
@@ -49,6 +58,20 @@ describe('MapUtil', () => {
 
       // @ts-ignore
       expect(() => MapUtil.collect(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty but mapFunction is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      const isKeyEven = (k: number, v: string) => 1 == k % 2;
+
+      // @ts-ignore
+      expect(() => MapUtil.collect(sourceMap, null, isKeyEven)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.collect(sourceMap, undefined, isKeyEven)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -74,6 +97,56 @@ describe('MapUtil', () => {
       );
     });
 
+
+    it('when given sourceMap has elements and mapFunction is valid but filterPredicate is null or undefined then all elements will be transformed', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'Hola');
+
+      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
+
+      const expectedResult = new Map<number, number>();
+      expectedResult.set(1, 2);
+      expectedResult.set(2, 5);
+      expectedResult.set(3, 4);
+
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.collect(sourceMap, keyAndValueLength, null),
+        expectedResult
+      );
+
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.collect(sourceMap, keyAndValueLength, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and mapFunction and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'Hola');
+
+      const isKeyEven: Predicate2<number, string> =
+        Predicate2.of((k: number, v: string) => 1 == k % 2);
+
+      const keyAndValueLength: Function2<number, string, [number, number]> =
+        Function2.of((k: number, v: string) => [k, v.length]);
+
+      const expectedResult = new Map<number, number>();
+      expectedResult.set(1, 2);
+      expectedResult.set(3, 4);
+
+      verifyMaps(
+        MapUtil.collect(sourceMap, keyAndValueLength, isKeyEven),
+        expectedResult
+      );
+    });
+
   });
 
 
@@ -82,7 +155,8 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       let emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> = Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
       expect(MapUtil.dropWhile(null, areKeyValueEven)).toEqual(emptyMap);
       expect(MapUtil.dropWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
@@ -171,7 +245,8 @@ describe('MapUtil', () => {
 
     it('when given sourceMap is undefined, null or is an empty Map then undefined is returned', () => {
       let emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> = Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
       expect(MapUtil.find(null, areKeyValueEven)).toBeUndefined();
       expect(MapUtil.find(undefined, areKeyValueEven)).toBeUndefined();
@@ -233,7 +308,9 @@ describe('MapUtil', () => {
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
 
-      const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+      const isKeyAndRoleIdOdd: Predicate2<number, Role> =
+        Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+
       const expectedResult: [number, Role] = [r1.id, r1];
 
       const result = MapUtil.find(sourceMap, isKeyAndRoleIdOdd);
@@ -256,7 +333,9 @@ describe('MapUtil', () => {
       sourceMap.set(u3.id, u3);
       sourceMap.set(u4.id, u4);
 
-      const isKeyAndUserIdEven: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 0 == k % 2 && 0 == user.id % 2);
+      const isKeyAndUserIdEven: FPredicate2<number, User> =
+        (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
+
       const expectedResult: [number, User] = [u2.id, u2];
 
       const result = MapUtil.find(sourceMap, isKeyAndUserIdEven);
@@ -274,7 +353,8 @@ describe('MapUtil', () => {
 
     it('when given sourceMap is undefined, null or is an empty Map then empty Optional is returned', () => {
       let emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> = Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
       expect(MapUtil.findOptional(null, areKeyValueEven).isPresent()).toBeFalse();
       expect(MapUtil.findOptional(undefined, areKeyValueEven).isPresent()).toBeFalse();
@@ -304,7 +384,8 @@ describe('MapUtil', () => {
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
 
-      const isKeyAndIdGreaterThan10: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 10 < k && 10 < role.id);
+      const isKeyAndIdGreaterThan10: Predicate2<number, Role> =
+        Predicate2.of((k: number, role: Role) => 10 < k && 10 < role.id);
 
       expect(MapUtil.findOptional(sourceMap, isKeyAndIdGreaterThan10).isPresent()).toBeFalse();
     });
@@ -320,7 +401,8 @@ describe('MapUtil', () => {
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
 
-      const isKeyAndIdGreaterThan10: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 10 < k && 10 < user.id);
+      const isKeyAndIdGreaterThan10: FPredicate2<number, User> =
+        (k: number, user: User) => 10 < k && 10 < user.id;
 
       expect(MapUtil.findOptional(sourceMap, isKeyAndIdGreaterThan10).isPresent()).toBeFalse();
     });
@@ -336,7 +418,9 @@ describe('MapUtil', () => {
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
 
-      const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+      const isKeyAndRoleIdOdd: Predicate2<number, Role> =
+        Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+
       const expectedResult: Optional<[number, Role]> = Optional.of([r1.id, r1]);
 
       const result = MapUtil.findOptional(sourceMap, isKeyAndRoleIdOdd);
@@ -359,7 +443,9 @@ describe('MapUtil', () => {
       sourceMap.set(u3.id, u3);
       sourceMap.set(u4.id, u4);
 
-      const isKeyAndUserIdEven: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 0 == k % 2 && 0 == user.id % 2);
+      const isKeyAndUserIdEven: FPredicate2<number, User> =
+        (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
+
       const expectedResult: Optional<[number, User]> = Optional.of([u2.id, u2]);
 
       const result = MapUtil.findOptional(sourceMap, isKeyAndUserIdEven);
@@ -452,7 +538,8 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       let emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> = Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
       expect(MapUtil.takeWhile(null, areKeyValueEven)).toEqual(emptyMap);
       expect(MapUtil.takeWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
@@ -503,7 +590,8 @@ describe('MapUtil', () => {
       expectedResult.set(r1.id, r1);
       expectedResult.set(r3.id, r3);
 
-      const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+      const isKeyAndRoleIdOdd: FPredicate2<number, Role> =
+        (k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2;
 
       verifyMaps(
         MapUtil.takeWhile(sourceMap, isKeyAndRoleIdOdd),

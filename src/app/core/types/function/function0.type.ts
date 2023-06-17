@@ -17,19 +17,19 @@ export type FFunction0<R> =
 
 
 /**
- * Verifies if the given {@code input} is potentially an instance of {@link FFunction0}.
+ * Verifies if the given `input` is potentially an instance of {@link FFunction0}.
  * <p>
- *    It is important to know {@code input} could be 'something' different from {@link FFunction0}. To improve
+ *    It is important to know `input` could be 'something' different from {@link FFunction0}. To improve
  * the performance:
  * <p>
  *   1. Its type has been compared to a function.
- *   2. Check its number of parameters, however the default ones are not considered by the {@code length} function.
+ *   2. Check its number of parameters, however the default ones are not considered by the `length` function.
  *
  * @param input
  *    Object to verify
  *
- * @return {@code true} if {@code input} is potentially an instance of {@link FFunction0},
- *         {@code false} otherwise
+ * @return `true` if `input` is potentially an instance of {@link FFunction0},
+ *         `false` otherwise
  */
 export function isFFunction0<R>(input?: any): input is FFunction0<R> {
   return ObjectUtil.nonNullOrUndefined(input) &&
@@ -53,13 +53,13 @@ export class Function0<R> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link Function0}.
+   * Verifies if the given `input` is an instance of {@link Function0}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link Function0},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link Function0},
+   *         `false` otherwise
    */
   static isFunction = <R>(input?: any): input is Function0<R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -72,9 +72,9 @@ export class Function0<R> {
    * @param func
    *    {@link FFunction0} used to return instances of R
    *
-   * @return an {@link Function0} as wrapper of {@code mapper}
+   * @return an {@link Function0} as wrapper of `mapper`
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<R>(func: FFunction0<R>): Function0<R>;
 
@@ -87,17 +87,17 @@ export class Function0<R> {
    *
    * @return {@link Function0} based on provided {@link TFunction0}
    *
-   * @throws {@link IllegalArgumentError} if {@code func} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<R>(func: TFunction0<R>): Function0<R>;
 
 
-  static of<R>(func: FFunction0<R> | TFunction0<R>): Function0<R> {
+  static of<R>(func: TFunction0<R>): Function0<R> {
     AssertUtil.notNullOrUndefined(
       func,
       'func must be not null and not undefined'
     );
-    return (func instanceof Function0)
+    return Function0.isFunction<R>(func)
       ? func
       : new Function0(func);
   }

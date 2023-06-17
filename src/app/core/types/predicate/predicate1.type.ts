@@ -18,19 +18,19 @@ export type FPredicate1<T> =
 
 
 /**
- * Verifies if the given {@code input} is potentially an instance of {@link FPredicate1}.
+ * Verifies if the given `input` is potentially an instance of {@link FPredicate1}.
  * <p>
- *    It is important to know {@code input} could be 'something' different from {@link FPredicate1}. To improve
+ *    It is important to know `input` could be 'something' different from {@link FPredicate1}. To improve
  * the performance:
  * <p>
  *   1. Its type has been compared to a function.
- *   2. Check its number of parameters, however the default ones are not considered by the {@code length} function.
+ *   2. Check its number of parameters, however the default ones are not considered by the `length` function.
  *
  * @param input
  *    Object to verify
  *
- * @return {@code true} if {@code input} is potentially an instance of {@link FPredicate1},
- *         {@code false} otherwise
+ * @return `true` if `input` is potentially an instance of {@link FPredicate1},
+ *         `false` otherwise
  */
 export function isFPredicate1<T>(input?: any): input is FPredicate1<T> {
   return ObjectUtil.nonNullOrUndefined(input) &&
@@ -54,7 +54,7 @@ export class Predicate1<T> {
 
 
   /**
-   * Checks all given {@code predicates} to verify if all of them are satisfied.
+   * Checks all given `predicates` to verify if all of them are satisfied.
    *
    * <pre>
    * Example:
@@ -90,7 +90,7 @@ export class Predicate1<T> {
 
 
   /**
-   * Returns a {@link Predicate1} with {@code false} as result.
+   * Returns a {@link Predicate1} with `false` as result.
    *
    * @return {@link Predicate1}
    */
@@ -99,7 +99,7 @@ export class Predicate1<T> {
 
 
   /**
-   * Returns a {@link Predicate1} with {@code true} as result.
+   * Returns a {@link Predicate1} with `true` as result.
    *
    * @return {@link Predicate1}
    */
@@ -108,7 +108,7 @@ export class Predicate1<T> {
 
 
   /**
-   * Checks all given {@code predicates} to verify that at least one is satisfied.
+   * Checks all given `predicates` to verify that at least one is satisfied.
    *
    * <pre>
    * Example:
@@ -143,13 +143,13 @@ export class Predicate1<T> {
 
 
   /**
-   * Verifies if the given {@code input} is an instance of {@link Predicate1}.
+   * Verifies if the given `input` is an instance of {@link Predicate1}.
    *
    * @param input
    *    Object to verify
    *
-   * @return {@code true} if {@code input} is an instance of {@link Predicate1},
-   *         {@code false} otherwise
+   * @return `true` if `input` is an instance of {@link Predicate1},
+   *         `false` otherwise
    */
   static isPredicate = <T>(input?: any): input is Predicate1<T> =>
     ObjectUtil.nonNullOrUndefined(input) &&
@@ -165,9 +165,9 @@ export class Predicate1<T> {
    * @param predicate
    *    {@link FPredicate1} used to evaluates the given instances of T
    *
-   * @return an {@link Predicate1} as wrapper of {@code verifier}
+   * @return an {@link Predicate1} as wrapper of `verifier`
    *
-   * @throws {@link IllegalArgumentError} if {@code predicate} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `predicate` is `null` or `undefined`
    */
   static of<T>(predicate: FPredicate1<T>): Predicate1<T>;
 
@@ -180,7 +180,7 @@ export class Predicate1<T> {
    *
    * @return {@link Predicate1} based on provided {@link TPredicate1}
    *
-   * @throws {@link IllegalArgumentError} if {@code predicate} is {@code null} or {@code undefined}
+   * @throws {@link IllegalArgumentError} if `predicate` is `null` or `undefined`
    */
   static of<T>(predicate: TPredicate1<T>): Predicate1<T>;
 
@@ -190,7 +190,7 @@ export class Predicate1<T> {
       predicate,
       'predicate must be not null and not undefined'
     );
-    return (predicate instanceof Predicate1)
+    return Predicate1.isPredicate<T>(predicate)
       ? predicate
       : new Predicate1(predicate);
   }
@@ -198,17 +198,17 @@ export class Predicate1<T> {
 
   /**
    *    Returns a composed {@link Predicate1} that represents a short-circuiting logical AND of this {@link Predicate1}
-   * and another. When evaluating the composed {@link Predicate1}, if this {@link Predicate1} is {@code false}, then
+   * and another. When evaluating the composed {@link Predicate1}, if this {@link Predicate1} is `false`, then
    * the other {@link Predicate1} is not evaluated.
    *
    * @apiNote
-   *    If {@code predicate} is {@code null} or {@code undefined} then only this {@link Predicate1} will be applied.
+   *    If `predicate` is `null` or `undefined` then only this {@link Predicate1} will be applied.
    *
    * @param predicate
    *    {@link TPredicate1} that will be logically-ANDed with this {@link Predicate1}
    *
    * @return a composed {@link Predicate1} that represents the short-circuiting logical AND of this {@link Predicate1}
-   *         and {@code predicate}
+   *         and `predicate`
    */
   and = (predicate: TPredicate1<T>): Predicate1<T> =>
     ObjectUtil.isNullOrUndefined(predicate)
@@ -224,13 +224,13 @@ export class Predicate1<T> {
 
 
   /**
-   * Evaluates this {@link Predicate1} on the given {@code t}.
+   * Evaluates this {@link Predicate1} on the given @type {T}.
    *
    * @param t
    *    The input argument
    *
-   * @return {@code true} if the input argument matches the predicate,
-   *         {@code false} otherwise
+   * @return `true` if the input argument matches the predicate,
+   *         `false` otherwise
    */
   apply = (t: T): boolean =>
     this.verifier(t);
@@ -250,17 +250,17 @@ export class Predicate1<T> {
 
   /**
    *   Returns a composed {@link Predicate1} that represents a short-circuiting logical OR of this {@link Predicate1}
-   * and another. When evaluating the composed {@link Predicate1}, if this {@link Predicate1} is {@code true}, then
+   * and another. When evaluating the composed {@link Predicate1}, if this {@link Predicate1} is `true`, then
    * the other {@link Predicate1} is not evaluated.
    *
    * @apiNote
-   *    If {@code predicate} is {@code null} or {@code undefined} then only this {@link Predicate1} will be applied.
+   *    If `predicate` is `null` or `undefined` then only this {@link Predicate1} will be applied.
    *
    * @param predicate
    *    {@link TPredicate1} that will be logically-ORed with this {@link Predicate1}
    *
    * @return a composed {@link Predicate1} that represents the short-circuiting logical OR of this {@link Predicate1}
-   *         and {@code predicate}
+   *         and `predicate`
    */
   or = (predicate: TPredicate1<T>): Predicate1<T> =>
     ObjectUtil.isNullOrUndefined(predicate)
