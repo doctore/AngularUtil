@@ -27,7 +27,10 @@ import {
  * @typeParam <T>
  *    Value type in the case of {@link Success}
  */
-export abstract class Try<T> {
+export abstract class Try<T extends any> {
+
+  private static readonly DEFAULT_ERROR_MESSAGE = 'An unknown error was thrown, error = ';
+
 
   /**
    * Gets the value of this {@link Try} if is a {@link Success} or throws if this is an {@link Failure}.
@@ -73,11 +76,7 @@ export abstract class Try<T> {
       );
 
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
-
-      return this.failure(finalError);
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -102,11 +101,7 @@ export abstract class Try<T> {
       );
 
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
-
-      return this.failure(finalError);
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -134,11 +129,7 @@ export abstract class Try<T> {
       );
 
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
-
-      return this.failure(finalError);
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -169,11 +160,7 @@ export abstract class Try<T> {
       );
 
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
-
-      return this.failure(finalError);
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -207,11 +194,7 @@ export abstract class Try<T> {
       );
 
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
-
-      return this.failure(finalError);
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -248,11 +231,7 @@ export abstract class Try<T> {
       );
 
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
-
-      return this.failure(finalError);
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -450,6 +429,101 @@ export abstract class Try<T> {
 
 
   /**
+   *    Whereas {@link Try#mapSuccess} with `mapper` argument only performs a mapping on a {@link Success} {@link Try},
+   * and {@link Try#mapFailure} performs a mapping on an {@link Failure} {@link Try}, this method with two {@link TFunction1}
+   * mappers as arguments, allows you to provide mapping actions for both, and will give you the result based on what
+   * type of {@link Try} this is. Without this, you would have to do something like:
+   *
+   * <pre>
+   * Example:
+   *
+   *   t.mapSuccess(...).mapFailure(...);
+   * </pre>
+   *
+   * If invoking given `mapperFailure` or `mapperSuccess` an {@link Error} is thrown then returned {@link Try} will {@link Failure}.
+   *
+   * @param mapperFailure
+   *    {@link TFunction1} with the failure mapping operation
+   * @param mapperSuccess
+   *    {@link TFunction1} with the success mapping operation
+   *
+   * @return {@link Try}
+   *
+   * @throws {@link IllegalArgumentError} if `mapperFailure` is `null` or `undefined` and the current instance is a {@link Success} one
+   *                                      or `mapperSuccess` is `null` or `undefined` and the current instance is a {@link Failure} one
+   */
+  map = <U>(mapperFailure: TFunction1<Error, Error>,
+            mapperSuccess: TFunction1<T, U>): Try<U> => {
+    if (this.isSuccess()) {
+      AssertUtil.notNullOrUndefined(
+        mapperSuccess,
+        'mapperSuccess must be not null and not undefined'
+      );
+      return this.internalMapTry(mapperSuccess);
+    } else {
+      AssertUtil.notNullOrUndefined(
+        mapperFailure,
+        'mapperFailure must be not null and not undefined'
+      );
+      return Try.failure<U>(
+        this.internalMapFailureTry(mapperFailure)
+          .getError()
+      );
+    }
+  }
+
+
+  /**
+   *    Applies a {@link TFunction1} `mapper` to the stored value of this {@link Try} if this is a {@link Failure}.
+   * Otherwise, does nothing if this is a {@link Success}.
+   * <p>
+   * If given `mapper` invocation returns an {@link Error}, then returned {@link Try} will {@link Failure}.
+   *
+   * @param mapper
+   *    The {@link TFunction1} mapping function to apply to a value of a {@link Failure} instance.
+   *
+   * @return new {@link Try}
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
+   */
+  mapFailure = (mapper: TFunction1<Error, Error>): Try<T> => {
+    if (!this.isSuccess()) {
+      AssertUtil.notNullOrUndefined(
+        mapper,
+        'mapper must be not null and not undefined'
+      );
+      return this.internalMapFailureTry(mapper);
+    }
+    return Try.success(this.get());
+  }
+
+
+  /**
+   *    Applies a {@link TFunction1} `mapper` to the stored value of this {@link Try} if this is a {@link Success}.
+   * Otherwise, does nothing if this is a {@link Failure}.
+   * <p>
+   * If given `mapper` invocation returns an {@link Error}, then returned {@link Try} will be {@link Failure}.
+   *
+   * @param mapper
+   *    The {@link TFunction1} mapping function to apply to a value of a {@link Success} instance.
+   *
+   * @return new {@link Try}
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Success} one
+   */
+  mapSuccess = <U>(mapper: TFunction1<T, U>): Try<U> => {
+    if (this.isSuccess()) {
+      AssertUtil.notNullOrUndefined(
+        mapper,
+        'mapper must be not null and not undefined'
+      );
+      return this.internalMapTry(mapper);
+    }
+    return Try.failure(this.getError());
+  }
+
+
+  /**
    *    If the current {@link Try} is an instance of {@link Success} wraps the stored value into an {@link Optional} object.
    * Otherwise return {@link Optional#empty}
    *
@@ -466,33 +540,64 @@ export abstract class Try<T> {
 
 
   /**
-   *    When current {@link Try} is a {@link Success} instance and given `t` too, manages in a safe way the
-   * {@link TFunction2} invocation to map both values.
+   * Manages the `catch` clause of a `try` one, returning a standard {@link Failure} instance.
    *
-   * @param t
-   *    New {@link Try} to merge with the current one
+   * @param error
+   *    Error received in the `catch` clause of a `try` one
+   *
+   * @return {@link Failure} instance adding the provided `error` information
+   */
+  private static failureResultHandler = <T>(error: any): Try<T> => {
+    const finalError = error instanceof Error
+      ? error
+      : new Error(Try.DEFAULT_ERROR_MESSAGE + error);
+
+    return Try.failure(finalError);
+  }
+
+
+  /**
+   * When current {@link Try} is a {@link Failure} instance, manages in a safe way the {@link TFunction1} invocation.
+   *
    * @param mapper
-   *    {@link TFunction2} to apply the stored value and the one related with `t`
+   *    {@link TFunction1} to apply the stored value if the current instance is a {@link Failure} one
    *
    * @return {@link Try}
    */
-  private mapTry = <U>(t: Try<T>,
-                       mapper: TFunction2<T, T, U>): Try<U> => {
+  private internalMapFailureTry = (mapper: TFunction1<Error, Error>): Try<T> => {
     try {
-      return Try.success(
-        Function2.of(mapper)
+      return Try.failure(
+        Function1.of(mapper)
           .apply(
-            this.get(),
-            t.get()
+            this.getError()
           )
       );
 
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
+      return Try.failureResultHandler(error);
+    }
+  }
 
-      return Try.failure(finalError);
+
+  /**
+   * When current {@link Try} is a {@link Success} instance, manages in a safe way the {@link TFunction1} invocation.
+   *
+   * @param mapper
+   *    {@link TFunction1} to apply the stored value if the current instance is a {@link Success} one
+   *
+   * @return {@link Try}
+   */
+  private internalMapTry = <U>(mapper: TFunction1<T, U>): Try<U> => {
+    try {
+      return Try.success(
+        Function1.of(mapper)
+          .apply(
+            this.get()
+          )
+      );
+
+    } catch (error) {
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -525,6 +630,34 @@ export abstract class Try<T> {
         : new Error('An unknown error was thrown, error = ' + error);
 
       return Try.failure(finalError);
+    }
+  }
+
+
+  /**
+   *    When current {@link Try} is a {@link Success} instance and given `t` too, manages in a safe way the
+   * {@link TFunction2} invocation to map both values.
+   *
+   * @param t
+   *    New {@link Try} to merge with the current one
+   * @param mapper
+   *    {@link TFunction2} to apply the stored value and the one related with `t`
+   *
+   * @return {@link Try}
+   */
+  private mapTry = <U>(t: Try<T>,
+                       mapper: TFunction2<T, T, U>): Try<U> => {
+    try {
+      return Try.success(
+        Function2.of(mapper)
+          .apply(
+            this.get(),
+            t.get()
+          )
+      );
+
+    } catch (error) {
+      return Try.failureResultHandler(error);
     }
   }
 

@@ -11,7 +11,9 @@ import {
   Function2,
   Function3,
   Function4,
-  Function5, TFunction2
+  Function5,
+  TFunction1,
+  TFunction2
 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
@@ -603,6 +605,263 @@ describe('Try', () => {
 
     it('when the Try instance is a Failure one then false is returned', () => {
       expect(Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error')).isEmpty()).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('map', () => {
+
+    it('when the Try instance is Failure but mapperFailure is null or undefined then an error is thrown', () => {
+      const failureTry = Try.failure<number>(new SyntaxError('There was an error'));
+
+      const fromNumToString = (n: number): string => '' + n;
+
+      // @ts-ignore
+      expect(() => failureTry.map(null, fromNumToString)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => failureTry.map(null, fromNumToString)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Try instance is Success but mapperSuccess is null or undefined then an error is thrown', () => {
+      const successTry = Try.success(11);
+
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message);
+
+      // @ts-ignore
+      expect(() => successTry.map(throwSyntaxError, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => successTry.map(throwSyntaxError, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Try instance is Failure then mapperFailure is invoked and mapperSuccess is not', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const throwSyntaxErrorSpy = jasmine.createSpy('throwSyntaxError', throwSyntaxError);
+
+      const failureTry: Try<number> = Try.failure(illegalArgumentError);
+
+      failureTry.map(throwSyntaxErrorSpy, fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+      expect(throwSyntaxErrorSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Try instance is Success then mapperSuccess is invoked and mapperFailure is not', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const throwSyntaxErrorSpy = jasmine.createSpy('throwSyntaxError', throwSyntaxError);
+
+      const successTry: Try<number> = Try.success(11);
+
+      successTry.map(throwSyntaxErrorSpy, fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+      expect(throwSyntaxErrorSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Try instance is Failure then new Try applying mapperFailure is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message + 'v2');
+
+      const failureTry: Try<number> = Try.failure(illegalArgumentError);
+
+      const result = failureTry.map(throwSyntaxError, fromNumToString);
+
+      expect(result.isSuccess()).toBeFalse();
+      expect(result.getError() instanceof SyntaxError).toBeTrue();
+      expect(result.getError().message).toEqual(illegalArgumentError.message + 'v2');
+    });
+
+
+    it('when the Try instance is Success then new Try applying mapperSucess is returned', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message + 'v2');
+
+      const successTry: Try<number> = Try.success(11);
+
+      const result = successTry.map(throwSyntaxError, fromNumToString);
+
+      expect(result.isSuccess()).toBeTrue();
+      expect(result.get()).toEqual('11');
+    });
+
+  });
+
+
+
+  describe('mapFailure', () => {
+
+    it('when the Try instance is Failure but mapper is null or undefined then an error is thrown', () => {
+      const failureTry = Try.failure<number>(new SyntaxError('There was an error'));
+
+      // @ts-ignore
+      expect(() => failureTry.mapFailure(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => failureTry.mapFailure(null)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Try instance is Failure then mapper is invoked', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message);
+
+      const throwSyntaxErrorSpy = jasmine.createSpy('throwSyntaxError', throwSyntaxError);
+
+      const failureTry: Try<number> = Try.failure(illegalArgumentError);
+
+      failureTry.mapFailure(throwSyntaxErrorSpy);
+
+      expect(throwSyntaxErrorSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Try instance is Success then mapper is not invoked', () => {
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message);
+
+      const throwSyntaxErrorSpy = jasmine.createSpy('throwSyntaxError', throwSyntaxError);
+
+      const successTry: Try<number> = Try.success(11);
+
+      successTry.mapFailure(throwSyntaxErrorSpy);
+
+      expect(throwSyntaxErrorSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Try instance is Failure then new Try applying mapper is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message + 'v2');
+
+      const failureTry: Try<number> = Try.failure(illegalArgumentError);
+
+      const result = failureTry.mapFailure(throwSyntaxError);
+
+      expect(result.isSuccess()).toBeFalse();
+      expect(result.getError() instanceof SyntaxError).toBeTrue();
+      expect(result.getError().message).toEqual(illegalArgumentError.message + 'v2');
+    });
+
+
+    it('when the Try instance is Success then same Try is returned', () => {
+      const throwSyntaxError: TFunction1<Error, Error> =
+        (e1: Error): Error => new SyntaxError(e1.message + 'v2');
+
+      const successTry: Try<number> = Try.success(11);
+
+      const result = successTry.mapFailure(throwSyntaxError);
+
+      expect(result.isSuccess()).toBeTrue();
+      expect(result.get()).toEqual(11);
+    });
+
+  });
+
+
+
+  describe('mapSuccess', () => {
+
+    it('when the Try instance is Success but mapper is null or undefined then an error is thrown', () => {
+      const successTry = Try.success(11);
+
+      // @ts-ignore
+      expect(() => successTry.mapSuccess(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => successTry.mapSuccess(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Try instance is Failure then mapper is not invoked', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const failureTry: Try<number> = Try.failure(illegalArgumentError);
+
+      failureTry.mapSuccess(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Try instance is Success then mapper is invoked', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const successTry: Try<number> = Try.success(11);
+
+      successTry.mapSuccess(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Try instance is Success then same Try is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const failureTry: Try<number> = Try.failure(illegalArgumentError);
+
+      const result = failureTry.mapSuccess(fromNumToString);
+
+      expect(result.isSuccess()).toBeFalse();
+      expect(result.getError() instanceof IllegalArgumentError).toBeTrue();
+      expect(result.getError().message).toEqual(illegalArgumentError.message);
+    });
+
+
+    it('when the Try instance is Success then new Try applying mapper is returned', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const successTry: Try<number> = Try.success(11);
+
+      const result = successTry.mapSuccess(fromNumToString);
+
+      expect(result.isSuccess()).toBeTrue();
+      expect(result.get()).toEqual('11');
     });
 
   });
