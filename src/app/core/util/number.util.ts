@@ -33,7 +33,7 @@ export class NumberUtil {
    *   Parameters:            Result:
    *    100.125                0
    *    '100.126'
-   *    0.009
+   *    0.01
    *
    *
    * Example 2:
