@@ -15,7 +15,7 @@ export class NumberUtil {
    * Compares provided {@link Number}s taking into account the given `epsilon`.
    *
    * @apiNote
-   *    If `epsilon` is `null` or `undefined` or less than zero, {@link Number#EPSILON} will be applied.
+   *    If `epsilon` is `null`, `undefined` or less than zero, {@link Number#EPSILON} will be applied.
    *    Javascript is not the best programming language managing float values so, take care about the `epsilon` provided
    * value. For example:
    *
@@ -33,7 +33,7 @@ export class NumberUtil {
    *   Parameters:            Result:
    *    100.125                0
    *    '100.126'
-   *    0.01
+   *    0.009
    *
    *
    * Example 2:
@@ -41,7 +41,7 @@ export class NumberUtil {
    *   Parameters:            Result:
    *    '100.125'              -1
    *    100.126
-   *    0.001
+   *    0.0009
    * </pre>
    *
    * @param one
