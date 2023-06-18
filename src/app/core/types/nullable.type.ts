@@ -12,3 +12,9 @@ export type OrUndefined<T> = T | undefined;
  * Type that allows `undefined` and `null` values.
  */
 export type NullableOrUndefined<T> = T | null | undefined;
+
+/**
+ * Type that allows `undefined` and `null` {@link String} or {@link Number} values
+ */
+export type NullableOrUndefinedStringNumber = string | number | null | undefined;
+
