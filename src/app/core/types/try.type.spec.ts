@@ -89,7 +89,7 @@ describe('Try', () => {
 
       const tries: Try<number>[] = [ Try.success(12), Try.success(11), Try.failure(new TypeError()), Try.failure(lastError) ];
       const mapperFailure = (f1: Error, f2: Error) => f2;
-      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+      const mapperSuccess = (s1: number, s2: number) => s2;
 
       expect(Try.combine(mapperFailure, mapperSuccess, tries).isSuccess()).toBeFalse();
       expect(Try.combine(mapperFailure, mapperSuccess, tries).getError()).toEqual(lastError);
@@ -146,7 +146,7 @@ describe('Try', () => {
       const firstError = new TypeError();
 
       const tries: TFunction0<Try<number>>[] = [ () => Try.success(12), () => Try.success(11), () => Try.failure(firstError), () => Try.failure(new SyntaxError()) ];
-      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+      const mapperSuccess = (s1: number, s2: number) => s2;
 
       expect(Try.combineGetFirstFailure(mapperSuccess, tries).isSuccess()).toBeFalse();
       expect(Try.combineGetFirstFailure(mapperSuccess, tries).getError()).toEqual(firstError);
@@ -497,7 +497,7 @@ describe('Try', () => {
       const sumValues: FFunction2<number, number, number> =
         (n1: number, n2: number): number => n1 + n2;
 
-      const mergeErrors: TFunction2<Error, Error, Error> =
+      const mergeErrors: FFunction2<Error, Error, Error> =
         (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
 
       const sumValuesSpy = jasmine.createSpy('sumValues', sumValues);
@@ -519,8 +519,7 @@ describe('Try', () => {
       const sumValues: FFunction2<number, number, number> =
         (n1: number, n2: number): number => n1 + n2;
 
-      const mergeErrors: TFunction2<Error, Error, Error> =
-        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+      const mergeErrors = (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
 
       const successTry = Try.success(11);
       const failureTry = Try.failure<number>(illegalArgumentError);
@@ -543,8 +542,8 @@ describe('Try', () => {
       const sumValues: FFunction2<number, number, number> =
         (n1: number, n2: number): number => n1 + n2;
 
-      const mergeErrors: TFunction2<Error, Error, Error> =
-        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+      const mergeErrors: Function2<Error, Error, Error> =
+        Function2.of((e1: Error, e2: Error): Error => new Error(e1.message + e2.message));
 
       const t1 = Try.failure<number>(illegalArgumentError);
       const t2 = Try.failure<number>(syntaxError);
@@ -563,11 +562,8 @@ describe('Try', () => {
 
 
     it('when given Try and this one are Success then mapperSuccess result is returned', () => {
-      const sumValues: FFunction2<number, number, number> =
-        (n1: number, n2: number): number => n1 + n2;
-
-      const mergeErrors: TFunction2<Error, Error, Error> =
-        (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+      const sumValues = (n1: number, n2: number): number => n1 + n2;
+      const mergeErrors = (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
 
       const t1 = Try.success(11);
       const t2 = Try.success(19);

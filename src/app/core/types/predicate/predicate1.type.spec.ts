@@ -148,9 +148,7 @@ describe('Predicate1', () => {
 
 
     it('when an instance of FPredicate1 is provided then a valid Predicate1 is returned', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
+      const isEven = (n: NullableOrUndefined<number>) => 0 == n! % 2;
       const predicate = Predicate1.of(isEven);
 
       expect(Predicate1.isPredicate(predicate)).toBeTrue();

@@ -77,6 +77,9 @@ export class Function2<T1, T2, R> {
     undefined !== (input as Function2<T1, T2, R>).apply;
 
 
+  static of<T1, T2, R>(func: FFunction2<T1, T2, R>): Function2<T1, T2, R>;
+  static of<T1, T2, R>(func: TFunction2<T1, T2, R>): Function2<T1, T2, R>;
+
   /**
    * Returns a {@link Function2} describing the given {@link FFunction2}.
    *
@@ -87,22 +90,6 @@ export class Function2<T1, T2, R> {
    *
    * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
-  static of<T1, T2, R>(func: FFunction2<T1, T2, R>): Function2<T1, T2, R>;
-
-
-  /**
-   * Returns a {@link Function2} based on provided {@link TFunction2} parameter.
-   *
-   * @param func
-   *    {@link TFunction2} instance to convert to a {@link Function2} one
-   *
-   * @return {@link Function2} based on provided {@link TFunction2}
-   *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
-   */
-  static of<T1, T2, R>(func: TFunction2<T1, T2, R>): Function2<T1, T2, R>;
-
-
   static of<T1, T2, R>(func: TFunction2<T1, T2, R>): Function2<T1, T2, R> {
     AssertUtil.notNullOrUndefined(
       func,

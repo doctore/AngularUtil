@@ -66,18 +66,8 @@ export class Function0<R> {
     undefined !== (input as Function0<R>).apply;
 
 
-  /**
-   * Returns a {@link Function0} describing the given {@link FFunction0}.
-   *
-   * @param func
-   *    {@link FFunction0} used to return instances of R
-   *
-   * @return an {@link Function0} as wrapper of `mapper`
-   *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
-   */
   static of<R>(func: FFunction0<R>): Function0<R>;
-
+  static of<R>(func: TFunction0<R>): Function0<R>;
 
   /**
    * Returns a {@link Function0} based on provided {@link TFunction0} parameter.
@@ -89,9 +79,6 @@ export class Function0<R> {
    *
    * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
-  static of<R>(func: TFunction0<R>): Function0<R>;
-
-
   static of<R>(func: TFunction0<R>): Function0<R> {
     AssertUtil.notNullOrUndefined(
       func,

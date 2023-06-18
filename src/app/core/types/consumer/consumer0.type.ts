@@ -64,18 +64,8 @@ export class Consumer0 {
     undefined !== (input as Consumer0).apply;
 
 
-  /**
-   * Returns a {@link Consumer0} describing the given {@link FConsumer0}.
-   *
-   * @param consumer
-   *    {@link FConsumer0}
-   *
-   * @return an {@link Consumer0} as wrapper of `mapper`
-   *
-   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
-   */
   static of(consumer: FConsumer0): Consumer0;
-
+  static of(consumer: TConsumer0): Consumer0;
 
   /**
    * Returns a {@link Consumer0} based on provided {@link TConsumer0} parameter.
@@ -87,9 +77,6 @@ export class Consumer0 {
    *
    * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
-  static of(consumer: TConsumer0): Consumer0;
-
-
   static of(consumer: TConsumer0): Consumer0 {
     AssertUtil.notNullOrUndefined(
       consumer,

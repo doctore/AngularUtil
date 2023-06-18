@@ -83,8 +83,7 @@ describe('Function1', () => {
 
 
     it('when an instance of FFunction1 is provided then a valid Function1 is returned', () => {
-      const stringLength: FFunction1<string, number> =
-        (s: NullableOrUndefined<string>) => s!.length;
+      const stringLength = (s: NullableOrUndefined<string>) => s!.length;
 
       const func = Function1.of(stringLength);
 
@@ -124,8 +123,7 @@ describe('Function1', () => {
       const stringLength: Function1<string, number> =
         Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
+      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
 
       const stringLengthAndThenMultiply2 = stringLength.andThen(multiply2);
 
@@ -138,8 +136,8 @@ describe('Function1', () => {
       const stringLength: Function1<string, number> =
         Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
-      const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+      const multiply2: FFunction1<number, number> =
+        (n: NullableOrUndefined<number>) => 2 * n!;
 
       const stringLengthAndThenMultiply2 = stringLength.andThen(multiply2);
 
@@ -180,8 +178,7 @@ describe('Function1', () => {
 
 
     it('when a FFunction1 is provided then it will be applied before current one', () => {
-      const stringLength: FFunction1<string, number> =
-        (s: NullableOrUndefined<string>) => s!.length;
+      const stringLength = (s: NullableOrUndefined<string>) => s!.length;
 
       const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
@@ -194,8 +191,8 @@ describe('Function1', () => {
 
 
     it('when a Function1 is provided then it will be applied before current one', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
+      const stringLength: FFunction1<string, number> =
+        (s: NullableOrUndefined<string>) => s!.length;
 
       const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);

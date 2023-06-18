@@ -75,18 +75,8 @@ export class Consumer2<T1, T2> {
     undefined !== (input as Consumer2<T1, T2>).apply;
 
 
-  /**
-   * Returns a {@link Consumer2} describing the given {@link FConsumer2}.
-   *
-   * @param consumer
-   *    {@link FConsumer2} used to perform an operation over the given instances of T
-   *
-   * @return an {@link Consumer2} as wrapper of `mapper`
-   *
-   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
-   */
   static of<T1, T2>(consumer: FConsumer2<T1, T2>): Consumer2<T1, T2>;
-
+  static of<T1, T2>(consumer: TConsumer2<T1, T2>): Consumer2<T1, T2>;
 
   /**
    * Returns a {@link Consumer2} based on provided {@link TConsumer2} parameter.
@@ -98,9 +88,6 @@ export class Consumer2<T1, T2> {
    *
    * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
-  static of<T1, T2>(consumer: TConsumer2<T1, T2>): Consumer2<T1, T2>;
-
-
   static of<T1, T2>(consumer: TConsumer2<T1, T2>): Consumer2<T1, T2> {
     AssertUtil.notNullOrUndefined(
       consumer,

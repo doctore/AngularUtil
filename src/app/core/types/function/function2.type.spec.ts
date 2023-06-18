@@ -111,8 +111,7 @@ describe('Function2', () => {
       const stringLengthPlusNumber: Function2<string, number, number> =
         Function2.of((s: string, n: number) => s.length + n);
 
-      const multiply2: FFunction1<number, number> =
-        (n: number) => 2 * n;
+      const multiply2 = (n: number) => 2 * n;
 
       const stringLengthPlusNumberAndThenMultiply2 = stringLengthPlusNumber.andThen(multiply2);
 

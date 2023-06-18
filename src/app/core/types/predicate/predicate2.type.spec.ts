@@ -154,7 +154,7 @@ describe('Predicate2', () => {
 
 
     it('when an instance of FPredicate2 is provided then a valid Predicate2 is returned', () => {
-      const isNumberEvenAndStringNotNull: FPredicate2<number, string> =
+      const isNumberEvenAndStringNotNull =
         (n: NullableOrUndefined<number>, s?: NullableOrUndefined<string>) =>
           0 == n! % 2 &&
           undefined !== s &&

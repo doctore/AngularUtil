@@ -75,25 +75,11 @@ export class PartialFunction<T, R> {
     undefined !== (input as PartialFunction<T, R>).isDefinedAt;
 
 
-  /**
-   *    Returns a new {@link PartialFunction} based on provided {@link FPredicate1} `verifier` and
-   * {@link FFunction1} `mapper`.
-   *
-   * @apiNote
-   *    If `verifier` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
-   *
-   * @param verifier
-   *    {@link FPredicate1} used to know new {@link PartialFunction}'s domain
-   * @param mapper
-   *    {@link FFunction1} required for {@link PartialFunction#apply}
-   *
-   * @return {@link PartialFunction} to convert values of @type {T} to @type {R}
-   *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
-   */
   static of<T, R>(verifier: FPredicate1<T>,
                   mapper: FFunction1<T, R>): PartialFunction<T, R>;
 
+  static of<T, R>(verifier: TPredicate1<T>,
+                  mapper: TFunction1<T, R>): PartialFunction<T, R>;
 
   /**
    *    Returns a new {@link PartialFunction} based on provided {@link TPredicate1} `verifier` and
@@ -112,10 +98,6 @@ export class PartialFunction<T, R> {
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
   static of<T, R>(verifier: TPredicate1<T>,
-                  mapper: TFunction1<T, R>): PartialFunction<T, R>;
-
-
-  static of<T, R>(verifier: TPredicate1<T>,
                   mapper: TFunction1<T, R>): PartialFunction<T, R> {
     AssertUtil.notNullOrUndefined(
       mapper,
@@ -132,25 +114,11 @@ export class PartialFunction<T, R> {
   }
 
 
-  /**
-   *    Returns a new {@link PartialFunction} based on provided {@link FPredicate2} `verifier` and
-   * {@link FFunction2} `mapper`.
-   *
-   * @apiNote
-   *    If `verifier` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
-   *
-   * @param verifier
-   *    {@link FPredicate2} used to know new {@link PartialFunction}'s domain
-   * @param mapper
-   *    {@link FFunction2} required for {@link PartialFunction#apply}
-   *
-   * @return {@link PartialFunction} to convert tuples of [@type {T1}, @type {R1}] to [@type {T2}, @type {R2}]
-   *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
-   */
   static of2<T1, T2, R1, R2>(verifier: FPredicate2<T1, R1>,
                              mapper: FFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]>;
 
+  static of2<T1, T2, R1, R2>(verifier: TPredicate2<T1, R1>,
+                             mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]>;
 
   /**
    *    Returns a new {@link PartialFunction} based on provided {@link TPredicate2} `verifier` and
@@ -168,10 +136,6 @@ export class PartialFunction<T, R> {
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
-  static of2<T1, T2, R1, R2>(verifier: TPredicate2<T1, R1>,
-                             mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]>;
-
-
   static of2<T1, T2, R1, R2>(verifier: TPredicate2<T1, R1>,
                              mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]> {
     AssertUtil.notNullOrUndefined(
@@ -287,36 +251,20 @@ export class PartialFunction<T, R> {
   }
 
 
-  /**
-   *    Returns a composed {@link PartialFunction} that first applies the `before` {@link TFunction1} to its input,
-   * and then this {@link PartialFunction} to the result.
-   *
-   * @param before
-   *    {@link TFunction1} to apply before this {@link PartialFunction} is applied
-   *
-   * @return composed {@link PartialFunction} that first applies the `before` {@link TFunction1} and then applies
-   *         this {@link PartialFunction}
-   *
-   * @throws {@link IllegalArgumentError} if `before` is `null` or `undefined`
-   */
   compose<V>(before: TFunction1<V, T>): PartialFunction<V, R>;
-
-
-  /**
-   *    Returns a composed {@link PartialFunction} that first applies the `before` {@link PartialFunction} to its input,
-   * and then this {@link PartialFunction} to the result.
-   *
-   * @param before
-   *    {@link PartialFunction} to apply before this {@link PartialFunction} is applied
-   *
-   * @return composed {@link PartialFunction} that first applies the `before` {@link PartialFunction} and then applies
-   *         this {@link PartialFunction}
-   *
-   * @throws {@link IllegalArgumentError} if `before` is `null` or `undefined`
-   */
   compose<V>(before: PartialFunction<V, T>): PartialFunction<V, R>;
 
-
+  /**
+   *    Returns a composed {@link PartialFunction} that first applies `before` to its input, and then this
+   * {@link PartialFunction} to the result.
+   *
+   * @param before
+   *    {@link PartialFunction} or {@link TFunction1} to apply before this {@link PartialFunction} is applied
+   *
+   * @return composed {@link PartialFunction} that first applies `before` and then applies this {@link PartialFunction}
+   *
+   * @throws {@link IllegalArgumentError} if `before` is `null` or `undefined`
+   */
   compose<V>(before: TFunction1<V, T> | PartialFunction<V, T>): PartialFunction<V, R> {
     AssertUtil.notNullOrUndefined(
       before,

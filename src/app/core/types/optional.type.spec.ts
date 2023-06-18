@@ -415,7 +415,7 @@ describe('Optional', () => {
       const otherIntValue = 11;
       const otherStringValue = 'abd';
 
-      const otherIntFunc: FFunction0<number> = () => otherIntValue;
+      const otherIntFunc = () => otherIntValue;
       const otherStringFunc: Function0<string> = Function0.of(() => otherStringValue);
 
       const getOrElseIntResult = Optional.empty<number>().getOrElse(otherIntFunc);

@@ -1,6 +1,7 @@
-import {ArrayUtil, AssertUtil, ObjectUtil} from '@app-core/util';
-import {Nullable, Optional} from '@app-core/types';
+import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
+import { NullableOrUndefined, Optional } from '@app-core/types';
 import {
+  FFunction2,
   Function0,
   Function1,
   Function2,
@@ -14,6 +15,7 @@ import {
   TFunction4,
   TFunction5
 } from '@app-core/types/function';
+import {TPredicate2} from "@app-core/types/predicate";
 
 /**
  *    Represents a computation that may either result in an error, or return a successfully computed value. It's
@@ -59,6 +61,14 @@ export abstract class Try<T extends any> {
   abstract getError(): Error;
 
 
+  static combine<T>(mapperFailure: TFunction2<Error, Error, Error>,
+                    mapperSuccess: FFunction2<T, T, T>,
+                    tries: NullableOrUndefined<Try<T>[]>): Try<T>;
+
+  static combine<T>(mapperFailure: TFunction2<Error, Error, Error>,
+                    mapperSuccess: TFunction2<T, T, T>,
+                    tries: NullableOrUndefined<Try<T>[]>): Try<T>;
+
   /**
    * Merges the given `tries` in a one result that will be:
    * <p>
@@ -83,7 +93,7 @@ export abstract class Try<T extends any> {
    * @param mapperFailure
    *    {@link TFunction2} used to calculate the new {@link Failure} based on two provided ones
    * @param mapperSuccess
-   *    {@link TFunction2} used to calculate the new {@link Success} based on two provided ones
+   *    {@link FFunction2} | {@link TFunction2}  used to calculate the new {@link Success} based on two provided ones
    * @param tries
    *    {@link Try} instances to combine
    *
@@ -91,9 +101,9 @@ export abstract class Try<T extends any> {
    *
    * @throws {@link IllegalArgumentError} if `mapperFailure` or `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
-  static combine = <T>(mapperFailure: TFunction2<Error, Error, Error>,
-                       mapperSuccess: TFunction2<T, T, T>,
-                       tries?: Nullable<Try<T>[]>): Try<T> => {
+  static combine<T>(mapperFailure: TFunction2<Error, Error, Error>,
+                    mapperSuccess: TFunction2<T, T, T>,
+                    tries: NullableOrUndefined<Try<T>[]>): Try<T> {
     if (ArrayUtil.isEmpty(tries)) {
       // @ts-ignore
       return Try.success<T>(null);
@@ -106,17 +116,24 @@ export abstract class Try<T extends any> {
       mapperSuccess,
       'mapperSuccess must be not null and not undefined'
     );
+    const finalMapperSuccess = Function2.of(mapperSuccess);
     let result = tries![0];
     for (let i = 1; i < tries!.length; i++) {
       result = result.ap(
         tries![i],
         mapperFailure,
-        mapperSuccess
+        finalMapperSuccess
       );
     }
     return result;
   }
 
+
+  static combineGetFirstFailure<T>(mapperSuccess: FFunction2<T, T, T>,
+                                   tries: NullableOrUndefined<TFunction0<Try<T>>[]>): Try<T>;
+
+  static combineGetFirstFailure<T>(mapperSuccess: TFunction2<T, T, T>,
+                                   tries: NullableOrUndefined<TFunction0<Try<T>>[]>): Try<T>;
 
   /**
    * Merges the given `tries` in a one result that will be:
@@ -146,8 +163,8 @@ export abstract class Try<T extends any> {
    *
    * @throws {@link IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
-  static combineGetFirstFailure = <T>(mapperSuccess: TFunction2<T, T, T>,
-                                      tries?: Nullable<TFunction0<Try<T>>[]>): Try<T> => {
+  static combineGetFirstFailure<T>(mapperSuccess: TFunction2<T, T, T>,
+                                   tries: NullableOrUndefined<TFunction0<Try<T>>[]>): Try<T> {
     if (ArrayUtil.isEmpty(tries)) {
       // @ts-ignore
       return Try.success<T>(null);

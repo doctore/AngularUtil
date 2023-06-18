@@ -121,8 +121,8 @@ describe('Consumer0', () => {
       const plus10: Consumer0 =
         Consumer0.of(() => { externalInt += 10 });
 
-      const plus2: Consumer0 =
-        Consumer0.of(() => { externalInt += 2 });
+      const plus2: FConsumer0 =
+        () => { externalInt += 2 };
 
       const consumer = plus10.andThen(plus2);
       consumer.apply();
@@ -137,8 +137,7 @@ describe('Consumer0', () => {
       const plus10: Consumer0 =
         Consumer0.of(() => { externalInt += 10 });
 
-      const plus2: FConsumer0 =
-        () => { externalInt += 2 };
+      const plus2 = () => { externalInt += 2 };
 
       const consumer = plus10.andThen(plus2);
       consumer.apply();

@@ -71,9 +71,7 @@ describe('Consumer1', () => {
 
     it('when an instance of FConsumer1 is provided then a valid Consumer1 is returned', () => {
       let externalInt = 10;
-
-      const plusN: FConsumer1<number> =
-        (n: NullableOrUndefined<number>) => { externalInt += n!; };
+      const plusN = (n: NullableOrUndefined<number>) => { externalInt += n!; };
 
       const consumer = Consumer1.of(plusN);
       consumer.apply(5);
@@ -138,8 +136,7 @@ describe('Consumer1', () => {
       const plusN: Consumer1<number> =
         Consumer1.of((n: number) => { externalInt += n });
 
-      const multiplyN: Consumer1<number> =
-        Consumer1.of((n: number) => { externalInt *= n });
+      const multiplyN = (n: number) => { externalInt *= n };
 
       const consumer = plusN.andThen(multiplyN);
       consumer.apply(2);

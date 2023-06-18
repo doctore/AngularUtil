@@ -79,18 +79,8 @@ export class Function1<T, R> {
     undefined !== (input as Function1<T, R>).compose;
 
 
-  /**
-   * Returns a {@link Function1} describing the given {@link FFunction1}.
-   *
-   * @param func
-   *    {@link FFunction1} used to evaluates the given instance of T and return an R one
-   *
-   * @return an {@link Function1} as wrapper of `mapper`
-   *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
-   */
   static of<T, R>(func: FFunction1<T, R>): Function1<T, R>;
-
+  static of<T, R>(func: TFunction1<T, R>): Function1<T, R>;
 
   /**
    * Returns a {@link Function1} based on provided {@link TFunction1} parameter.
@@ -102,9 +92,6 @@ export class Function1<T, R> {
    *
    * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
-  static of<T, R>(func: TFunction1<T, R>): Function1<T, R>;
-
-
   static of<T, R>(func: TFunction1<T, R>): Function1<T, R> {
     AssertUtil.notNullOrUndefined(
       func,

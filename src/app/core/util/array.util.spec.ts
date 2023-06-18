@@ -114,11 +114,8 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has elements and mapFunction and filterPredicate are valid then a new filtered and transformed array is returned', () => {
       let sourceArray: number[] = [1, 2, 3, 6];
-      const isIdEven: FPredicate1<number> =
-        (n: number) => 0 == n % 2;
-
-      const multiply2AndString: FFunction1<number, string> =
-        (n: number) => '' + (2 * n);
+      const isIdEven = (n: number) => 0 == n % 2;
+      const multiply2AndString = (n: number) => '' + (2 * n);
 
       const expectedResult: string[] = ['4', '12'];
 
@@ -260,7 +257,7 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, name: 'role2' } as Role;
       const sourceArray = [r1, r2, r3, r4];
 
-      const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role!.id % 2);
+      const isIdEven = (role: Role) => 0 == role!.id % 2;
 
       expect(ArrayUtil.find(sourceArray, isIdEven)).toEqual(r2);
     });

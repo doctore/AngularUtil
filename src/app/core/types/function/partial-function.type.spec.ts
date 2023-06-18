@@ -437,14 +437,12 @@ describe('PartialFunction', () => {
 
 
     it('when a PartialFunction is provided then it will be applied before current one', () => {
-      const longerThan3: Predicate1<string> =
-        Predicate1.of((s: string) => 3 < s.length);
+      const longerThan3 = (s: string) => 3 < s.length;
 
       const isEven: Predicate1<number> =
         Predicate1.of((n: number) => 0 == n % 2);
 
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
+      const stringLength = (s: string) => s.length;
 
       const toString: Function1<number, string> =
         Function1.of((n: number) => '' + n);

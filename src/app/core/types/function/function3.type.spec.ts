@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction1, FFunction3, Function1, Function3, isFFunction3 } from '@app-core/types/function';
+import { FFunction3, Function1, Function3, isFFunction3 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -111,8 +111,7 @@ describe('Function3', () => {
       const stringLengthPlusNumbers: Function3<string, number, number, number> =
         Function3.of((s: string, n1: number, n2: number) => s.length + n1 + n2);
 
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
+      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
 
       const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 

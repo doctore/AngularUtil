@@ -1,4 +1,4 @@
-import { FFunction1, FFunction5, Function1, Function5, isFFunction5 } from '@app-core/types/function';
+import { FFunction1, FFunction5, Function5, isFFunction5 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -132,8 +132,7 @@ describe('Function5', () => {
         Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
           s.length + n1 + n2 + n3 + n4);
 
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
+      const multiply2 =(n: number) => 2 * n;
 
       const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 

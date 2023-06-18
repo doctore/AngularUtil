@@ -87,18 +87,8 @@ export class Function4<T1, T2, T3, T4, R> {
     undefined !== (input as Function4<T1, T2, T3, T4, R>).apply;
 
 
-  /**
-   * Returns a {@link Function4} describing the given {@link FFunction4}.
-   *
-   * @param func
-   *    {@link FFunction4} used to evaluates the given instances of T and return an R one
-   *
-   * @return an {@link Function4} as wrapper of `mapper`
-   *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
-   */
   static of<T1, T2, T3, T4, R>(func: FFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
-
+  static of<T1, T2, T3, T4, R>(func: TFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
 
   /**
    * Returns a {@link Function4} based on provided {@link TFunction4} parameter.
@@ -110,9 +100,6 @@ export class Function4<T1, T2, T3, T4, R> {
    *
    * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
    */
-  static of<T1, T2, T3, T4, R>(func: TFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
-
-
   static of<T1, T2, T3, T4, R>(func: TFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R> {
     AssertUtil.notNullOrUndefined(
       func,

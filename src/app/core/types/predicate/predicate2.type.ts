@@ -169,18 +169,8 @@ export class Predicate2<T1, T2> {
     undefined !== (input as Predicate2<T1, T2>).or;
 
 
-  /**
-   * Returns a {@link Predicate2} describing the given {@link FPredicate2}.
-   *
-   * @param predicate
-   *    {@link FPredicate2} used to evaluates the given instances of T
-   *
-   * @return an {@link Predicate2} as wrapper of `verifier`
-   *
-   * @throws {@link IllegalArgumentError} if `predicate` is `null` or `undefined`
-   */
   static of<T1, T2>(predicate: FPredicate2<T1, T2>): Predicate2<T1, T2>;
-
+  static of<T1, T2>(predicate: TPredicate2<T1, T2>): Predicate2<T1, T2>;
 
   /**
    * Returns a {@link Predicate2} based on provided {@link TPredicate2} parameter.
@@ -192,9 +182,6 @@ export class Predicate2<T1, T2> {
    *
    * @throws {@link IllegalArgumentError} if `predicate` is `null` or `undefined`
    */
-  static of<T1, T2>(predicate: TPredicate2<T1, T2>): Predicate2<T1, T2>;
-
-
   static of<T1, T2>(predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> {
     AssertUtil.notNullOrUndefined(
       predicate,

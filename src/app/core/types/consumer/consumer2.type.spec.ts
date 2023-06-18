@@ -149,8 +149,7 @@ describe('Consumer2', () => {
       const plusNAndAddS: Consumer2<number, string> =
         Consumer2.of((n: number, s: string) => { externalInt += n; externalString += s; });
 
-      const multiplyNAddS: Consumer2<number, string> =
-        Consumer2.of((n: number, s: string) => { externalInt *= n!; externalString += s!; });
+      const multiplyNAddS = (n: number, s: string) => { externalInt *= n!; externalString += s!; };
 
       const consumer = plusNAndAddS.andThen(multiplyNAddS);
       consumer.apply(5, 'V2');
