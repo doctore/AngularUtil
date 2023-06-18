@@ -1,5 +1,5 @@
-import { AssertUtil, ObjectUtil } from '@app-core/util';
-import { Optional } from '@app-core/types';
+import {ArrayUtil, AssertUtil, ObjectUtil} from '@app-core/util';
+import {Nullable, Optional} from '@app-core/types';
 import {
   Function0,
   Function1,
@@ -57,6 +57,118 @@ export abstract class Try<T extends any> {
    * @throws {@link ReferenceError} if this is an {@link Success}
    */
   abstract getError(): Error;
+
+
+  /**
+   * Merges the given `tries` in a one result that will be:
+   * <p>
+   *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`
+   *      or empty. Using provided {@link TFunction2} `mapperSuccess` to get the final value added into the
+   *      returned {@link Success}.
+   * <p>
+   *   2. {@link Failure} instance if there is at least one {@link Failure} in the given `tries`. Using provided
+   *      {@link TFunction2} `mapperFailure` to get the final value added into the returned {@link Success}.
+   *
+   * <pre>
+   * Examples:
+   *
+   *   mapperFailure = (f1: Error, f2: Error) => f2;
+   *   mapperSuccess = (s1: number, s2: number) => s2;
+   *
+   *   combine(mapperFailure, mapperSuccess, [Try.success(11), Try.success(7)]);                                                 // Success(7)
+   *   combine(mapperFailure, mapperSuccess, [Try.success(13), Try.failure(new TypeError())]);                                   // Failure(new TypeError())
+   *   combine(mapperFailure, mapperSuccess, [Try.success(10), Try.failure(new TypeError()), Try.failure(new SyntaxError())]);   // Failure(new SyntaxError())
+   * </pre>
+   *
+   * @param mapperFailure
+   *    {@link TFunction2} used to calculate the new {@link Failure} based on two provided ones
+   * @param mapperSuccess
+   *    {@link TFunction2} used to calculate the new {@link Success} based on two provided ones
+   * @param tries
+   *    {@link Try} instances to combine
+   *
+   * @return {@link Try}
+   *
+   * @throws {@link IllegalArgumentError} if `mapperFailure` or `mapperSuccess` is `null` or `undefined` but `tries` is not empty
+   */
+  static combine = <T>(mapperFailure: TFunction2<Error, Error, Error>,
+                       mapperSuccess: TFunction2<T, T, T>,
+                       tries?: Nullable<Try<T>[]>): Try<T> => {
+    if (ArrayUtil.isEmpty(tries)) {
+      // @ts-ignore
+      return Try.success<T>(null);
+    }
+    AssertUtil.notNullOrUndefined(
+      mapperFailure,
+      'mapperFailure must be not null and not undefined'
+    );
+    AssertUtil.notNullOrUndefined(
+      mapperSuccess,
+      'mapperSuccess must be not null and not undefined'
+    );
+    let result = tries![0];
+    for (let i = 1; i < tries!.length; i++) {
+      result = result.ap(
+        tries![i],
+        mapperFailure,
+        mapperSuccess
+      );
+    }
+    return result;
+  }
+
+
+  /**
+   * Merges the given `tries` in a one result that will be:
+   * <p>
+   *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`
+   *      or empty. Using provided {@link TFunction2} `mapperSuccess` to get the final value added into the
+   *      returned {@link Success}.
+   * <p>
+   *   2. {@link Failure} instance with the first {@link Failure} found in the given `tries`.
+   *
+   * <pre>
+   * Examples:
+   *
+   *   mapperSuccess = (s1: number, s2: number) => s2;
+   *
+   *   combineGetFirstFailure(mapperSuccess, [() => Try.success(11), () => Try.success(7)]);                                                       // Success(7)
+   *   combineGetFirstFailure(mapperSuccess, [() => Try.success(13), () => Try.failure(new TypeError())]);                                         // Failure(new TypeError())
+   *   combineGetFirstFailure(mapperSuccess, [() => Try.success(10), () => Try.failure(new TypeError()), () => Try.failure(new SyntaxError())]);   // Failure(new TypeError())
+   * </pre>
+   *
+   * @param mapperSuccess
+   *    {@link TFunction2} used to calculate the new {@link Success} based on two provided ones
+   * @param tries
+   *    {@link TFunction0} of {@link Try} instances to verify
+   *
+   * @return {@link Try}
+   *
+   * @throws {@link IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` but `tries` is not empty
+   */
+  static combineGetFirstFailure = <T>(mapperSuccess: TFunction2<T, T, T>,
+                                      tries?: Nullable<TFunction0<Try<T>>[]>): Try<T> => {
+    if (ArrayUtil.isEmpty(tries)) {
+      // @ts-ignore
+      return Try.success<T>(null);
+    }
+    AssertUtil.notNullOrUndefined(
+      mapperSuccess,
+      'mapperSuccess must be not null and not undefined'
+    );
+    let result = Function0.of(tries![0]).apply();
+    for (let i = 1; i < tries!.length; i++) {
+      result = result.ap(
+        Function0.of(tries![i]).apply(),
+        (e1, e2) => e1,
+        mapperSuccess
+      );
+      if (!result.isSuccess()) {
+        return result;
+      }
+    }
+    return result;
+  }
 
 
   /**

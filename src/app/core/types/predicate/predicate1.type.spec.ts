@@ -49,7 +49,7 @@ describe('Predicate1', () => {
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
       const isEven: Predicate1<number> = Predicate1.of((n: number) => 0 == n % 2)
-      const isLowerThan20: FPredicate1<number> = (n: NullableOrUndefined<number>) => 20 > n!;
+      const isLowerThan20 = (n: NullableOrUndefined<number>) => 20 > n!;
 
       expect(Predicate1.allOf([isEven, isLowerThan20]).apply(11)).toBeFalse();
       expect(Predicate1.allOf([isEven, isLowerThan20]).apply(30)).toBeFalse();
@@ -98,7 +98,7 @@ describe('Predicate1', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const isEven: Predicate1<number> = Predicate1.of((n: number) => 0 == n % 2)
+      const isEven = (n: number) => 0 == n % 2;
       const isLowerThan20: FPredicate1<number> = (n: NullableOrUndefined<number>) => 20 > n!;
 
       expect(Predicate1.anyOf([isEven, isLowerThan20]).apply(11)).toBeTrue();

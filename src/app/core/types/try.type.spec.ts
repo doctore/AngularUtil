@@ -1,6 +1,5 @@
 import { Failure, Nullable, NullableOrUndefined, Success, Try } from '@app-core/types';
 import {
-  FFunction0,
   FFunction1,
   FFunction2,
   FFunction3,
@@ -12,6 +11,7 @@ import {
   Function3,
   Function4,
   Function5,
+  TFunction0,
   TFunction1,
   TFunction2
 } from '@app-core/types/function';
@@ -23,6 +23,137 @@ import { IllegalArgumentError } from '@app-core/errors';
  *    ng test --include src/app/core/types/try.type.spec.ts
  */
 describe('Try', () => {
+
+
+  describe('combine', () => {
+
+    it('when given tries are null, undefined or empty then a Success with null value is returned', () => {
+      const mapperFailure = (f1: Error, f2: Error) => f2;
+      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      // @ts-ignore
+      expect(Try.combine(mapperFailure, mapperSuccess, null).isSuccess()).toBeTrue();
+      // @ts-ignore
+      expect(Try.combine(mapperFailure, mapperSuccess, null).get()).toBeNull();
+
+      // @ts-ignore
+      expect(Try.combine(mapperFailure, mapperSuccess, undefined).isSuccess()).toBeTrue();
+      // @ts-ignore
+      expect(Try.combine(mapperFailure, mapperSuccess, undefined).get()).toBeNull();
+
+
+      // @ts-ignore
+      expect(Try.combine(mapperFailure, mapperSuccess, []).isSuccess()).toBeTrue();
+      // @ts-ignore
+      expect(Try.combine(mapperFailure, mapperSuccess, []).get()).toBeNull();
+    });
+
+
+    it('when given tries is not empty but mapperFailure is null or undefined then an error is thrown', () => {
+      const tries = [ Try.success(12) ];
+      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      // @ts-ignore
+      expect(() => Try.combine(null, mapperSuccess, tries)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Try.combine(undefined, mapperSuccess, tries)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given tries is not empty but mapperSuccess is null or undefined then an error is thrown', () => {
+      const tries = [ Try.success(12) ];
+      const mapperFailure = (f1: Error, f2: Error) => f2;
+
+      // @ts-ignore
+      expect(() => Try.combine(mapperFailure, null, tries)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Try.combine(mapperFailure, undefined, tries)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when all tries are Success then a Success applying mapperSuccess is returned', () => {
+      const tries = [ Try.success(12), Try.success(11), Try.success(10) ];
+      const mapperFailure: Function2<Error, Error, Error> =
+        Function2.of((f1: Error, f2: Error) => f2);
+      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      expect(Try.combine(mapperFailure, mapperSuccess, tries).isSuccess()).toBeTrue();
+      expect(Try.combine(mapperFailure, mapperSuccess, tries).get()).toEqual(10);
+    });
+
+
+    it('when tries contains Failure then a Failure applying mapperFailure is returned', () => {
+      const lastError = new SyntaxError();
+
+      const tries: Try<number>[] = [ Try.success(12), Try.success(11), Try.failure(new TypeError()), Try.failure(lastError) ];
+      const mapperFailure = (f1: Error, f2: Error) => f2;
+      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      expect(Try.combine(mapperFailure, mapperSuccess, tries).isSuccess()).toBeFalse();
+      expect(Try.combine(mapperFailure, mapperSuccess, tries).getError()).toEqual(lastError);
+    });
+
+  });
+
+
+
+  describe('combineGetFirstFailure', () => {
+
+    it('when given tries are null, undefined or empty then a Success with null value is returned', () => {
+      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      // @ts-ignore
+      expect(Try.combineGetFirstFailure(mapperSuccess, null).isSuccess()).toBeTrue();
+      // @ts-ignore
+      expect(Try.combineGetFirstFailure(mapperSuccess, null).get()).toBeNull();
+
+      // @ts-ignore
+      expect(Try.combineGetFirstFailure(mapperSuccess, undefined).isSuccess()).toBeTrue();
+      // @ts-ignore
+      expect(Try.combineGetFirstFailure(mapperSuccess, undefined).get()).toBeNull();
+
+
+      // @ts-ignore
+      expect(Try.combineGetFirstFailure(mapperSuccess, []).isSuccess()).toBeTrue();
+      // @ts-ignore
+      expect(Try.combineGetFirstFailure(mapperSuccess, []).get()).toBeNull();
+    });
+
+
+    it('when given tries is not empty but mapperSuccess is null or undefined then an error is thrown', () => {
+      const tries = [ () => Try.success(12) ];
+
+      // @ts-ignore
+      expect(() => Try.combineGetFirstFailure(null, tries)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Try.combineGetFirstFailure(undefined, tries)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when all tries are Success then a Success applying mapperSuccess is returned', () => {
+      const tries = [ () => Try.success(12), () => Try.success(11), () => Try.success(10) ];
+      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      expect(Try.combineGetFirstFailure(mapperSuccess, tries).isSuccess()).toBeTrue();
+      expect(Try.combineGetFirstFailure(mapperSuccess, tries).get()).toEqual(10);
+    });
+
+
+    it('when tries contains Failure then a Failure applying mapperFailure is returned', () => {
+      const firstError = new TypeError();
+
+      const tries: TFunction0<Try<number>>[] = [ () => Try.success(12), () => Try.success(11), () => Try.failure(firstError), () => Try.failure(new SyntaxError()) ];
+      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      expect(Try.combineGetFirstFailure(mapperSuccess, tries).isSuccess()).toBeFalse();
+      expect(Try.combineGetFirstFailure(mapperSuccess, tries).getError()).toEqual(firstError);
+    });
+
+  });
+
 
 
   describe('ofFunction0', () => {
@@ -38,8 +169,7 @@ describe('Try', () => {
 
     it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
       const returnedValue: string = 'abc';
-      const func: FFunction0<string> =
-        () => returnedValue;
+      const func = () => returnedValue;
 
       const tryResult = Try.ofFunction0(func);
 
@@ -77,8 +207,7 @@ describe('Try', () => {
 
 
     it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
-      const func: FFunction1<string, number> =
-        (s) => parseInt(s);
+      const func = (s: string) => parseInt(s);
 
       const tryResult = Try.ofFunction1('1', func);
 

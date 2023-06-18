@@ -50,7 +50,7 @@ describe('Predicate2', () => {
       const isNumberEvenAndStringLongerThan2: Predicate2<number, string> =
         Predicate2.of((n: number, s: string) => 0 == n % 2 && 2 < s.length);
 
-      const isNumberLowerThan20AndStringLongerThan5: FPredicate2<number, string> =
+      const isNumberLowerThan20AndStringLongerThan5 =
         (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => 20 > n! && 5 < s!.length;
 
       expect(Predicate2.allOf([isNumberEvenAndStringLongerThan2, isNumberLowerThan20AndStringLongerThan5]).apply(11, 'abcdef')).toBeFalse();
@@ -101,8 +101,8 @@ describe('Predicate2', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const isNumberEvenAndStringLongerThan2: Predicate2<number, string> =
-        Predicate2.of((n: number, s: string) => 0 == n % 2 && 2 < s.length);
+      const isNumberEvenAndStringLongerThan2 =
+        (n: number, s: string) => 0 == n % 2 && 2 < s.length;
 
       const isNumberLowerThan20AndStringLongerThan5: FPredicate2<number, string> =
         (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => 20 > n! && 5 < s!.length;
