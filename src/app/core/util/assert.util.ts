@@ -14,6 +14,66 @@ export class AssertUtil {
 
 
   /**
+   * Checks if the given `value` is `true`.
+   *
+   * @param value
+   *    Value to check
+   * @param message
+   *    Custom message to include more information about the error
+   *
+   * @return `true` if `value` is `true`,
+   *         {@link IllegalArgumentError} if `value` is `undefined`, `null` or `false`
+   *
+   * @throws {@link IllegalArgumentError} if `value` is `undefined`, `null` or `false`
+   */
+  static isTrue(value: NullableOrUndefined<boolean>,
+                message?: Nullable<string>): boolean;
+
+
+  /**
+   * Checks if the given `value` is `true`.
+   *
+   * @param value
+   *    Value to check
+   * @param errorSupplier
+   *    {@link TFunction0} used to provide the returned {@link Error}
+   *
+   * @return `true` if `value` is `true`,
+   *         {@link IllegalArgumentError} if `value` is `null` or `undefined`
+   *         if `value` is `false`:
+   *            Custom {@link Error} if `errorSupplier` is defined,
+   *            {@link IllegalArgumentError} otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `value` is `undefined`, `null` or `false`
+   */
+  static isTrue(value: NullableOrUndefined<boolean>,
+                errorSupplier?: Nullable<TFunction0<Error>>): boolean;
+
+
+  static isTrue(value: NullableOrUndefined<boolean>,
+                errorSupplierOrMessage?: Nullable<TFunction0<Error> | string>): boolean {
+    if (value) {
+      return true;
+    }
+    AssertUtil.notNullOrUndefined(
+      value,
+      'value is null or undefined'
+    );
+    if (Function0.isFunction(errorSupplierOrMessage)) {
+      throw errorSupplierOrMessage.apply();
+    }
+    if (isFFunction0(errorSupplierOrMessage)) {
+      throw Function0.of(errorSupplierOrMessage).apply();
+    }
+    throw new IllegalArgumentError(
+      errorSupplierOrMessage
+        ? errorSupplierOrMessage
+        : 'value is false'
+    );
+  }
+
+
+  /**
    * Checks if the given `value` is `undefined` or `null`.
    *
    * @param value
