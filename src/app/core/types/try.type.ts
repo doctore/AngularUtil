@@ -1,7 +1,12 @@
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import {
+  FFunction0,
+  FFunction1,
   FFunction2,
+  FFunction3,
+  FFunction4,
+  FFunction5,
   Function0,
   Function1,
   Function2,
@@ -15,7 +20,6 @@ import {
   TFunction4,
   TFunction5
 } from '@app-core/types/function';
-import {TPredicate2} from "@app-core/types/predicate";
 
 /**
  *    Represents a computation that may either result in an error, or return a successfully computed value. It's
@@ -188,6 +192,9 @@ export abstract class Try<T extends any> {
   }
 
 
+  static ofFunction0<T>(func: FFunction0<T>): Try<T>;
+  static ofFunction0<T>(func: TFunction0<T>): Try<T>;
+
   /**
    * Creates a {@link Success} invoking the provided {@link TFunction0}.
    *
@@ -197,7 +204,7 @@ export abstract class Try<T extends any> {
    * @return {@link Success} if there was no error invoking {@link TFunction0},
    *         {@link Failure} otherwise
    */
-  static ofFunction0 = <T>(func: TFunction0<T>): Try<T> => {
+  static ofFunction0<T>(func: TFunction0<T>): Try<T> {
     try {
       return this.success(
         Function0.of(func)
@@ -210,6 +217,12 @@ export abstract class Try<T extends any> {
   }
 
 
+  static ofFunction1<T1, R>(t1: T1,
+                            func: FFunction1<T1, R>): Try<R>;
+
+  static ofFunction1<T1, R>(t1: T1,
+                            func: TFunction1<T1, R>): Try<R>;
+
   /**
    * Creates a {@link Success} invoking the provided {@link TFunction1} with given `t1`.
    *
@@ -221,8 +234,8 @@ export abstract class Try<T extends any> {
    * @return {@link Success} if there was no error invoking {@link TFunction1},
    *         {@link Failure} otherwise
    */
-  static ofFunction1 = <T1, R>(t1: T1,
-                               func: TFunction1<T1, R>): Try<R> => {
+  static ofFunction1<T1, R>(t1: T1,
+                            func: TFunction1<T1, R>): Try<R> {
     try {
       return this.success(
         Function1.of(func)
@@ -234,6 +247,14 @@ export abstract class Try<T extends any> {
     }
   }
 
+
+  static ofFunction2<T1, T2, R>(t1: T1,
+                                t2: T2,
+                                func: FFunction2<T1, T2, R>): Try<R>;
+
+  static ofFunction2<T1, T2, R>(t1: T1,
+                                t2: T2,
+                                func: TFunction2<T1, T2, R>): Try<R>;
 
   /**
    * Creates a {@link Success} invoking the provided {@link TFunction2} with given input parameters.
@@ -248,9 +269,9 @@ export abstract class Try<T extends any> {
    * @return {@link Success} if there was no error invoking {@link TFunction2},
    *         {@link Failure} otherwise
    */
-  static ofFunction2 = <T1, T2, R>(t1: T1,
-                                   t2: T2,
-                                   func: TFunction2<T1, T2, R>): Try<R> => {
+  static ofFunction2<T1, T2, R>(t1: T1,
+                                t2: T2,
+                                func: TFunction2<T1, T2, R>): Try<R> {
     try {
       return this.success(
         Function2.of(func)
@@ -262,6 +283,16 @@ export abstract class Try<T extends any> {
     }
   }
 
+
+  static ofFunction3<T1, T2, T3, R>(t1: T1,
+                                    t2: T2,
+                                    t3: T3,
+                                    func: FFunction3<T1, T2, T3, R>): Try<R>;
+
+  static ofFunction3<T1, T2, T3, R>(t1: T1,
+                                    t2: T2,
+                                    t3: T3,
+                                    func: TFunction3<T1, T2, T3, R>): Try<R>;
 
   /**
    * Creates a {@link Success} invoking the provided {@link TFunction3} with given input parameters.
@@ -278,10 +309,10 @@ export abstract class Try<T extends any> {
    * @return {@link Success} if there was no error invoking {@link TFunction3},
    *         {@link Failure} otherwise
    */
-  static ofFunction3 = <T1, T2, T3, R>(t1: T1,
-                                       t2: T2,
-                                       t3: T3,
-                                       func: TFunction3<T1, T2, T3, R>): Try<R> => {
+  static ofFunction3<T1, T2, T3, R>(t1: T1,
+                                    t2: T2,
+                                    t3: T3,
+                                    func: TFunction3<T1, T2, T3, R>): Try<R> {
     try {
       return this.success(
         Function3.of(func)
@@ -293,6 +324,18 @@ export abstract class Try<T extends any> {
     }
   }
 
+
+  static ofFunction4<T1, T2, T3, T4, R>(t1: T1,
+                                        t2: T2,
+                                        t3: T3,
+                                        t4: T4,
+                                        func: FFunction4<T1, T2, T3, T4, R>): Try<R>;
+
+  static ofFunction4<T1, T2, T3, T4, R>(t1: T1,
+                                        t2: T2,
+                                        t3: T3,
+                                        t4: T4,
+                                        func: TFunction4<T1, T2, T3, T4, R>): Try<R>;
 
   /**
    * Creates a {@link Success} invoking the provided {@link TFunction4} with given input parameters.
@@ -311,11 +354,11 @@ export abstract class Try<T extends any> {
    * @return {@link Success} if there was no error invoking {@link TFunction4},
    *         {@link Failure} otherwise
    */
-  static ofFunction4 = <T1, T2, T3, T4, R>(t1: T1,
-                                           t2: T2,
-                                           t3: T3,
-                                           t4: T4,
-                                           func: TFunction4<T1, T2, T3, T4, R>): Try<R> => {
+  static ofFunction4<T1, T2, T3, T4, R>(t1: T1,
+                                        t2: T2,
+                                        t3: T3,
+                                        t4: T4,
+                                        func: TFunction4<T1, T2, T3, T4, R>): Try<R> {
     try {
       return this.success(
         Function4.of(func)
@@ -327,6 +370,20 @@ export abstract class Try<T extends any> {
     }
   }
 
+
+  static ofFunction5<T1, T2, T3, T4, T5, R>(t1: T1,
+                                            t2: T2,
+                                            t3: T3,
+                                            t4: T4,
+                                            t5: T5,
+                                            func: FFunction5<T1, T2, T3, T4, T5, R>): Try<R>;
+
+  static ofFunction5<T1, T2, T3, T4, T5, R>(t1: T1,
+                                            t2: T2,
+                                            t3: T3,
+                                            t4: T4,
+                                            t5: T5,
+                                            func: TFunction5<T1, T2, T3, T4, T5, R>): Try<R>;
 
   /**
    * Creates a {@link Success} invoking the provided {@link TFunction5} with given input parameters.
@@ -347,12 +404,12 @@ export abstract class Try<T extends any> {
    * @return {@link Success} if there was no error invoking {@link TFunction5},
    *         {@link Failure} otherwise
    */
-  static ofFunction5 = <T1, T2, T3, T4, T5, R>(t1: T1,
-                                               t2: T2,
-                                               t3: T3,
-                                               t4: T4,
-                                               t5: T5,
-                                               func: TFunction5<T1, T2, T3, T4, T5, R>): Try<R> => {
+  static ofFunction5<T1, T2, T3, T4, T5, R>(t1: T1,
+                                            t2: T2,
+                                            t3: T3,
+                                            t4: T4,
+                                            t5: T5,
+                                            func: TFunction5<T1, T2, T3, T4, T5, R>): Try<R> {
     try {
       return this.success(
         Function5.of(func)
@@ -558,47 +615,27 @@ export abstract class Try<T extends any> {
 
 
   /**
-   *    Whereas {@link Try#mapSuccess} with `mapper` argument only performs a mapping on a {@link Success} {@link Try},
-   * and {@link Try#mapFailure} performs a mapping on an {@link Failure} {@link Try}, this method with two {@link TFunction1}
-   * mappers as arguments, allows you to provide mapping actions for both, and will give you the result based on what
-   * type of {@link Try} this is. Without this, you would have to do something like:
+   *    Applies a {@link TFunction1} `mapper` to the stored value of this {@link Try} if this is a {@link Success}.
+   * Otherwise, does nothing if this is a {@link Failure}.
+   * <p>
+   * If given `mapper` invocation returns an {@link Error}, then returned {@link Try} will be {@link Failure}.
    *
-   * <pre>
-   * Example:
+   * @param mapper
+   *    The {@link TFunction1} mapping function to apply to a value of a {@link Success} instance.
    *
-   *   t.mapSuccess(...).mapFailure(...);
-   * </pre>
+   * @return new {@link Try}
    *
-   * If invoking given `mapperFailure` or `mapperSuccess` an {@link Error} is thrown then returned {@link Try} will {@link Failure}.
-   *
-   * @param mapperFailure
-   *    {@link TFunction1} with the failure mapping operation
-   * @param mapperSuccess
-   *    {@link TFunction1} with the success mapping operation
-   *
-   * @return {@link Try}
-   *
-   * @throws {@link IllegalArgumentError} if `mapperFailure` is `null` or `undefined` and the current instance is a {@link Success} one
-   *                                      or `mapperSuccess` is `null` or `undefined` and the current instance is a {@link Failure} one
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Success} one
    */
-  map = <U>(mapperFailure: TFunction1<Error, Error>,
-            mapperSuccess: TFunction1<T, U>): Try<U> => {
+  map = <U>(mapper: TFunction1<T, U>): Try<U> => {
     if (this.isSuccess()) {
       AssertUtil.notNullOrUndefined(
-        mapperSuccess,
-        'mapperSuccess must be not null and not undefined'
+        mapper,
+        'mapper must be not null and not undefined'
       );
-      return this.internalMapTry(mapperSuccess);
-    } else {
-      AssertUtil.notNullOrUndefined(
-        mapperFailure,
-        'mapperFailure must be not null and not undefined'
-      );
-      return Try.failure<U>(
-        this.internalMapFailureTry(mapperFailure)
-          .getError()
-      );
+      return this.internalMapTry(mapper);
     }
+    return Try.failure(this.getError());
   }
 
 
@@ -628,27 +665,33 @@ export abstract class Try<T extends any> {
 
 
   /**
-   *    Applies a {@link TFunction1} `mapper` to the stored value of this {@link Try} if this is a {@link Success}.
-   * Otherwise, does nothing if this is a {@link Failure}.
-   * <p>
-   * If given `mapper` invocation returns an {@link Error}, then returned {@link Try} will be {@link Failure}.
+   *    Returns this {@link Try} if it is {@link Success}, otherwise tries to recover the {@link Error} of the
+   * {@link Failure} applying `mapper`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   // @ts-ignore
+   *   Try.ofFunction0(() => doesNotExits)
+   *      .recover((e1: Error) => 9999999999);
+   * </pre>
    *
    * @param mapper
-   *    The {@link TFunction1} mapping function to apply to a value of a {@link Success} instance.
+   *    Recovery {@link TFunction1} taking a {@link Error}
    *
-   * @return new {@link Try}
+   * @return {@link Try}
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Success} one
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
    */
-  mapSuccess = <U>(mapper: TFunction1<T, U>): Try<U> => {
-    if (this.isSuccess()) {
+  recover = (mapper: TFunction1<Error, T>): Try<T> => {
+    if (!this.isSuccess()) {
       AssertUtil.notNullOrUndefined(
         mapper,
         'mapper must be not null and not undefined'
       );
-      return this.internalMapTry(mapper);
+      return this.recoverTry(mapper);
     }
-    return Try.failure(this.getError());
+    return Try.success(this.get());
   }
 
 
@@ -666,6 +709,43 @@ export abstract class Try<T extends any> {
        : Optional.of(
            this.get()
          );
+
+
+  /**
+   *    Whereas {@link Try#map} with `mapper` argument only performs a mapping on a {@link Success} {@link Try},
+   * and {@link Try#mapFailure} performs a mapping on an {@link Failure} {@link Try}, this method with two {@link TFunction1}
+   * mappers as arguments, allows you to provide mapping actions for both, and will give you the result based on what
+   * type of {@link Try} this is.
+   * <p>
+   *    If invoking given `mapperFailure` or `mapperSuccess` an {@link Error} is thrown then returned {@link Try}
+   * will be {@link Failure}.
+   *
+   * @param mapperFailure
+   *    {@link TFunction1} with the failure mapping operation
+   * @param mapperSuccess
+   *    {@link TFunction1} with the success mapping operation
+   *
+   * @return {@link Try}
+   *
+   * @throws {@link IllegalArgumentError} if `mapperFailure` is `null` or `undefined` and the current instance is a {@link Success} one
+   *                                      or `mapperSuccess` is `null` or `undefined` and the current instance is a {@link Failure} one
+   */
+  transform = <U>(mapperFailure: TFunction1<Error, U>,
+                  mapperSuccess: TFunction1<T, U>): Try<U> => {
+    if (this.isSuccess()) {
+      AssertUtil.notNullOrUndefined(
+        mapperSuccess,
+        'mapperSuccess must be not null and not undefined'
+      );
+      return this.internalMapTry(mapperSuccess);
+    } else {
+      AssertUtil.notNullOrUndefined(
+        mapperFailure,
+        'mapperFailure must be not null and not undefined'
+      );
+      return this.recoverTry(mapperFailure);
+    }
+  }
 
 
   /**
@@ -691,7 +771,7 @@ export abstract class Try<T extends any> {
    * @param mapper
    *    {@link TFunction1} to apply the stored value if the current instance is a {@link Failure} one
    *
-   * @return {@link Try}
+   * @return {@link Try} of type {@link Failure}
    */
   private internalMapFailureTry = (mapper: TFunction1<Error, Error>): Try<T> => {
     try {
@@ -701,7 +781,6 @@ export abstract class Try<T extends any> {
             this.getError()
           )
       );
-
     } catch (error) {
       return Try.failureResultHandler(error);
     }
@@ -724,7 +803,6 @@ export abstract class Try<T extends any> {
             this.get()
           )
       );
-
     } catch (error) {
       return Try.failureResultHandler(error);
     }
@@ -740,7 +818,7 @@ export abstract class Try<T extends any> {
    * @param mapper
    *    {@link TFunction2} to apply the stored exception and the one related with `t`
    *
-   * @return {@link Try}
+   * @return {@link Try} of type {@link Failure}
    */
   private mapFailureTry = (t: Try<T>,
                            mapper: TFunction2<Error, Error, Error>): Try<T> => {
@@ -752,13 +830,8 @@ export abstract class Try<T extends any> {
             t.getError()
           )
       );
-
     } catch (error) {
-      const finalError = error instanceof Error
-        ? error
-        : new Error('An unknown error was thrown, error = ' + error);
-
-      return Try.failure(finalError);
+      return Try.failureResultHandler(error);
     }
   }
 
@@ -784,7 +857,28 @@ export abstract class Try<T extends any> {
             t.get()
           )
       );
+    } catch (error) {
+      return Try.failureResultHandler(error);
+    }
+  }
 
+
+  /**
+   * When current {@link Try} is a {@link Failure} instance, manages in a safe way the {@link TFunction1} invocation.
+   *
+   * @param mapper
+   *    {@link TFunction1} to apply the stored value if the current instance is a {@link Failure} one
+   *
+   * @return {@link Try}
+   */
+  private recoverTry = <U>(mapper: TFunction1<Error, U>): Try<U> => {
+    try {
+      return Try.success(
+        Function1.of(mapper)
+          .apply(
+            this.getError()
+          )
+      );
     } catch (error) {
       return Try.failureResultHandler(error);
     }
