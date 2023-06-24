@@ -1,8 +1,8 @@
 import { ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import { FConsumer1 } from '@app-core/types/consumer';
-import { FFunction0, FFunction1, Function0, PartialFunction } from '@app-core/types/function';
-import { FPredicate1 } from '@app-core/types/predicate';
+import {FFunction0, FFunction1, Function0, Function1, PartialFunction} from '@app-core/types/function';
+import {FPredicate1, Predicate1} from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -227,8 +227,8 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty and predicate does not match then an empty Optional is returned', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: number) => 0 == n! % 2);
 
       expect(Optional.of(1).filter(isEven).isPresent()).toBeFalse();
       expect(Optional.of(9).filter(isEven).isPresent()).toBeFalse();
@@ -236,8 +236,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty and predicate matches then same Optional is returned', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+      const isEven = (n: NullableOrUndefined<number>) => 0 == n! % 2;
 
       const optional1 = Optional.of(2).filter(isEven);
       const optional2 = Optional.of(18).filter(isEven);
@@ -257,7 +256,7 @@ describe('Optional', () => {
 
     it('when the Optional is empty then mapper is not invoked', () => {
       const fromNumToString: FFunction1<number, Optional<string>> =
-        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+        (n: NullableOrUndefined<number>) => Optional.ofNullable('' + n);
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
 
@@ -269,7 +268,7 @@ describe('Optional', () => {
 
     it('when the Optional is not empty then mapper is invoked', () => {
       const fromNumToString: FFunction1<number, Optional<string>> =
-        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+        (n: NullableOrUndefined<number>) => Optional.ofNullable('' + n);
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
 
@@ -281,7 +280,7 @@ describe('Optional', () => {
 
     it('when the Optional is empty then empty Optional is returned', () => {
       const fromNumToString: FFunction1<number, Optional<string>> =
-        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+        (n: NullableOrUndefined<number>) => Optional.ofNullable('' + n);
 
       const optional = Optional.empty<number>().flatMap(fromNumToString);
 
@@ -291,7 +290,7 @@ describe('Optional', () => {
 
     it('when the Optional is not empty then new mapped Optional is returned', () => {
       const fromNumToString: FFunction1<number, Optional<string>> =
-        (n: NullableOrUndefined<number>): Optional<string> => Optional.ofNullable('' + n);
+        (n: NullableOrUndefined<number>) => Optional.ofNullable('' + n);
 
       const optional = Optional.of(9).flatMap(fromNumToString);
 
@@ -307,10 +306,10 @@ describe('Optional', () => {
 
     it('when the Optional is empty then ifEmpty is invoked and ifNonEmpty is not', () => {
       const fromNumToString: FFunction1<number, string> =
-        (n: number): string => '' + n;
+        (n: number) => '' + n;
 
       const returnEmptyString: FFunction0<string> =
-        (): string => '';
+        () => '';
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
       const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyString);
@@ -324,10 +323,10 @@ describe('Optional', () => {
 
     it('when the Optional is not empty then ifNonEmpty is invoked and ifEmpty is not', () => {
       const fromNumToString: FFunction1<number, string> =
-        (n: number): string => '' + n;
+        (n: number) => '' + n;
 
       const returnEmptyString: FFunction0<string> =
-        (): string => '';
+        () => '';
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
       const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyString);
@@ -340,22 +339,19 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then ifEmpty result is returned', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: number): string => '' + n;
+      const fromNumToString: Function1<number, string> =
+        Function1.of((n: number) => '' + n);
 
       const returnEmptyString: FFunction0<string> =
-        (): string => '';
+        () => '';
 
       expect(Optional.empty<number>().fold(returnEmptyString, fromNumToString)).toEqual('');
     });
 
 
     it('when the Optional is not empty then ifNonEmpty result is returned', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: number): string => '' + n;
-
-      const returnEmptyString: FFunction0<string> =
-        (): string => '';
+      const fromNumToString = (n: number) => '' + n;
+      const returnEmptyString = () => '';
 
       expect(Optional.of(11).fold(returnEmptyString, fromNumToString)).toEqual('11');
     });
@@ -496,7 +492,7 @@ describe('Optional', () => {
 
     it('when the Optional is empty then mapper is not invoked', () => {
       const fromNumToString: FFunction1<number, string> =
-        (n: NullableOrUndefined<number>): string => '' + n!;
+        (n: NullableOrUndefined<number>) => '' + n!;
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
 
@@ -508,7 +504,7 @@ describe('Optional', () => {
 
     it('when the Optional is not empty then mapper is invoked', () => {
       const fromNumToString: FFunction1<number, string> =
-        (n: NullableOrUndefined<number>): string => '' + n!;
+        (n: NullableOrUndefined<number>) => '' + n!;
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
 
@@ -519,8 +515,8 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then empty Optional is returned', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: NullableOrUndefined<number>): string => '' + n!;
+      const fromNumToString: Function1<number, string> =
+        Function1.of((n: NullableOrUndefined<number>) => '' + n!);
 
       const optional = Optional.empty<number>().map(fromNumToString);
 
@@ -529,8 +525,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty then new mapped Optional is returned', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: NullableOrUndefined<number>): string => '' + n!;
+      const fromNumToString = (n: NullableOrUndefined<number>) => '' + n!;
 
       const optional = Optional.of(12).map(fromNumToString);
 

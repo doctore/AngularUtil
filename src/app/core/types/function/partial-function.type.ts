@@ -1,5 +1,5 @@
 import { AssertUtil, ObjectUtil } from '@app-core/util';
-import { Optional } from '@app-core/types';
+import {NullableOrUndefined, Optional} from '@app-core/types';
 import { FFunction1, FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/types/function';
 import { FPredicate1, FPredicate2, Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/types/predicate';
 
@@ -75,10 +75,10 @@ export class PartialFunction<T, R> {
     undefined !== (input as PartialFunction<T, R>).isDefinedAt;
 
 
-  static of<T, R>(verifier: FPredicate1<T>,
+  static of<T, R>(verifier: NullableOrUndefined<FPredicate1<T>>,
                   mapper: FFunction1<T, R>): PartialFunction<T, R>;
 
-  static of<T, R>(verifier: TPredicate1<T>,
+  static of<T, R>(verifier: NullableOrUndefined<TPredicate1<T>>,
                   mapper: TFunction1<T, R>): PartialFunction<T, R>;
 
   /**
@@ -97,7 +97,7 @@ export class PartialFunction<T, R> {
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
-  static of<T, R>(verifier: TPredicate1<T>,
+  static of<T, R>(verifier: NullableOrUndefined<TPredicate1<T>>,
                   mapper: TFunction1<T, R>): PartialFunction<T, R> {
     AssertUtil.notNullOrUndefined(
       mapper,
@@ -114,10 +114,10 @@ export class PartialFunction<T, R> {
   }
 
 
-  static of2<T1, T2, R1, R2>(verifier: FPredicate2<T1, R1>,
+  static of2<T1, T2, R1, R2>(verifier: NullableOrUndefined<FPredicate2<T1, R1>>,
                              mapper: FFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]>;
 
-  static of2<T1, T2, R1, R2>(verifier: TPredicate2<T1, R1>,
+  static of2<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
                              mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]>;
 
   /**
@@ -136,7 +136,7 @@ export class PartialFunction<T, R> {
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
-  static of2<T1, T2, R1, R2>(verifier: TPredicate2<T1, R1>,
+  static of2<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
                              mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]> {
     AssertUtil.notNullOrUndefined(
       mapper,

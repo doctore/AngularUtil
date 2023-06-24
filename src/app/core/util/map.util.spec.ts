@@ -1,5 +1,5 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
-import { FFunction3, Function2, PartialFunction } from '@app-core/types/function';
+import { FFunction2, FFunction3, Function2, PartialFunction } from '@app-core/types/function';
 import { FPredicate2, Predicate2 } from '@app-core/types/predicate';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
@@ -22,6 +22,159 @@ describe('MapUtil', () => {
 
 
 
+  describe('applyOrElse', () => {
+
+    it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
+      let emptyMap = new Map<string, number>();
+      const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
+        PartialFunction.of(
+          ([k, v]: [string, number]) => 1 == v % 2,
+          ([k, v]: [string, number]) => [k, 1 + v]
+        );
+      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
+
+      expect(MapUtil.applyOrElse(null, keyAndValuePlus1ForOdd, keyValueMultiply2)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(undefined, keyAndValuePlus1ForOdd, keyValueMultiply2)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(emptyMap, keyAndValuePlus1ForOdd, keyValueMultiply2)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap has no elements and defaultMapper, orElseMapper and filterPredicate are provided then empty Map is returned', () => {
+      let emptyMap = new Map<string, number>();
+      const isValueEven = (k: string, v: number) => 1 == v % 2;
+      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
+      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
+
+      expect(MapUtil.applyOrElse(null, keyValuePlus1, keyValueMultiply2, isValueEven)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(undefined, keyValuePlus1, keyValueMultiply2, isValueEven)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(emptyMap, keyValuePlus1, keyValueMultiply2, isValueEven)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap is not empty but partialFunction or orElseMapper are null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<string, number>();
+      sourceMap.set('a', 1);
+
+      const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
+        PartialFunction.of(
+          ([k, v]: [string, number]) => 1 == v % 2,
+          ([k, v]: [string, number]) => [k, 1 + v]
+        );
+      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
+
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, null, keyValueMultiply2)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, undefined, keyValueMultiply2)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOdd, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOdd, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty but defaultMapper or orElseMapper are null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<string, number>();
+      sourceMap.set('a', 1);
+
+      const isKeyEven = (k: number, v: string) => 1 == k % 2;
+      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
+
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, null, keyValuePlus1,  isKeyEven)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, undefined, keyValuePlus1, isKeyEven)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, keyValuePlus1, null, isKeyEven)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, keyValuePlus1, undefined, isKeyEven)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and partialFunction and orElseMapper are valid then a new filtered and transformed Map is returned', () => {
+      let sourceMap = new Map<string, number>();
+      sourceMap.set('A', 1);
+      sourceMap.set('B', 2);
+      sourceMap.set('D', 4);
+
+      const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
+        PartialFunction.of(
+          ([k, v]: [string, number]) => 1 == v % 2,
+          ([k, v]: [string, number]) => [k, 1 + v]
+        );
+      const keyValueMultiply2: Function2<string, number, [string, number]> =
+        Function2.of((k: string, v: number) => [k, 2 * v]);
+
+      const expectedResult = new Map<string, number>();
+      expectedResult.set('A', 2);
+      expectedResult.set('B', 4);
+      expectedResult.set('D', 8);
+
+      verifyMaps(
+        MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOdd, keyValueMultiply2),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and and defaultMapper and orElseMapper are valid but filterPredicate is null or undefined then all elements will be transformed using defaultMapper', () => {
+      let sourceMap = new Map<string, number>();
+      sourceMap.set('A', 1);
+      sourceMap.set('B', 2);
+      sourceMap.set('D', 4);
+
+      const keyValuePlus1: Function2<string, number, [string, number]> =
+        Function2.of((k: string, v: number): [string, number] => [k, 1 + v]);
+
+      const keyValueMultiply2: FFunction2<string, number, [string, number]> =
+        (k: string, v: number): [string, number] => [k, 2 * v];
+
+      const expectedResult = new Map<string, number>();
+      expectedResult.set('A', 2);
+      expectedResult.set('B', 3);
+      expectedResult.set('D', 5);
+
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, null),
+        expectedResult
+      );
+
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and defaultMapper, orElseMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
+      let sourceMap = new Map<string, number>();
+      sourceMap.set('A', 1);
+      sourceMap.set('B', 2);
+      sourceMap.set('D', 4);
+
+      const isValueEven = (k: string, v: number) => 1 == v % 2;
+      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
+      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
+
+      const expectedResult = new Map<string, number>();
+      expectedResult.set('A', 2);
+      expectedResult.set('B', 4);
+      expectedResult.set('D', 8);
+
+      verifyMaps(
+        MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, isValueEven),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('collect', () => {
 
     it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
@@ -38,7 +191,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap has no elements and mapFunction and filterPredicate are provided then Map array is returned', () => {
+    it('when given sourceMap has no elements and mapFunction and filterPredicate are provided then empty Map is returned', () => {
       let emptyMap = new Map<number, string>();
       const isKeyEven = (k: number, v: string) => 1 == k % 2;
       const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];

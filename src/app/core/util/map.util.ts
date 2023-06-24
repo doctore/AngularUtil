@@ -1,4 +1,4 @@
-import { Function3, PartialFunction, TFunction2, TFunction3 } from '@app-core/types/function';
+import { Function2, Function3, PartialFunction, TFunction2, TFunction3 } from '@app-core/types/function';
 import { Predicate2, TPredicate2 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
@@ -10,6 +10,113 @@ export class MapUtil {
 
   constructor() {
     throw new SyntaxError('MapUtil is an utility class');
+  }
+
+
+  /**
+   *    Returns a new {@link Map} using the given `sourceMap`, applying {@link PartialFunction#apply} if the current element
+   * verifies {@link PartialFunction#isDefinedAt}, `orElseMapper` otherwise.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                        Result:
+   *    [("A", 1), ("B", 2)]                               [("A", 2), ("B", 4)]
+   *    PartialFunction.of(
+   *      ([k, v]: [string, number]) => 1 == v % 2
+   *      ([k, v]: [string, number]) => [k, 1 + v]
+   *    )
+   *    (k: string, v: number)=> [k, 2 * v]
+   * </pre>
+   *
+   * @param sourceMap
+   *    Source {@link Map} with the elements to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform elements of `sourceMap`
+   * @param orElseMapper
+   *    {@link TFunction2} to transform elements of `sourceMap` do not verify {@link PartialFunction#isDefinedAt}
+   *
+   * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
+   *         on which it is defined and collecting the results or `orElseMapper` otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static applyOrElse<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                     partialFunction: PartialFunction<[K1, V1], [K2, V2]>,
+                                     orElseMapper: TFunction2<K1, V1, [K2, V2]>): Map<K2, V2>;
+
+
+  /**
+   *    Returns a new {@link Map} using the given `sourceMap`, applying `defaultMapper` if the current element verifies
+   * `filterPredicate`, `orElseMapper` otherwise.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                        Result:
+   *    [("A", 1), ("B", 2)]                               [("A", 2), ("B", 4)]
+   *    (k: string, v: number) => [k, 1 + v]
+   *    (k: string, v: number) => [k, 2 * v]
+   *    (k: string, v: number) => 1 == v % 2
+   * </pre>
+   *
+   * @param sourceMap
+   *    Source {@link Map} with the elements to filter and transform
+   * @param defaultMapper
+   *    {@link TFunction2} to transform elements of `sourceMap` that verify `filterPredicate`
+   * @param orElseMapper
+   *    {@link TFunction2} to transform elements of `sourceMap` do not verify `filterPredicate`
+   * @param filterPredicate
+   *    {@link TPredicate2} to filter elements of `sourceMap`
+   *
+   * @return new {@link Map} from applying the given `defaultMapper` to each element of `sourceMap` that verifies `filterPredicate`
+   *         and collecting the results or `orElseMapper` otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `defaultMapper` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static applyOrElse<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                     defaultMapper: TFunction2<K1, V1, [K2, V2]>,
+                                     orElseMapper: TFunction2<K1, V1, [K2, V2]>,
+                                     filterPredicate: TPredicate2<K1, V1>): Map<K2, V2>;
+
+
+  static applyOrElse<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                     partialFunctionOrDefaultMapper: PartialFunction<[K1, V1], [K2, V2]> | TFunction2<K1, V1, [K2, V2]>,
+                                     orElseMapper: TFunction2<K1, V1, [K2, V2]>,
+                                     filterPredicate?: TPredicate2<K1, V1>): Map<K2, V2>{
+    let result = new Map<K2, V2>();
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        partialFunctionOrDefaultMapper,
+        'partialFunctionOrDefaultMapper must be not null and not undefined'
+      );
+      AssertUtil.notNullOrUndefined(
+        orElseMapper,
+        'orElseMapper must be not null and not undefined'
+      );
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDefaultMapper)
+        ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDefaultMapper
+        : PartialFunction.of2(
+            filterPredicate,
+            <TFunction2<K1, V1, [K2, V2]>>partialFunctionOrDefaultMapper
+        );
+      const finalOrElseMapper = Function2.of(orElseMapper);
+
+      for (let [key, value] of sourceMap!) {
+        const elementResult = finalPartialFunction.isDefinedAt([key, value])
+          ? finalPartialFunction.apply([key, value])
+          : finalOrElseMapper.apply(key, value);
+
+        result.set(
+          elementResult[0],
+          elementResult[1]
+        );
+      }
+    }
+    return result;
   }
 
 
@@ -55,10 +162,10 @@ export class MapUtil {
    * <pre>
    * Example:
    *
-   *   Parameters:                                        Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                          [(1, 2)]
-   *    ([k, v]: [number, string]) => [k, v.length]
-   *    ([k, v]: [number, string]) => 1 == k % 2
+   *   Parameters:                                       Result:
+   *    [(1, 'Hi'), (2, 'Hello')]                         [(1, 2)]
+   *    (k: number, v: string) => [k, v.length]
+   *    (k: number, v: string) => 1 == k % 2
    * </pre>
    *
    * @param sourceMap
@@ -90,7 +197,7 @@ export class MapUtil {
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrMapFunction)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrMapFunction
         : PartialFunction.of2(
-            filterPredicate!,
+            filterPredicate,
             <TFunction2<K1, V1, [K2, V2]>>partialFunctionOrMapFunction
           );
       for (let [key, value] of sourceMap!) {

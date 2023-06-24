@@ -1,4 +1,4 @@
-import { Function2, PartialFunction, TFunction1, TFunction2 } from '@app-core/types/function';
+import { FFunction1, Function1, Function2, PartialFunction, TFunction1, TFunction2 } from '@app-core/types/function';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
@@ -11,6 +11,110 @@ export class ArrayUtil {
 
   constructor() {
     throw new SyntaxError('ArrayUtil is an utility class');
+  }
+
+
+  /**
+   *    Returns a new array using the given `sourceArray`, applying {@link PartialFunction#apply} if the current element
+   * verifies {@link PartialFunction#isDefinedAt}, `orElseMapper` otherwise.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3, 6]                         [2, 4, 4, 12]
+   *    PartialFunction.of(
+   *      (n: number) => 1 == n % 2
+   *      (n: number) => 1 + n
+   *    )
+   *    (n: number) => 2 * n
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform elements of `sourceArray`
+   * @param orElseMapper
+   *    {@link TFunction1} to transform elements of `sourceArray` do not verify {@link PartialFunction#isDefinedAt}
+   *
+   * @return new array from applying the given {@link PartialFunction} to each element of `sourceArray`
+   *         on which it is defined and collecting the results or `orElseMapper` otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static applyOrElse<T, U>(sourceArray: NullableOrUndefined<T[]>,
+                           partialFunction: PartialFunction<T, U>,
+                           orElseMapper: TFunction1<T, U>): U[];
+
+
+  static applyOrElse<T, U>(sourceArray: NullableOrUndefined<T[]>,
+                           partialFunction: PartialFunction<T, U>,
+                           orElseMapper: FFunction1<T, U>): U[];
+
+  /**
+   *    Returns a new array using the given `sourceArray`, applying `defaultMapper` if the current element verifies
+   * `filterPredicate`, `orElseMapper` otherwise.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3, 6]                         [2, 4, 4, 12]
+   *    (n: number) => 1 + n
+   *    (n: number) => 2 * n
+   *    (n: number) => 1 == n % 2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter and transform
+   * @param defaultMapper
+   *    {@link TFunction1} to transform elements of `sourceArray` that verify `filterPredicate`
+   * @param orElseMapper
+   *    {@link TFunction1} to transform elements of `sourceArray` do not verify `filterPredicate`
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *
+   * @return new array from applying the given `defaultMapper` to each element of `sourceArray` that verifies `filterPredicate`
+   *         and collecting the results or `orElseMapper` otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `defaultMapper` or `orElseMapper` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static applyOrElse<T, U>(sourceArray: NullableOrUndefined<T[]>,
+                           defaultMapper: TFunction1<T, U>,
+                           orElseMapper: TFunction1<T, U>,
+                           filterPredicate: TPredicate1<T>): U[];
+
+
+  static applyOrElse<T, U>(sourceArray: NullableOrUndefined<T[]>,
+                           partialFunctionOrDefaultMapper: PartialFunction<T, U> | TFunction1<T, U>,
+                           orElseMapper: TFunction1<T, U>,
+                           filterPredicate?: TPredicate1<T>): U[]{
+    let result: U[] = [];
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        partialFunctionOrDefaultMapper,
+        'partialFunctionOrDefaultMapper must be not null and not undefined'
+      );
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDefaultMapper)
+        ? <PartialFunction<T, U>>partialFunctionOrDefaultMapper
+        : PartialFunction.of(
+            filterPredicate,
+            <TFunction1<T, U>>partialFunctionOrDefaultMapper
+        );
+      const finalOrElseMapper = Function1.of(orElseMapper);
+
+      for (let item of sourceArray!) {
+        result.push(
+          finalPartialFunction.isDefinedAt(item)
+            ? finalPartialFunction.apply(item)
+            : finalOrElseMapper.apply(item)
+        );
+      }
+    }
+    return result;
   }
 
 
@@ -92,7 +196,7 @@ export class ArrayUtil {
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrMapFunction)
         ? <PartialFunction<T, U>>partialFunctionOrMapFunction
         : PartialFunction.of(
-            filterPredicate!,
+            filterPredicate,
             <TFunction1<T, U>>partialFunctionOrMapFunction
           );
       for (let item of sourceArray!) {

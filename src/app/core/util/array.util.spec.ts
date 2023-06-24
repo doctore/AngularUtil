@@ -1,6 +1,6 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction1, FFunction2, Function2, PartialFunction } from '@app-core/types/function';
+import { FFunction1, FFunction2, Function1, Function2, PartialFunction } from '@app-core/types/function';
 import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
@@ -16,6 +16,137 @@ describe('ArrayUtil', () => {
 
     it('when trying to create a new instance then an error is thrown', () => {
       expect(() => new ArrayUtil()).toThrowError(SyntaxError);
+    });
+
+  });
+
+
+
+  describe('applyOrElse', () => {
+
+    it('when given sourceArray has no elements and partialFunction is provided then empty array is returned', () => {
+      let emptyArray: number[] = [];
+      const plus1ForOdd: PartialFunction<number, number> =
+        PartialFunction.of(
+          (n: number) => 1 == n % 2,
+          (n: number) => 1 + n
+        );
+      const multiply2 = (n: number) => 2 * n;
+
+      const expectedResult: number[] = [];
+
+      expect(ArrayUtil.applyOrElse(null, plus1ForOdd, multiply2)).toEqual(expectedResult);
+      expect(ArrayUtil.applyOrElse(undefined, plus1ForOdd, multiply2)).toEqual(expectedResult);
+      expect(ArrayUtil.applyOrElse(emptyArray, plus1ForOdd, multiply2)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray has no elements and defaultMapper, orElseMapper and filterPredicate are provided then empty array is returned', () => {
+      let emptyArray: number[] = [];
+      const isOdd = (n: number) => 1 == n % 2;
+      const plus1 = (n: number) => 1 + n;
+      const multiply2 = (n: number) => 2 * n;
+
+      const expectedResult: number[] = [];
+
+      expect(ArrayUtil.applyOrElse(null, plus1, multiply2, isOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.applyOrElse(undefined, plus1, multiply2, isOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.applyOrElse(emptyArray, plus1, multiply2, isOdd)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but partialFunction or orElseMapper are null or undefined then an error is thrown', () => {
+      const plus1ForOdd: PartialFunction<number, number> =
+        PartialFunction.of(
+          (n: number) => 1 == n % 2,
+          (n: number) => 1 + n
+        );
+      const multiply2 = (n: number) => 2 * n;
+
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], null, multiply2)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], undefined, multiply2)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], plus1ForOdd, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], plus1ForOdd, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray is not empty but defaultMapper or orElseMapper are null or undefined then an error is thrown', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+      const plus1 = (n: number) => 1 + n;
+
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], null, plus1,  isOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], undefined, plus1, isOdd)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], plus1, null, isOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.applyOrElse([1], plus1, undefined, isOdd)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and partialFunction and orElseMapper are valid then a new filtered and transformed array is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6];
+
+      const plus1ForOdd: PartialFunction<number, number> =
+        PartialFunction.of(
+          (n: number) => 1 == n % 2,
+          (n: number) => 1 + n
+        );
+      const multiply2: Function1<number, number> =
+        Function1.of((n: number) => 2 * n);
+
+      const expectedResult: number[] = [2, 4, 4, 12];
+
+      verifyArrays(
+        ArrayUtil.applyOrElse(sourceArray, plus1ForOdd, multiply2),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and defaultMapper and orElseMapper are valid but filterPredicate is null or undefined then all elements will be transformed using defaultMapper', () => {
+      let sourceArray: number[] = [1, 2, 3, 6];
+
+      const plus1: FFunction1<number, number> = (n: number) => 1 + n;
+      const multiply2: Function1<number, number> =
+        Function1.of((n: number) => 2 * n);
+
+      const expectedResult: number[] = [2, 3, 4, 7];
+
+      verifyArrays(
+        // @ts-ignore
+        ArrayUtil.applyOrElse(sourceArray, plus1, multiply2, null),
+        expectedResult
+      );
+
+      verifyArrays(
+        // @ts-ignore
+        ArrayUtil.applyOrElse(sourceArray, plus1, multiply2, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and defaultMapper, orElseMapper and filterPredicate are valid then a new filtered and transformed array is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6];
+
+      const isOdd = (n: number) => 1 == n % 2;
+      const plus1 = (n: number) => 1 + n;
+      const multiply2 = (n: number) => 2 * n;
+
+      const expectedResult: number[] = [2, 4, 4, 12];
+
+      verifyArrays(
+        ArrayUtil.applyOrElse(sourceArray, plus1, multiply2, isOdd),
+        expectedResult
+      );
     });
 
   });
@@ -42,14 +173,14 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements and mapFunction and filterPredicate are provided then empty array is returned', () => {
       let emptyArray: number[] = [];
-      const isIdEven: FPredicate1<number> = (n: number) => 0 == n % 2;
+      const isEven: FPredicate1<number> = (n: number) => 0 == n % 2;
       const multiply2AndString: FFunction1<number, string> = (n: number) => '' + (2 * n);
 
       const expectedResult: string[] = [];
 
-      expect(ArrayUtil.collect(null, multiply2AndString, isIdEven)).toEqual(expectedResult);
-      expect(ArrayUtil.collect(undefined, multiply2AndString, isIdEven)).toEqual(expectedResult);
-      expect(ArrayUtil.collect(emptyArray, multiply2AndString, isIdEven)).toEqual(expectedResult);
+      expect(ArrayUtil.collect(null, multiply2AndString, isEven)).toEqual(expectedResult);
+      expect(ArrayUtil.collect(undefined, multiply2AndString, isEven)).toEqual(expectedResult);
+      expect(ArrayUtil.collect(emptyArray, multiply2AndString, isEven)).toEqual(expectedResult);
     });
 
 
@@ -63,14 +194,14 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty but mapFunction is null or undefined then an error is thrown', () => {
-      const isIdEven: FPredicate1<number> =
+      const isEven: FPredicate1<number> =
         (n: number) => 0 == n % 2;
 
       // @ts-ignore
-      expect(() => ArrayUtil.collect([1], null, isIdEven)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.collect([1], null, isEven)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.collect([1], undefined, isIdEven)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.collect([1], undefined, isEven)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -114,13 +245,13 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has elements and mapFunction and filterPredicate are valid then a new filtered and transformed array is returned', () => {
       let sourceArray: number[] = [1, 2, 3, 6];
-      const isIdEven = (n: number) => 0 == n % 2;
+      const isEven = (n: number) => 0 == n % 2;
       const multiply2AndString = (n: number) => '' + (2 * n);
 
       const expectedResult: string[] = ['4', '12'];
 
       verifyArrays(
-        ArrayUtil.collect(sourceArray, multiply2AndString, isIdEven),
+        ArrayUtil.collect(sourceArray, multiply2AndString, isEven),
         expectedResult
       );
     });
@@ -133,12 +264,12 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       let emptyArray: Role[] = [];
-      const isIdEven: Predicate1<Role> =
+      const isEven: Predicate1<Role> =
         Predicate1.of((role: Role) => 0 == role.id % 2);
 
-      expect(ArrayUtil.dropWhile(null, isIdEven)).toEqual(emptyArray);
-      expect(ArrayUtil.dropWhile(undefined, isIdEven)).toEqual(emptyArray);
-      expect(ArrayUtil.dropWhile(emptyArray, isIdEven)).toEqual(emptyArray);
+      expect(ArrayUtil.dropWhile(null, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.dropWhile(undefined, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.dropWhile(emptyArray, isEven)).toEqual(emptyArray);
     });
 
 
@@ -257,9 +388,9 @@ describe('ArrayUtil', () => {
       const r4 = { id: 4, name: 'role2' } as Role;
       const sourceArray = [r1, r2, r3, r4];
 
-      const isIdEven = (role: Role) => 0 == role!.id % 2;
+      const isEven = (role: Role) => 0 == role!.id % 2;
 
-      expect(ArrayUtil.find(sourceArray, isIdEven)).toEqual(r2);
+      expect(ArrayUtil.find(sourceArray, isEven)).toEqual(r2);
     });
 
 

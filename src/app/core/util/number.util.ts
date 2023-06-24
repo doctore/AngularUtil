@@ -69,10 +69,13 @@ export class NumberUtil {
       return 1;
     }
     AssertUtil.isTrue(
-      NumberUtil.isValidFloat(one), 'one: ' + one + ' is not a valid float value');
+      NumberUtil.isValidFloat(one),
+      'one: ' + one + ' is not a valid float value'
+    );
     AssertUtil.isTrue(
-      NumberUtil.isValidFloat(two), 'two: ' + two + ' is not a valid float value');
-
+      NumberUtil.isValidFloat(two),
+      'two: ' + two + ' is not a valid float value'
+    );
     const finalEpsilon = ObjectUtil.isNullOrUndefined(epsilon) || 0 > epsilon
       ? Number.EPSILON
       : epsilon;

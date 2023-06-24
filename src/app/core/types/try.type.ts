@@ -673,7 +673,7 @@ export abstract class Try<T extends any> {
    *
    *   // @ts-ignore
    *   Try.ofFunction0(() => doesNotExits)
-   *      .recover((e1: Error) => 9999999999);
+   *      .recover((e1: Error) => 9999);
    * </pre>
    *
    * @param mapper

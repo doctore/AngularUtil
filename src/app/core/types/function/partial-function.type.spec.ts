@@ -71,10 +71,7 @@ describe('PartialFunction', () => {
       const multiply2: FFunction1<number, number> =
         (n: NullableOrUndefined<number>) => 2 * n!;
 
-      // @ts-ignore
       const undefinedVerifierPF = PartialFunction.of(undefined, multiply2);
-
-      // @ts-ignore
       const nullVerifierPF = PartialFunction.of(null, multiply2);
 
       expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
@@ -141,10 +138,7 @@ describe('PartialFunction', () => {
       const multiply2: FFunction2<number, number, [number, number]> =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => [2 * n1!, 2 * n2!];
 
-      // @ts-ignore
       const undefinedVerifierPF = PartialFunction.of2(undefined, multiply2);
-
-      // @ts-ignore
       const nullVerifierPF = PartialFunction.of2(null, multiply2);
 
       expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
