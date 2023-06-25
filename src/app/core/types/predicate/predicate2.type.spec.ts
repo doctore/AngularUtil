@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { Predicate2, FPredicate2, isFPredicate2} from '@app-core/types/predicate';
+import { Predicate2, FPredicate2, isFPredicate2 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -19,8 +19,8 @@ describe('isFPredicate2', () => {
 
   it('when a function that does not match is provided then false is returned', () => {
     expect(isFPredicate2((t1: string) => null !== t1)).toBeFalse();
-    expect(isFPredicate2((t1: string, t2: string, t3: string) => t1 + t2 + t3)).toBeFalse();
-    expect(isFPredicate2((t1: string, t2: string, t3: string, t4: string) => t1 + t2 + t3 + t4)).toBeFalse();
+    expect(isFPredicate2((t1: string, t2: string, t3: string) => null !== t1 && null !== t2 && null != t3)).toBeFalse();
+    expect(isFPredicate2((t1: string, t2: string, t3: string, t4: string) => null !== t1 && null !== t2 && null != t3 && null != t4)).toBeFalse();
   });
 
 
@@ -153,9 +153,25 @@ describe('Predicate2', () => {
     });
 
 
-    it('when an instance of FPredicate2 is provided then a valid Predicate2 is returned', () => {
+    it('when a raw function equivalent to FPredicate2 is provided then a valid Predicate2 is returned', () => {
       const isNumberEvenAndStringNotNull =
-        (n: NullableOrUndefined<number>, s?: NullableOrUndefined<string>) =>
+        (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) =>
+          0 == n! % 2 &&
+          undefined !== s &&
+          null !== s;
+
+      const predicate = Predicate2.of(isNumberEvenAndStringNotNull);
+
+      expect(Predicate2.isPredicate(predicate)).toBeTrue();
+      expect(predicate.apply(1, null)).toBeFalse();
+      expect(predicate.apply(1, 'abc')).toBeFalse();
+      expect(predicate.apply(2, 'abc')).toBeTrue();
+    });
+
+
+    it('when an instance of FPredicate2 is provided then a valid Predicate2 is returned', () => {
+      const isNumberEvenAndStringNotNull: FPredicate2<number, string> =
+        (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) =>
           0 == n! % 2 &&
           undefined !== s &&
           null !== s;

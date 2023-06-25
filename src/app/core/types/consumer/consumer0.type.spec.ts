@@ -68,6 +68,19 @@ describe('Consumer0', () => {
     });
 
 
+    it('when a raw function equivalent to FConsumer0 is provided then a valid Consumer0 is returned', () => {
+      let externalInt = 10;
+
+      const externalIntPlus1 = () => { externalInt += 1; };
+
+      const consumer = Consumer0.of(externalIntPlus1);
+      consumer.apply();
+
+      expect(Consumer0.isConsumer(consumer)).toBeTrue();
+      expect(externalInt).toEqual(11);
+    });
+
+
     it('when an instance of FConsumer0 is provided then a valid Consumer0 is returned', () => {
       let externalInt = 10;
 
@@ -115,14 +128,29 @@ describe('Consumer0', () => {
     });
 
 
+    it('when a raw function equivalent to FConsumer0 is provided then it will be applied after current one', () => {
+      let externalInt = 1;
+
+      const plus10: Consumer0 =
+        Consumer0.of(() => { externalInt += 10 });
+
+      const plus2 = () => { externalInt += 2 };
+
+      const consumer = plus10.andThen(plus2);
+      consumer.apply();
+
+      expect(externalInt).toEqual(13);
+    });
+
+
     it('when a Consumer0 is provided then it will be applied after current one', () => {
       let externalInt = 1;
 
       const plus10: Consumer0 =
         Consumer0.of(() => { externalInt += 10 });
 
-      const plus2: FConsumer0 =
-        () => { externalInt += 2 };
+      const plus2: Consumer0 =
+        Consumer0.of(() => { externalInt += 2 });
 
       const consumer = plus10.andThen(plus2);
       consumer.apply();
@@ -137,7 +165,7 @@ describe('Consumer0', () => {
       const plus10: Consumer0 =
         Consumer0.of(() => { externalInt += 10 });
 
-      const plus2 = () => { externalInt += 2 };
+      const plus2: FConsumer0 = () => { externalInt += 2 };
 
       const consumer = plus10.andThen(plus2);
       consumer.apply();

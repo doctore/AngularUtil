@@ -42,13 +42,13 @@ export function isFConsumer1<T>(input?: any): input is FConsumer1<T> {
 
 /**
  *    Represents an operation that accepts a single input argument and returns no result, used as wrapper of
- * {@link FConsumer1}. Unlike most other functional interfaces, {@link FConsumer1} is expected to operate via
+ * {@link FConsumer1}. Unlike most other functional interfaces, {@link Consumer1} is expected to operate via
  * side effects.
  * <p>
  * This is a functional interface whose functional method is {@link Consumer1#apply}.
  *
  * @typeParam <T>
- *   Type of the input to the {@link FConsumer1}
+ *   Type of the input to the {@link Consumer1}
  */
 export class Consumer1<T> {
 

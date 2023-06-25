@@ -44,14 +44,14 @@ export function isFPredicate2<T1, T2>(input?: any): input is FPredicate2<T1, T2>
 
 
 /**
- * Represents a predicate (boolean-valued function) of one argument used as wrapper of {@link FPredicate2}.
+ * Represents a predicate (boolean-valued function) of two arguments used as wrapper of {@link FPredicate2}.
  * <p>
  * This is a functional interface whose functional method is {@link Predicate2#apply}.
  *
  * @typeParam <T1>
  *   Type of results returned by this {@link Predicate2}
  * @typeParam <T2>
- *   Type of second parameter received by this {@link FPredicate2}
+ *   Type of second parameter received by this {@link Predicate2}
  */
 export class Predicate2<T1, T2> {
 
@@ -72,9 +72,9 @@ export class Predicate2<T1, T2> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate1} to verify
+   *    Array of {@link Predicate2} to verify
    *
-   * @return {@link Predicate1} verifying all provided ones
+   * @return {@link Predicate2} verifying all provided ones
    */
   static allOf = <T1, T2>(predicates?: Nullable<TPredicate2<T1, T2>[]>): Predicate2<T1, T2> => {
     if (ArrayUtil.isEmpty(predicates)) {
@@ -130,9 +130,9 @@ export class Predicate2<T1, T2> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate1} to verify
+   *    Array of {@link Predicate2} to verify
    *
-   * @return {@link Predicate1} verifying provided ones
+   * @return {@link Predicate2} verifying provided ones
    */
   static anyOf = <T1, T2>(predicates?: Nullable<TPredicate2<T1, T2>[]>): Predicate2<T1, T2> => {
     if (ArrayUtil.isEmpty(predicates)) {
@@ -199,7 +199,7 @@ export class Predicate2<T1, T2> {
    * the other {@link Predicate2} is not evaluated.
    *
    * @apiNote
-   *    If `predicate` is `null` or `undefined` then only this {@link Predicate1} will be applied.
+   *    If `predicate` is `null` or `undefined` then only this {@link Predicate2} will be applied.
    *
    * @param predicate
    *    {@link TPredicate2} that will be logically-ANDed with this {@link Predicate2}
@@ -257,7 +257,7 @@ export class Predicate2<T1, T2> {
    * the other {@link Predicate2} is not evaluated.
    *
    * @apiNote
-   *    If `predicate` is `null` or `undefined` then only this {@link Predicate1} will be applied.
+   *    If `predicate` is `null` or `undefined` then only this {@link Predicate2} will be applied.
    *
    * @param predicate
    *    {@link TPredicate2} that will be logically-ORed with this {@link Predicate2}

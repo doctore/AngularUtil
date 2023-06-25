@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction3, Function1, Function3, isFFunction3 } from '@app-core/types/function';
+import { FFunction1, FFunction3, Function1, Function3, isFFunction3 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -69,6 +69,16 @@ describe('Function3', () => {
     });
 
 
+    it('when a raw function equivalent to FFunction3 is provided then a valid Function3 is returned', () => {
+      const stringLengthPlusNumbers = (s: string, n1: number, n2: number) => s.length + n1 + n2;
+
+      const func = Function3.of(stringLengthPlusNumbers);
+
+      expect(Function3.isFunction(func)).toBeTrue();
+      expect(func.apply('abc', 10, 8)).toEqual(21);
+    });
+
+
     it('when an instance of FFunction3 is provided then a valid Function3 is returned', () => {
       const stringLengthPlusNumbers: FFunction3<string, number, number, number> =
         (s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => s!.length + n1! + n2!;
@@ -107,11 +117,25 @@ describe('Function3', () => {
     });
 
 
-    it('when a FFunction1 is provided then it will be applied after current one', () => {
+    it('when a raw function equivalent to FFunction1 is provided then it will be applied after current one', () => {
       const stringLengthPlusNumbers: Function3<string, number, number, number> =
         Function3.of((s: string, n1: number, n2: number) => s.length + n1 + n2);
 
       const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
+
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
+
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5)).toEqual(16);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2)).toEqual(18);
+    });
+
+
+    it('when a FFunction1 is provided then it will be applied after current one', () => {
+      const stringLengthPlusNumbers: Function3<string, number, number, number> =
+        Function3.of((s: string, n1: number, n2: number) => s.length + n1 + n2);
+
+      const multiply2: FFunction1<number, number> =
+        (n: NullableOrUndefined<number>) => 2 * n!;
 
       const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 

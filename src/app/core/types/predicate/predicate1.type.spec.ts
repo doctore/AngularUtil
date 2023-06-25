@@ -19,9 +19,9 @@ describe('isFPredicate1', () => {
 
   it('when a function that does not match is provided then false is returned', () => {
     expect(isFPredicate1(() => true)).toBeFalse();
-    expect(isFPredicate1((t1: string, t2: string) => t1 + t2)).toBeFalse();
-    expect(isFPredicate1((t1: string, t2: string, t3: string) => t1 + t2 + t3)).toBeFalse();
-    expect(isFPredicate1((t1: string, t2: string, t3: string, t4: string) => t1 + t2 + t3 + t4)).toBeFalse();
+    expect(isFPredicate1((t1: string, t2: string) => null !== t1 && null !== t2)).toBeFalse();
+    expect(isFPredicate1((t1: string, t2: string, t3: string) => null !== t1 && null !== t2 && null != t3)).toBeFalse();
+    expect(isFPredicate1((t1: string, t2: string, t3: string, t4: string) => null !== t1 && null !== t2 && null != t3 && null != t4)).toBeFalse();
   });
 
 
@@ -147,8 +147,21 @@ describe('Predicate1', () => {
     });
 
 
-    it('when an instance of FPredicate1 is provided then a valid Predicate1 is returned', () => {
+    it('when a raw function equivalent to FPredicate1 is provided then a valid Predicate1 is returned', () => {
       const isEven = (n: NullableOrUndefined<number>) => 0 == n! % 2;
+
+      const predicate = Predicate1.of(isEven);
+
+      expect(Predicate1.isPredicate(predicate)).toBeTrue();
+      expect(predicate.apply(1)).toBeFalse();
+      expect(predicate.apply(2)).toBeTrue();
+    });
+
+
+    it('when an instance of FPredicate1 is provided then a valid Predicate1 is returned', () => {
+      const isEven: FPredicate1<number> =
+        (n: NullableOrUndefined<number>) => 0 == n! % 2;
+
       const predicate = Predicate1.of(isEven);
 
       expect(Predicate1.isPredicate(predicate)).toBeTrue();

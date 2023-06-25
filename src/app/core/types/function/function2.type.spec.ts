@@ -69,6 +69,16 @@ describe('Function2', () => {
     });
 
 
+    it('when a raw function equivalent to FFunction2 is provided then a valid Function2 is returned', () => {
+      const stringLengthPlusNumber = (s: NullableOrUndefined<string>, n: NullableOrUndefined<number>) => s!.length + n!;
+
+      const func = Function2.of(stringLengthPlusNumber);
+
+      expect(Function2.isFunction(func)).toBeTrue();
+      expect(func.apply('abc', 10)).toEqual(13);
+    });
+
+
     it('when an instance of FFunction2 is provided then a valid Function2 is returned', () => {
       const stringLengthPlusNumber: FFunction2<string, number, number> =
         (s: NullableOrUndefined<string>, n: NullableOrUndefined<number>) => s!.length + n!;
@@ -107,11 +117,25 @@ describe('Function2', () => {
     });
 
 
-    it('when a FFunction1 is provided then it will be applied after current one', () => {
+    it('when a raw function equivalent to FFunction1 is provided then it will be applied after current one', () => {
       const stringLengthPlusNumber: Function2<string, number, number> =
         Function2.of((s: string, n: number) => s.length + n);
 
       const multiply2 = (n: number) => 2 * n;
+
+      const stringLengthPlusNumberAndThenMultiply2 = stringLengthPlusNumber.andThen(multiply2);
+
+      expect(stringLengthPlusNumberAndThenMultiply2.apply('0', 2)).toEqual(6);
+      expect(stringLengthPlusNumberAndThenMultiply2.apply('abc', 4)).toEqual(14);
+    });
+
+
+    it('when a FFunction1 is provided then it will be applied after current one', () => {
+      const stringLengthPlusNumber: Function2<string, number, number> =
+        Function2.of((s: string, n: number) => s.length + n);
+
+      const multiply2: FFunction1<number, number> =
+        (n: number) => 2 * n;
 
       const stringLengthPlusNumberAndThenMultiply2 = stringLengthPlusNumber.andThen(multiply2);
 

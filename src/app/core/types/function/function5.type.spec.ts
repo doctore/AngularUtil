@@ -1,4 +1,4 @@
-import { FFunction1, FFunction5, Function5, isFFunction5 } from '@app-core/types/function';
+import { FFunction1, FFunction5, Function1, Function5, isFFunction5 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -71,6 +71,16 @@ describe('Function5', () => {
     });
 
 
+    it('when a raw function equivalent to FFunction5 is provided then a valid Function5 is returned', () => {
+      const stringLengthPlusNumbers = (s: string, n1: number, n2: number, n3: number, n4: number) => s.length + n1 + n2 + n3 + n4;
+
+      const func = Function5.of(stringLengthPlusNumbers);
+
+      expect(Function5.isFunction(func)).toBeTrue();
+      expect(func.apply('abc', 10, 8, -1, 0)).toEqual(20);
+    });
+
+
     it('when an instance of FFunction5 is provided then a valid Function5 is returned', () => {
       const stringLengthPlusNumbers: FFunction5<string, number, number, number, number, number> =
         (s: string, n1: number, n2: number, n3: number, n4: number) =>
@@ -112,6 +122,20 @@ describe('Function5', () => {
     });
 
 
+    it('when a raw function equivalent to FFunction1 is provided then it will be applied after current one', () => {
+      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
+
+      const multiply2 = (n: number) => 2 * n;
+
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
+
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1, 0)).toEqual(14);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1, 0)).toEqual(16);
+    });
+
+
     it('when a Function1 is provided then it will be applied after current one', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
         Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
@@ -132,7 +156,8 @@ describe('Function5', () => {
         Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
           s.length + n1 + n2 + n3 + n4);
 
-      const multiply2 =(n: number) => 2 * n;
+      const multiply2: Function1<number, number> =
+        Function1.of((n: number) => 2 * n);
 
       const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
@@ -145,7 +170,7 @@ describe('Function5', () => {
 
   describe('apply', () => {
 
-    it('when a Function2 is provided then the received input will be transformed', () => {
+    it('when a Function5 is provided then the received input will be transformed', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
         Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
           s.length + n1 + n2 + n3 + n4);

@@ -8,7 +8,7 @@ export type TFunction4<T1, T2, T3, T4, R> = FFunction4<T1, T2, T3, T4, R> | Func
 
 
 /**
- * Represents the function approach of a function that accepts three arguments and produces a result.
+ * Represents the function approach of a function that accepts four arguments and produces a result.
  *
  * @typeParam <T1>
  *   Type of the first input to the {@link FFunction4}
@@ -52,18 +52,18 @@ export function isFFunction4<T1, T2, T3, T4, R>(input?: any): input is FFunction
 
 
 /**
- * Represents a function that accepts three arguments and produces a result, used as wrapper of {@link FFunction4}.
+ * Represents a function that accepts four arguments and produces a result, used as wrapper of {@link FFunction4}.
  * <p>
  * This is a functional interface whose functional method is {@link Function4#apply}.
  *
  * @typeParam <T1>
- *   Type of the first input to the {@link FFunction4}
+ *   Type of the first input to the {@link Function4}
  * @typeParam <T2>
- *   Type of the second input to the {@link FFunction4}
+ *   Type of the second input to the {@link Function4}
  * @typeParam <T3>
- *   Type of the third input to the {@link FFunction4}
+ *   Type of the third input to the {@link Function4}
  * @typeParam <T4>
- *   Type of the fourth input to the {@link FFunction4}
+ *   Type of the fourth input to the {@link Function4}
  * @typeParam <R>
  *   Type of the result of the {@link Function4}
  */

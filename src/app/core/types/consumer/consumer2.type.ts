@@ -45,15 +45,15 @@ export function isFConsumer2<T1, T2>(input?: any): input is FConsumer2<T1, T2> {
 
 /**
  *    Represents an operation that accepts two input arguments and returns no result, used as wrapper of
- * {@link FConsumer2}. Unlike most other functional interfaces, {@link FConsumer2} is expected to operate via
+ * {@link FConsumer2}. Unlike most other functional interfaces, {@link Consumer2} is expected to operate via
  * side effects.
  * <p>
  * This is a functional interface whose functional method is {@link Consumer2#apply}.
  *
  * @typeParam <T1>
- *   Type of the first input to the {@link FConsumer2}
+ *   Type of the first input to the {@link Consumer2}
  * @typeParam <T2>
- *   Type of the second input to the {@link FConsumer2}
+ *   Type of the second input to the {@link Consumer2}
  */
 export class Consumer2<T1, T2> {
 
@@ -107,7 +107,7 @@ export class Consumer2<T1, T2> {
    *    If `after` is `null` or `undefined` then only this {@link TConsumer2} will be applied.
    *
    * @param after
-   *    {@link TConsumer2} to apply after this {@link Consumer2 is applied
+   *    {@link TConsumer2} to apply after this {@link Consumer2} is applied
    *
    * @return composed {@link Consumer2} that first applies this {@link Consumer2} and then applies the
    *         `after` {@link TConsumer2}

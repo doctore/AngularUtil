@@ -69,9 +69,24 @@ describe('Consumer1', () => {
     });
 
 
+    it('when a raw function equivalent to FConsumer1 is provided then a valid Consumer1 is returned', () => {
+      let externalInt = 10;
+
+      const plusN = (n: NullableOrUndefined<number>) => { externalInt += n!; };
+
+      const consumer = Consumer1.of(plusN);
+      consumer.apply(5);
+
+      expect(Consumer1.isConsumer(consumer)).toBeTrue();
+      expect(externalInt).toEqual(15);
+    });
+
+
     it('when an instance of FConsumer1 is provided then a valid Consumer1 is returned', () => {
       let externalInt = 10;
-      const plusN = (n: NullableOrUndefined<number>) => { externalInt += n!; };
+
+      const plusN: FConsumer1<number> =
+        (n: NullableOrUndefined<number>) => { externalInt += n!; };
 
       const consumer = Consumer1.of(plusN);
       consumer.apply(5);
@@ -114,6 +129,21 @@ describe('Consumer1', () => {
     });
 
 
+    it('when a raw function equivalent to FConsumer1 is provided then it will be applied after current one', () => {
+      let externalInt = 1;
+
+      const plusN: Consumer1<number> =
+        Consumer1.of((n: number) => { externalInt += n });
+
+      const multiplyN = (n: number) => { externalInt *= n };
+
+      const consumer = plusN.andThen(multiplyN);
+      consumer.apply(2);
+
+      expect(externalInt).toEqual(6);
+    });
+
+
     it('when a FConsumer1 is provided then it will be applied after current one', () => {
       let externalInt = 1;
 
@@ -136,7 +166,8 @@ describe('Consumer1', () => {
       const plusN: Consumer1<number> =
         Consumer1.of((n: number) => { externalInt += n });
 
-      const multiplyN = (n: number) => { externalInt *= n };
+      const multiplyN: Consumer1<number> =
+        Consumer1.of((n: number) => { externalInt *= n });
 
       const consumer = plusN.andThen(multiplyN);
       consumer.apply(2);

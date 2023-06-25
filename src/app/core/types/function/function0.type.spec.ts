@@ -72,6 +72,17 @@ describe('Function0', () => {
     });
 
 
+    it('when a raw function equivalent to FFunction0 is provided then a valid Function0 is returned', () => {
+      const message = 'message';
+      const getMessage = () => 'message';
+
+      const func = Function0.of(getMessage);
+
+      expect(Function0.isFunction(func)).toBeTrue();
+      expect(func.apply()).toEqual(message);
+    });
+
+
     it('when an instance of FFunction0 is provided then a valid Function0 is returned', () => {
       const message = 'message';
       const getMessage: FFunction0<string> = () => 'message';

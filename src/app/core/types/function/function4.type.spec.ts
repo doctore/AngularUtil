@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction1, FFunction4, Function4, isFFunction4 } from '@app-core/types/function';
+import { FFunction1, FFunction4, Function1, Function4, isFFunction4 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -70,6 +70,16 @@ describe('Function4', () => {
     });
 
 
+    it('when a raw function equivalent to FFunction4 is provided then a valid Function4 is returned', () => {
+      const stringLengthPlusNumbers = (s: string, n1: number, n2: number, n3: number) => s.length + n1 + n2 + n3;
+
+      const func = Function4.of(stringLengthPlusNumbers);
+
+      expect(Function4.isFunction(func)).toBeTrue();
+      expect(func.apply('abc', 10, 8, -1)).toEqual(20);
+    });
+
+
     it('when an instance of FFunction4 is provided then a valid Function4 is returned', () => {
       const stringLengthPlusNumbers: FFunction4<string, number, number, number, number> =
         (s: string, n1: number, n2: number, n3: number) => s.length + n1 + n2 + n3;
@@ -108,6 +118,19 @@ describe('Function4', () => {
     });
 
 
+    it('when a raw function equivalent to FFunction1 is provided then it will be applied after current one', () => {
+      const stringLengthPlusNumbers: Function4<string, number, number, number, number> =
+        Function4.of((s: string, n1: number, n2: number, n3: number) => s.length + n1 + n2 + n3);
+
+      const multiply2 = (n: number) => 2 * n;
+
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
+
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1)).toEqual(14);
+      expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1)).toEqual(16);
+    });
+
+
     it('when a FFunction1 is provided then it will be applied after current one', () => {
       const stringLengthPlusNumbers: Function4<string, number, number, number, number> =
         Function4.of((s: string, n1: number, n2: number, n3: number) => s.length + n1 + n2 + n3);
@@ -126,7 +149,8 @@ describe('Function4', () => {
       const stringLengthPlusNumbers: Function4<string, number, number, number, number> =
         Function4.of((s: string, n1: number, n2: number, n3: number) => s.length + n1 + n2 + n3);
 
-      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
+      const multiply2: Function1<NullableOrUndefined<number>, number> =
+        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
       const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
 
@@ -139,7 +163,7 @@ describe('Function4', () => {
 
   describe('apply', () => {
 
-    it('when a Function2 is provided then the received input will be transformed', () => {
+    it('when a Function4 is provided then the received input will be transformed', () => {
       const stringLengthPlusNumbers: Function4<string, number, number, number, number> =
         Function4.of((s: string, n1: number, n2: number, n3: number) => s.length + n1 + n2 + n3);
 

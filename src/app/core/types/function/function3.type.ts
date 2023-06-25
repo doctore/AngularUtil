@@ -54,11 +54,11 @@ export function isFFunction3<T1, T2, T3, R>(input?: any): input is FFunction3<T1
  * This is a functional interface whose functional method is {@link Function3#apply}.
  *
  * @typeParam<T1>
- *   Type of the first input to the {@link FFunction3}
+ *   Type of the first input to the {@link Function3}
  * @typeParam<T2>
- *   Type of the second input to the {@link FFunction3}
+ *   Type of the second input to the {@link Function3}
  * @typeParam<T3>
- *   Type of the third input to the {@link FFunction3}
+ *   Type of the third input to the {@link Function3}
  * @typeParam <R>
  *   Type of the result of the {@link Function3}
  */

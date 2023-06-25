@@ -40,7 +40,7 @@ export function isFFunction0<R>(input?: any): input is FFunction0<R> {
 
 
 /**
- * Represents a function that accepts one argument and produces a result, used as wrapper of {@link FFunction0}.
+ * Represents a function that does not accept arguments and produces a result, used as wrapper of {@link FFunction0}.
  * <p>
  * This is a functional interface whose functional method is {@link Function0#apply}.
  *

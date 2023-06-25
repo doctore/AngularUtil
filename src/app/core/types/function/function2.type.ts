@@ -51,9 +51,9 @@ export function isFFunction2<T1, T2, R>(input?: any): input is FFunction2<T1, T2
  * This is a functional interface whose functional method is {@link Function2#apply}.
  *
  * @typeParam<T1>
- *   Type of the first input to the {@link FFunction2}
+ *   Type of the first input to the {@link Function2}
  * @typeParam<T2>
- *   Type of the second input to the {@link FFunction2}
+ *   Type of the second input to the {@link Function2}
  * @typeParam <R>
  *   Type of the result of the {@link Function2}
  */
