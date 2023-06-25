@@ -96,7 +96,7 @@ export class StringUtil {
     }
     if (ObjectUtil.isNullOrUndefined(size) ||
         1 > size ||
-        size > sourceString!.length) {
+        size >= sourceString!.length) {
       return [sourceString!];
     }
     const result: string[] = [];
