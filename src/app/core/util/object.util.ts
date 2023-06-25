@@ -1,6 +1,8 @@
-import { NullableOrUndefined } from '@app-core/types';
+import { ArrayUtil } from '@app-core/util';
 import { Function0, isFFunction0, TFunction0 } from '@app-core/types/function';
+import { NullableOrUndefined, OrUndefined } from '@app-core/types';
 import * as _ from 'lodash';
+import {Predicate1} from "@app-core/types/predicate";
 
 /**
  * Helper functions to manage common operations related with class instances.
@@ -9,6 +11,37 @@ export class ObjectUtil {
 
   constructor() {
     throw new SyntaxError('ObjectUtil is an utility class');
+  }
+
+
+  /**
+   * Returns the first not `null` and not `undefined` value of the provided ones.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                    Result:
+   *    null, undefined, 12, 15        12
+   * </pre>
+   *
+   * @param valuesToVerify
+   *   Values to check the first one neither `undefined` nor `null`
+   *
+   * @return first not `null` and not `undefined` value if exists, `undefined` otherwise
+   */
+  static coalesce = <T>(...valuesToVerify: NullableOrUndefined<T>[]): OrUndefined<T> => {
+    let result;
+    if (!ArrayUtil.isEmpty(valuesToVerify)) {
+      result = ArrayUtil.find(
+        valuesToVerify,
+        Predicate1.of(
+          (t: NullableOrUndefined<T>) => this.nonNullOrUndefined(t)
+        )
+      );
+    }
+    return this.isNullOrUndefined(result)
+      ? undefined
+      : result;
   }
 
 

@@ -19,9 +19,35 @@ describe('ObjectUtil', () => {
 
 
 
+  describe('coalesce', () => {
+
+    it('when given valuesToVerify are null, undefined then undefined is returned', () => {
+      expect(ObjectUtil.coalesce(null)).toBeUndefined();
+      expect(ObjectUtil.coalesce(undefined)).toBeUndefined();
+    });
+
+
+    it('when given valuesToVerify only contains null or undefined values then undefined is returned', () => {
+      let undefinedVariable;
+      const nullVariable = null;
+
+      expect(ObjectUtil.coalesce(null, undefined, null, undefined)).toBeUndefined();
+      expect(ObjectUtil.coalesce(undefined, nullVariable, undefinedVariable, null)).toBeUndefined();
+    });
+
+
+    it('when given valuesToVerify contains a not null and not undefined values then first one is returned', () => {
+      expect(ObjectUtil.coalesce(null, undefined, 12, undefined, 15)).toEqual(12);
+      expect(ObjectUtil.coalesce(undefined, 15, null, 12)).toEqual(15);
+    });
+
+  });
+
+
+
   describe('equals', () => {
 
-    it('when both values are null or undefined then true is be returned', () => {
+    it('when both values are null or undefined then true is returned', () => {
       expect(ObjectUtil.equals(undefined, undefined)).toBeTrue();
       expect(ObjectUtil.equals(null, null)).toBeTrue();
     });
