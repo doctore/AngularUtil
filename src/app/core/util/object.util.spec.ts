@@ -1,5 +1,6 @@
 import { ObjectUtil } from '@app-core/util';
 import { FFunction0, Function0 } from '@app-core/types/function';
+import { Optional } from '@app-core/types';
 
 /**
  * To invoke only this test:
@@ -39,6 +40,38 @@ describe('ObjectUtil', () => {
     it('when given valuesToVerify contains a not null and not undefined values then first one is returned', () => {
       expect(ObjectUtil.coalesce(null, undefined, 12, undefined, 15)).toEqual(12);
       expect(ObjectUtil.coalesce(undefined, 15, null, 12)).toEqual(15);
+    });
+
+  });
+
+
+
+  describe('coalesceOptional', () => {
+
+    it('when given valuesToVerify are null, undefined then empty Optional is returned', () => {
+      expect(ObjectUtil.coalesceOptional(null).isPresent()).toBeFalse()
+      expect(ObjectUtil.coalesceOptional(undefined).isPresent()).toBeFalse()
+    });
+
+
+    it('when given valuesToVerify only contains null or undefined values then empty Optional is returned', () => {
+      let undefinedVariable;
+      const nullVariable = null;
+
+      expect(ObjectUtil.coalesceOptional(null, undefined, null, undefined).isPresent()).toBeFalse()
+      expect(ObjectUtil.coalesceOptional(undefined, nullVariable, undefinedVariable, null).isPresent()).toBeFalse()
+    });
+
+
+    it('when given valuesToVerify contains a not null and not undefined values then Optional with the first one is returned', () => {
+      const optional1: Optional<number> = ObjectUtil.coalesceOptional(null, undefined, 12, undefined, 15);
+      const optional2: Optional<number> = ObjectUtil.coalesceOptional(undefined, 15, null, 12);
+
+      expect(optional1.isPresent()).toBeTrue();
+      expect(optional1.get()).toEqual(12);
+
+      expect(optional2.isPresent()).toBeTrue();
+      expect(optional2.get()).toEqual(15);
     });
 
   });

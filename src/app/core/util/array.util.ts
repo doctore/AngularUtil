@@ -284,7 +284,7 @@ export class ArrayUtil {
 
 
   /**
-   *    Returns an {@link Optional} containing the first element of the given `sourceArray` hat verifies the provided
+   *    Returns an {@link Optional} containing the first element of the given `sourceArray` that verifies the provided
    * `filterPredicate`, {@link Optional#empty} otherwise.
    *
    * <pre>

@@ -1,4 +1,4 @@
-import { ObjectUtil } from '@app-core/util';
+import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
 
 /**
@@ -25,7 +25,7 @@ export class StringUtil {
    *    '  a '               false
    * </pre>
    *
-   * @param inputToCheck
+   * @param sourceString
    *    {@link String} to verify
    *
    * @return `true` if `input` is `undefined`, `null` or has no characters
@@ -64,7 +64,7 @@ export class StringUtil {
    * length equals to `size`.
    *
    * @apiNote
-   *    If `size` is `null`, `undefined` or lower than zero then 1 will be applied.
+   *    If `size` is `null`, `undefined` or lower than one then an array with one element containing `sourceString` is returned.
    *
    * <pre>
    * Example 1:
@@ -109,6 +109,56 @@ export class StringUtil {
       );
     }
     return result;
+  }
+
+
+  /**
+   *    Returns an array splitting the given `sourceString` in different parts, using provided `separators` to know how
+   * to do it, iterating over each one every time.
+   *
+   * <pre>
+   * Example 1:
+   *
+   *   Parameters:              Result:
+   *    'AB,C'                   ['AB', 'C']
+   *    ','
+   * </pre>
+   *
+   * <pre>
+   * Example 2:
+   *
+   *   Parameters:              Result:
+   *    'A,B#D,E,B'              ['A', 'B', 'D', 'E']
+   *    '#'
+   *    ','
+   * </pre>
+   *
+   * @param sourceString
+   *    Source {@link String} with the values to extract
+   * @param separators
+   *    Array used to know how the values are divided inside `sourceString`
+   *
+   * @return array of {@link String}
+   */
+  static splitMultilevel = (sourceString: NullableOrUndefined<string>,
+                            ...separators: NullableOrUndefined<string>[]): string[] => {
+    if (this.isEmpty(sourceString)) {
+      return [];
+    }
+    const finalSeparators = ArrayUtil.takeWhile(
+      separators,
+      s => ObjectUtil.nonNullOrUndefined(s)
+    );
+    if (ArrayUtil.isEmpty(finalSeparators)) {
+      return [sourceString!]
+    }
+    let currentSplitValues = [sourceString!];
+    for (let i = 0; i < separators!.length; i++) {
+      currentSplitValues = currentSplitValues.flatMap(
+        elto => elto.split(separators[i]!)
+      );
+    }
+    return currentSplitValues;
   }
 
 }

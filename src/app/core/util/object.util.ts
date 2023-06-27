@@ -1,8 +1,8 @@
 import { ArrayUtil } from '@app-core/util';
 import { Function0, isFFunction0, TFunction0 } from '@app-core/types/function';
-import { NullableOrUndefined, OrUndefined } from '@app-core/types';
+import { NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
+import { Predicate1 } from '@app-core/types/predicate';
 import * as _ from 'lodash';
-import {Predicate1} from "@app-core/types/predicate";
 
 /**
  * Helper functions to manage common operations related with class instances.
@@ -42,6 +42,37 @@ export class ObjectUtil {
     return this.isNullOrUndefined(result)
       ? undefined
       : result;
+  }
+
+
+  /**
+   *    Returns an {@link Optional} containing not `null` and not `undefined` value of the provided ones,
+   * {@link Optional#empty} otherwise.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                    Result:
+   *    null, undefined, 12, 15        Optional(12)
+   * </pre>
+   *
+   * @param valuesToVerify
+   *   Values to check the first one neither `undefined` nor `null`
+   *
+   * @return {@link Optional} containing the first `null` and not `undefined` value if exists,
+   *         {@link Optional#empty} otherwise.
+   */
+  static coalesceOptional = <T>(...valuesToVerify: NullableOrUndefined<T>[]): Optional<T> => {
+    let result;
+    if (!ArrayUtil.isEmpty(valuesToVerify)) {
+      result = ArrayUtil.find(
+        valuesToVerify,
+        Predicate1.of(
+          (t: NullableOrUndefined<T>) => this.nonNullOrUndefined(t)
+        )
+      );
+    }
+    return Optional.ofNullable<T>(result);
   }
 
 

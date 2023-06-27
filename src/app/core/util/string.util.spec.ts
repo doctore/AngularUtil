@@ -67,7 +67,7 @@ describe('StringUtil', () => {
     });
 
 
-    it('when given sourceString contains a not empty string but size is null, undefined then an array with one element containing sourceString is returned', () => {
+    it('when given sourceString contains a not empty string but size is null or undefined then an array with one element containing sourceString is returned', () => {
       const sourceString = 'abc';
       const expectedResult: string[] = [sourceString];
 
@@ -78,11 +78,13 @@ describe('StringUtil', () => {
     });
 
 
-    it('when given sourceString contains a not empty string but size is lower than zero or greater than sourceString.length then an array with one element containing sourceString is returned', () => {
+    it('when given sourceString contains a not empty string but size is lower than one or equals or greater than sourceString.length then an array with one element containing sourceString is returned', () => {
       const sourceString = 'abc';
       const expectedResult: string[] = [sourceString];
 
       expect(StringUtil.sliding(sourceString, -1)).toEqual(expectedResult);
+      expect(StringUtil.sliding(sourceString, 0)).toEqual(expectedResult);
+      expect(StringUtil.sliding(sourceString, sourceString.length)).toEqual(expectedResult);
       expect(StringUtil.sliding(sourceString, sourceString.length + 1)).toEqual(expectedResult);
     });
 
@@ -94,6 +96,50 @@ describe('StringUtil', () => {
 
       expect(StringUtil.sliding(sourceString, 2)).toEqual(expectedResultSize2);
       expect(StringUtil.sliding(sourceString, 3)).toEqual(expectedResultSize3);
+    });
+
+  });
+
+
+
+  describe('splitMultilevel', () => {
+
+    it('when given sourceString is null, undefined or empty then empty array is returned', () => {
+      const expectedResult: string[] = [];
+
+      expect(StringUtil.splitMultilevel(undefined)).toEqual(expectedResult);
+      expect(StringUtil.splitMultilevel(null)).toEqual(expectedResult);
+      expect(StringUtil.splitMultilevel('')).toEqual(expectedResult);
+
+      expect(StringUtil.splitMultilevel(undefined, ' ')).toEqual(expectedResult);
+      expect(StringUtil.splitMultilevel(null, ' ')).toEqual(expectedResult);
+      expect(StringUtil.splitMultilevel('', ' ')).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceString contains a not empty string but separators is null or undefined then an array with one element containing sourceString is returned', () => {
+      const sourceString = 'abc';
+      const expectedResult: string[] = [sourceString];
+
+      expect(StringUtil.splitMultilevel(sourceString)).toEqual(expectedResult);
+      expect(StringUtil.splitMultilevel(sourceString, null)).toEqual(expectedResult);
+      expect(StringUtil.splitMultilevel(sourceString, undefined)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceString contains a not empty string but separators contains null or undefined then an array with the expected pieces of sourceString is returned using only valid separators', () => {
+      const sourceString = 'ABC,DEF';
+      const expectedResult: string[] = ['ABC', 'DEF'];
+
+      expect(StringUtil.splitMultilevel(sourceString, null, ',', undefined)).toEqual(expectedResult);
+      expect(StringUtil.splitMultilevel(sourceString, undefined, null, null, ',')).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceString contains a not empty string and separators contains valid values then an array with the expected pieces of sourceString is returned', () => {
+      expect(StringUtil.splitMultilevel('ABC,DEF', ',')).toEqual(['ABC', 'DEF']);
+      expect(StringUtil.splitMultilevel('1,2.3,6,7.8.9', ',', '.')).toEqual(['1', '2', '3', '6', '7', '8', '9']);
+      expect(StringUtil.splitMultilevel('1,13&%7,8,22&3', ',', '&%')).toEqual(['1', '13', '7', '8', '22&3']);
     });
 
   });
