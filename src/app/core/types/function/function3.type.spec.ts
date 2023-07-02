@@ -104,6 +104,22 @@ describe('Function3', () => {
 
 
 
+  describe('getMapper', () => {
+
+    it('then return internal mapper', () => {
+      const stringLengthPlusNumbers: Function3<string, number, number, number> =
+        Function3.of((s: string, n1: number, n2: number) => s.length + n1 + n2);
+
+      const mapper: FFunction3<string, number, number, number> = stringLengthPlusNumbers.getMapper();
+
+      expect(mapper('', 2, 7)).toEqual(9);
+      expect(mapper('abc', 5, 11)).toEqual(19);
+    });
+
+  });
+
+
+
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
@@ -158,6 +174,7 @@ describe('Function3', () => {
     });
 
   });
+
 
 
   describe('apply', () => {

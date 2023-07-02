@@ -84,7 +84,8 @@ export class Function4<T1, T2, T3, T4, R> {
   static isFunction = <T1, T2, T3, T4, R>(input?: any): input is Function4<T1, T2, T3, T4, R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Function4<T1, T2, T3, T4, R>).andThen &&
-    undefined !== (input as Function4<T1, T2, T3, T4, R>).apply;
+    undefined !== (input as Function4<T1, T2, T3, T4, R>).apply &&
+    undefined !== (input as Function4<T1, T2, T3, T4, R>).getMapper;
 
 
   static of<T1, T2, T3, T4, R>(func: FFunction4<T1, T2, T3, T4, R>): Function4<T1, T2, T3, T4, R>;
@@ -109,6 +110,15 @@ export class Function4<T1, T2, T3, T4, R> {
       ? func
       : new Function4(func);
   }
+
+
+  /**
+   * Returns internal `mapper`.
+   *
+   * @return {@link FFunction4}
+   */
+  getMapper = (): FFunction4<T1, T2, T3, T4, R> =>
+    this.mapper;
 
 
   /**

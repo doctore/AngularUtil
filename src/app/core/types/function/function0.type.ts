@@ -63,7 +63,8 @@ export class Function0<R> {
    */
   static isFunction = <R>(input?: any): input is Function0<R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
-    undefined !== (input as Function0<R>).apply;
+    undefined !== (input as Function0<R>).apply &&
+    undefined !== (input as Function0<R>).getMapper;
 
 
   static of<R>(func: FFunction0<R>): Function0<R>;
@@ -88,6 +89,15 @@ export class Function0<R> {
       ? func
       : new Function0(func);
   }
+
+
+  /**
+   * Returns internal `mapper`.
+   *
+   * @return {@link FFunction0}
+   */
+  getMapper = (): FFunction0<R> =>
+    this.mapper;
 
 
   /**

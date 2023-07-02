@@ -117,6 +117,21 @@ describe('Function1', () => {
 
 
 
+  describe('getMapper', () => {
+
+    it('then return internal mapper', () => {
+      const stringLength: Function1<string, number> =
+        Function1.of((s: string) => s.length);
+
+      const mapper: FFunction1<string, number> = stringLength.getMapper();
+
+      expect(mapper('abc')).toEqual(3);
+    });
+
+  });
+
+
+
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
@@ -171,6 +186,7 @@ describe('Function1', () => {
     });
 
   });
+
 
 
   describe('apply', () => {

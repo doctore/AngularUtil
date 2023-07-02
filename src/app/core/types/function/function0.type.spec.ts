@@ -108,6 +108,21 @@ describe('Function0', () => {
 
 
 
+  describe('getMapper', () => {
+
+    it('then return internal mapper', () => {
+      const message = 'message';
+      const funcString: Function0<string> = Function0.of(() => message);
+
+      const mapper = funcString.getMapper();
+
+      expect(mapper()).toEqual(message);
+    });
+
+  });
+
+
+
   describe('apply', () => {
 
     it('when a Function0 is provided then a new instance of internal type is returned', () => {

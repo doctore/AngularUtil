@@ -76,7 +76,8 @@ export class Function1<T, R> {
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Function1<T, R>).andThen &&
     undefined !== (input as Function1<T, R>).apply &&
-    undefined !== (input as Function1<T, R>).compose;
+    undefined !== (input as Function1<T, R>).compose &&
+    undefined !== (input as Function1<T, R>).getMapper;
 
 
   static of<T, R>(func: FFunction1<T, R>): Function1<T, R>;
@@ -101,6 +102,15 @@ export class Function1<T, R> {
       ? func
       : new Function1(func);
   }
+
+
+  /**
+   * Returns internal `mapper`.
+   *
+   * @return {@link FFunction1}
+   */
+  getMapper = (): FFunction1<T, R> =>
+    this.mapper;
 
 
   /**
