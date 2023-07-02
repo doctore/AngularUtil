@@ -185,6 +185,22 @@ describe('Predicate1', () => {
 
 
 
+  describe('getVerifier', () => {
+
+    it('then return internal verifier', () => {
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: number) => 0 == n % 2);
+
+      const verifier: FPredicate1<number> = isEven.getVerifier();
+
+      expect(verifier(1)).toBeFalse();
+      expect(verifier(2)).toBeTrue();
+    });
+
+  });
+
+
+
   describe('and', () => {
 
     it('when given Predicate is null or undefined then only this will be evaluated', () => {

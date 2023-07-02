@@ -206,6 +206,25 @@ describe('Predicate2', () => {
 
 
 
+  describe('getVerifier', () => {
+
+    it('then return internal verifier', () => {
+      const isNumberEvenAndStringLongerThan3: Predicate2<number, string> =
+        Predicate2.of((n: number, s: string) =>
+          0 == n % 2 &&
+          3 < s.length);
+
+      const verifier: FPredicate2<number, string> = isNumberEvenAndStringLongerThan3.getVerifier();
+
+      expect(verifier(11, 'abcd')).toBeFalse();
+      expect(verifier(2, 'ab')).toBeFalse();
+      expect(verifier(12, 'abcd')).toBeTrue();
+    });
+
+  });
+
+
+
   describe('and', () => {
 
     it('when given Predicate is null or undefined then only this will be evaluated', () => {

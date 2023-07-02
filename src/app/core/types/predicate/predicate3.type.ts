@@ -191,6 +191,7 @@ export class Predicate3<T1, T2, T3> {
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Predicate3<T1, T2, T3>).and &&
     undefined !== (input as Predicate3<T1, T2, T3>).apply &&
+    undefined !== (input as Predicate3<T1, T2, T3>).getVerifier &&
     undefined !== (input as Predicate3<T1, T2, T3>).not &&
     undefined !== (input as Predicate3<T1, T2, T3>).or;
 
@@ -217,6 +218,15 @@ export class Predicate3<T1, T2, T3> {
       ? predicate
       : new Predicate3(predicate);
   }
+
+
+  /**
+   * Returns internal `verifier`.
+   *
+   * @return {@link FPredicate3}
+   */
+  getVerifier = (): FPredicate3<T1, T2, T3> =>
+    this.verifier;
 
 
   /**
