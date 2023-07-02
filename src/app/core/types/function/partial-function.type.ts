@@ -1,6 +1,13 @@
 import { AssertUtil, ObjectUtil } from '@app-core/util';
-import {NullableOrUndefined, Optional} from '@app-core/types';
-import { FFunction1, FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/types/function';
+import { NullableOrUndefined, Optional } from '@app-core/types';
+import {
+  FFunction1,
+  FFunction2,
+  Function1,
+  Function2,
+  TFunction1,
+  TFunction2
+} from '@app-core/types/function';
 import { FPredicate1, FPredicate2, Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/types/predicate';
 
 /**
@@ -72,6 +79,8 @@ export class PartialFunction<T, R> {
     undefined !== (input as PartialFunction<T, R>).apply &&
     undefined !== (input as PartialFunction<T, R>).applyOrElse &&
     undefined !== (input as PartialFunction<T, R>).compose &&
+    undefined !== (input as PartialFunction<T, R>).getMapper &&
+    undefined !== (input as PartialFunction<T, R>).getVerifier &&
     undefined !== (input as PartialFunction<T, R>).isDefinedAt;
 
 
@@ -155,6 +164,24 @@ export class PartialFunction<T, R> {
       )
     );
   }
+
+
+  /**
+   * Returns internal `mapper`.
+   *
+   * @return {@link Function1}
+   */
+  getMapper = (): Function1<T, R> =>
+    this.mapper;
+
+
+  /**
+   * Returns internal `verifier`.
+   *
+   * @return {@link Predicate1}
+   */
+  getVerifier = (): Predicate1<T> =>
+    this.verifier;
 
 
   /**

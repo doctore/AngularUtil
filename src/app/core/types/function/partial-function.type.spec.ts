@@ -188,6 +188,48 @@ describe('PartialFunction', () => {
 
 
 
+  describe('getMapper', () => {
+
+    it('then return internal mapper', () => {
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: number) => 0 == n % 2);
+
+      const multiply2: Function1<number, number> =
+        Function1.of((n: number) => 2 * n);
+
+      const partialFunction = PartialFunction.of(isEven, multiply2);
+
+      const mapper: Function1<number, number> = partialFunction.getMapper();
+
+      expect(mapper.apply(5)).toEqual(10);
+      expect(mapper.apply(8)).toEqual(16);
+    });
+
+  });
+
+
+
+  describe('getVerifier', () => {
+
+    it('then return internal verifier', () => {
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: number) => 0 == n % 2);
+
+      const multiply2: Function1<number, number> =
+        Function1.of((n: number) => 2 * n);
+
+      const partialFunction = PartialFunction.of(isEven, multiply2);
+
+      const verifier: Predicate1<number> = partialFunction.getVerifier();
+
+      expect(verifier.apply(5)).toEqual(false);
+      expect(verifier.apply(8)).toEqual(true);
+    });
+
+  });
+
+
+
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
