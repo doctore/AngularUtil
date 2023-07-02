@@ -696,6 +696,37 @@ export abstract class Try<T extends any> {
 
 
   /**
+   *    Returns this {@link Try} if it is {@link Success}, otherwise tries to recover the {@link Error} of the
+   * {@link Failure} applying `mapper`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   // @ts-ignore
+   *   Try.ofFunction0(() => doesNotExits)
+   *      .recoverWith((e1: Error) => Try.success(9999));
+   * </pre>
+   *
+   * @param mapper
+   *    Recovery {@link TFunction1} taking a {@link Error}
+   *
+   * @return {@link Try}
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
+   */
+  recoverWith = (mapper: TFunction1<Error, Try<T>>): Try<T> => {
+    if (!this.isSuccess()) {
+      AssertUtil.notNullOrUndefined(
+        mapper,
+        'mapper must be not null and not undefined'
+      );
+      return this.recoverWithTry(mapper);
+    }
+    return Try.success(this.get());
+  }
+
+
+  /**
    *    If the current {@link Try} is an instance of {@link Success} wraps the stored value into an {@link Optional} object.
    * Otherwise return {@link Optional#empty}
    *
@@ -879,6 +910,26 @@ export abstract class Try<T extends any> {
             this.getError()
           )
       );
+    } catch (error) {
+      return Try.failureResultHandler(error);
+    }
+  }
+
+
+  /**
+   * When current {@link Try} is a {@link Failure} instance, manages in a safe way the {@link TFunction1} invocation.
+   *
+   * @param mapper
+   *    {@link TFunction1} to apply the stored value if the current instance is a {@link Failure} one
+   *
+   * @return {@link Try}
+   */
+  private recoverWithTry = <U>(mapper: TFunction1<Error, Try<U>>): Try<U> => {
+    try {
+      return Function1.of(mapper)
+        .apply(
+          this.getError()
+        );
     } catch (error) {
       return Try.failureResultHandler(error);
     }

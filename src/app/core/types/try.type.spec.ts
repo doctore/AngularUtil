@@ -937,10 +937,87 @@ describe('Try', () => {
 
 
     it('when the Try instance is Success then same Try is returned', () => {
-      const getLengthErrorMessage = (e: Error) => e.message.length;
+      const getLengthErrorMessage: Function1<Error, number> =
+        Function1.of((e: Error) => e.message.length);
+
       const successTry: Try<number> = Try.success(11);
 
       const result = successTry.recover(getLengthErrorMessage);
+
+      expect(result.isSuccess()).toBeTrue();
+      expect(result.get()).toEqual(11);
+    });
+
+  });
+
+
+
+  describe('recoverWith', () => {
+
+    it('when the Try instance is Failure but mapper is null or undefined then an error is thrown', () => {
+      const failureTry = Try.failure<number>(new SyntaxError('There was an error'));
+
+      // @ts-ignore
+      expect(() => failureTry.recoverWith(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => failureTry.recoverWith(null)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Try instance is Failure then mapper is invoked', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const getErrorMessage: TFunction1<Error, Try<string>> =
+        (e: Error) => Try.success(e.message);
+
+      const getErrorMessageSpy = jasmine.createSpy('getErrorMessage', getErrorMessage);
+
+      const failureTry: Try<string> = Try.failure(illegalArgumentError);
+
+      failureTry.recoverWith(getErrorMessageSpy);
+
+      expect(getErrorMessageSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Try instance is Success then mapper is not invoked', () => {
+      const getErrorMessage: TFunction1<Error, Try<string>> =
+        (e: Error) => Try.success(e.message);
+
+      const getErrorMessageSpy = jasmine.createSpy('getErrorMessage', getErrorMessage);
+      const successTry: Try<string> = Try.success('9');
+
+      successTry.recoverWith(getErrorMessageSpy);
+
+      expect(getErrorMessageSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Try instance is Failure then a Success applying mapper is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const failureBuilder: Function0<number> =
+        Function0.of(
+          () => { throw illegalArgumentError; }
+        );
+      const getLengthErrorMessage = (e: Error) => Try.success(e.message.length);
+      const failureTry = Try.ofFunction0(failureBuilder);
+
+      const result = failureTry.recoverWith(getLengthErrorMessage);
+
+      expect(result.isSuccess()).toBeTrue();
+      expect(result.get()).toEqual(illegalArgumentError.message.length);
+    });
+
+
+    it('when the Try instance is Success then same Try is returned', () => {
+      const getLengthErrorMessage: Function1<Error, Try<number>> =
+        Function1.of((e: Error) => Try.success(e.message.length));
+
+      const successTry: Try<number> = Try.success(11);
+
+      const result = successTry.recoverWith(getLengthErrorMessage);
 
       expect(result.isSuccess()).toBeTrue();
       expect(result.get()).toEqual(11);
