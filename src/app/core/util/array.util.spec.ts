@@ -25,7 +25,7 @@ describe('ArrayUtil', () => {
   describe('applyOrElse', () => {
 
     it('when given sourceArray has no elements and partialFunction is provided then empty array is returned', () => {
-      let emptyArray: number[] = [];
+      const emptyArray: number[] = [];
       const plus1ForOdd: PartialFunction<number, number> =
         PartialFunction.of(
           (n: number) => 1 == n % 2,
@@ -42,7 +42,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has no elements and defaultMapper, orElseMapper and filterPredicate are provided then empty array is returned', () => {
-      let emptyArray: number[] = [];
+      const emptyArray: number[] = [];
       const isOdd = (n: number) => 1 == n % 2;
       const plus1 = (n: number) => 1 + n;
       const multiply2 = (n: number) => 2 * n;
@@ -156,7 +156,7 @@ describe('ArrayUtil', () => {
   describe('collect', () => {
 
     it('when given sourceArray has no elements and partialFunction is provided then empty array is returned', () => {
-      let emptyArray: number[] = [];
+      const emptyArray: number[] = [];
       const multiply2AndStringForEven: PartialFunction<number, string> =
         PartialFunction.of(
           (n: number) => 0 == n % 2,
@@ -263,7 +263,7 @@ describe('ArrayUtil', () => {
   describe('dropWhile', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
-      let emptyArray: Role[] = [];
+      const emptyArray: Role[] = [];
       const isEven: Predicate1<Role> =
         Predicate1.of((role: Role) => 0 == role.id % 2);
 
@@ -296,13 +296,12 @@ describe('ArrayUtil', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
-      const sourceArray = [r1, r2, r3];
 
       const isIdOdd: FPredicate1<NullableOrUndefined<Role>> =
         (role: NullableOrUndefined<Role>) => 1 == role!.id % 2;
 
       verifyArrays(
-        ArrayUtil.dropWhile(sourceArray, isIdOdd),
+        ArrayUtil.dropWhile([r1, r2, r3], isIdOdd),
         [r2]
       );
     });
@@ -312,12 +311,11 @@ describe('ArrayUtil', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
-      const sourceArray = [u1, u2, u3];
 
       const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
 
       verifyArrays(
-        ArrayUtil.dropWhile(sourceArray, isIdOdd),
+        ArrayUtil.dropWhile([u1, u2, u3], isIdOdd),
         [u2]
       );
     });
@@ -358,12 +356,11 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
 
       const isIdGreaterThan10: Predicate1<Role> =
         Predicate1.of((role: Role) => 10 < role.id);
 
-      expect(ArrayUtil.find(sourceArray, isIdGreaterThan10)).toBeUndefined();
+      expect(ArrayUtil.find([r1, r2, r3, r4], isIdGreaterThan10)).toBeUndefined();
     });
 
 
@@ -386,11 +383,10 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
 
       const isEven = (role: Role) => 0 == role!.id % 2;
 
-      expect(ArrayUtil.find(sourceArray, isEven)).toEqual(r2);
+      expect(ArrayUtil.find([r1, r2, r3, r4], isEven)).toEqual(r2);
     });
 
 
@@ -399,12 +395,11 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
-      const sourceArray = [u1, u2, u3, u4];
 
       const isIdOdd: Predicate1<User> =
         Predicate1.of((user: User) => 1 == user.id % 2);
 
-      expect(ArrayUtil.find(sourceArray, isIdOdd)).toEqual(u1);
+      expect(ArrayUtil.find([u1, u2, u3, u4], isIdOdd)).toEqual(u1);
     });
 
   });
@@ -443,11 +438,10 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
 
       const isIdGreaterThan10 = (role: Role) => 10 < role.id;
 
-      expect(ArrayUtil.findOptional(sourceArray, isIdGreaterThan10).isPresent()).toBeFalse();
+      expect(ArrayUtil.findOptional([r1, r2, r3, r4], isIdGreaterThan10).isPresent()).toBeFalse();
     });
 
 
@@ -470,13 +464,12 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
 
       const isIdEven: Predicate1<Role> = Predicate1.of((role: Role) => 0 == role.id % 2);
 
       const expectedResult = r2;
 
-      const optional = ArrayUtil.findOptional(sourceArray, isIdEven);
+      const optional = ArrayUtil.findOptional([r1, r2, r3, r4], isIdEven);
 
       expect(optional.isPresent()).toBeTrue();
       expect(optional.get()).toEqual(expectedResult);
@@ -488,14 +481,13 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
-      const sourceArray = [u1, u2, u3, u4];
 
       const isIdOdd: Predicate1<User> =
         Predicate1.of((user: User) => 1 == user.id % 2);
 
       const expectedResult = u1;
 
-      const optional = ArrayUtil.findOptional(sourceArray, isIdOdd);
+      const optional = ArrayUtil.findOptional([u1, u2, u3, u4], isIdOdd);
 
       expect(optional.isPresent()).toBeTrue();
       expect(optional.get()).toEqual(expectedResult);
@@ -586,10 +578,92 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('sort', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+      const comparator: FFunction2<number, number, number> = (a, b) => a - b;
+
+      expect(ArrayUtil.sort(null)).toEqual(emptyArray);
+      expect(ArrayUtil.sort(undefined)).toEqual(emptyArray);
+      expect(ArrayUtil.sort(emptyArray)).toEqual(emptyArray);
+
+      expect(ArrayUtil.sort(null, comparator)).toEqual(emptyArray);
+      expect(ArrayUtil.sort(undefined, comparator)).toEqual(emptyArray);
+      expect(ArrayUtil.sort(emptyArray, comparator)).toEqual(emptyArray);
+    });
+
+
+    it('when given sourceArray is not empty but comparator is null or undefined then default sort is applied', () => {
+      const sourceArray: number[] = [1, 10, 21, 2];
+
+      const expectedResult: number[] = [1, 10, 2, 21];
+
+      verifyArrays(
+        ArrayUtil.sort(sourceArray),
+        expectedResult
+      );
+
+      verifyArrays(
+        ArrayUtil.sort(sourceArray, undefined),
+        expectedResult
+      );
+
+      verifyArrays(
+        ArrayUtil.sort(sourceArray, null),
+        expectedResult
+      );
+    });
+
+
+    it('using basic types, when given sourceArray is not empty and comparator is valid then the sorted array using comparator is returned', () => {
+      const sourceArray: number[] = [1, 10, 21, 2];
+      const comparator = (a: number, b: number) => a - b;
+
+      const expectedResult: number[] = [1, 2, 10, 21];
+
+      verifyArrays(
+        ArrayUtil.sort(sourceArray, comparator),
+        expectedResult
+      );
+    });
+
+
+    it('using interfaces, when given sourceArray is not empty and comparator is valid then the sorted array using comparator is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const comparator = (r1: Role, r2: Role) => r1.id - r2.id;
+
+      verifyArrays(
+        ArrayUtil.sort([r1, r3, r2], comparator),
+        [r1, r2, r3]
+      );
+    });
+
+
+    it('using classes, when given sourceArray is not empty and comparator is valid then the sorted array using comparator is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const comparator: FFunction2<User, User, number> = (u1: User, u2: User) => u2.id - u1.id;
+
+      verifyArrays(
+        ArrayUtil.sort([u3, u1, u2], comparator),
+        [u3, u2, u1]
+      );
+    });
+
+  });
+
+
+
   describe('takeWhile', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
-      let emptyArray: Role[] = [];
+      const emptyArray: Role[] = [];
       const isIdEven = (role: Role) => 0 == role.id % 2;
 
       expect(ArrayUtil.takeWhile(null, isIdEven)).toEqual(emptyArray);
@@ -621,12 +695,11 @@ describe('ArrayUtil', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
-      const sourceArray = [r1, r2, r3];
 
       const isIdOdd = (role: Role) => 1 == role.id % 2;
 
       verifyArrays(
-        ArrayUtil.takeWhile(sourceArray, isIdOdd),
+        ArrayUtil.takeWhile([r1, r2, r3], isIdOdd),
         [r1, r3]
       );
     });
@@ -636,13 +709,12 @@ describe('ArrayUtil', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
-      const sourceArray = [u1, u2, u3];
 
       const isIdOdd: Predicate1<User> =
         Predicate1.of((user: User) => 1 == user.id % 2);
 
       verifyArrays(
-        ArrayUtil.takeWhile(sourceArray, isIdOdd),
+        ArrayUtil.takeWhile([u1, u2, u3], isIdOdd),
         [u1, u3]
       );
     });

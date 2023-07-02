@@ -376,6 +376,59 @@ export class MapUtil {
 
 
   /**
+   * Sorts the given `sourceMap` using `comparator` if provided or default ordination otherwise.
+   *
+   * @apiNote
+   *    The default sort order is ascending, built upon converting the elements into strings, then comparing their
+   * sequences of UTF-16 code units values.
+   *
+   * <pre>
+   * Example 1:
+   *
+   *   Parameters:                                                      Result:
+   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                        [(1, 'a'), (11, 'k'), (3, 'c'), (4, 'd')]
+   *
+   *
+   * Example 2:
+   *
+   *  Parameters:                                                       Result:
+   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                        [(1, 'a'), (3, 'c'), (4, 'd'), (11, 'k')]
+   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} to sort
+   * @param comparator
+   *    {@link TFunction2} used to determine the order of the elements. The returned value should verify the formula:
+   *       <p>
+   *       > 0    sort `a` after `b`, e.g. [b, a]
+   *       <p>
+   *       < 0    sort `a` before `b`, e.g. [a, b]
+   *       <p>
+   *       === 0  keep original order of `a` and `b`
+   *
+   * @return new sorted {@link Map}
+   */
+  static sort = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                       comparator?: Nullable<TFunction2<[K, V], [K, V], number>>): Map<K, V> => {
+    if (this.isEmpty(sourceMap)) {
+      return new Map<K, V>();
+    }
+    const clonedSourceMapAsArray = [...sourceMap!.entries()];
+    return comparator
+      ? new Map(
+          clonedSourceMapAsArray!
+            .sort(
+              Function2.of<[K, V], [K, V], number>(comparator!).getMapper()
+            )
+        )
+      : new Map(
+          clonedSourceMapAsArray!.sort()
+        );
+  }
+
+
+  /**
    *    Returns a new {@link Map} using `sourceMap` as source, adding from the result the elements that verify the
    * given {@link TPredicate2} `filterPredicate`.
    *

@@ -370,6 +370,54 @@ export class ArrayUtil {
 
 
   /**
+   * Sorts the given `sourceArray` using `comparator` if provided or default ordination otherwise.
+   *
+   * @apiNote
+   *    The default sort order is ascending, built upon converting the elements into strings, then comparing their
+   * sequences of UTF-16 code units values.
+   *
+   * <pre>
+   * Example 1:
+   *
+   *   Parameters:                           Result:
+   *    [1, 10, 21, 2]                        [1, 10, 2, 21]
+   *
+   *
+   * Example 2:
+   *
+   *   Parameters:                           Result:
+   *    [1, 10, 21, 2]                        [1, 2, 10, 21]
+   *    (a: number, b: number) => a - b
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with elements to sort
+   * @param comparator
+   *    {@link TFunction2} used to determine the order of the elements. The returned value should verify the formula:
+   *       <p>
+   *       > 0    sort `a` after `b`, e.g. [b, a]
+   *       <p>
+   *       < 0    sort `a` before `b`, e.g. [a, b]
+   *       <p>
+   *       === 0  keep original order of `a` and `b`
+   *
+   * @return new sorted array
+   */
+  static sort = <T>(sourceArray: NullableOrUndefined<T[]>,
+                    comparator?: Nullable<TFunction2<T, T, number>>): T[] => {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    const clonedSourceArray = _.cloneDeep(sourceArray);
+    return comparator
+      ? clonedSourceArray!.sort(
+          Function2.of(comparator).getMapper()
+        )
+      : clonedSourceArray!.sort();
+  }
+
+
+  /**
    *    Returns a new array using `sourceArray` as source, adding from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *

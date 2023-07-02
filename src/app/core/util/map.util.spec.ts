@@ -25,7 +25,7 @@ describe('MapUtil', () => {
   describe('applyOrElse', () => {
 
     it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
-      let emptyMap = new Map<string, number>();
+      const emptyMap = new Map<string, number>();
       const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
         PartialFunction.of(
           ([k, v]: [string, number]) => 1 == v % 2,
@@ -307,7 +307,7 @@ describe('MapUtil', () => {
   describe('dropWhile', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
-      let emptyMap = new Map<number, number>();
+      const emptyMap = new Map<number, number>();
       const areKeyValueEven: Predicate2<number, number> =
         Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
@@ -397,7 +397,7 @@ describe('MapUtil', () => {
   describe('find', () => {
 
     it('when given sourceMap is undefined, null or is an empty Map then undefined is returned', () => {
-      let emptyMap = new Map<number, number>();
+      const emptyMap = new Map<number, number>();
       const areKeyValueEven: Predicate2<number, number> =
         Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
@@ -505,7 +505,7 @@ describe('MapUtil', () => {
   describe('findOptional', () => {
 
     it('when given sourceMap is undefined, null or is an empty Map then empty Optional is returned', () => {
-      let emptyMap = new Map<number, number>();
+      const emptyMap = new Map<number, number>();
       const areKeyValueEven: Predicate2<number, number> =
         Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
@@ -687,10 +687,131 @@ describe('MapUtil', () => {
 
 
 
+  describe('sort', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      const emptyMap = new Map<number, number>();
+      const compareKeys: FFunction2<[number, number], [number, number], number> =
+        (a: [number, number], b: [number, number]) => a[0] - b[0];
+
+      expect(MapUtil.sort(null)).toEqual(emptyMap);
+      expect(MapUtil.sort(undefined)).toEqual(emptyMap);
+      expect(MapUtil.sort(emptyMap)).toEqual(emptyMap);
+
+      expect(MapUtil.sort(null, compareKeys)).toEqual(emptyMap);
+      expect(MapUtil.sort(undefined, compareKeys)).toEqual(emptyMap);
+      expect(MapUtil.sort(emptyMap, compareKeys)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap is not empty but comparator is null or undefined then default sort is applied', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+      sourceMap.set(4, 'd');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'c');
+
+      const expectedResult = new Map<number, string>();
+      expectedResult.set(1, 'a');
+      expectedResult.set(11, 'k');
+      expectedResult.set(3, 'c');
+      expectedResult.set(4, 'd');
+
+      verifyMaps(
+        MapUtil.sort(sourceMap),
+        expectedResult
+      );
+
+      verifyMaps(
+        MapUtil.sort(sourceMap, undefined),
+        expectedResult
+      );
+
+      verifyMaps(
+        MapUtil.sort(sourceMap, null),
+        expectedResult
+      );
+    });
+
+
+    it('using basic types, when given sourceMap is not empty and comparator is valid then the sorted map using comparator is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+      sourceMap.set(4, 'd');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'c');
+
+      const compareKeys: FFunction2<[number, string], [number, string], number> =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
+
+      const expectedResult = new Map<number, string>();
+      expectedResult.set(1, 'a');
+      expectedResult.set(3, 'c');
+      expectedResult.set(4, 'd');
+      expectedResult.set(11, 'k');
+
+      verifyMaps(
+        MapUtil.sort(sourceMap, compareKeys),
+        expectedResult
+      );
+    });
+
+
+    it('using interfaces, when given sourceArray is not empty and comparator is valid then the sorted map using comparator is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      let sourceMap = new Map<number, Role>();
+      sourceMap.set(r1.id, r1);
+      sourceMap.set(r3.id, r3);
+      sourceMap.set(r2.id, r2);
+
+      const compareKeys = (a: [number, Role], b: [number, Role]) => a[0] - b[0];
+
+      const expectedResult = new Map<number, Role>();
+      expectedResult.set(r1.id, r1);
+      expectedResult.set(r2.id, r2);
+      expectedResult.set(r3.id, r3);
+
+      verifyMaps(
+        MapUtil.sort(sourceMap, compareKeys),
+        expectedResult
+      );
+    });
+
+
+    it('using classes, when given sourceArray is not empty and comparator is valid then the sorted map using comparator is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      let sourceMap = new Map<number, User>();
+      sourceMap.set(u1.id, u1);
+      sourceMap.set(u3.id, u3);
+      sourceMap.set(u2.id, u2);
+
+      const compareKeys = (a: [number, User], b: [number, User]) => b[0] - a[0];
+
+      let expectedResult = new Map<number, User>();
+      expectedResult.set(u3.id, u3);
+      expectedResult.set(u2.id, u2);
+      expectedResult.set(u1.id, u1);
+
+      verifyMaps(
+        MapUtil.sort(sourceMap, compareKeys),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('takeWhile', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
-      let emptyMap = new Map<number, number>();
+      const emptyMap = new Map<number, number>();
       const areKeyValueEven: Predicate2<number, number> =
         Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
