@@ -61,7 +61,8 @@ export class Consumer0 {
   static isConsumer = (input?: any): input is Consumer0 =>
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Consumer0).andThen &&
-    undefined !== (input as Consumer0).apply;
+    undefined !== (input as Consumer0).apply &&
+    undefined !== (input as Consumer0).getAction;
 
 
   static of(consumer: FConsumer0): Consumer0;
@@ -86,6 +87,15 @@ export class Consumer0 {
       ? consumer
       : new Consumer0(consumer);
   }
+
+
+  /**
+   * Returns internal `action`.
+   *
+   * @return {@link FConsumer0}
+   */
+  getAction = (): FConsumer0 =>
+    this.action;
 
 
   /**

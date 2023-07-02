@@ -77,7 +77,8 @@ export class Consumer3<T1, T2, T3> {
   static isConsumer = <T1, T2, T3>(input?: any): input is Consumer3<T1, T2, T3> =>
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Consumer3<T1, T2, T3>).andThen &&
-    undefined !== (input as Consumer3<T1, T2, T3>).apply;
+    undefined !== (input as Consumer3<T1, T2, T3>).apply &&
+    undefined !== (input as Consumer3<T1, T2, T3>).getAction;
 
 
   static of<T1, T2, T3>(consumer: FConsumer3<T1, T2, T3>): Consumer3<T1, T2, T3>;
@@ -102,6 +103,15 @@ export class Consumer3<T1, T2, T3> {
       ? consumer
       : new Consumer3(consumer);
   }
+
+
+  /**
+   * Returns internal `action`.
+   *
+   * @return {@link FConsumer3}
+   */
+  getAction = (): FConsumer3<T1, T2, T3> =>
+    this.action;
 
 
   /**

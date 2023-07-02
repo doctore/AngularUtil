@@ -138,6 +138,33 @@ describe('Consumer3', () => {
 
 
 
+  describe('getAction', () => {
+
+    it('then return internal action', () => {
+      let externalInt = 10;
+      let externalString = 'abc';
+      let externalBoolean = true;
+
+      const plusNAndAddSAndChangeB: Consumer3<number, string, boolean> =
+        Consumer3.of(
+          (n: number, s: string, b: boolean) => {
+            externalInt += n;
+            externalString += s;
+            externalBoolean = b;
+          });
+
+      const action = plusNAndAddSAndChangeB.getAction();
+      action(5, 'V2', false);
+
+      expect(externalInt).toEqual(15);
+      expect(externalString).toEqual('abcV2');
+      expect(externalBoolean).toBeFalse();
+    });
+
+  });
+
+
+
   describe('andThen', () => {
 
     it('when given Consumer3 is null or undefined then only this will be applied', () => {

@@ -113,6 +113,24 @@ describe('Consumer1', () => {
 
 
 
+  describe('getAction', () => {
+
+    it('then return internal action', () => {
+      let externalString = 'abc';
+
+      const stringAddS: Consumer1<string> =
+        Consumer1.of((s: string) => { externalString += s; });
+
+      const action: FConsumer1<string> = stringAddS.getAction();
+      action('V2');
+
+      expect(externalString).toEqual('abcV2');
+    });
+
+  });
+
+
+
   describe('andThen', () => {
 
     it('when given Consumer1 is null or undefined then only this will be applied', () => {
