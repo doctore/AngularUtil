@@ -7,18 +7,21 @@ import {
   FFunction3,
   FFunction4,
   FFunction5,
+  FFunction6,
   Function0,
   Function1,
   Function2,
   Function3,
   Function4,
   Function5,
+  Function6,
   TFunction0,
   TFunction1,
   TFunction2,
   TFunction3,
   TFunction4,
-  TFunction5
+  TFunction5,
+  TFunction6
 } from '@app-core/types/function';
 
 /**
@@ -399,7 +402,7 @@ export abstract class Try<T extends any> {
    * @param t5
    *    Fifth input parameter used by given {@link TFunction5}
    * @param func
-   *    {@link TFunction4} used to get the value to store in the returned {@link Success}
+   *    {@link TFunction5} used to get the value to store in the returned {@link Success}
    *
    * @return {@link Success} if there was no error invoking {@link TFunction5},
    *         {@link Failure} otherwise
@@ -414,6 +417,62 @@ export abstract class Try<T extends any> {
       return this.success(
         Function5.of(func)
           .apply(t1, t2, t3, t4, t5)
+      );
+
+    } catch (error) {
+      return Try.failureResultHandler(error);
+    }
+  }
+
+
+  static ofFunction6<T1, T2, T3, T4, T5, T6, R>(t1: T1,
+                                                t2: T2,
+                                                t3: T3,
+                                                t4: T4,
+                                                t5: T5,
+                                                t6: T6,
+                                                func: FFunction6<T1, T2, T3, T4, T5, T6, R>): Try<R>;
+
+  static ofFunction6<T1, T2, T3, T4, T5, T6, R>(t1: T1,
+                                                t2: T2,
+                                                t3: T3,
+                                                t4: T4,
+                                                t5: T5,
+                                                t6: T6,
+                                                func: TFunction6<T1, T2, T3, T4, T5, T6, R>): Try<R>;
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction6} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction6}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction6}
+   * @param t3
+   *    Third input parameter used by given {@link TFunction6}
+   * @param t4
+   *    Fourth input parameter used by given {@link TFunction6}
+   * @param t5
+   *    Fifth input parameter used by given {@link TFunction6}
+   * @param t6
+   *    Sixth input parameter used by given {@link TFunction6}
+   * @param func
+   *    {@link TFunction6} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction6},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction6<T1, T2, T3, T4, T5, T6, R>(t1: T1,
+                                                t2: T2,
+                                                t3: T3,
+                                                t4: T4,
+                                                t5: T5,
+                                                t6: T6,
+                                                func: TFunction6<T1, T2, T3, T4, T5, T6, R>): Try<R> {
+    try {
+      return this.success(
+        Function6.of(func)
+          .apply(t1, t2, t3, t4, t5, t6)
       );
 
     } catch (error) {

@@ -2,15 +2,13 @@ import { Failure, Nullable, NullableOrUndefined, Success, Try } from '@app-core/
 import {
   FFunction1,
   FFunction2,
-  FFunction3,
-  FFunction4,
-  FFunction5,
   Function0,
   Function1,
   Function2,
   Function3,
   Function4,
   Function5,
+  Function6,
   TFunction0,
   TFunction1,
   TFunction2
@@ -245,8 +243,7 @@ describe('Try', () => {
 
 
     it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
-      const func: FFunction2<string, string, number> =
-        (s1, s2) => parseInt(s1 + s2);
+      const func = (s1: string, s2: string) => parseInt(s1 + s2);
 
       const tryResult = Try.ofFunction2('1', '2', func);
 
@@ -284,8 +281,7 @@ describe('Try', () => {
 
 
     it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
-      const func: FFunction3<string, string, string, number> =
-        (s1, s2, s3) => parseInt(s1 + s2 + s3);
+      const func = (s1: string, s2: string, s3: string) => parseInt(s1 + s2 + s3);
 
       const tryResult = Try.ofFunction3('1', '2', '3', func);
 
@@ -323,8 +319,7 @@ describe('Try', () => {
 
 
     it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
-      const func: FFunction4<string, string, string, string, number> =
-        (s1, s2, s3, s4) => parseInt(s1 + s2 + s3 + s4);
+      const func = (s1: string, s2: string, s3: string, s4: string) => parseInt(s1 + s2 + s3 + s4);
 
       const tryResult = Try.ofFunction4('1', '2', '3', '4', func);
 
@@ -362,8 +357,7 @@ describe('Try', () => {
 
 
     it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
-      const func: FFunction5<string, string, string, string, string, number> =
-        (s1, s2, s3, s4, s5) => parseInt(s1 + s2 + s3 + s4 + s5);
+      const func = (s1: string, s2: string, s3: string, s4: string, s5: string) => parseInt(s1 + s2 + s3 + s4 + s5);
 
       const tryResult = Try.ofFunction5('1', '2', '3', '4', '5', func);
 
@@ -380,6 +374,44 @@ describe('Try', () => {
         );
 
       const tryResult = Try.ofFunction5('1', '2', '3', '4', '5', func);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError()).toEqual(returnedError);
+    });
+
+  });
+
+
+
+  describe('ofFunction6', () => {
+
+    it('when no func is provided then a Failure with the error is returned', () => {
+      // @ts-ignore
+      const tryResult = Try.ofFunction6(null);
+
+      expect(tryResult.isSuccess()).toBeFalse();
+      expect(tryResult.getError() instanceof IllegalArgumentError).toBeTrue();
+    });
+
+
+    it('when applying providing func no error is thrown then a Success with the result value is returned', () => {
+      const func = (s1: string, s2: string, s3: string, s4: string, s5: string, s6: string) => parseInt(s1 + s2 + s3 + s4 + s5 + s6);
+
+      const tryResult = Try.ofFunction6('1', '2', '3', '4', '5', '6', func);
+
+      expect(tryResult.isSuccess()).toBeTrue();
+      expect(tryResult.get()).toEqual(123456);
+    });
+
+
+    it('when applying providing func an error is thrown then a Failure with the error is returned', () => {
+      const returnedError: Error = new SyntaxError('There was an error');
+      const func: Function6<string, string, string, string, string, string, number> =
+        Function6.of(
+          (s1, s2, s3, s4, s5, s6) => { throw returnedError; }
+        );
+
+      const tryResult = Try.ofFunction6('1', '2', '3', '4', '5', '6', func);
 
       expect(tryResult.isSuccess()).toBeFalse();
       expect(tryResult.getError()).toEqual(returnedError);
