@@ -254,8 +254,8 @@ describe('Function1', () => {
 
 
     it('when a Function1 is provided then it will be applied before current one', () => {
-      const stringLength: FFunction1<string, number> =
-        (s: NullableOrUndefined<string>) => s!.length;
+      const stringLength: Function1<string, number> =
+        Function1.of((s: NullableOrUndefined<string>) => s!.length);
 
       const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
