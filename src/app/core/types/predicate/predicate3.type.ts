@@ -193,7 +193,8 @@ export class Predicate3<T1, T2, T3> {
     undefined !== (input as Predicate3<T1, T2, T3>).apply &&
     undefined !== (input as Predicate3<T1, T2, T3>).getVerifier &&
     undefined !== (input as Predicate3<T1, T2, T3>).not &&
-    undefined !== (input as Predicate3<T1, T2, T3>).or;
+    undefined !== (input as Predicate3<T1, T2, T3>).or &&
+    isFPredicate3((input as Predicate3<T1, T2, T3>).getVerifier());
 
 
   static of<T1, T2, T3>(predicate: FPredicate3<T1, T2, T3>): Predicate3<T1, T2, T3>;

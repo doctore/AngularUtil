@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { Consumer3, FConsumer3, isFConsumer3 } from '@app-core/types/consumer';
+import { Consumer2, Consumer3, FConsumer3, isFConsumer3 } from '@app-core/types/consumer';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -39,7 +39,7 @@ describe('Consumer3', () => {
 
   describe('isConsumer', () => {
 
-    it('when no function is provided then false is returned', () => {
+    it('when no consumer is provided then false is returned', () => {
       expect(Consumer3.isConsumer()).toBeFalse();
       expect(Consumer3.isConsumer(null)).toBeFalse();
       expect(Consumer3.isConsumer('')).toBeFalse();
@@ -48,7 +48,15 @@ describe('Consumer3', () => {
     });
 
 
-    it('when a function is provided then true is returned', () => {
+    it('when provided consumer is different than Consumer3 then false is returned', () => {
+      const consumer: Consumer2<NullableOrUndefined<number>, NullableOrUndefined<string>> =
+        Consumer2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => { n! += 2; s! += 'V2'; });
+
+      expect(Consumer3.isConsumer(consumer)).toBeFalse();
+    });
+
+
+    it('when a Consumer3 is provided then true is returned', () => {
       const consumer: Consumer3<NullableOrUndefined<number>, NullableOrUndefined<string>, boolean> =
         Consumer3.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>, b: boolean) => { n! += 2; s! += 'V2'; b = !b; });
 

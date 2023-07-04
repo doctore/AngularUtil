@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { Consumer1, FConsumer1, isFConsumer1 } from '@app-core/types/consumer';
+import { Consumer0, Consumer1, FConsumer1, isFConsumer1 } from '@app-core/types/consumer';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -39,7 +39,7 @@ describe('Consumer1', () => {
 
   describe('isConsumer', () => {
 
-    it('when no function is provided then false is returned', () => {
+    it('when no consumer is provided then false is returned', () => {
       expect(Consumer1.isConsumer()).toBeFalse();
       expect(Consumer1.isConsumer(null)).toBeFalse();
       expect(Consumer1.isConsumer('')).toBeFalse();
@@ -48,7 +48,15 @@ describe('Consumer1', () => {
     });
 
 
-    it('when a function is provided then true is returned', () => {
+    it('when provided consumer is different than Consumer1 then false is returned', () => {
+      const consumer: Consumer0 =
+        Consumer0.of(() => { let a = 1;  a += 2; });
+
+      expect(Consumer1.isConsumer(consumer)).toBeFalse();
+    });
+
+
+    it('when a Consumer1 is provided then true is returned', () => {
       const consumer: Consumer1<NullableOrUndefined<number>> =
         Consumer1.of((n: NullableOrUndefined<number>) => { n! += 2; });
 

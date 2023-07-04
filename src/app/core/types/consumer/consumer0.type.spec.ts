@@ -1,5 +1,6 @@
-import { Consumer0, FConsumer0, isFConsumer0 } from '@app-core/types/consumer';
+import { Consumer0, Consumer1, FConsumer0, isFConsumer0 } from '@app-core/types/consumer';
 import { IllegalArgumentError } from '@app-core/errors';
+import { NullableOrUndefined } from '@app-core/types';
 
 /**
  * To invoke only this test:
@@ -38,7 +39,7 @@ describe('Consumer0', () => {
 
   describe('isConsumer', () => {
 
-    it('when no function is provided then false is returned', () => {
+    it('when no consumer is provided then false is returned', () => {
       expect(Consumer0.isConsumer()).toBeFalse();
       expect(Consumer0.isConsumer(null)).toBeFalse();
       expect(Consumer0.isConsumer('')).toBeFalse();
@@ -47,7 +48,15 @@ describe('Consumer0', () => {
     });
 
 
-    it('when a function is provided then true is returned', () => {
+    it('when provided consumer is different than Consumer0 then false is returned', () => {
+      const consumer: Consumer1<NullableOrUndefined<number>> =
+        Consumer1.of((n: NullableOrUndefined<number>) => { n! += 2; });
+
+      expect(Consumer0.isConsumer(consumer)).toBeFalse();
+    });
+
+
+    it('when a Consumer0 is provided then true is returned', () => {
       const consumer: Consumer0 =
         Consumer0.of(() => { let a = 1;  a += 2; });
 

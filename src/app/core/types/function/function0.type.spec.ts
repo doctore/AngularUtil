@@ -1,4 +1,4 @@
-import { FFunction0, Function0, isFFunction0 } from '@app-core/types/function';
+import { FFunction0, Function0, Function1, isFFunction0 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -47,7 +47,15 @@ describe('Function0', () => {
     });
 
 
-    it('when a function is provided then true is returned', () => {
+    it('when provided function is different than Function0 then false is returned', () => {
+      const stringLength: Function1<string, number> =
+        Function1.of((s: string) => s.length);
+
+      expect(Function0.isFunction(stringLength)).toBeFalse();
+    });
+
+
+    it('when a Function0 is provided then true is returned', () => {
       const funcError: Function0<IllegalArgumentError> =
         Function0.of(() => new IllegalArgumentError('errorMessage'));
 

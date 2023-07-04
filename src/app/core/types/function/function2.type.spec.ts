@@ -48,7 +48,15 @@ describe('Function2', () => {
     });
 
 
-    it('when a function is provided then true is returned', () => {
+    it('when provided function is different than Function2 then false is returned', () => {
+      const stringLength: Function1<string, number> =
+        Function1.of((s: string) => s.length);
+
+      expect(Function2.isFunction(stringLength)).toBeFalse();
+    });
+
+
+    it('when a Function2 is provided then true is returned', () => {
       const stringLengthPlusNumber: Function2<string, number, number> =
         Function2.of((s: string, n: number) => s.length + n);
 

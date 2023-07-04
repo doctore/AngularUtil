@@ -157,7 +157,8 @@ export class Predicate1<T> {
     undefined !== (input as Predicate1<T>).apply &&
     undefined !== (input as Predicate1<T>).getVerifier &&
     undefined !== (input as Predicate1<T>).not &&
-    undefined !== (input as Predicate1<T>).or;
+    undefined !== (input as Predicate1<T>).or &&
+    isFPredicate1((input as Predicate1<T>).getVerifier());
 
 
   static of<T>(predicate: FPredicate1<T>): Predicate1<T>;

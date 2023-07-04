@@ -78,7 +78,8 @@ export class Consumer3<T1, T2, T3> {
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Consumer3<T1, T2, T3>).andThen &&
     undefined !== (input as Consumer3<T1, T2, T3>).apply &&
-    undefined !== (input as Consumer3<T1, T2, T3>).getAction;
+    undefined !== (input as Consumer3<T1, T2, T3>).getAction &&
+    isFConsumer3((input as Consumer3<T1, T2, T3>).getAction());
 
 
   static of<T1, T2, T3>(consumer: FConsumer3<T1, T2, T3>): Consumer3<T1, T2, T3>;

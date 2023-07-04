@@ -1,4 +1,4 @@
-import { FFunction1, FFunction6, Function1, Function6, isFFunction6 } from '@app-core/types/function';
+import { FFunction1, FFunction6, Function1, Function5, Function6, isFFunction6 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -50,7 +50,16 @@ describe('Function6', () => {
     });
 
 
-    it('when a function is provided then true is returned', () => {
+    it('when provided function is different than Function6 then false is returned', () => {
+      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
+        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
+          s.length + n1 + n2 + n3 + n4);
+
+      expect(Function6.isFunction(stringLengthPlusNumbers)).toBeFalse();
+    });
+
+
+    it('when a Function6 is provided then true is returned', () => {
       const stringLengthPlusNumbers: Function6<string, number, number, number, number, number, number> =
         Function6.of((s: string, n1: number, n2: number, n3: number, n4: number, n5: number) =>
           s.length + n1 + n2 + n3 + n4 + n5);

@@ -95,7 +95,8 @@ export class Function6<T1, T2, T3, T4, T5, T6, R> {
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Function6<T1, T2, T3, T4, T5, T6, R>).andThen &&
     undefined !== (input as Function6<T1, T2, T3, T4, T5, T6, R>).apply &&
-    undefined !== (input as Function6<T1, T2, T3, T4, T5, T6, R>).getMapper;
+    undefined !== (input as Function6<T1, T2, T3, T4, T5, T6, R>).getMapper &&
+    isFFunction6((input as Function6<T1, T2, T3, T4, T5, T6, R>).getMapper());
 
 
   static of<T1, T2, T3, T4, T5, T6, R>(func: FFunction6<T1, T2, T3, T4, T5, T6, R>): Function6<T1, T2, T3, T4, T5, T6, R>;

@@ -62,7 +62,8 @@ export class Consumer0 {
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Consumer0).andThen &&
     undefined !== (input as Consumer0).apply &&
-    undefined !== (input as Consumer0).getAction;
+    undefined !== (input as Consumer0).getAction &&
+    isFConsumer0((input as Consumer0).getAction());
 
 
   static of(consumer: FConsumer0): Consumer0;

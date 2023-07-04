@@ -77,7 +77,8 @@ export class Function1<T, R> {
     undefined !== (input as Function1<T, R>).andThen &&
     undefined !== (input as Function1<T, R>).apply &&
     undefined !== (input as Function1<T, R>).compose &&
-    undefined !== (input as Function1<T, R>).getMapper;
+    undefined !== (input as Function1<T, R>).getMapper &&
+    isFFunction1((input as Function1<T, R>).getMapper());
 
 
   static of<T, R>(func: FFunction1<T, R>): Function1<T, R>;

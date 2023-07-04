@@ -64,7 +64,8 @@ export class Function0<R> {
   static isFunction = <R>(input?: any): input is Function0<R> =>
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Function0<R>).apply &&
-    undefined !== (input as Function0<R>).getMapper;
+    undefined !== (input as Function0<R>).getMapper &&
+    isFFunction0((input as Function0<R>).getMapper());
 
 
   static of<R>(func: FFunction0<R>): Function0<R>;

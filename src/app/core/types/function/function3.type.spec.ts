@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction1, FFunction3, Function1, Function3, isFFunction3 } from '@app-core/types/function';
+import { FFunction1, FFunction3, Function1, Function2, Function3, isFFunction3 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -48,7 +48,15 @@ describe('Function3', () => {
     });
 
 
-    it('when a function is provided then true is returned', () => {
+    it('when provided function is different than Function3 then false is returned', () => {
+      const stringLengthPlusNumber: Function2<string, number, number> =
+        Function2.of((s: string, n: number) => s.length + n);
+
+      expect(Function3.isFunction(stringLengthPlusNumber)).toBeFalse();
+    });
+
+
+    it('when a Function3 is provided then true is returned', () => {
       const stringLengthPlusNumbers: Function3<string, number, number, number> =
         Function3.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => s!.length + n1! + n2!);
 

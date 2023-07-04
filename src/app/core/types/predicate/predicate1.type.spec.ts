@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import { Predicate1, FPredicate1, isFPredicate1 } from '@app-core/types/predicate';
+import { Predicate1, FPredicate1, isFPredicate1, Predicate2 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -122,7 +122,20 @@ describe('Predicate1', () => {
     });
 
 
-    it('when a predicate is provided then true is returned', () => {
+
+    it('when provided predicate is different than Predicate1 then false is returned', () => {
+      const isNumberEvenAndStringNotNull: Predicate2<NullableOrUndefined<number>, NullableOrUndefined<string>> =
+        Predicate2.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) =>
+          0 == n! % 2 &&
+          undefined !== s &&
+          null !== s
+        );
+
+      expect(Predicate1.isPredicate(isNumberEvenAndStringNotNull)).toBeFalse();
+    });
+
+
+    it('when a Predicate1 is provided then true is returned', () => {
       const isEven: Predicate1<NullableOrUndefined<number>> =
         Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
 

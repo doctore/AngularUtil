@@ -80,7 +80,8 @@ export class Function3<T1, T2, T3, R> {
     ObjectUtil.nonNullOrUndefined(input) &&
     undefined !== (input as Function3<T1, T2, T3, R>).andThen &&
     undefined !== (input as Function3<T1, T2, T3, R>).apply &&
-    undefined !== (input as Function3<T1, T2, T3, R>).getMapper;
+    undefined !== (input as Function3<T1, T2, T3, R>).getMapper &&
+    isFFunction3((input as Function3<T1, T2, T3, R>).getMapper());
 
 
   static of<T1, T2, T3, R>(func: FFunction3<T1, T2, T3, R>): Function3<T1, T2, T3, R>;
