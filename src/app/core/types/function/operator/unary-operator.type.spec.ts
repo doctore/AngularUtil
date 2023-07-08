@@ -1,18 +1,17 @@
 import {
   FFunction1,
-  FUnaryOperator,
   Function1,
   Function2,
-  isFUnaryOperator,
-  UnaryOperator
 } from '@app-core/types/function';
+import { FUnaryOperator, isFUnaryOperator, UnaryOperator } from '@app-core/types/function/operator';
 import { NullableOrUndefined } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
+
 
 /**
  * To invoke only this test:
  *
- *    ng test --include src/app/core/types/function/unary-operator.type.spec.ts
+ *    ng test --include src/app/core/types/function/operator/unary-operator.type.spec.ts
  */
 describe('isFUnaryOperator', () => {
 

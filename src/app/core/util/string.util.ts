@@ -128,7 +128,7 @@ export class StringUtil {
    * Example 2:
    *
    *   Parameters:              Result:
-   *    'A,B#D,E,B'              ['A', 'B', 'D', 'E']
+   *    'A,B#D,E,B'              ['A', 'B', 'D', 'E', 'B']
    *    '#'
    *    ','
    * </pre>
