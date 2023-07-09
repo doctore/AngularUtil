@@ -376,6 +376,39 @@ export class MapUtil {
 
 
   /**
+   *    If the specified `key` is not already associated with a value associates it with the given `value` and returns
+   * `undefined`, else returns the previous stored `value`.
+   *
+   * @param sourceMap
+   *    {@link Map} to update if required
+   * @param key
+   *    Key with which the specified `value` is to be associated
+   * @param value
+   *    Value to be associated with the specified `key`
+   *
+   * @return the current `value` associated with the specified `key`, or `undefined` if there was no mapping for the `key`.
+   *
+   * @throws {@link IllegalArgumentError} if `sourceMap` is `null` or `undefined`
+   */
+  static putIfAbsent = <K, V>(sourceMap: Map<K, V>,
+                              key: K,
+                              value: V): OrUndefined<V> => {
+    AssertUtil.notNullOrUndefined(
+      sourceMap,
+      'sourceMap must be not null and not undefined'
+    );
+    if (!sourceMap.has(key)) {
+      sourceMap.set(
+        key,
+        value
+      );
+      return undefined;
+    }
+    return sourceMap.get(key);
+  }
+
+
+  /**
    * Sorts the given `sourceMap` using `comparator` if provided or default ordination otherwise.
    *
    * @apiNote

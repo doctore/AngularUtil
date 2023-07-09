@@ -687,6 +687,65 @@ describe('MapUtil', () => {
 
 
 
+  describe('putIfAbsent', () => {
+
+    it('when given sourceMap is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => MapUtil.putIfAbsent(undefined, 'A', 11)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.putIfAbsent(null, 'A', 11)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is empty then key and value is always added', () => {
+      const key = 'A';
+      const value = 11;
+
+      const emptyMap: Map<string, number> = new Map<string, number>();
+
+      expect(MapUtil.putIfAbsent(emptyMap, key, value)).toBeUndefined();
+      expect(emptyMap.size).toEqual(1);
+      expect(emptyMap.has(key)).toBeTrue();
+    });
+
+
+    it('when given sourceMap contains the key then no new value is added and existing one keeps and is returned', () => {
+      const key = 'A';
+      const value = 11;
+
+      const mapWithNullValue: Map<string, number> = new Map<string, number>();
+      // @ts-ignore
+      mapWithNullValue.set(key, null);
+
+      const mapWithOtherValue: Map<string, number> = new Map<string, number>();
+      mapWithOtherValue.set(key, value + 1);
+
+      expect(MapUtil.putIfAbsent(mapWithNullValue, key, value)).toBeNull();
+      expect(mapWithNullValue.has(key)).toBeTrue();
+      expect(mapWithNullValue.get(key)).toBeNull();
+
+      expect(MapUtil.putIfAbsent(mapWithOtherValue, key, value)).toEqual(value + 1);
+      expect(mapWithOtherValue.has(key)).toBeTrue();
+      expect(mapWithOtherValue.get(key)).toEqual(value + 1);
+    });
+
+
+    it('when given sourceMap does not contain the key then new value is added and undefined is returned', () => {
+      const key = 'A';
+      const value = 11;
+
+      const map: Map<string, number> = new Map<string, number>();
+      map.set('B', 12);
+
+      expect(MapUtil.putIfAbsent(map, key, value)).toBeUndefined();
+      expect(map.has(key)).toBeTrue();
+      expect(map.get(key)).toEqual(value);
+    });
+
+  });
+
+
+
   describe('sort', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
