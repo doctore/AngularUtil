@@ -376,8 +376,8 @@ export class MapUtil {
 
 
   /**
-   *    If the specified `key` is not already associated with a value associates it with the given `value` and returns
-   * `undefined`, else returns the previous stored `value`.
+   *   If the specified `key` is not already associated with a value in provided {@link Map}, then associates it with the
+   * given `value` and returns `undefined`, else returns the previous stored `value`.
    *
    * @param sourceMap
    *    {@link Map} to update if required
