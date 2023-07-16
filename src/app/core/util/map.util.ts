@@ -21,7 +21,7 @@ export class MapUtil {
    * Example:
    *
    *   Parameters:                                        Result:
-   *    [("A", 1), ("B", 2)]                               [("A", 2), ("B", 4)]
+   *    [('A', 1), ('B', 2)]                               [('A', 2), ('B', 4)]
    *    PartialFunction.of(
    *      ([k, v]: [string, number]) => 1 == v % 2
    *      ([k, v]: [string, number]) => [k, 1 + v]
@@ -57,7 +57,7 @@ export class MapUtil {
    * Example:
    *
    *   Parameters:                                        Result:
-   *    [("A", 1), ("B", 2)]                               [("A", 2), ("B", 4)]
+   *    [('A', 1), ('B', 2)]                               [('A', 2), ('B', 4)]
    *    (k: string, v: number) => [k, 1 + v]
    *    (k: string, v: number) => [k, 2 * v]
    *    (k: string, v: number) => 1 == v % 2
@@ -86,7 +86,7 @@ export class MapUtil {
   static applyOrElse<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                      partialFunctionOrDefaultMapper: PartialFunction<[K1, V1], [K2, V2]> | TFunction2<K1, V1, [K2, V2]>,
                                      orElseMapper: TFunction2<K1, V1, [K2, V2]>,
-                                     filterPredicate?: TPredicate2<K1, V1>): Map<K2, V2>{
+                                     filterPredicate?: TPredicate2<K1, V1>): Map<K2, V2> {
     let result = new Map<K2, V2>();
     if (!this.isEmpty(sourceMap)) {
       AssertUtil.notNullOrUndefined(
@@ -225,7 +225,7 @@ export class MapUtil {
    * Example:
    *
    *   Parameters:                                                  Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(1, "Hi"), (2, 'Hello')]
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(1, 'Hi'), (2, 'Hello')]
    *    (k: number, v: string) => 1 == k.id && 2 > v.length()
    * </pre>
    *

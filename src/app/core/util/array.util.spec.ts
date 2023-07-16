@@ -552,6 +552,129 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('groupMap', () => {
+
+    it('when given sourceArray has no elements and partialFunction is provided then empty Map is returned', () => {
+      const emptyArray: number[] = [];
+      const numberAsKeyAndPlus1AsValueForOdd: PartialFunction<number, [number, number]> =
+        PartialFunction.of(
+          (n: number) => 1 == n % 2,
+          (n: number) => [n, 1 + n]
+        );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(ArrayUtil.groupMap(null, numberAsKeyAndPlus1AsValueForOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMap(undefined, numberAsKeyAndPlus1AsValueForOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMap(emptyArray, numberAsKeyAndPlus1AsValueForOdd)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
+      const emptyArray: number[] = [];
+      const isOdd = (n: number) => 1 == n % 2;
+      const sameValue = (n: number) => n;
+      const plus1 = (n: number) => 1 + n;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(ArrayUtil.groupMap(null, sameValue, plus1, isOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMap(undefined, sameValue, plus1, isOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMap(emptyArray, sameValue, plus1, isOdd)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMap([1], null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMap([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray is not empty but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+      const sameValue = (n: number) => n;
+      const plus1 = (n: number) => 1 + n;
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMap([1], null, plus1,  isOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMap([1], undefined, plus1, isOdd)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMap([1], sameValue, null, isOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMap([1], sameValue, undefined, isOdd)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6, 3];
+
+      const numberAsKeyAndPlus1AsValueForOdd: PartialFunction<number, [number, number]> =
+        PartialFunction.of(
+          (n: number) => 1 == n % 2,
+          (n: number) => [n, 1 + n]
+        );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(1, [2]);
+      expectedResult.set(3, [4, 4]);
+
+      verifyMaps(
+        ArrayUtil.groupMap(sourceArray, numberAsKeyAndPlus1AsValueForOdd),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      let sourceArray: number[] = [1, 2, 3, 6, 3];
+
+      const sameValue = (n: number) => n;
+      const plus1 = (n: number) => 1 + n;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(1, [2]);
+      expectedResult.set(2, [3]);
+      expectedResult.set(3, [4, 4]);
+      expectedResult.set(6, [7]);
+
+      verifyMaps(
+        // @ts-ignore
+        ArrayUtil.groupMap(sourceArray, sameValue, plus1, null),
+        expectedResult
+      );
+
+      verifyMaps(
+        ArrayUtil.groupMap(sourceArray, sameValue, plus1, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6, 3];
+
+      const isOdd = (n: number) => 1 == n % 2;
+      const sameValue = (n: number) => n;
+      const plus1 = (n: number) => 1 + n;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(1, [2]);
+      expectedResult.set(3, [4, 4]);
+
+      verifyMaps(
+        ArrayUtil.groupMap(sourceArray, sameValue, plus1, isOdd),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('isEmpty', () => {
 
     it('when given arrayToVerify is null, undefined or is an empty array then true is returned', () => {
@@ -730,6 +853,18 @@ describe('ArrayUtil', () => {
     if (0 < expectedArray.length) {
       for (let i = 0; i < expectedArray.length; i++) {
         expect(expectedArray[i]).toEqual(actualArray[i]);
+      }
+    }
+  }
+
+
+  function verifyMaps(actualMap: Map<any, any>,
+                      expectedMap: Map<any, any>) {
+    expect(actualMap.size).toEqual(expectedMap.size);
+    if (0 < expectedMap.size) {
+      for (let [key, value] of actualMap!) {
+        expect(expectedMap.has(key)).toBeTrue();
+        expect(expectedMap.get(key)).toEqual(value);
       }
     }
   }
