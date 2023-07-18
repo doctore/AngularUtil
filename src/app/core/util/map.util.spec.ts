@@ -1,5 +1,5 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
-import { FFunction2, FFunction3, Function2, PartialFunction } from '@app-core/types/function';
+import { FFunction0, FFunction2, FFunction3, Function0, Function2, PartialFunction } from '@app-core/types/function';
 import { FPredicate2, Predicate2 } from '@app-core/types/predicate';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
@@ -681,6 +681,98 @@ describe('MapUtil', () => {
       const expectedResult = false;
 
       expect(MapUtil.isEmpty(numberStringEquivalence)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
+  describe('getOrElse', () => {
+
+    it('when sourceMap is null, undefined or empty and defaultValue is a value then defaultValue is returned', () => {
+      const emptyMap: Map<string, number> = new Map<string, number>();
+      const defaultValue = 12;
+
+      const expectedResult = defaultValue;
+
+      expect(MapUtil.getOrElse(null, 'a', defaultValue)).toEqual(expectedResult);
+      expect(MapUtil.getOrElse(undefined, 'a', defaultValue)).toEqual(expectedResult);
+      expect(MapUtil.getOrElse(emptyMap, 'a', defaultValue)).toEqual(expectedResult);
+    });
+
+
+    it('when sourceMap is null, undefined or empty and defaultValue is a TFunction0 then defaultValue result is returned', () => {
+      const emptyMap: Map<string, number> = new Map<string, number>();
+
+      const defaultValueRaw = () => 12;
+      const defaultValueFF: FFunction0<number> = () => 12;
+      const defaultValueF: Function0<number> = Function0.of(() => 12);
+
+      const expectedResult = 12;
+
+      expect(MapUtil.getOrElse(null, 'a', defaultValueRaw)).toEqual(expectedResult);
+      expect(MapUtil.getOrElse(undefined, 'a', defaultValueFF)).toEqual(expectedResult);
+      expect(MapUtil.getOrElse(emptyMap, 'a', defaultValueF)).toEqual(expectedResult);
+    });
+
+
+    it('when sourceMap has elements, provided key is not found and defaultValue is a value then defaultValue is returned', () => {
+      const sourceMap: Map<string, number> = new Map<string, number>();
+      sourceMap.set('a', 11);
+      sourceMap.set('b', 12);
+
+      const defaultValue = 15;
+
+      const expectedResult = defaultValue;
+
+      expect(MapUtil.getOrElse(sourceMap, 'e', defaultValue)).toEqual(expectedResult);
+      expect(MapUtil.getOrElse(sourceMap, 'f', defaultValue)).toEqual(expectedResult);
+    });
+
+
+
+    it('when sourceMap has elements, provided key is not found and defaultValue is a TFunction0 then defaultValue result is returned', () => {
+      const sourceMap: Map<string, number> = new Map<string, number>();
+      sourceMap.set('a', 11);
+      sourceMap.set('b', 12);
+
+      const defaultValueRaw = () => 15;
+      const defaultValueFF: FFunction0<number> = () => 15;
+      const defaultValueF: Function0<number> = Function0.of(() => 15);
+
+      const expectedResult = 15;
+
+      expect(MapUtil.getOrElse(sourceMap, 'e', defaultValueRaw)).toEqual(expectedResult);
+      expect(MapUtil.getOrElse(sourceMap, 'f', defaultValueFF)).toEqual(expectedResult);
+      expect(MapUtil.getOrElse(sourceMap, 'g', defaultValueF)).toEqual(expectedResult);
+    });
+
+
+    it('when sourceMap has elements, provided key is found and defaultValue is a value then the value related with the key is returned', () => {
+      const sourceMap: Map<string, number> = new Map<string, number>();
+      sourceMap.set('a', 11);
+      sourceMap.set('b', 12);
+
+      const defaultValue = 15;
+
+      expect(MapUtil.getOrElse(sourceMap, 'a', defaultValue)).toEqual(11);
+      expect(MapUtil.getOrElse(sourceMap, 'b', defaultValue)).toEqual(12);
+    });
+
+
+    it('when sourceMap has elements, provided key is found and defaultValue is a TFunction0 then the value related with the key is returned', () => {
+      const sourceMap: Map<string, number> = new Map<string, number>();
+      sourceMap.set('a', 11);
+      sourceMap.set('b', 12);
+      sourceMap.set('c', 13);
+
+      const defaultValueRaw = () => 15;
+      const defaultValueFF: FFunction0<number> = () => 15;
+      const defaultValueF: Function0<number> = Function0.of(() => 15);
+
+      expect(MapUtil.getOrElse(sourceMap, 'a', defaultValueRaw)).toEqual(11);
+      expect(MapUtil.getOrElse(sourceMap, 'b', defaultValueFF)).toEqual(12);
+      expect(MapUtil.getOrElse(sourceMap, 'c', defaultValueF)).toEqual(13);
     });
 
   });

@@ -1,4 +1,11 @@
-import { Function2, Function3, PartialFunction, TFunction2, TFunction3 } from '@app-core/types/function';
+import {
+  Function2,
+  Function3,
+  PartialFunction,
+  TFunction0,
+  TFunction2,
+  TFunction3
+} from '@app-core/types/function';
 import { Predicate2, TPredicate2 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
@@ -376,6 +383,75 @@ export class MapUtil {
 
 
   /**
+   * Returns the value associated with the given `key` if `sourceMap` contains it, `defaultValue` otherwise.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                      Result:
+   *    [(1, 'Hi'), (2, 'Hello')]        'Hi'
+   *    1
+   *    'World'
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} to search `key`
+   * @param key
+   *    Key to search in `sourceMap`
+   * @param defaultValue
+   *    Default value to return in case no binding for `key` is found in `sourceMap`
+   *
+   * @return value associated with the given `key` if `sourceMap` contains it,
+   *         `defaultValue` otherwise.
+   */
+  static getOrElse<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         key: K,
+                         defaultValue: V): V;
+
+
+  /**
+   *    Returns the value associated with the given `key` if `sourceMap` contains it, the result after invoking
+   * `defaultValue` otherwise.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                      Result:
+   *    [(1, 'Hi'), (2, 'Hello')]        'World'
+   *    5
+   *    () -> 'World'
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} to search `key`
+   * @param key
+   *    Key to search in {@code sourceMap}
+   * @param defaultValue
+   *    {@link TFunction0} that yields a default value in case no binding for `key` is found in `sourceMap`
+   *
+   * @return value associated with the given `key` if {@code sourceMap} contains it,
+   *         `defaultValue` results otherwise.
+   */
+  static getOrElse<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         key: K,
+                         defaultValue: TFunction0<V>): V;
+
+
+  static getOrElse<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         key: K,
+                         defaultValue: TFunction0<V> | V): V {
+    const finalSourceMap = ObjectUtil.getOrElse(
+      sourceMap,
+      new Map<K, V>()
+    );
+    // @ts-ignore
+    return Optional.ofNullable(key)
+      .map(k => finalSourceMap.get(k))
+      .getOrElse(defaultValue);
+  }
+
+
+  /**
    *   If the specified `key` is not already associated with a value in provided {@link Map}, then associates it with the
    * given `value` and returns `undefined`, else returns the previous stored `value`.
    *
@@ -433,12 +509,12 @@ export class MapUtil {
    *    {@link Map} to sort
    * @param comparator
    *    {@link TFunction2} used to determine the order of the elements. The returned value should verify the formula:
-   *       <p>
-   *       > 0    sort `a` after `b`, e.g. [b, a]
-   *       <p>
-   *       < 0    sort `a` before `b`, e.g. [a, b]
-   *       <p>
-   *       === 0  keep original order of `a` and `b`
+   *      <p>
+   *        > 0    sort `a` after `b`, e.g. [b, a]
+   *      <p>
+   *        < 0    sort `a` before `b`, e.g. [a, b]
+   *      <p>
+   *        === 0  keep original order of `a` and `b`
    *
    * @return new sorted {@link Map}
    */

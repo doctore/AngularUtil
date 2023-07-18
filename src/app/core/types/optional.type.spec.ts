@@ -1,8 +1,8 @@
 import { ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import { FConsumer1 } from '@app-core/types/consumer';
-import {FFunction0, FFunction1, Function0, Function1, PartialFunction} from '@app-core/types/function';
-import {FPredicate1, Predicate1} from '@app-core/types/predicate';
+import { FFunction0, FFunction1, Function0, Function1, PartialFunction } from '@app-core/types/function';
+import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
@@ -412,7 +412,7 @@ describe('Optional', () => {
       const otherStringValue = 'abd';
 
       const otherIntFunc = () => otherIntValue;
-      const otherStringFunc: Function0<string> = Function0.of(() => otherStringValue);
+      const otherStringFunc: FFunction0<string> = () => otherStringValue;
 
       const getOrElseIntResult = Optional.empty<number>().getOrElse(otherIntFunc);
       const getOrElseStringResult = Optional.ofNullable<string>(null).getOrElse(otherStringFunc);

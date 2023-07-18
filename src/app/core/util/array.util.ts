@@ -1,7 +1,7 @@
 import { FFunction1, Function1, Function2, PartialFunction, TFunction1, TFunction2 } from '@app-core/types/function';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
-import {AssertUtil, MapUtil, ObjectUtil} from '@app-core/util';
+import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import * as _ from 'lodash';
 
 /**
@@ -430,19 +430,19 @@ export class ArrayUtil {
     if (!this.isEmpty(sourceArray)) {
       AssertUtil.notNullOrUndefined(
         partialFunctionOrDiscriminatorKey,
-        'partialFunctionOrDefaultMapper must be not null and not undefined'
+        'partialFunctionOrDiscriminatorKey must be not null and not undefined'
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
         : PartialFunction.of(
-          filterPredicate,
-          Function1.of(
-            (t: T) => [
-              Function1.of(<TFunction1<T, K>>partialFunctionOrDiscriminatorKey).apply(t),
-              Function1.of(<TFunction1<T, V>>valueMapper).apply(t),
-            ]
-          )
-        );
+            filterPredicate,
+            Function1.of(
+              (t: T) => [
+                Function1.of(<TFunction1<T, K>>partialFunctionOrDiscriminatorKey).apply(t),
+                Function1.of(<TFunction1<T, V>>valueMapper).apply(t),
+              ]
+            )
+          );
       for (let item of sourceArray!) {
         if (finalPartialFunction.isDefinedAt(item)) {
           const pairKeyValue: [K, V] = <[K, V]>finalPartialFunction.apply(item);
