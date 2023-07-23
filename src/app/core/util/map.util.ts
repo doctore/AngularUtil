@@ -233,7 +233,7 @@ export class MapUtil {
    *
    *   Parameters:                                                  Result:
    *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(1, 'Hi'), (2, 'Hello')]
-   *    (k: number, v: string) => 1 == k.id && 2 > v.length()
+   *    (k: number, v: string) => 1 == k % 2 && 2 > v.length()
    * </pre>
    *
    * @param sourceMap
@@ -266,7 +266,7 @@ export class MapUtil {
    *
    *   Parameters:                                                  Result:
    *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      (3, 'World')
-   *    (k: number, v: string) => 1 == k.id && 2 > v.length()
+   *    (k: number, v: string) => 1 == k % 2 && 2 > v.length()
    * </pre>
    *
    * @param sourceMap
@@ -303,7 +303,7 @@ export class MapUtil {
    *
    *   Parameters:                                                  Result:
    *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      Optional(3, 'World')
-   *    (k: number, v: string) => 1 == k.id && 2 > v.length()
+   *    (k: number, v: string) => 1 == k % 2 && 2 > v.length()
    * </pre>
    *
    * @param sourceMap
@@ -331,8 +331,8 @@ export class MapUtil {
    * <pre>
    * Example:
    *
-   *   Parameters:                                                        Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                                          10
+   *   Parameters:                                                         Result:
+   *    [(1, 'Hi'), (2, 'Hello')]                                           10
    *    0
    *    (prev: number, k: number, v: string) => prev + k + v.length()
    * </pre>
@@ -349,20 +349,67 @@ export class MapUtil {
    *
    * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
    */
-  static foldLeft = <K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                              initialValue: R,
-                              accumulator: TFunction3<R, K, V, R>): R => {
+  static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                           initialValue: R,
+                           accumulator: TFunction3<R, K, V, R>): R;
+
+
+  /**
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction3} to all
+   * elements of `sourceMap`, going left to right.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                         Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                             3
+   *    0
+   *    (prev: number, k: number, v: string) => prev + k + v.length()
+   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with elements to combine
+   * @param initialValue
+   *    The initial value to start with
+   * @param accumulator
+   *    A {@link TFunction3} which combines elements
+   * @param filterPredicate
+   *    {@link TPredicate2} used to find given elements to filter
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going
+   *         left to right with the start value `initialValue` on the left.
+   *
+   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
+   */
+  static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                           initialValue: R,
+                           accumulator: TFunction3<R, K, V, R>,
+                           filterPredicate: TPredicate2<K, V>): R;
+
+
+  static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                           initialValue: R,
+                           accumulator: TFunction3<R, K, V, R>,
+                           filterPredicate?: TPredicate2<K, V>): R {
     if (this.isEmpty(sourceMap)) {
       return initialValue
     }
     const finalAccumulator = Function3.of(accumulator);
+    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      ? Predicate2.alwaysTrue<K, V>()
+      : Predicate2.of(filterPredicate);
+
     let result: R = initialValue;
     for (let [key, value] of sourceMap!) {
-      result = finalAccumulator.apply(
-        result,
-        key,
-        value
-      );
+
+      if (finalFilterPredicate.apply(key, value)) {
+        result = finalAccumulator.apply(
+          result,
+          key,
+          value
+        );
+      }
     }
     return result;
   }
@@ -549,7 +596,7 @@ export class MapUtil {
    *
    *   Parameters:                                                  Result:
    *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(3, 'World')]
-   *    (k: number, v: string) => 1 == k.id && 2 > v.length()
+   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
    * </pre>
    *
    * @param sourceMap

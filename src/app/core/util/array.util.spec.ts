@@ -548,6 +548,31 @@ describe('ArrayUtil', () => {
       expect(stringResult).toEqual('abcd');
     });
 
+
+    it('when given arrayToVerify is not null and there is a filter then initialValue applying accumulator only to the elements match filter is returned', () => {
+      const intValue = 10;
+      const stringValue = 'a';
+
+      const intArray: number[] = [ 2, 3, 4 ];
+      const stringArray: string[] = [ 'b', 'c', 'd', 'e' ];
+
+      const intAccumulator: FFunction2<number, number, number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      const stringAccumulator: Function2<string, string, string> =
+        Function2.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
+
+      const isEven = (n: number) => 0 == n % 2;
+      const isNotVowel: FPredicate1<string> =
+        (s: string) => -1 == 'aeiouAEIUO'.indexOf(s);
+
+      const intResult = ArrayUtil.foldLeft(intArray, intValue, intAccumulator, isEven);
+      const stringResult = ArrayUtil.foldLeft(stringArray, stringValue, stringAccumulator, isNotVowel);
+
+      expect(intResult).toEqual(80);
+      expect(stringResult).toEqual('abcd');
+    });
+
   });
 
 

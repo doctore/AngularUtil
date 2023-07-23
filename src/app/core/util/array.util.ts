@@ -338,19 +338,67 @@ export class ArrayUtil {
    *
    * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
    */
-  static foldLeft = <T, R>(sourceArray: NullableOrUndefined<T[]>,
-                           initialValue: R,
-                           accumulator: TFunction2<R, T, R>): R => {
+  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+                        initialValue: R,
+                        accumulator: TFunction2<R, T, R>): R;
+
+
+  /**
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to elements
+   * of `sourceArray` that verify `filterPredicate`, going left to right.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                              Result:
+   *    [5, 7, 8, 9]                             315
+   *    1
+   *    (n1: number, n2: number) => n1 * n2
+   *    (n: number) => 1 == n % 2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with elements to combine
+   * @param initialValue
+   *    The initial value to start with
+   * @param accumulator
+   *    A {@link TFunction2} which combines elements
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
+   *         left to right with the start value `initialValue` on the left.
+   *
+   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
+   */
+  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+                        initialValue: R,
+                        accumulator: TFunction2<R, T, R>,
+                        filterPredicate: TPredicate1<T>): R;
+
+
+  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+                        initialValue: R,
+                        accumulator: TFunction2<R, T, R>,
+                        filterPredicate?: TPredicate1<T>): R {
     if (this.isEmpty(sourceArray)) {
       return initialValue
     }
     const finalAccumulator = Function2.of(accumulator);
+    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      ? Predicate1.alwaysTrue<T>()
+      : Predicate1.of(filterPredicate);
+
     let result: R = initialValue;
     for (let i = 0; i < sourceArray!.length; i++) {
-      result = finalAccumulator.apply(
-        result,
-        sourceArray![i]
-      );
+
+      const currentElement = sourceArray![i];
+      if (finalFilterPredicate.apply(currentElement)) {
+        result = finalAccumulator.apply(
+          result,
+          currentElement
+        );
+      }
     }
     return result;
   }

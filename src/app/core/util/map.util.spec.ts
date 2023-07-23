@@ -658,6 +658,25 @@ describe('MapUtil', () => {
       expect(intResult).toEqual(600);
     });
 
+
+    it('when given sourceMap is not null and there is a filter then initialValue applying accumulator only to the elements match filter is returned', () => {
+      let sourceMap = new Map<number, number>();
+      sourceMap.set(1, 2);
+      sourceMap.set(4, 3);
+      sourceMap.set(5, 6);
+
+      const intValue = 10;
+
+      const intAccumulator: FFunction3<number, number, number, number> =
+        (prev: number, k: number, v: number) => prev * k * v;
+
+      const isKeyEven = (k: number, v: number) => 1 == k % 2;
+
+      const intResult = MapUtil.foldLeft(sourceMap, intValue, intAccumulator, isKeyEven);
+
+      expect(intResult).toEqual(600);
+    });
+
   });
 
 
