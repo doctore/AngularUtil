@@ -24,7 +24,7 @@ export class ArrayUtil {
    *   Parameters:                          Result:
    *    [1, 2, 3, 6]                         [2, 4, 4, 12]
    *    PartialFunction.of(
-   *      (n: number) => 1 == n % 2
+   *      (n: number) => 1 == n % 2,
    *      (n: number) => 1 + n
    *    )
    *    (n: number) => 2 * n
@@ -130,7 +130,7 @@ export class ArrayUtil {
    *   Parameters:                          Result:
    *    [1, 2, 3, 6]                         ['4', '12']
    *    PartialFunction.of(
-   *      (n: number) => 0 == n % 2
+   *      (n: number) => 0 == n % 2,
    *      (n: number) => '' + (2 * n)
    *    )
    * </pre>
@@ -414,7 +414,7 @@ export class ArrayUtil {
    *   Parameters:                          Result:
    *    [1, 2, 3, 6]                         [(1, [2])
    *    PartialFunction.of(                   (3, [4])]
-   *      (n: number) => 1 == n % 2
+   *      (n: number) => 1 == n % 2,
    *      (n: number) => [n, 1 + n]
    *    )
    * </pre>
@@ -487,7 +487,7 @@ export class ArrayUtil {
             Function1.of(
               (t: T) => [
                 Function1.of(<TFunction1<T, K>>partialFunctionOrDiscriminatorKey).apply(t),
-                Function1.of(<TFunction1<T, V>>valueMapper).apply(t),
+                Function1.of(<TFunction1<T, V>>valueMapper).apply(t)
               ]
             )
           );
@@ -499,7 +499,8 @@ export class ArrayUtil {
             pairKeyValue[0],
             []
           );
-          result.get(pairKeyValue[0])!.push(pairKeyValue[1]);
+          result.get(pairKeyValue[0])!
+            .push(pairKeyValue[1]);
         }
       }
     }

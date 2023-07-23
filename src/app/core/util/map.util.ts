@@ -30,7 +30,7 @@ export class MapUtil {
    *   Parameters:                                        Result:
    *    [('A', 1), ('B', 2)]                               [('A', 2), ('B', 4)]
    *    PartialFunction.of(
-   *      ([k, v]: [string, number]) => 1 == v % 2
+   *      ([k, v]: [string, number]) => 1 == v % 2,
    *      ([k, v]: [string, number]) => [k, 1 + v]
    *    )
    *    (k: string, v: number)=> [k, 2 * v]
@@ -139,7 +139,7 @@ export class MapUtil {
    *   Parameters:                                        Result:
    *    [(1, 'Hi'), (2, 'Hello')]                          [(1, 2)]
    *    PartialFunction.of(
-   *      ([k, v]: [number, string]) => 1 == k % 2
+   *      ([k, v]: [number, string]) => 1 == k % 2,
    *      ([k, v]: [number, string]) => [k, v.length]
    *    )
    * </pre>
@@ -495,6 +495,110 @@ export class MapUtil {
     return Optional.ofNullable(key)
       .map(k => finalSourceMap.get(k))
       .getOrElse(defaultValue);
+  }
+
+
+  /**
+   *   Partitions given `sourceMap` into a {@link Map}, applying {@link PartialFunction#apply} and adding values with
+   * the same `key` in an array of values.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                   Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')]            [(1, [2, 5])
+   *    PartialFunction.of(                                            (2, [2]]
+   *      ([k, v]: [number, string]) => 1 == k % 2 || 6 < k,
+   *      ([k, v]: [number, string]) => [k % 3, v.length]
+   *    )
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform elements of `sourceMap`
+   *
+   * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
+   *         on which it is defined and collecting the results
+   *
+   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static groupMap<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                  partialFunction: PartialFunction<[K1, V1], [K2, V2]>): Map<K2, V2[]>;
+
+
+  /**
+   *   Partitions given `sourceMap` into a {@link Map}, applying `discriminatorKey` and `valueMapper` if the current
+   * element verifies `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                   Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')]            [(1, [2, 5])
+   *    (k: number, v: string) => k % 3                                (2, [2]]
+   *    (k: number, v: string) => v.length
+   *    (k: number, v: string) => 1 == k % 2 || 6 < k
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to filter and transform
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction2} to get the key values of returned {@link Map}
+   * @param valueMapper
+   *    {@link TFunction2} to transform elements of `sourceMap`
+   * @param filterPredicate
+   *    {@link TPredicate2} to filter elements of `sourceMap`
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceMap`
+   *         that verifies `filterPredicate`
+   *
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static groupMap<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                  discriminatorKey: TFunction2<K1, V1, K2>,
+                                  valueMapper: TFunction2<K1, V1, V2>,
+                                  filterPredicate?: TPredicate2<K1, V1>): Map<K2, V2[]>;
+
+
+  static groupMap<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                  partialFunctionOrDiscriminatorKey: PartialFunction<[K1, V1], [K2, V2]> | TFunction2<K1, V1, K2>,
+                                  valueMapper?: TFunction2<K1, V1, V2>,
+                                  filterPredicate?: TPredicate2<K1, V1>): Map<K2, V2[]> {
+    let result: Map<K2, V2[]> = new Map<K2, V2[]>();
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        partialFunctionOrDiscriminatorKey,
+        'partialFunctionOrDiscriminatorKey must be not null and not undefined'
+      );
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
+        ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDiscriminatorKey
+        : PartialFunction.of2(
+            filterPredicate,
+            Function2.of<K1, V1, [K2, V2]>(
+              (k: K1, v: V1) => [
+                Function2.of(<TFunction2<K1, V1, K2>>partialFunctionOrDiscriminatorKey).apply(k, v),
+                Function2.of(<TFunction2<K1, V1, V2>>valueMapper).apply(k, v)
+              ]
+            )
+          );
+      for (let [key, value] of sourceMap!) {
+        if (finalPartialFunction.isDefinedAt([key, value])) {
+          const pairKeyValue: [K2, V2] = <[K2, V2]>finalPartialFunction.apply([key, value]);
+          MapUtil.putIfAbsent(
+            result,
+            pairKeyValue[0],
+            []
+          );
+          result.get(pairKeyValue[0])!
+            .push(pairKeyValue[1]);
+        }
+      }
+    }
+    return result;
   }
 
 

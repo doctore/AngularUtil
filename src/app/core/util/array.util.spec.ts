@@ -581,6 +581,7 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements and partialFunction is provided then empty Map is returned', () => {
       const emptyArray: number[] = [];
+
       const numberAsKeyAndPlus1AsValueForOdd: PartialFunction<number, [number, number]> =
         PartialFunction.of(
           (n: number) => 1 == n % 2,
@@ -597,6 +598,7 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
       const emptyArray: number[] = [];
+
       const isOdd = (n: number) => 1 == n % 2;
       const sameValue = (n: number) => n;
       const plus1 = (n: number) => 1 + n;

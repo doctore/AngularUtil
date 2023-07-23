@@ -798,6 +798,147 @@ describe('MapUtil', () => {
 
 
 
+  describe('groupMap', () => {
+
+    it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
+      const emptyMap: Map<number, string> = new Map<number, string>();
+
+      const keyMod3AndValueLengthForOddKeyOrGreaterThan6: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 1 == k % 2,
+          ([k, v]: [number, string]) => [k % 3, v.length]
+        );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(MapUtil.groupMap(null, keyMod3AndValueLengthForOddKeyOrGreaterThan6)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(undefined, keyMod3AndValueLengthForOddKeyOrGreaterThan6)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(emptyMap, keyMod3AndValueLengthForOddKeyOrGreaterThan6)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
+      const emptyMap: Map<number, string> = new Map<number, string>();
+
+      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
+      const sameKey = (k: number, v: string) => k;
+      const valueLength = (k: number, v: string) => v.length;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(MapUtil.groupMap(null, sameKey, valueLength, isKeyOdd)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(undefined, sameKey, valueLength, isKeyOdd)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(emptyMap, sameKey, valueLength, isKeyOdd)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
+      const sameKey = (k: number, v: string) => k;
+      const valueLength = (k: number, v: string) => v.length;
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, null, valueLength,  isKeyOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, undefined, valueLength, isKeyOdd)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, sameKey, null, isKeyOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, sameKey, undefined, isKeyOdd)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(7, 'World');
+      sourceMap.set(8, 'Ok');
+
+      const keyMod3AndValueLengthForOddKeyOrGreaterThan6: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 1 == k % 2 || 6 < k,
+          ([k, v]: [number, string]) => [k % 3, v.length]
+        );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(1, [2, 5]);
+      expectedResult.set(2, [2]);
+
+      verifyMaps(
+        MapUtil.groupMap(sourceMap, keyMod3AndValueLengthForOddKeyOrGreaterThan6),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(7, 'World');
+      sourceMap.set(8, 'Ok');
+
+      const keyMod3 = (k: number, v: string) => k % 3;
+      const valueLength = (k: number, v: string) => v.length;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(1, [2, 5]);
+      expectedResult.set(2, [5, 2]);
+
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.groupMap(sourceMap, keyMod3, valueLength, null),
+        expectedResult
+      );
+
+      verifyMaps(
+        MapUtil.groupMap(sourceMap, keyMod3, valueLength, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(7, 'World');
+      sourceMap.set(8, 'Ok');
+
+      const isKeyOddOrGreaterThan6 = (k: number, v: string) => 1 == k % 2 || 6 < k;
+      const keyMod3 = (k: number, v: string) => k % 3;
+      const valueLength = (k: number, v: string) => v.length;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(1, [2, 5]);
+      expectedResult.set(2, [2]);
+
+      verifyMaps(
+        MapUtil.groupMap(sourceMap, keyMod3, valueLength, isKeyOddOrGreaterThan6),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('putIfAbsent', () => {
 
     it('when given sourceMap is null or undefined then an error is thrown', () => {
