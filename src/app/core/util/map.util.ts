@@ -109,7 +109,7 @@ export class MapUtil {
         : PartialFunction.of2(
             filterPredicate,
             <TFunction2<K1, V1, [K2, V2]>>partialFunctionOrDefaultMapper
-        );
+          );
       const finalOrElseMapper = Function2.of(orElseMapper);
 
       for (let [key, value] of sourceMap!) {
@@ -178,7 +178,7 @@ export class MapUtil {
    * @param sourceMap
    *    Source {@link Map} with the elements to filter and transform
    * @param mapFunction
-   *    {@link TFunction2} to transform filtered elements of the source `sourceMap`
+   *    {@link TFunction2} to transform filtered elements of `sourceMap`
    * @param filterPredicate
    *    {@link TPredicate2} to filter elements from `sourceMap`
    *
@@ -576,15 +576,12 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.of2(
+        : PartialFunction.of2ToTuple(
             filterPredicate,
-            Function2.of<K1, V1, [K2, V2]>(
-              (k: K1, v: V1) => [
-                Function2.of(<TFunction2<K1, V1, K2>>partialFunctionOrDiscriminatorKey).apply(k, v),
-                Function2.of(<TFunction2<K1, V1, V2>>valueMapper).apply(k, v)
-              ]
-            )
+            <TFunction2<K1, V1, K2>>partialFunctionOrDiscriminatorKey,
+            <TFunction2<K1, V1, V2>>valueMapper
           );
+
       for (let [key, value] of sourceMap!) {
         if (finalPartialFunction.isDefinedAt([key, value])) {
           const pairKeyValue: [K2, V2] = <[K2, V2]>finalPartialFunction.apply([key, value]);
@@ -596,6 +593,47 @@ export class MapUtil {
           result.get(pairKeyValue[0])!
             .push(pairKeyValue[1]);
         }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Returns a new {@link Map} by applying the {@link TFunction2} `mapFunction` a function to all elements of `sourceMap`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                       Result:
+   *    [(1, 'Hi'), (2, 'Hello')]                         [(1, 2), (2, 4)]
+   *    (k: number, v: string) => [k, v.length]
+   * </pre>
+   *
+   * @param sourceMap
+   *    Source {@link Map} with the elements to transform
+   * @param mapFunction
+   *    {@link TFunction2} to transform given elements of `sourceMap`
+   *
+   * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap`
+   *
+   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static map = <K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                mapFunction: TFunction2<K1, V1, [K2, V2]>): Map<K2, V2> => {
+    let result = new Map<K2, V2>();
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        mapFunction,
+        'mapFunction must be not null and not undefined'
+      );
+      const finalMapFunction = Function2.of(mapFunction);
+      for (let [key, value] of sourceMap!) {
+        const elementResult = finalMapFunction.apply(key, value);
+        result.set(
+          elementResult[0],
+          elementResult[1]
+        );
       }
     }
     return result;

@@ -482,15 +482,12 @@ export class ArrayUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.of(
+        : PartialFunction.ofToTuple(
             filterPredicate,
-            Function1.of(
-              (t: T) => [
-                Function1.of(<TFunction1<T, K>>partialFunctionOrDiscriminatorKey).apply(t),
-                Function1.of(<TFunction1<T, V>>valueMapper).apply(t)
-              ]
-            )
+            <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
+            <TFunction1<T, V>>valueMapper
           );
+
       for (let item of sourceArray!) {
         if (finalPartialFunction.isDefinedAt(item)) {
           const pairKeyValue: [K, V] = <[K, V]>finalPartialFunction.apply(item);
@@ -519,6 +516,47 @@ export class ArrayUtil {
    */
   static isEmpty = (arrayToVerify?: Nullable<any[]>): boolean =>
     _.isEmpty(arrayToVerify);
+
+
+  /**
+   * Returns an array by applying the {@link TFunction1} `mapFunction` a function to all elements of `sourceArray`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3, 6]                         ['2', '4', '6', '12']
+   *    (n: number) => '' + (2 * n)
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to transform
+   * @param mapFunction
+   *   {@link TFunction1} used to transform given `sourceArray` elements
+   *
+   * @return new array from applying the given {@link TFunction1} to each element of `sourceArray`
+   *
+   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static map = <T, R>(sourceArray: NullableOrUndefined<T[]>,
+                      mapFunction: TFunction1<T, R>): R[] => {
+    let result: R[] = [];
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        mapFunction,
+        'mapFunction must be not null and not undefined'
+      );
+      const finalMapFunction = Function1.of(mapFunction);
+      for (let item of sourceArray!) {
+        result.push(
+          finalMapFunction.apply(
+            item
+          )
+        );
+      }
+    }
+    return result;
+  }
 
 
   /**

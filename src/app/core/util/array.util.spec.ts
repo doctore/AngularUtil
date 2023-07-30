@@ -728,6 +728,54 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('map', () => {
+
+    it('when given sourceArray has no elements and mapFunction is provided then empty array is returned', () => {
+      const emptyArray: number[] = [];
+      const toString: FFunction1<number, string> =
+        (n: NullableOrUndefined<number>) => '' + n!;
+
+      const expectedResult: string[] = [];
+
+      expect(ArrayUtil.map(null, toString)).toEqual(expectedResult);
+      expect(ArrayUtil.map(undefined, toString)).toEqual(expectedResult);
+      expect(ArrayUtil.map(emptyArray, toString)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but mapFunction is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.map([1], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.map([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and mapFunction is valid then a new transformed array is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6];
+
+      const toString = (n: number) => '' + n;
+      const plus2: Function1<number, number> =
+        Function1.of((n: number) => 2 + n);
+
+      const expectedToStringResult: string[] = ['1', '2', '3', '6'];
+      const expectedPlus2Result: number[] = [3, 4, 5, 8];
+
+      verifyArrays(
+        ArrayUtil.map(sourceArray, toString),
+        expectedToStringResult
+      );
+      verifyArrays(
+        ArrayUtil.map(sourceArray, plus2),
+        expectedPlus2Result
+      );
+    });
+
+  });
+
+
+
   describe('sort', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {

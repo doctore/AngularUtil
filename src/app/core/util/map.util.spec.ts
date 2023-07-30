@@ -939,6 +939,64 @@ describe('MapUtil', () => {
 
 
 
+  describe('map', () => {
+
+    it('when given sourceMap has no elements and mapFunction is provided then empty Map is returned', () => {
+      let emptyMap = new Map<number, string>();
+      const keyAndValueLength: FFunction2<number, string, [number, number]> =
+        (k: number, v: string) => [k, v.length];
+
+      expect(MapUtil.map(null, keyAndValueLength)).toEqual(emptyMap);
+      expect(MapUtil.map(undefined, keyAndValueLength)).toEqual(emptyMap);
+      expect(MapUtil.map(emptyMap, keyAndValueLength)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap is not empty but mapFunction is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.map(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.map(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and mapFunction is valid then a new transformed Map is returned', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'Hola');
+
+      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
+      const keyPlus1AndValueV2 = (k: number, v: string): [number, string] => [k+1, v + 'v2'];
+
+      const expectedKeyAndValueLengthResult = new Map<number, number>();
+      expectedKeyAndValueLengthResult.set(1, 2);
+      expectedKeyAndValueLengthResult.set(2, 5);
+      expectedKeyAndValueLengthResult.set(3, 4);
+
+      const expectedLeyPlus1AndValueV2Result = new Map<number, string>();
+      expectedLeyPlus1AndValueV2Result.set(2, 'Hiv2');
+      expectedLeyPlus1AndValueV2Result.set(3, 'Hellov2');
+      expectedLeyPlus1AndValueV2Result.set(4, 'Holav2');
+
+      verifyMaps(
+        MapUtil.map(sourceMap, keyAndValueLength),
+        expectedKeyAndValueLengthResult
+      );
+      verifyMaps(
+        MapUtil.map(sourceMap, keyPlus1AndValueV2),
+        expectedLeyPlus1AndValueV2Result
+      );
+    });
+
+  });
+
+
+
   describe('putIfAbsent', () => {
 
     it('when given sourceMap is null or undefined then an error is thrown', () => {
