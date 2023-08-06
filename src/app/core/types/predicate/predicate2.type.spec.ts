@@ -145,6 +145,9 @@ describe('Predicate2', () => {
         );
 
       expect(Predicate2.isPredicate(isNumberEvenAndStringNotNull)).toBeTrue();
+
+      expect(Predicate2.isPredicate(Predicate2.alwaysTrue())).toBeTrue();
+      expect(Predicate2.isPredicate(Predicate2.alwaysFalse())).toBeTrue();
     });
 
   });

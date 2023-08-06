@@ -1,4 +1,5 @@
 import { FFunction1, Function1, Function2, PartialFunction, TFunction1, TFunction2 } from '@app-core/types/function';
+import { FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
 import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
@@ -92,7 +93,7 @@ export class ArrayUtil {
                            partialFunctionOrDefaultMapper: PartialFunction<T, U> | TFunction1<T, U>,
                            orElseMapper: TFunction1<T, U>,
                            filterPredicate?: TPredicate1<T>): U[] {
-    let result: U[] = [];
+    const result: U[] = [];
     if (!this.isEmpty(sourceArray)) {
       AssertUtil.notNullOrUndefined(
         partialFunctionOrDefaultMapper,
@@ -187,7 +188,7 @@ export class ArrayUtil {
   static collect<T, U>(sourceArray: NullableOrUndefined<T[]>,
                        partialFunctionOrMapFunction: PartialFunction<T, U> | TFunction1<T, U>,
                        filterPredicate?: TPredicate1<T>): U[] {
-    let result: U[] = [];
+    const result: U[] = [];
     if (!this.isEmpty(sourceArray)) {
       AssertUtil.notNullOrUndefined(
         partialFunctionOrMapFunction,
@@ -391,7 +392,6 @@ export class ArrayUtil {
 
     let result: R = initialValue;
     for (let i = 0; i < sourceArray!.length; i++) {
-
       const currentElement = sourceArray![i];
       if (finalFilterPredicate.apply(currentElement)) {
         result = finalAccumulator.apply(
@@ -462,7 +462,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
    *         that verifies `filterPredicate`
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` are `null` or `undefined` with a not empty `sourceArray`
    */
   static groupMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                            discriminatorKey: TFunction1<T, K>,
@@ -474,7 +474,7 @@ export class ArrayUtil {
                            partialFunctionOrDiscriminatorKey: PartialFunction<T, [K, V]> | TFunction1<T, K>,
                            valueMapper?: TFunction1<T, V>,
                            filterPredicate?: TPredicate1<T>): Map<K, V[]> {
-    let result: Map<K, V[]> = new Map<K, V[]>();
+    const result: Map<K, V[]> = new Map<K, V[]>();
     if (!this.isEmpty(sourceArray)) {
       AssertUtil.notNullOrUndefined(
         partialFunctionOrDiscriminatorKey,
@@ -499,6 +499,208 @@ export class ArrayUtil {
           result.get(pairKeyValue[0])!
             .push(pairKeyValue[1]);
         }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Partitions given `sourceArray` into a {@link Map}, applying `discriminatorKey` and `valueMapper` if the current
+   * element verifies `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied. This method is
+   * similar to {@link ArrayUtil#groupMap} but `discriminatorKey` returns an array of related key values.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                 Result:
+   *    [1, 2, 3, 6, 11, 12]                        [("even",  [2, 6])
+   *    (n: number) => {                             ("odd",   [1, 3])
+   *      const keys: string[] = [];                 ("smaller5", [1, 2, 3])
+   *      if (0 == n % 2) {                          ("greaterEqual5", [6])]
+   *        keys.push("even");
+   *      } else {
+   *        keys.push("odd");
+   *      }
+   *      if (5 > n) {
+   *        keys.push("smaller5");
+   *      } else {
+   *        keys.push("greaterEqual5");
+   *      }
+   *      return keys;
+   *    }
+   *    (n: number) => n
+   *    (n: number) => 10 > n
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter and transform
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param valueMapper
+   *    {@link TFunction1} to transform elements of `sourceArray`
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
+   *         that verifies `filterPredicate`
+   *
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` are `null` or `undefined` with a not empty `sourceArray`
+   */
+  static groupMapMultiKey = <T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                                      discriminatorKey: TFunction1<T, K[]>,
+                                      valueMapper: TFunction1<T, V>,
+                                      filterPredicate?: TPredicate1<T>): Map<K, V[]> => {
+    const result: Map<K, V[]> = new Map<K, V[]>();
+    if (!this.isEmpty(sourceArray)) {
+      const finalValueMapper = Function1.of(valueMapper);
+      const finalDiscriminatorKey = Function1.of(discriminatorKey);
+      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+        ? Predicate1.alwaysTrue<T>()
+        : Predicate1.of(filterPredicate);
+
+      for (let item of sourceArray!) {
+        if (finalFilterPredicate.apply(item)) {
+           const valueMapperResult = finalValueMapper.apply(item);
+           const discriminatorKeyResult = ObjectUtil.getOrElse(
+             finalDiscriminatorKey.apply(item),
+             []
+           );
+          for (let key of discriminatorKeyResult!) {
+            MapUtil.putIfAbsent(
+              result,
+              key,
+              []
+            );
+            result.get(key)!
+              .push(valueMapperResult);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Partitions given `sourceArray` into a {@link Map} of arrays as values, according to `partialFunction`.
+   * If the current element verifies {@link PartialFunction#isDefinedAt}, all the values that have the same `key`
+   * after applying {@link PartialFunction#apply} are then reduced into a single value with `reduceValues`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                  Intermediate Map:          Result:
+   *    [1, 2, 3, 6, 7, 11, 12]                      [(0,  [4, 7])              [(0, 11), (1, 10), (2, 3)]
+   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])
+   *    PartialFunction.of(                           (2,  [3])]
+   *      (n: number) => 10 > n,
+   *      (n: number) => [n % 3, n + 1]
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter, transform and reduce
+   * @param reduceValues
+   *    {@link TBinaryOperator} used to reduce the values related with same key
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform elements of `sourceArray`
+   *
+   * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceArray`
+   *         on which it is defined, collecting the results and reduce them
+   *
+   * @throws {@link IllegalArgumentError} if `reduceValues` or `partialFunction` are `null` or `undefined` with a not
+   *                                      empty `sourceArray`
+   */
+  static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                                 reduceValues: TBinaryOperator<V>,
+                                 partialFunction: PartialFunction<T, [K, V]>): Map<K, V>;
+
+  static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                                 reduceValues: FBinaryOperator<V>,
+                                 partialFunction: PartialFunction<T, [K, V]>): Map<K, V>;
+
+
+  /**
+   *    Partitions given `sourceArray` into a {@link Map} of arrays as values, according to `discriminatorKey`. All
+   * the values that have the same discriminator are then transformed by the `valueMapper` {@link TFunction1} and
+   * then reduced into a single value with `reduceValues`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                  Intermediate Map:          Result:
+   *    [1, 2, 3, 6, 7]                              [(0,  [4, 7])              [(0, 11), (1, 10), (2, 3)]
+   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])
+   *    (n: number) => n % 3                          (2,  [3])]
+   *    (n: number) => n + 1
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter, transform and reduce
+   * @param reduceValues
+   *    {@link TBinaryOperator} used to reduce the values related with same key
+   * @param discriminatorKey
+   *    {@link TFunction1} to get the key values of returned {@link Map}
+   * @param valueMapper
+   *    {@link TFunction1} to transform elements of `sourceArray`
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`,
+   *         collecting the results and reduce them
+   *
+   * @throws {@link IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
+   *                                      with a not empty `sourceArray`
+   */
+  static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                                 reduceValues: TBinaryOperator<V>,
+                                 discriminatorKey: TFunction1<T, K>,
+                                 valueMapper: TFunction1<T, V>): Map<K, V>;
+
+  static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                                 reduceValues: FBinaryOperator<V>,
+                                 discriminatorKey: TFunction1<T, K>,
+                                 valueMapper: TFunction1<T, V>): Map<K, V>;
+
+
+  static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                                 reduceValues: TBinaryOperator<V>,
+                                 partialFunctionOrDiscriminatorKey: PartialFunction<T, [K, V]> | TFunction1<T, K>,
+                                 valueMapper?: TFunction1<T, V>): Map<K, V> {
+    const result = new Map<K, V>();
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        reduceValues,
+        'reduceValues must be not null and not undefined'
+      );
+      AssertUtil.notNullOrUndefined(
+        partialFunctionOrDiscriminatorKey,
+        'partialFunctionOrDiscriminatorKey must be not null and not undefined'
+      );
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
+        ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
+        : PartialFunction.ofToTuple(
+            Predicate1.alwaysTrue<T>(),
+            <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
+            <TFunction1<T, V>>valueMapper
+          );
+      for (let item of sourceArray!) {
+        this.groupMap(
+          sourceArray,
+          finalPartialFunction
+        )
+        .forEach((value, key) => {
+          result.set(
+            key,
+            // @ts-ignore
+            this.reduce(
+              value,
+              reduceValues
+            )
+          );
+        })
       }
     }
     return result;
@@ -540,7 +742,7 @@ export class ArrayUtil {
    */
   static map = <T, R>(sourceArray: NullableOrUndefined<T[]>,
                       mapFunction: TFunction1<T, R>): R[] => {
-    let result: R[] = [];
+    const result: R[] = [];
     if (!this.isEmpty(sourceArray)) {
       AssertUtil.notNullOrUndefined(
         mapFunction,
@@ -556,6 +758,55 @@ export class ArrayUtil {
       }
     }
     return result;
+  }
+
+
+  /**
+   *    Performs a reduction on the elements of `sourceArray`, using an associative accumulation {@link TBinaryOperator},
+   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
+   *
+   * @apiNote
+   *    This method is similar to {@link ArrayUtil#foldLeft} but `accumulator` works with the same type that `sourceArray`
+   * and only uses contained elements of provided array.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                              Result:
+   *    [5, 7, 9]                                315
+   *    (n1: number, n2: number) => n1 * n2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with elements to combine
+   * @param accumulator
+   *    A {@link TBinaryOperator} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
+   *         left to right with the start value `initialValue` on the left.
+   *
+   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
+   */
+  static reduce<T>(sourceArray: NullableOrUndefined<T[]>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T>;
+
+  static reduce<T>(sourceArray: NullableOrUndefined<T[]>,
+                   accumulator: FBinaryOperator<T>): OrUndefined<T>;
+
+  static reduce<T>(sourceArray: NullableOrUndefined<T[]>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T> {
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        accumulator,
+        'accumulator must be not null and not undefined'
+      );
+      return this.foldLeft<T, T>(
+        sourceArray!.slice(1),
+        sourceArray![0],
+        accumulator
+      );
+    }
+    return undefined;
   }
 
 

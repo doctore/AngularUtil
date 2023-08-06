@@ -1,6 +1,7 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
 import { FFunction1, FFunction2, Function1, Function2, PartialFunction } from '@app-core/types/function';
+import {BinaryOperator, FBinaryOperator} from '@app-core/types/function/operator';
 import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
@@ -499,7 +500,7 @@ describe('ArrayUtil', () => {
 
   describe('foldLeft', () => {
 
-    it('when given arrayToVerify is null, undefined or empty then initialValue is returned', () => {
+    it('when given sourceArray is null, undefined or empty then initialValue is returned', () => {
       const intValue = 19;
       const stringValue = 'afr';
 
@@ -519,7 +520,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given arrayToVerify is not empty but accumulator is null or undefined then an error is thrown', () => {
+    it('when given sourceArray is not empty but accumulator is null or undefined then an error is thrown', () => {
       // @ts-ignore
       expect(() => ArrayUtil.foldLeft([2], 11, null)).toThrowError(IllegalArgumentError);
 
@@ -528,12 +529,12 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given arrayToVerify is not null then initialValue applying accumulator is returned', () => {
+    it('when given sourceArray is not null then initialValue applying accumulator is returned', () => {
       const intValue = 10;
       const stringValue = 'a';
 
-      const intArray: number[] = [ 2, 3, 4 ];
-      const stringArray: string[] = [ 'b', 'c', 'd' ];
+      const intArray: number[] = [2, 3, 4];
+      const stringArray: string[] = ['b', 'c', 'd'];
 
       const intAccumulator: FFunction2<number, number, number> =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
@@ -549,12 +550,12 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given arrayToVerify is not null and there is a filter then initialValue applying accumulator only to the elements match filter is returned', () => {
+    it('when given sourceArray is not null and there is a filter then initialValue applying accumulator only to the elements match filter is returned', () => {
       const intValue = 10;
       const stringValue = 'a';
 
-      const intArray: number[] = [ 2, 3, 4 ];
-      const stringArray: string[] = [ 'b', 'c', 'd', 'e' ];
+      const intArray: number[] = [2, 3, 4];
+      const stringArray: string[] = ['b', 'c', 'd', 'e'];
 
       const intAccumulator: FFunction2<number, number, number> =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
@@ -659,8 +660,11 @@ describe('ArrayUtil', () => {
     it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
       let sourceArray: number[] = [1, 2, 3, 6, 3];
 
-      const sameValue = (n: number) => n;
-      const plus1 = (n: number) => 1 + n;
+      const sameValue: Function1<number, number> =
+        Function1.of((n: number) => n);
+
+      const plus1: FFunction1<number, number> =
+        (n: number) => 1 + n;
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(1, [2]);
@@ -694,6 +698,269 @@ describe('ArrayUtil', () => {
 
       verifyMaps(
         ArrayUtil.groupMap(sourceArray, sameValue, plus1, isOdd),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('groupMapMultiKey', () => {
+
+    it('when given sourceArray has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
+      const emptyArray: number[] = [];
+
+      const lessThan10 = (n: number) => 10 > n;
+      const sameValue = (n: number) => n;
+      const oddEvenAndCompareWith5 = (n: number) => {
+        const keys: string[] = [];
+        if (0 == n % 2) {
+          keys.push("even");
+        } else {
+          keys.push("odd");
+        }
+        if (5 > n) {
+          keys.push("smaller5");
+        } else {
+          keys.push("greaterEqual5");
+        }
+        return keys;
+      };
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(ArrayUtil.groupMapMultiKey(null, oddEvenAndCompareWith5, sameValue, lessThan10)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapMultiKey(undefined, oddEvenAndCompareWith5, sameValue, lessThan10)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapMultiKey(emptyArray, oddEvenAndCompareWith5, sameValue, lessThan10)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const lessThan10 = (n: number) => 10 > n;
+      const sameValue = (n: number) => n;
+      const oddEvenAndCompareWith5 = (n: number) => {
+        const keys: string[] = [];
+        if (0 == n % 2) {
+          keys.push("even");
+        } else {
+          keys.push("odd");
+        }
+        if (5 > n) {
+          keys.push("smaller5");
+        } else {
+          keys.push("greaterEqual5");
+        }
+        return keys;
+      };
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapMultiKey([1], null, sameValue, lessThan10)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapMultiKey([1], undefined, sameValue, lessThan10)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapMultiKey([1], oddEvenAndCompareWith5, null, lessThan10)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapMultiKey([1], oddEvenAndCompareWith5, undefined, lessThan10)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      let sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+
+      const sameValue: Function1<number, number> =
+        Function1.of((n: number) => n);
+
+      const oddEvenAndCompareWith5: FFunction1<number, string[]> =
+        (n: number) => {
+          const keys: string[] = [];
+          if (0 == n % 2) {
+            keys.push("even");
+          } else {
+            keys.push("odd");
+          }
+          if (5 > n) {
+            keys.push("smaller5");
+          } else {
+            keys.push("greaterEqual5");
+          }
+          return keys;
+      };
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [2, 6, 12]);
+      expectedResult.set("odd", [1, 3, 11]);
+      expectedResult.set("smaller5", [1, 2, 3]);
+      expectedResult.set("greaterEqual5", [6, 11, 12]);
+
+      verifyMaps(
+        // @ts-ignore
+        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameValue, null),
+        expectedResult
+      );
+
+      verifyMaps(
+        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameValue, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+
+      const lessThan10 = (n: number) => 10 > n;
+      const sameValue = (n: number) => n;
+      const oddEvenAndCompareWith5 = (n: number) => {
+        const keys: string[] = [];
+        if (0 == n % 2) {
+          keys.push("even");
+        } else {
+          keys.push("odd");
+        }
+        if (5 > n) {
+          keys.push("smaller5");
+        } else {
+          keys.push("greaterEqual5");
+        }
+        return keys;
+      };
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [2, 6]);
+      expectedResult.set("odd", [1, 3]);
+      expectedResult.set("smaller5", [1, 2, 3]);
+      expectedResult.set("greaterEqual5", [6]);
+
+      verifyMaps(
+        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameValue, lessThan10),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('groupMapReduce', () => {
+
+    it('when given sourceArray has no elements and reduceValues, partialFunction are provided then empty Map is returned', () => {
+      const emptyArray: number[] = [];
+
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<number, [number, number]> =
+        PartialFunction.of(
+          (n: number) => 10 > n,
+          (n: number) => [n % 3, n + 1]
+        );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(ArrayUtil.groupMapReduce(null, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapReduce(undefined, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapReduce(emptyArray, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
+      const emptyArray: number[] = [];
+
+      const sumValues: BinaryOperator<number> =
+        BinaryOperator.of((n1: number, n2: number) => n1 + n2);
+
+      const mod3: FFunction1<number, number> =
+        (n: number) => n % 3;
+
+      const plus1: Function1<number, number> =
+        Function1.of((n: number) => 1 + n);
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(ArrayUtil.groupMapReduce(null, sumValues, mod3, plus1)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapReduce(undefined, sumValues, mod3, plus1)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapReduce(emptyArray, sumValues, mod3, plus1)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but reduceValues or partialFunction is null or undefined then an error is thrown', () => {
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<number, [number, number]> =
+        PartialFunction.of(
+          (n: number) => 10 > n,
+          (n: number) => [n % 3, n + 1]
+        );
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], null, mod3AsKeyAndPlus1AsValueForLowerThan10)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], undefined, mod3AsKeyAndPlus1AsValueForLowerThan10)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], sumValues, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], sumValues, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray is not empty but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3 = (n: number) => n % 3;
+      const plus1 = (n: number) => 1 + n;
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], null, mod3,  plus1)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], undefined, mod3, plus1)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], sumValues, null,  plus1)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], sumValues, undefined, plus1)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], sumValues, mod3,  null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupMapReduce([1], sumValues, mod3, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and reduceValues and partialFunction are valid then a new filtered and transformed Map is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6, 7, 11, 12];
+
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<number, [number, number]> =
+        PartialFunction.of(
+          (n: number) => 10 > n,
+          (n: number) => [n % 3, n + 1]
+        );
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(0, 11);
+      expectedResult.set(1, 10);
+      expectedResult.set(2, 3);
+
+      verifyMaps(
+        ArrayUtil.groupMapReduce(sourceArray, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey and valueMapper are valid then a transformed Map is returned', () => {
+      let sourceArray: number[] = [1, 2, 3, 6, 7];
+
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3 = (n: number) => n % 3;
+      const plus1 = (n: number) => 1 + n;
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(0, 11);
+      expectedResult.set(1, 10);
+      expectedResult.set(2, 3);
+
+      verifyMaps(
+        ArrayUtil.groupMapReduce(sourceArray, sumValues, mod3, plus1),
         expectedResult
       );
     });
@@ -770,6 +1037,45 @@ describe('ArrayUtil', () => {
         ArrayUtil.map(sourceArray, plus2),
         expectedPlus2Result
       );
+    });
+
+  });
+
+
+
+  describe('reduce', () => {
+
+    it('when given sourceArray is null, undefined or empty then undefined is returned', () => {
+      const intAccumulator: FBinaryOperator<number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(ArrayUtil.reduce(null, intAccumulator)).toBeUndefined();
+      expect(ArrayUtil.reduce(undefined, intAccumulator)).toBeUndefined();
+      expect(ArrayUtil.reduce([], intAccumulator)).toBeUndefined();
+    });
+
+
+    it('when given sourceArray is not empty but accumulator is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.reduce([2], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.reduce([2], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray is not null then accumulator is applied to contained elements', () => {
+      const intArray: number[] = [2, 3, 4];
+      const stringArray: string[] = ['b', 'c', 'd'];
+
+      const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+      const stringAccumulator = (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!;
+
+      const intResult = ArrayUtil.reduce(intArray, intAccumulator);
+      const stringResult = ArrayUtil.reduce(stringArray, stringAccumulator);
+
+      expect(intResult).toEqual(24);
+      expect(stringResult).toEqual('bcd');
     });
 
   });

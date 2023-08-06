@@ -144,6 +144,9 @@ describe('Predicate1', () => {
 
       expect(Predicate1.isPredicate(isEven)).toBeTrue();
       expect(Predicate1.isPredicate(isNotNullOrUndefined)).toBeTrue();
+
+      expect(Predicate1.isPredicate(Predicate1.alwaysTrue())).toBeTrue();
+      expect(Predicate1.isPredicate(Predicate1.alwaysFalse())).toBeTrue();
     });
 
   });

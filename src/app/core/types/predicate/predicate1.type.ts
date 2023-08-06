@@ -95,7 +95,7 @@ export class Predicate1<T> {
    * @return {@link Predicate1}
    */
   static alwaysFalse = <T>(): Predicate1<T> =>
-    new Predicate1<T>(() => false);
+    new Predicate1<T>((t: T) => false);
 
 
   /**
@@ -104,7 +104,7 @@ export class Predicate1<T> {
    * @return {@link Predicate1}
    */
   static alwaysTrue = <T>(): Predicate1<T> =>
-    new Predicate1<T>(() => true);
+    new Predicate1<T>((t: T) => true);
 
 
   /**

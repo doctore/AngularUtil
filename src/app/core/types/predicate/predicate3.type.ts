@@ -120,7 +120,7 @@ export class Predicate3<T1, T2, T3> {
    * @return {@link Predicate3}
    */
   static alwaysFalse = <T1, T2, T3>(): Predicate3<T1, T2, T3> =>
-    new Predicate3<T1, T2, T3>(() => false);
+    new Predicate3<T1, T2, T3>((t1: T1, t2: T2, t3: T3) => false);
 
 
   /**
@@ -129,7 +129,7 @@ export class Predicate3<T1, T2, T3> {
    * @return {@link Predicate3}
    */
   static alwaysTrue = <T1, T2, T3>(): Predicate3<T1, T2, T3> =>
-    new Predicate3<T1, T2, T3>(() => true);
+    new Predicate3<T1, T2, T3>((t1: T1, t2: T2, t3: T3) => true);
 
 
   /**
