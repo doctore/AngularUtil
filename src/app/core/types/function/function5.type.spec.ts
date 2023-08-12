@@ -161,7 +161,7 @@ describe('Function5', () => {
     });
 
 
-    it('when a Function1 is provided then it will be applied after current one', () => {
+    it('when a FFunction1 is provided then it will be applied after current one', () => {
       const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
         Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
           s.length + n1 + n2 + n3 + n4);
