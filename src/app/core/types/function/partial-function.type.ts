@@ -58,7 +58,7 @@ export class PartialFunction<T, R> {
    * @return {@link PartialFunction} that always returns its input argument
    */
   static identity = <T>(): PartialFunction<T, T> =>
-    new PartialFunction(
+    new PartialFunction<T, T>(
       Predicate1.alwaysTrue(),
       Function1.identity(),
     );

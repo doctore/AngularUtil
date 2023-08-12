@@ -48,6 +48,8 @@ describe('PartialFunction', () => {
         );
 
       expect(PartialFunction.isPartialFunction(multiply2ForEven)).toBeTrue();
+
+      expect(PartialFunction.isPartialFunction(PartialFunction.identity())).toBeTrue();
     });
 
   });

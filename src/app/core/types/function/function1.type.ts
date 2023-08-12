@@ -60,7 +60,7 @@ export class Function1<T, R> {
    * Returns a {@link Function1} that always returns its input argument.
    */
   static identity = <T>(): Function1<T, T> =>
-    new Function1((t: T) => t);
+    new Function1<T, T>((t: T) => t);
 
 
   /**
