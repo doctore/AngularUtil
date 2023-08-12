@@ -58,6 +58,20 @@ export class BinaryOperator<T> extends Function2<T, T, T> {
 
 
   /**
+   * Returns a {@link BinaryOperator} that always returns the first parameter.
+   */
+  static returnFirst = <T>(): BinaryOperator<T> =>
+    new BinaryOperator<T>((t1: T, t2: T) => t1);
+
+
+  /**
+   * Returns a {@link BinaryOperator} that always returns the second parameter.
+   */
+  static returnSecond = <T>(): BinaryOperator<T> =>
+    new BinaryOperator<T>((t1: T, t2: T) => t2);
+
+
+  /**
    * Verifies if the given `input` is an instance of {@link BinaryOperator}.
    *
    * @param input

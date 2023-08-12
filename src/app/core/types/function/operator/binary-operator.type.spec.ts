@@ -47,6 +47,34 @@ describe('isFBinaryOperator', () => {
 describe('BinaryOperator', () => {
 
 
+  describe('returnFirst', () => {
+
+    it('when two parameters are received then the first one is returned', () => {
+      const returnFirstBinaryOperator: BinaryOperator<number> =
+        BinaryOperator.returnFirst();
+
+      expect(returnFirstBinaryOperator.apply(12, 11)).toEqual(12);
+      expect(returnFirstBinaryOperator.apply(0, -3)).toEqual(0);
+    });
+
+  });
+
+
+
+  describe('returnSecond', () => {
+
+    it('when two parameters are received then the second one is returned', () => {
+      const returnSecondBinaryOperator: BinaryOperator<string> =
+        BinaryOperator.returnSecond();
+
+      expect(returnSecondBinaryOperator.apply('12', '11')).toEqual('11');
+      expect(returnSecondBinaryOperator.apply('0', '-3')).toEqual('-3');
+    });
+
+  });
+
+
+
   describe('isBinaryOperator', () => {
 
     it('when no function is provided then false is returned', () => {
@@ -72,6 +100,9 @@ describe('BinaryOperator', () => {
         BinaryOperator.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
 
       expect(BinaryOperator.isBinaryOperator(joinStrings)).toBeTrue();
+
+      expect(BinaryOperator.isBinaryOperator(BinaryOperator.returnFirst())).toBeTrue();
+      expect(BinaryOperator.isBinaryOperator(BinaryOperator.returnSecond())).toBeTrue();
     });
 
   });
