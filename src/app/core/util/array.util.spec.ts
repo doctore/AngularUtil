@@ -246,6 +246,7 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has elements and mapFunction and filterPredicate are valid then a new filtered and transformed array is returned', () => {
       let sourceArray: number[] = [1, 2, 3, 6];
+
       const isEven = (n: number) => 0 == n % 2;
       const multiply2AndString = (n: number) => '' + (2 * n);
 
@@ -313,7 +314,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const isIdOdd: Predicate1<User> = Predicate1.of((user: User) => 1 == user.id % 2);
+      const isIdOdd = (user: User) => 1 == user.id % 2;
 
       verifyArrays(
         ArrayUtil.dropWhile([u1, u2, u3], isIdOdd),
@@ -397,8 +398,7 @@ describe('ArrayUtil', () => {
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
 
-      const isIdOdd: Predicate1<User> =
-        Predicate1.of((user: User) => 1 == user.id % 2);
+      const isIdOdd = (user: User) => 1 == user.id % 2;
 
       expect(ArrayUtil.find([u1, u2, u3, u4], isIdOdd)).toEqual(u1);
     });
@@ -483,8 +483,7 @@ describe('ArrayUtil', () => {
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
 
-      const isIdOdd: Predicate1<User> =
-        Predicate1.of((user: User) => 1 == user.id % 2);
+      const isIdOdd =(user: User) => 1 == user.id % 2;
 
       const expectedResult = u1;
 
@@ -536,8 +535,7 @@ describe('ArrayUtil', () => {
       const intArray: number[] = [2, 3, 4];
       const stringArray: string[] = ['b', 'c', 'd'];
 
-      const intAccumulator: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+      const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
       const stringAccumulator: Function2<string, string, string> =
         Function2.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
@@ -557,8 +555,7 @@ describe('ArrayUtil', () => {
       const intArray: number[] = [2, 3, 4];
       const stringArray: string[] = ['b', 'c', 'd', 'e'];
 
-      const intAccumulator: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+      const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
       const stringAccumulator: Function2<string, string, string> =
         Function2.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
@@ -1214,8 +1211,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const isIdOdd: Predicate1<User> =
-        Predicate1.of((user: User) => 1 == user.id % 2);
+      const isIdOdd = (user: User) => 1 == user.id % 2;
 
       verifyArrays(
         ArrayUtil.takeWhile([u1, u2, u3], isIdOdd),

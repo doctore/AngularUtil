@@ -1,4 +1,12 @@
-import { FFunction1, Function1, Function2, PartialFunction, TFunction1, TFunction2 } from '@app-core/types/function';
+import {
+  FFunction1,
+  FFunction2,
+  Function1,
+  Function2,
+  PartialFunction,
+  TFunction1,
+  TFunction2
+} from '@app-core/types/function';
 import { FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
@@ -344,6 +352,11 @@ export class ArrayUtil {
                         accumulator: TFunction2<R, T, R>): R;
 
 
+  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+                        initialValue: R,
+                        accumulator: FFunction2<R, T, R>): R;
+
+
   /**
    *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to elements
    * of `sourceArray` that verify `filterPredicate`, going left to right.
@@ -375,6 +388,12 @@ export class ArrayUtil {
   static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
                         accumulator: TFunction2<R, T, R>,
+                        filterPredicate: TPredicate1<T>): R;
+
+
+  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+                        initialValue: R,
+                        accumulator: FFunction2<R, T, R>,
                         filterPredicate: TPredicate1<T>): R;
 
 
@@ -619,6 +638,7 @@ export class ArrayUtil {
                                  reduceValues: TBinaryOperator<V>,
                                  partialFunction: PartialFunction<T, [K, V]>): Map<K, V>;
 
+
   static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                                  reduceValues: FBinaryOperator<V>,
                                  partialFunction: PartialFunction<T, [K, V]>): Map<K, V>;
@@ -658,6 +678,7 @@ export class ArrayUtil {
                                  reduceValues: TBinaryOperator<V>,
                                  discriminatorKey: TFunction1<T, K>,
                                  valueMapper: TFunction1<T, V>): Map<K, V>;
+
 
   static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                                  reduceValues: FBinaryOperator<V>,
@@ -790,8 +811,10 @@ export class ArrayUtil {
   static reduce<T>(sourceArray: NullableOrUndefined<T[]>,
                    accumulator: TBinaryOperator<T>): OrUndefined<T>;
 
+
   static reduce<T>(sourceArray: NullableOrUndefined<T[]>,
                    accumulator: FBinaryOperator<T>): OrUndefined<T>;
+
 
   static reduce<T>(sourceArray: NullableOrUndefined<T[]>,
                    accumulator: TBinaryOperator<T>): OrUndefined<T> {
