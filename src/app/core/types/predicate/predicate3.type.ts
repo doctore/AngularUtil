@@ -8,7 +8,7 @@ export type TPredicate3<T1, T2, T3> = FPredicate3<T1, T2, T3> | Predicate3<T1, T
 
 
 /**
- * Represents the function approach of a predicate (boolean-valued function) of one argument.
+ * Represents the function approach of a predicate (boolean-valued function) of three arguments.
  *
  * @typeParam <T1>
  *   Type of first parameter received by this {@link FPredicate3}
@@ -143,15 +143,15 @@ export class Predicate3<T1, T2, T3> {
    *   const isNumberLowerThan20AndStringLongerThan5AndBooleanFalse: FPredicate3<number, string, boolean> =
    *      (n: number, s: string, b: boolean) => 20 > n && 5 < s.length && !b;
    *
-   *   Predicate3.allOf([]).apply(5, '', false);                                                   // false
+   *   Predicate3.anyOf([]).apply(5, '', false);                                                   // false
    *
-   *   Predicate3.allOf(
+   *   Predicate3.anyOf(
    *     [isNumberEvenAndStringLongerThan2AndBooleanFalse,
-   *      isNumberLowerThan20AndStringLongerThan5AndBooleanFalse]).apply(10, 'abcdef', false);     // false
+   *      isNumberLowerThan20AndStringLongerThan5AndBooleanFalse]).apply(30, 'a', false);          // false
    *
-   *   Predicate3.allOf(
+   *   Predicate3.anyOf(
    *     [isNumberEvenAndStringLongerThan2AndBooleanFalse,
-   *      isNumberLowerThan20AndStringLongerThan5AndBooleanFalse]).apply(30, 'a', false);          // true
+   *      isNumberLowerThan20AndStringLongerThan5AndBooleanFalse]).apply(10, 'abcdef', false);     // true
    * </pre>
    *
    * @param predicates
@@ -262,7 +262,7 @@ export class Predicate3<T1, T2, T3> {
 
 
   /**
-   * Evaluates this {@link Predicate3} on the given @type {T1} and @type {T2}.
+   * Evaluates this {@link Predicate3} for the given @type {T1}, @type {T2} and @type {T3} instances.
    *
    * @param t1
    *    The first input argument

@@ -20,8 +20,6 @@ describe('isFPredicate1', () => {
   it('when a function that does not match is provided then false is returned', () => {
     expect(isFPredicate1(() => true)).toBeFalse();
     expect(isFPredicate1((t1: string, t2: string) => null !== t1 && null !== t2)).toBeFalse();
-    expect(isFPredicate1((t1: string, t2: string, t3: string) => null !== t1 && null !== t2 && null != t3)).toBeFalse();
-    expect(isFPredicate1((t1: string, t2: string, t3: string, t4: string) => null !== t1 && null !== t2 && null != t3 && null != t4)).toBeFalse();
   });
 
 

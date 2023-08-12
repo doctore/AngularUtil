@@ -325,6 +325,7 @@ describe('Predicate3', () => {
 
       expect(andPredicates1.apply(12, 'abcd', false)).toBeTrue();
       expect(andPredicates1.apply(18, '1234', false)).toBeTrue();
+
       expect(andPredicates2.apply(12, 'abcd', false)).toBeTrue();
       expect(andPredicates2.apply(18, '1234', false)).toBeTrue();
     });

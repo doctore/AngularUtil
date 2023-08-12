@@ -8,7 +8,7 @@ export type TPredicate2<T1, T2> = FPredicate2<T1, T2> | Predicate2<T1, T2>;
 
 
 /**
- * Represents the function approach of a predicate (boolean-valued function) of one argument.
+ * Represents the function approach of a predicate (boolean-valued function) of two arguments.
  *
  * @typeParam <T1>
  *   Type of first parameter received by this {@link FPredicate2}
@@ -234,7 +234,7 @@ export class Predicate2<T1, T2> {
 
 
   /**
-   * Evaluates this {@link Predicate2} on the given @type {T1} and @type {T2}.
+   * Evaluates this {@link Predicate2} for the given @type {T1} and @type {T2} instances.
    *
    * @param t1
    *    The first input argument
