@@ -1,8 +1,10 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
 import { FFunction0, FFunction2, FFunction3, Function0, Function2, PartialFunction } from '@app-core/types/function';
+import { FBinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate2, Predicate2 } from '@app-core/types/predicate';
 import { NullableOrUndefined, Optional } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
+
 
 /**
  * To invoke only this test:
@@ -125,8 +127,7 @@ describe('MapUtil', () => {
       sourceMap.set('B', 2);
       sourceMap.set('D', 4);
 
-      const keyValuePlus1: Function2<string, number, [string, number]> =
-        Function2.of((k: string, v: number): [string, number] => [k, 1 + v]);
+      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
 
       const keyValueMultiply2: FFunction2<string, number, [string, number]> =
         (k: string, v: number): [string, number] => [k, 2 * v];
@@ -141,7 +142,6 @@ describe('MapUtil', () => {
         MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, null),
         expectedResult
       );
-
       verifyMaps(
         // @ts-ignore
         MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, undefined),
@@ -269,7 +269,6 @@ describe('MapUtil', () => {
         MapUtil.collect(sourceMap, keyAndValueLength, null),
         expectedResult
       );
-
       verifyMaps(
         // @ts-ignore
         MapUtil.collect(sourceMap, keyAndValueLength, undefined),
@@ -284,11 +283,8 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
 
-      const isKeyEven: Predicate2<number, string> =
-        Predicate2.of((k: number, v: string) => 1 == k % 2);
-
-      const keyAndValueLength: Function2<number, string, [number, number]> =
-        Function2.of((k: number, v: string) => [k, v.length]);
+      const isKeyEven = (k: number, v: string) => 1 == k % 2;
+      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
 
       const expectedResult = new Map<number, number>();
       expectedResult.set(1, 2);
@@ -296,6 +292,83 @@ describe('MapUtil', () => {
 
       verifyMaps(
         MapUtil.collect(sourceMap, keyAndValueLength, isKeyEven),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('concat', () => {
+
+    it('when given sourceMaps has no elements then empty Map is returned', () => {
+      const emptyMap = new Map<number, number>();
+      const plusNumbers: FBinaryOperator<number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! + n2!;
+
+      // @ts-ignore
+      expect(MapUtil.concat(null)).toEqual(emptyMap);
+      // @ts-ignore
+      expect(MapUtil.concat(undefined)).toEqual(emptyMap);
+      expect(MapUtil.concat([])).toEqual(emptyMap);
+
+      // @ts-ignore
+      expect(MapUtil.concat(null, plusNumbers)).toEqual(emptyMap);
+      // @ts-ignore
+      expect(MapUtil.concat(undefined, plusNumbers)).toEqual(emptyMap);
+      expect(MapUtil.concat([], plusNumbers)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMaps has elements but no mergeValueFunction is provided then new Map will be returned on which last value will overwrite previous with same key', () => {
+      const sourceMap1 = new Map<string, number>();
+      sourceMap1.set('a', 1);
+      sourceMap1.set('b', 2);
+
+      const sourceMap2 = new Map<string, number>();
+      sourceMap2.set('d', 4);
+      sourceMap2.set('b', 10);
+
+      const expectedResult = new Map<string, number>();
+      expectedResult.set('a', 1);
+      expectedResult.set('b', 10);
+      expectedResult.set('d', 4);
+
+      verifyMaps(
+        MapUtil.concat([sourceMap1, sourceMap2]),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMaps has elements and mergeValueFunction is provided then new Map will be returned on which last value will be the result of applying mergeValueFunction', () => {
+      const sourceMap1 = new Map<string, number>();
+      sourceMap1.set('a', 1);
+      sourceMap1.set('b', 2);
+      sourceMap1.set('c', 3);
+
+      const sourceMap2 = new Map<string, number>();
+      sourceMap2.set('d', 4);
+      sourceMap2.set('b', 10);
+
+      const sourceMap3 = new Map<string, number>();
+      sourceMap3.set('c', 5);
+
+      const plusNumbers = (n1: number, n2: number) => n1 + n2;
+
+      const expectedResult = new Map<string, number>();
+      expectedResult.set('a', 1);
+      expectedResult.set('b', 12);
+      expectedResult.set('c', 8);
+      expectedResult.set('d', 4);
+
+      verifyMaps(
+        MapUtil.concat([sourceMap1, sourceMap2, sourceMap3], plusNumbers),
+        expectedResult
+      );
+      verifyMaps(
+        MapUtil.concat([sourceMap3, sourceMap2, sourceMap1], plusNumbers),
         expectedResult
       );
     });
@@ -382,7 +455,7 @@ describe('MapUtil', () => {
       expectedResult.set(u1.id, u1);
       expectedResult.set(u3.id, u3);
 
-      const isKeyAndUserIdEven: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 0 == k % 2 && 0 == user.id % 2);
+      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
 
       verifyMaps(
         MapUtil.dropWhile(sourceMap, isKeyAndUserIdEven),
@@ -486,8 +559,7 @@ describe('MapUtil', () => {
       sourceMap.set(u3.id, u3);
       sourceMap.set(u4.id, u4);
 
-      const isKeyAndUserIdEven: FPredicate2<number, User> =
-        (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
+      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
 
       const expectedResult: [number, User] = [u2.id, u2];
 
@@ -571,8 +643,7 @@ describe('MapUtil', () => {
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
 
-      const isKeyAndRoleIdOdd: Predicate2<number, Role> =
-        Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
+      const isKeyAndRoleIdOdd = (k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2;
 
       const expectedResult: Optional<[number, Role]> = Optional.of([r1.id, r1]);
 
@@ -650,8 +721,7 @@ describe('MapUtil', () => {
 
       const intValue = 10;
 
-      const intAccumulator: FFunction3<number, number, number, number> =
-        (prev: number, k: number, v: number) => prev * k * v;
+      const intAccumulator = (prev: number, k: number, v: number) => prev * k * v;
 
       const intResult = MapUtil.foldLeft(sourceMap, intValue, intAccumulator);
 
@@ -667,9 +737,7 @@ describe('MapUtil', () => {
 
       const intValue = 10;
 
-      const intAccumulator: FFunction3<number, number, number, number> =
-        (prev: number, k: number, v: number) => prev * k * v;
-
+      const intAccumulator = (prev: number, k: number, v: number) => prev * k * v;
       const isKeyEven = (k: number, v: number) => 1 == k % 2;
 
       const intResult = MapUtil.foldLeft(sourceMap, intValue, intAccumulator, isKeyEven);
@@ -792,6 +860,229 @@ describe('MapUtil', () => {
       expect(MapUtil.getOrElse(sourceMap, 'a', defaultValueRaw)).toEqual(11);
       expect(MapUtil.getOrElse(sourceMap, 'b', defaultValueFF)).toEqual(12);
       expect(MapUtil.getOrElse(sourceMap, 'c', defaultValueF)).toEqual(13);
+    });
+
+  });
+
+
+
+  describe('groupBy', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      const emptyMap: Map<number, string> = new Map<number, string>();
+
+      const keyMod2: FFunction2<number, string, number> =
+        (k: number, v: string) => k % 2;
+
+      const expectedResult: Map<number, Map<number, string>> = new Map<number, Map<number, string>>();
+
+      // @ts-ignore
+      expect(MapUtil.groupBy(null)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(MapUtil.groupBy(undefined)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(MapUtil.groupBy(emptyMap)).toEqual(expectedResult);
+
+      expect(MapUtil.groupBy(null, keyMod2)).toEqual(expectedResult);
+      expect(MapUtil.groupBy(undefined, keyMod2)).toEqual(expectedResult);
+      expect(MapUtil.groupBy(emptyMap, keyMod2)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap is not empty but discriminator is null or undefined then an error is thrown', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.groupBy(sourceMap, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupBy(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and discriminator is provided but filterPredicate is null or undefined then all elements will be transformed using discriminator', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(7, 'World');
+      sourceMap.set(11, 'Ok');
+
+      const keyMod2: Function2<number, string, number> =
+        Function2.of((k: number, v: string) => k % 2);
+
+      const expectedResult: Map<number, Map<number, string>> = new Map<number, Map<number, string>>();
+      expectedResult.set(0, MapUtil.of([[2, 'Hello']]));
+      expectedResult.set(1, MapUtil.of([[1, 'Hi'], [7, 'World'], [11, 'Ok']]));
+
+      verifyMaps(
+        MapUtil.groupBy(sourceMap, keyMod2),
+        expectedResult
+      );
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.groupBy(sourceMap, keyMod2, null),
+        expectedResult
+      );
+      verifyMaps(
+        MapUtil.groupBy(sourceMap, keyMod2, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and discriminator and filterPredicate are provided then a new filtered and transformed Map is returned', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(7, 'World');
+      sourceMap.set(11, 'Ok');
+
+      const keyMod2 = (k: number, v: string) => k % 2;
+      const keyLowerThan10 = (k: number, v: string) => 10 > k;
+
+      const expectedResult: Map<number, Map<number, string>> = new Map<number, Map<number, string>>();
+      expectedResult.set(0, MapUtil.of([[2, 'Hello']]));
+      expectedResult.set(1, MapUtil.of([[1, 'Hi'], [7, 'World']]));
+
+      verifyMaps(
+        MapUtil.groupBy(sourceMap, keyMod2, keyLowerThan10),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('groupByMultiKey', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      const emptyMap: Map<number, string> = new Map<number, string>();
+
+      const oddEvenSmallerOrGreaterEqualThan5Key: FFunction2<number, string, string[]> =
+        (k: number, v: string) => {
+          const keys: string[] = [];
+          if (0 == k % 2) {
+            keys.push("evenKey");
+          }
+          else {
+            keys.push("oddKey");
+          }
+          if (5 > k) {
+            keys.push("smaller5Key");
+          } else {
+            keys.push("greaterEqual5Key");
+          }
+          return keys;
+        };
+
+      const expectedResult: Map<number, Map<number, string>> = new Map<number, Map<number, string>>();
+
+      // @ts-ignore
+      expect(MapUtil.groupByMultiKey(null)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(MapUtil.groupByMultiKey(undefined)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(MapUtil.groupByMultiKey(emptyMap)).toEqual(expectedResult);
+
+      expect(MapUtil.groupByMultiKey(null, oddEvenSmallerOrGreaterEqualThan5Key)).toEqual(expectedResult);
+      expect(MapUtil.groupByMultiKey(undefined, oddEvenSmallerOrGreaterEqualThan5Key)).toEqual(expectedResult);
+      expect(MapUtil.groupByMultiKey(emptyMap, oddEvenSmallerOrGreaterEqualThan5Key)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap is not empty but discriminator is null or undefined then an error is thrown', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.groupByMultiKey(sourceMap, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupByMultiKey(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and discriminator is provided but filterPredicate is null or undefined then all elements will be transformed using discriminator', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(7, 'World');
+      sourceMap.set(11, 'Ok');
+
+      const oddEvenSmallerOrGreaterEqualThan5Key: Function2<number, string, string[]> =
+        Function2.of((k: number, v: string) => {
+          const keys: string[] = [];
+          if (0 == k % 2) {
+            keys.push("evenKey");
+          }
+          else {
+            keys.push("oddKey");
+          }
+          if (5 > k) {
+            keys.push("smaller5Key");
+          } else {
+            keys.push("greaterEqual5Key");
+          }
+          return keys;
+        });
+
+      const expectedResult: Map<string, Map<number, string>> = new Map<string, Map<number, string>>();
+      expectedResult.set('evenKey', MapUtil.of([[2, 'Hello']]));
+      expectedResult.set('oddKey', MapUtil.of([[1, 'Hi'], [7, 'World'], [11, 'Ok']]));
+      expectedResult.set('smaller5Key', MapUtil.of([[1, 'Hi'], [2, 'Hello']]));
+      expectedResult.set('greaterEqual5Key', MapUtil.of([[7, 'World'], [11, 'Ok']]));
+
+      verifyMaps(
+        MapUtil.groupByMultiKey(sourceMap, oddEvenSmallerOrGreaterEqualThan5Key),
+        expectedResult
+      );
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.groupByMultiKey(sourceMap, oddEvenSmallerOrGreaterEqualThan5Key, null),
+        expectedResult
+      );
+      verifyMaps(
+        MapUtil.groupByMultiKey(sourceMap, oddEvenSmallerOrGreaterEqualThan5Key, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and discriminator and filterPredicate are provided then a new filtered and transformed Map is returned', () => {
+      const sourceMap: Map<number, string> = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(7, 'World');
+      sourceMap.set(11, 'Ok');
+
+      const oddEvenSmallerOrGreaterEqualThan5Key =
+        (k: number, v: string) => {
+          const keys: string[] = [];
+          if (0 == k % 2) {
+            keys.push("evenKey");
+          }
+          else {
+            keys.push("oddKey");
+          }
+          if (5 > k) {
+            keys.push("smaller5Key");
+          } else {
+            keys.push("greaterEqual5Key");
+          }
+          return keys;
+      };
+      const keyLowerThan10 = (k: number, v: string) => 10 > k;
+
+      const expectedResult: Map<string, Map<number, string>> = new Map<string, Map<number, string>>();
+      expectedResult.set('evenKey', MapUtil.of([[2, 'Hello']]));
+      expectedResult.set('oddKey', MapUtil.of([[1, 'Hi'], [7, 'World']]));
+      expectedResult.set('smaller5Key', MapUtil.of([[1, 'Hi'], [2, 'Hello']]));
+      expectedResult.set('greaterEqual5Key', MapUtil.of([[7, 'World']]));
+
+      verifyMaps(
+        MapUtil.groupByMultiKey(sourceMap, oddEvenSmallerOrGreaterEqualThan5Key, keyLowerThan10),
+        expectedResult
+      );
     });
 
   });
@@ -939,6 +1230,155 @@ describe('MapUtil', () => {
 
 
 
+  describe('groupMapReduce', () => {
+
+    it('when given sourceMap has no elements and reduceValues, partialFunction are provided then empty Map is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 10 > k,
+          ([k, v]: [number, string]) => [k % 3, v.length + 1]
+        );
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+
+      expect(MapUtil.groupMapReduce(null, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(undefined, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(emptyMap, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap has no elements and reduceValues, discriminatorKey and valueMapper are provided then empty Map is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      const sumValues: FBinaryOperator<number> =
+        (n1: number, n2: number) => n1 + n2;
+
+      const keyMod3: FFunction2<number, string, number> =
+        (k: number, v: string) => k % 3;
+
+      const valueLengthPlus1: FFunction2<number, string, number> =
+        (k: number, v: string) => v.length + 1;
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+
+      expect(MapUtil.groupMapReduce(null, sumValues, keyMod3, valueLengthPlus1)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(undefined, sumValues, keyMod3, valueLengthPlus1)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(emptyMap, sumValues, keyMod3, valueLengthPlus1)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap is not empty but reduceValues or partialFunction is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 10 > k,
+          ([k, v]: [number, string]) => [k % 3, v.length + 1]
+        );
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, null, mod3AsKeyAndPlus1AsValueForLowerThan10)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, undefined, mod3AsKeyAndPlus1AsValueForLowerThan10)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty but reduceValues, discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      const sumValues: FBinaryOperator<number> =
+        (n1: number, n2: number) => n1 + n2;
+
+      const keyMod3: FFunction2<number, string, number> =
+        (k: number, v: string) => k % 3;
+
+      const valueLengthPlus1: FFunction2<number, string, number> =
+        (k: number, v: string) => v.length + 1;
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, null, keyMod3,  valueLengthPlus1)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, undefined, keyMod3, valueLengthPlus1)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, null,  valueLengthPlus1)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, undefined, valueLengthPlus1)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, keyMod3,  null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, keyMod3, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and reduceValues and partialFunction are valid then a new filtered and transformed Map is returned', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hola');
+      sourceMap.set(4, '');
+      sourceMap.set(5, 'World');
+      sourceMap.set(6, '!');
+      sourceMap.set(11, 'ABC');
+
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 10 > k,
+          ([k, v]: [number, string]) => [k % 3, v.length + 1]
+        );
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(0, 2);
+      expectedResult.set(1, 4);
+      expectedResult.set(2, 11);
+
+      verifyMaps(
+        MapUtil.groupMapReduce(sourceMap, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and reduceValues, discriminatorKey and valueMapper are valid then a transformed Map is returned', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hola');
+      sourceMap.set(4, '');
+      sourceMap.set(5, 'World');
+      sourceMap.set(6, '!');
+      sourceMap.set(11, 'ABC');
+
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const keyMod3 = (k: number, v: string) => k % 3;
+      const valueLengthPlus1 = (k: number, v: string) => v.length + 1;
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(0, 2);
+      expectedResult.set(1, 4);
+      expectedResult.set(2, 15);
+
+      verifyMaps(
+        MapUtil.groupMapReduce(sourceMap, sumValues, keyMod3, valueLengthPlus1),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('map', () => {
 
     it('when given sourceMap has no elements and mapFunction is provided then empty Map is returned', () => {
@@ -991,6 +1431,30 @@ describe('MapUtil', () => {
         MapUtil.map(sourceMap, keyPlus1AndValueV2),
         expectedLeyPlus1AndValueV2Result
       );
+    });
+
+  });
+
+
+
+  describe('of', () => {
+
+    it('when given tuples are null or undefined then an empty Map is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      expect(MapUtil.of()).toEqual(emptyMap);
+      expect(MapUtil.of(null)).toEqual(emptyMap);
+      expect(MapUtil.of(undefined)).toEqual(emptyMap);
+    });
+
+
+    it('when given tuples have elements then a new Map containing them is returned', () => {
+      let expectedResult = new Map<number, string>();
+      expectedResult.set(1, 'a');
+      expectedResult.set(3, 'c');
+      expectedResult.set(4, 'd');
+
+      expect(MapUtil.of([[1, 'a'], [3, 'c'], [4, 'd']])).toEqual(expectedResult);
     });
 
   });
@@ -1210,7 +1674,6 @@ describe('MapUtil', () => {
         MapUtil.takeWhile(roleMap, undefined),
         roleMap
       );
-
       verifyMaps(
         // @ts-ignore
         MapUtil.takeWhile(stringsMap, null),
@@ -1256,7 +1719,7 @@ describe('MapUtil', () => {
       const expectedResult = new Map<number, User>();
       expectedResult.set(u2.id, u2);
 
-      const isKeyAndUserIdEven: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 0 == k % 2 && 0 == user.id % 2);
+      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
 
       verifyMaps(
         MapUtil.takeWhile(sourceMap, isKeyAndUserIdEven),

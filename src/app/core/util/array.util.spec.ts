@@ -1,7 +1,7 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
 import { FFunction1, FFunction2, Function1, Function2, PartialFunction } from '@app-core/types/function';
-import {BinaryOperator, FBinaryOperator} from '@app-core/types/function/operator';
+import { BinaryOperator, FBinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
@@ -126,7 +126,6 @@ describe('ArrayUtil', () => {
         ArrayUtil.applyOrElse(sourceArray, plus1, multiply2, null),
         expectedResult
       );
-
       verifyArrays(
         // @ts-ignore
         ArrayUtil.applyOrElse(sourceArray, plus1, multiply2, undefined),
@@ -235,7 +234,6 @@ describe('ArrayUtil', () => {
         ArrayUtil.collect(sourceArray, multiply2AndString, null),
         expectedResult
       );
-
       verifyArrays(
         // @ts-ignore
         ArrayUtil.collect(sourceArray, multiply2AndString, undefined),
@@ -285,7 +283,6 @@ describe('ArrayUtil', () => {
         ArrayUtil.dropWhile([r1, r2, r3], undefined),
         [r1, r2, r3]
       );
-
       verifyArrays(
         // @ts-ignore
         ArrayUtil.dropWhile([3, 5, 2], null),
@@ -852,7 +849,7 @@ describe('ArrayUtil', () => {
           (n: number) => [n % 3, n + 1]
         );
 
-      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      const expectedResult: Map<number, number> = new Map<number, number>;
 
       expect(ArrayUtil.groupMapReduce(null, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
       expect(ArrayUtil.groupMapReduce(undefined, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
@@ -860,7 +857,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
+    it('when given sourceArray has no elements and reduceValues, discriminatorKey and valueMapper are provided then empty Map is returned', () => {
       const emptyArray: number[] = [];
 
       const sumValues: BinaryOperator<number> =
@@ -872,7 +869,7 @@ describe('ArrayUtil', () => {
       const plus1: Function1<number, number> =
         Function1.of((n: number) => 1 + n);
 
-      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      const expectedResult: Map<number, number> = new Map<number, number>;
 
       expect(ArrayUtil.groupMapReduce(null, sumValues, mod3, plus1)).toEqual(expectedResult);
       expect(ArrayUtil.groupMapReduce(undefined, sumValues, mod3, plus1)).toEqual(expectedResult);
@@ -900,7 +897,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+    it('when given sourceArray is not empty but reduceValues, discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
       const sumValues = (n1: number, n2: number) => n1 + n2;
       const mod3 = (n: number) => n % 3;
       const plus1 = (n: number) => 1 + n;
@@ -944,7 +941,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray has elements and discriminatorKey and valueMapper are valid then a transformed Map is returned', () => {
+    it('when given sourceArray has elements and reduceValues, discriminatorKey and valueMapper are valid then a transformed Map is returned', () => {
       let sourceArray: number[] = [1, 2, 3, 6, 7];
 
       const sumValues = (n1: number, n2: number) => n1 + n2;
@@ -1183,7 +1180,6 @@ describe('ArrayUtil', () => {
         ArrayUtil.takeWhile([r1, r2, r3], undefined),
         [r1, r2, r3]
       );
-
       verifyArrays(
         // @ts-ignore
         ArrayUtil.takeWhile([3, 5, 2], null),

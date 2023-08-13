@@ -707,22 +707,20 @@ export class ArrayUtil {
             <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
             <TFunction1<T, V>>valueMapper
           );
-      for (let item of sourceArray!) {
-        this.groupMap(
-          sourceArray,
-          finalPartialFunction
-        )
-        .forEach((value, key) => {
-          result.set(
-            key,
-            // @ts-ignore
-            this.reduce(
-              value,
-              reduceValues
-            )
-          );
-        })
-      }
+      this.groupMap(
+        sourceArray,
+        finalPartialFunction
+      )
+      .forEach((value, key) => {
+        result.set(
+          key,
+          // @ts-ignore
+          this.reduce(
+            value,
+            reduceValues
+          )
+        );
+      })
     }
     return result;
   }
