@@ -832,9 +832,9 @@ export class MapUtil {
    * Example:
    *
    *   Parameters:                                                                      Intermediate Map:         Result:
-   *    [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')]           [(0,  [2])                [(0, 2), (1, 4), (2, 11)]
-   *    (n1: number, n2: number) => n1 + n2                                               (1,  [3, 1])
-   *    PartialFunction.of(                                                               (2,  [5, 6])]
+   *    [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')]           [(0,  [2])                [(0, 2),
+   *    (n1: number, n2: number) => n1 + n2                                               (1,  [3, 1])              (1, 4)
+   *    PartialFunction.of(                                                               (2,  [5, 6])]             (2, 11)]
    *      ([k, v]: [number, string]) => 10 > k,
    *      ([k, v]: [number, string]) => [k % 3, v.length + 1]
    *    )
@@ -871,10 +871,10 @@ export class MapUtil {
    * <pre>
    * Example:
    *
-   *   Parameters:                                                                     Intermediate Map:         Result:
-   *    [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')]          [(0,  [2])                [(0, 2), (1, 4), (2, 15)]
-   *    (n1: number, n2: number) => n1 + n2                                              (1,  [3, 1])
-   *    (n: number) => n % 3                                                             (2,  [5, 6, 4])]
+   *   Parameters:                                                                     Intermediate Map:          Result:
+   *    [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')]          [(0,  [2])                 [(0, 2),
+   *    (n1: number, n2: number) => n1 + n2                                              (1,  [3, 1])               (1, 4)
+   *    (n: number) => n % 3                                                             (2,  [5, 6, 4])]           (2, 15)]
    *    (s: string) => s.length + 1
    * </pre>
    *

@@ -613,9 +613,9 @@ export class ArrayUtil {
    * Example:
    *
    *   Parameters:                                  Intermediate Map:          Result:
-   *    [1, 2, 3, 6, 7, 11, 12]                      [(0,  [4, 7])              [(0, 11), (1, 10), (2, 3)]
-   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])
-   *    PartialFunction.of(                           (2,  [3])]
+   *    [1, 2, 3, 6, 7, 11, 12]                      [(0,  [4, 7])              [(0, 11),
+   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])               (1, 10)
+   *    PartialFunction.of(                           (2,  [3])]                 (2, 3)]
    *      (n: number) => 10 > n,
    *      (n: number) => [n % 3, n + 1]
    *    )
@@ -653,9 +653,9 @@ export class ArrayUtil {
    * Example:
    *
    *   Parameters:                                  Intermediate Map:          Result:
-   *    [1, 2, 3, 6, 7]                              [(0,  [4, 7])              [(0, 11), (1, 10), (2, 3)]
-   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])
-   *    (n: number) => n % 3                          (2,  [3])]
+   *    [1, 2, 3, 6, 7]                              [(0,  [4, 7])              [(0, 11),
+   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])               (1, 10)
+   *    (n: number) => n % 3                          (2,  [3])]                 (2, 3)]
    *    (n: number) => n + 1
    * </pre>
    *
@@ -682,8 +682,8 @@ export class ArrayUtil {
 
   static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                                  reduceValues: FBinaryOperator<V>,
-                                 discriminatorKey: TFunction1<T, K>,
-                                 valueMapper: TFunction1<T, V>): Map<K, V>;
+                                 discriminatorKey: FFunction1<T, K>,
+                                 valueMapper: FFunction1<T, V>): Map<K, V>;
 
 
   static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,

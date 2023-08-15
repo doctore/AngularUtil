@@ -140,7 +140,7 @@ export class Function2<T1, T2, R> {
 
 
   /**
-   * Applies this {@link Function2} to the given argument.
+   * Applies this {@link Function2} to the given arguments.
    *
    * @param t1
    *    The first input argument

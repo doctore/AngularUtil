@@ -8,6 +8,9 @@ import {
   FFunction4,
   FFunction5,
   FFunction6,
+  FFunction7,
+  FFunction8,
+  FFunction9,
   Function0,
   Function1,
   Function2,
@@ -15,13 +18,19 @@ import {
   Function4,
   Function5,
   Function6,
+  Function7,
+  Function8,
+  Function9,
   TFunction0,
   TFunction1,
   TFunction2,
   TFunction3,
   TFunction4,
   TFunction5,
-  TFunction6
+  TFunction6,
+  TFunction7,
+  TFunction8,
+  TFunction9
 } from '@app-core/types/function';
 
 /**
@@ -36,7 +45,7 @@ import {
  * @typeParam <T>
  *    Value type in the case of {@link Success}
  */
-export abstract class Try<T extends any> {
+export abstract class Try<T> {
 
   private static readonly DEFAULT_ERROR_MESSAGE = 'An unknown error was thrown, error = ';
 
@@ -473,6 +482,204 @@ export abstract class Try<T extends any> {
       return this.success(
         Function6.of(func)
           .apply(t1, t2, t3, t4, t5, t6)
+      );
+
+    } catch (error) {
+      return Try.failureResultHandler(error);
+    }
+  }
+
+
+  static ofFunction7<T1, T2, T3, T4, T5, T6, T7, R>(t1: T1,
+                                                    t2: T2,
+                                                    t3: T3,
+                                                    t4: T4,
+                                                    t5: T5,
+                                                    t6: T6,
+                                                    t7: T7,
+                                                    func: FFunction7<T1, T2, T3, T4, T5, T6, T7, R>): Try<R>;
+
+  static ofFunction7<T1, T2, T3, T4, T5, T6, T7, R>(t1: T1,
+                                                    t2: T2,
+                                                    t3: T3,
+                                                    t4: T4,
+                                                    t5: T5,
+                                                    t6: T6,
+                                                    t7: T7,
+                                                    func: TFunction7<T1, T2, T3, T4, T5, T6, T7, R>): Try<R>;
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction7} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction7}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction7}
+   * @param t3
+   *    Third input parameter used by given {@link TFunction7}
+   * @param t4
+   *    Fourth input parameter used by given {@link TFunction7}
+   * @param t5
+   *    Fifth input parameter used by given {@link TFunction7}
+   * @param t6
+   *    Sixth input parameter used by given {@link TFunction7}
+   * @param t7
+   *    Seventh input parameter used by given {@link TFunction7}
+   * @param func
+   *    {@link TFunction7} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction7},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction7<T1, T2, T3, T4, T5, T6, T7, R>(t1: T1,
+                                                    t2: T2,
+                                                    t3: T3,
+                                                    t4: T4,
+                                                    t5: T5,
+                                                    t6: T6,
+                                                    t7: T7,
+                                                    func: TFunction7<T1, T2, T3, T4, T5, T6, T7, R>): Try<R> {
+    try {
+      return this.success(
+        Function7.of(func)
+          .apply(t1, t2, t3, t4, t5, t6, t7)
+      );
+
+    } catch (error) {
+      return Try.failureResultHandler(error);
+    }
+  }
+
+
+  static ofFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>(t1: T1,
+                                                        t2: T2,
+                                                        t3: T3,
+                                                        t4: T4,
+                                                        t5: T5,
+                                                        t6: T6,
+                                                        t7: T7,
+                                                        t8: T8,
+                                                        func: FFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>): Try<R>;
+
+  static ofFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>(t1: T1,
+                                                        t2: T2,
+                                                        t3: T3,
+                                                        t4: T4,
+                                                        t5: T5,
+                                                        t6: T6,
+                                                        t7: T7,
+                                                        t8: T8,
+                                                        func: TFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>): Try<R>;
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction8} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction8}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction8}
+   * @param t3
+   *    Third input parameter used by given {@link TFunction8}
+   * @param t4
+   *    Fourth input parameter used by given {@link TFunction8}
+   * @param t5
+   *    Fifth input parameter used by given {@link TFunction8}
+   * @param t6
+   *    Sixth input parameter used by given {@link TFunction8}
+   * @param t7
+   *    Seventh input parameter used by given {@link TFunction8}
+   * @param t8
+   *    Eighth input parameter used by given {@link TFunction8}
+   * @param func
+   *    {@link TFunction8} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction8},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>(t1: T1,
+                                                        t2: T2,
+                                                        t3: T3,
+                                                        t4: T4,
+                                                        t5: T5,
+                                                        t6: T6,
+                                                        t7: T7,
+                                                        t8: T8,
+                                                        func: TFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>): Try<R> {
+    try {
+      return this.success(
+        Function8.of(func)
+          .apply(t1, t2, t3, t4, t5, t6, t7, t8)
+      );
+
+    } catch (error) {
+      return Try.failureResultHandler(error);
+    }
+  }
+
+
+  static ofFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(t1: T1,
+                                                            t2: T2,
+                                                            t3: T3,
+                                                            t4: T4,
+                                                            t5: T5,
+                                                            t6: T6,
+                                                            t7: T7,
+                                                            t8: T8,
+                                                            t9: T9,
+                                                            func: FFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>): Try<R>;
+
+  static ofFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(t1: T1,
+                                                            t2: T2,
+                                                            t3: T3,
+                                                            t4: T4,
+                                                            t5: T5,
+                                                            t6: T6,
+                                                            t7: T7,
+                                                            t8: T8,
+                                                            t9: T9,
+                                                            func: TFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>): Try<R>;
+
+  /**
+   * Creates a {@link Success} invoking the provided {@link TFunction9} with given input parameters.
+   *
+   * @param t1
+   *    First input parameter used by given {@link TFunction9}
+   * @param t2
+   *    Second input parameter used by given {@link TFunction9}
+   * @param t3
+   *    Third input parameter used by given {@link TFunction9}
+   * @param t4
+   *    Fourth input parameter used by given {@link TFunction9}
+   * @param t5
+   *    Fifth input parameter used by given {@link TFunction9}
+   * @param t6
+   *    Sixth input parameter used by given {@link TFunction9}
+   * @param t7
+   *    Seventh input parameter used by given {@link TFunction9}
+   * @param t8
+   *    Eighth input parameter used by given {@link TFunction9}
+   * @param t9
+   *    Ninth input parameter used by given {@link TFunction9}
+   * @param func
+   *    {@link TFunction8} used to get the value to store in the returned {@link Success}
+   *
+   * @return {@link Success} if there was no error invoking {@link TFunction9},
+   *         {@link Failure} otherwise
+   */
+  static ofFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(t1: T1,
+                                                            t2: T2,
+                                                            t3: T3,
+                                                            t4: T4,
+                                                            t5: T5,
+                                                            t6: T6,
+                                                            t7: T7,
+                                                            t8: T8,
+                                                            t9: T9,
+                                                            func: TFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>): Try<R> {
+    try {
+      return this.success(
+        Function9.of(func)
+          .apply(t1, t2, t3, t4, t5, t6, t7, t8, t9)
       );
 
     } catch (error) {
