@@ -31,11 +31,12 @@ Below is shown a brief introduction to the functionality included in this one:
 Different new types related with functional programming like: 
 
 * [Consumer](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/consumer) represents an operation that accepts zero or more input arguments and returns no result.
+* [Either](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/either.type.ts) represents a value of one of two possible types (a disjoint union).
 * [Function](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/function) represents an operation that accepts zero or more input arguments and returns a result.
 * [Predicate](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/predicate) represents an operation that accepts zero or more input arguments and returns a boolean result based on provided data.
 * [Generic subject](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/subject/generic-subject.type.ts) wrapper of RxJS [Subject](https://rxjs.dev/guide/subject) adding several customizations.
-* [Optional](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/optional.type.ts) a container object which may or may not contain a non-null value.
-* [Try](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/try.type.ts) computation representation that may either result in an error, or return a successfully computed value.
+* [Optional](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/optional.type.ts) a container object which may or may not contain a non-null value.
+* [Try](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/try.type.ts) computation representation that may either result in an error, or return a successfully computed value.
 
 
 ### Util classes
