@@ -1,5 +1,7 @@
-import { Failure, Nullable, NullableOrUndefined, Success, Try } from '@app-core/types';
+import { Nullable, NullableOrUndefined } from '@app-core/types';
+import { Failure, Success, Try } from '@app-core/types/functional';
 import {
+  FFunction0,
   FFunction1,
   FFunction2,
   Function0,
@@ -11,17 +13,15 @@ import {
   Function6,
   Function7,
   Function8,
-  Function9,
-  TFunction0,
-  TFunction1,
-  TFunction2
+  Function9
 } from '@app-core/types/function';
+import { BinaryOperator, FBinaryOperator } from '@app-core/types/function/operator';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
  *
- *    ng test --include src/app/core/types/try.type.spec.ts
+ *    ng test --include src/app/core/types/functional/try.type.spec.ts
  */
 describe('Try', () => {
 
@@ -76,9 +76,10 @@ describe('Try', () => {
 
     it('when all tries are Success then a Success applying mapperSuccess is returned', () => {
       const tries = [ Try.success(12), Try.success(11), Try.success(10) ];
-      const mapperFailure: Function2<Error, Error, Error> =
-        Function2.of((f1: Error, f2: Error) => f2);
-      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+
+      const mapperFailure: BinaryOperator<Error> =
+        BinaryOperator.of((f1: Error, f2: Error) => f2);
+      const mapperSuccess: FBinaryOperator<number> = (s1: number, s2: number) => s2;
 
       expect(Try.combine(mapperFailure, mapperSuccess, tries).isSuccess()).toBeTrue();
       expect(Try.combine(mapperFailure, mapperSuccess, tries).get()).toEqual(10);
@@ -103,7 +104,7 @@ describe('Try', () => {
   describe('combineGetFirstFailure', () => {
 
     it('when given tries are null, undefined or empty then a Success with null value is returned', () => {
-      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+      const mapperSuccess: FBinaryOperator<number> = (s1: number, s2: number) => s2;
 
       // @ts-ignore
       expect(Try.combineGetFirstFailure(mapperSuccess, null).isSuccess()).toBeTrue();
@@ -136,7 +137,7 @@ describe('Try', () => {
 
     it('when all tries are Success then a Success applying mapperSuccess is returned', () => {
       const tries = [ () => Try.success(12), () => Try.success(11), () => Try.success(10) ];
-      const mapperSuccess: FFunction2<number, number, number> = (s1: number, s2: number) => s2;
+      const mapperSuccess: FBinaryOperator<number> = (s1: number, s2: number) => s2;
 
       expect(Try.combineGetFirstFailure(mapperSuccess, tries).isSuccess()).toBeTrue();
       expect(Try.combineGetFirstFailure(mapperSuccess, tries).get()).toEqual(10);
@@ -146,7 +147,7 @@ describe('Try', () => {
     it('when tries contains Failure then a Failure applying mapperFailure is returned', () => {
       const firstError = new TypeError();
 
-      const tries: TFunction0<Try<number>>[] = [ () => Try.success(12), () => Try.success(11), () => Try.failure(firstError), () => Try.failure(new SyntaxError()) ];
+      const tries: FFunction0<Try<number>>[] = [ () => Try.success(12), () => Try.success(11), () => Try.failure(firstError), () => Try.failure(new SyntaxError()) ];
       const mapperSuccess = (s1: number, s2: number) => s2;
 
       expect(Try.combineGetFirstFailure(mapperSuccess, tries).isSuccess()).toBeFalse();
@@ -556,7 +557,7 @@ describe('Try', () => {
     });
 
 
-    it('when a valid value is given then non empty Success', () => {
+    it('when a valid value is given then non empty Success is returned', () => {
       const intValue = 11;
       const stringValue = 'abd';
 
@@ -603,37 +604,34 @@ describe('Try', () => {
     it('when given Try is null or undefined then this Try is returned', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
 
-      const sumValues: FFunction2<number, number, number> =
+      const sumValues: FBinaryOperator<number> =
         (n1: number, n2: number) => n1 + n2;
 
-      const mergeErrors: TFunction2<Error, Error, Error> =
+      const mergeErrors: FBinaryOperator<Error> =
         (e1: Error, e2: Error) => new Error(e1.message + e2.message);
-
-      const sumValuesSpy = jasmine.createSpy('sumValues', sumValues);
-      const mergeErrorsSpy = jasmine.createSpy('mergeErrors', mergeErrors);
 
       const successTry = Try.success(11);
       const failureTry = Try.failure(illegalArgumentError);
 
       // @ts-ignore
-      expect(successTry.ap(null, mergeErrorsSpy, sumValuesSpy)).toEqual(successTry);
+      expect(successTry.ap(null, mergeErrors, sumValues)).toEqual(successTry);
       // @ts-ignore
-      expect(successTry.ap(undefined, mergeErrorsSpy, sumValuesSpy)).toEqual(successTry);
+      expect(successTry.ap(undefined, mergeErrors, sumValues)).toEqual(successTry);
 
       // @ts-ignore
-      expect(failureTry.ap(null, mergeErrorsSpy, sumValuesSpy)).toEqual(failureTry);
+      expect(failureTry.ap(null, mergeErrors, sumValues)).toEqual(failureTry);
       // @ts-ignore
-      expect(failureTry.ap(undefined, mergeErrorsSpy, sumValuesSpy)).toEqual(failureTry);
+      expect(failureTry.ap(undefined, mergeErrors, sumValues)).toEqual(failureTry);
     });
 
 
     it('when given Try and this one are Failure then mapperFailure is invoked and mapperSuccess is not', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
 
-      const sumValues: FFunction2<number, number, number> =
+      const sumValues: FBinaryOperator<number> =
         (n1: number, n2: number): number => n1 + n2;
 
-      const mergeErrors: TFunction2<Error, Error, Error> =
+      const mergeErrors: FBinaryOperator<Error> =
         (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
 
       const sumValuesSpy = jasmine.createSpy('sumValues', sumValues);
@@ -650,10 +648,10 @@ describe('Try', () => {
 
 
     it('when given Try and this one are Success then mapperSuccess is invoked and mapperFailure is not', () => {
-      const sumValues: FFunction2<number, number, number> =
+      const sumValues: FBinaryOperator<number> =
         (n1: number, n2: number): number => n1 + n2;
 
-      const mergeErrors: FFunction2<Error, Error, Error> =
+      const mergeErrors: FBinaryOperator<Error> =
         (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
 
       const sumValuesSpy = jasmine.createSpy('sumValues', sumValues);
@@ -669,11 +667,14 @@ describe('Try', () => {
     });
 
 
-    it('when only of the Try is Failure then Failure is returned', () => {
+    it('when one of the Try is Failure then Failure is returned', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
 
-      const sumValues = (n1: number, n2: number) => n1 + n2;
-      const mergeErrors = (e1: Error, e2: Error) => new Error(e1.message + e2.message);
+      const sumValues: BinaryOperator<number> =
+        BinaryOperator.of((n1: number, n2: number) => n1 + n2);
+
+      const mergeErrors: BinaryOperator<Error> =
+        BinaryOperator.of((e1: Error, e2: Error) => new Error(e1.message + e2.message));
 
       const successTry = Try.success(11);
       const failureTry = Try.failure<number>(illegalArgumentError);
@@ -689,15 +690,41 @@ describe('Try', () => {
     });
 
 
+
+    it('when given Try and this one are Failure but mapperFailure is null or undefined then Failure is returned because missing mapperFailure', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+      const syntaxError = new SyntaxError('SyntaxError: there was an error');
+
+      const errorMissingMapperFailure = new IllegalArgumentError('func must be not null and not undefined');
+
+      const sumValues: FBinaryOperator<number> =
+        (n1: number, n2: number) => n1 + n2;
+
+      const t1 = Try.failure<number>(illegalArgumentError);
+      const t2 = Try.failure<number>(syntaxError);
+
+      // @ts-ignore
+      const t1Apt2 = t1.ap(t2, null, sumValues);
+      // @ts-ignore
+      const t2Apt1 = t2.ap(t1, undefined, sumValues);
+
+      expect(t1Apt2.isSuccess()).toBeFalse();
+      expect(t1Apt2.getError() instanceof Error).toBeTrue();
+      expect(t1Apt2.getError().message).toEqual(errorMissingMapperFailure.message);
+
+      expect(t2Apt1.isSuccess()).toBeFalse();
+      expect(t2Apt1.getError() instanceof Error).toBeTrue();
+      expect(t2Apt1.getError().message).toEqual(errorMissingMapperFailure.message);
+    });
+
+
+
     it('when given Try and this one are Failure then mapperFailure result is returned', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
       const syntaxError = new SyntaxError('SyntaxError: there was an error');
 
-      const sumValues: FFunction2<number, number, number> =
-        (n1: number, n2: number) => n1 + n2;
-
-      const mergeErrors: Function2<Error, Error, Error> =
-        Function2.of((e1: Error, e2: Error) => new Error(e1.message + e2.message));
+      const sumValues = (n1: number, n2: number) => n1 + n2;
+      const mergeErrors = (e1: Error, e2: Error) => new Error(e1.message + e2.message);
 
       const t1 = Try.failure<number>(illegalArgumentError);
       const t2 = Try.failure<number>(syntaxError);
@@ -713,6 +740,31 @@ describe('Try', () => {
       expect(t2Apt1.getError() instanceof Error).toBeTrue();
       expect(t2Apt1.getError().message).toEqual(syntaxError.message + illegalArgumentError.message);
     });
+
+
+
+    it('when given Try and this one are Success but mapperSuccess is null or undefined then Failure is returned because missing mapperSuccess', () => {
+      const mergeErrors = (e1: Error, e2: Error): Error => new Error(e1.message + e2.message);
+
+      const errorMissingMapperFailure = new IllegalArgumentError('func must be not null and not undefined');
+
+      const t1 = Try.success(11);
+      const t2 = Try.success(19);
+
+      // @ts-ignore
+      const t1Apt2 = t1.ap(t2, mergeErrors, null);
+      // @ts-ignore
+      const t2Apt1 = t2.ap(t1, mergeErrors, undefined);
+
+      expect(t1Apt2.isSuccess()).toBeFalse();
+      expect(t1Apt2.getError() instanceof Error).toBeTrue();
+      expect(t1Apt2.getError().message).toEqual(errorMissingMapperFailure.message);
+
+      expect(t2Apt1.isSuccess()).toBeFalse();
+      expect(t2Apt1.getError() instanceof Error).toBeTrue();
+      expect(t2Apt1.getError().message).toEqual(errorMissingMapperFailure.message);
+    });
+
 
 
     it('when given Try and this one are Success then mapperSuccess result is returned', () => {
@@ -930,7 +982,7 @@ describe('Try', () => {
     });
 
 
-    it('when the Try instance is Success then same Try is returned', () => {
+    it('when the Try instance is Failure then same one is returned', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
 
       const fromNumToString = (n: number) => '' + n;
@@ -976,7 +1028,7 @@ describe('Try', () => {
     it('when the Try instance is Failure then mapper is invoked', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
 
-      const throwSyntaxError: TFunction1<Error, Error> =
+      const throwSyntaxError: FFunction1<Error, Error> =
         (e: Error): Error => new SyntaxError(e.message);
 
       const throwSyntaxErrorSpy = jasmine.createSpy('throwSyntaxError', throwSyntaxError);
@@ -990,7 +1042,7 @@ describe('Try', () => {
 
 
     it('when the Try instance is Success then mapper is not invoked', () => {
-      const throwSyntaxError: TFunction1<Error, Error> =
+      const throwSyntaxError: FFunction1<Error, Error> =
         (e: Error): Error => new SyntaxError(e.message);
 
       const throwSyntaxErrorSpy = jasmine.createSpy('throwSyntaxError', throwSyntaxError);
@@ -1049,7 +1101,7 @@ describe('Try', () => {
     it('when the Try instance is Failure then mapper is invoked', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
 
-      const getErrorMessage: TFunction1<Error, string> =
+      const getErrorMessage: FFunction1<Error, string> =
         (e: Error) => e.message;
 
       const getErrorMessageSpy = jasmine.createSpy('getErrorMessage', getErrorMessage);
@@ -1063,7 +1115,7 @@ describe('Try', () => {
 
 
     it('when the Try instance is Success then mapper is not invoked', () => {
-      const getErrorMessage: TFunction1<Error, string> =
+      const getErrorMessage: FFunction1<Error, string> =
         (e: Error) => e.message;
 
       const getErrorMessageSpy = jasmine.createSpy('getErrorMessage', getErrorMessage);
@@ -1124,7 +1176,7 @@ describe('Try', () => {
     it('when the Try instance is Failure then mapper is invoked', () => {
       const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
 
-      const getErrorMessage: TFunction1<Error, Try<string>> =
+      const getErrorMessage: FFunction1<Error, Try<string>> =
         (e: Error) => Try.success(e.message);
 
       const getErrorMessageSpy = jasmine.createSpy('getErrorMessage', getErrorMessage);
@@ -1138,7 +1190,7 @@ describe('Try', () => {
 
 
     it('when the Try instance is Success then mapper is not invoked', () => {
-      const getErrorMessage: TFunction1<Error, Try<string>> =
+      const getErrorMessage: FFunction1<Error, Try<string>> =
         (e: Error) => Try.success(e.message);
 
       const getErrorMessageSpy = jasmine.createSpy('getErrorMessage', getErrorMessage);
@@ -1177,6 +1229,41 @@ describe('Try', () => {
 
       expect(result.isSuccess()).toBeTrue();
       expect(result.get()).toEqual(11);
+    });
+
+  });
+
+
+
+  describe('toEither', () => {
+
+    it('when the Try instance is an empty Success one then empty Right is returned', () => {
+      expect(Success.of(null).toEither().isRight()).toBeTrue();
+      expect(Success.of(null).toEither().get()).toBeNull();
+
+      expect(Success.of(undefined).toEither().isRight()).toBeTrue();
+      expect(Success.of(undefined).toEither().get()).toBeUndefined();
+    });
+
+
+    it('when the Try instance is a non empty Success one then non empty Right is returned', () => {
+      const intSuccess = Success.of(12);
+      const stringSuccess = Success.of('abc');
+
+      expect(intSuccess.toEither().isRight()).toBeTrue();
+      expect(intSuccess.toEither().get()).toEqual(intSuccess.get());
+
+      expect(stringSuccess.toEither().isRight()).toBeTrue();
+      expect(stringSuccess.toEither().get()).toEqual(stringSuccess.get());
+    });
+
+
+    it('when the Try instance is a Failure one then a Left instance is returned', () => {
+      const error = new IllegalArgumentError('IllegalArgumentError: there was an error');
+      const failure = Failure.of(error);
+
+      expect(failure.toEither().isRight()).toBeFalse();
+      expect(failure.toEither().getLeft()).toEqual(error);
     });
 
   });
@@ -1234,7 +1321,7 @@ describe('Try', () => {
     it('when the Try instance is Success but mapperSuccess is null or undefined then an error is thrown', () => {
       const successTry = Try.success(11);
 
-      const getErrorMessage: TFunction1<Error, string> =
+      const getErrorMessage: FFunction1<Error, string> =
         (e: Error) => e.message;
 
       // @ts-ignore
@@ -1251,7 +1338,7 @@ describe('Try', () => {
       const fromNumToString: FFunction1<number, string> =
         (n: number) => '' + n;
 
-      const getErrorMessage: TFunction1<Error, string> =
+      const getErrorMessage: FFunction1<Error, string> =
         (e: Error) => e.message;
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
@@ -1270,7 +1357,7 @@ describe('Try', () => {
       const fromNumToString: FFunction1<number, string> =
         (n: number) => '' + n;
 
-      const getErrorMessage: TFunction1<Error, string> =
+      const getErrorMessage: FFunction1<Error, string> =
         (e: Error) => e.message;
 
       const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
@@ -1322,6 +1409,37 @@ describe('Try', () => {
 describe('Success', () => {
 
 
+  describe('of', () => {
+
+    it('when a value is given then it will be stored internally', () => {
+      const intValue = 11;
+
+      expect(Success.of<NullableOrUndefined<string>>(undefined).isSuccess()).toBeTrue();
+      expect(Success.of<NullableOrUndefined<string>>(undefined).get()).toBeUndefined();
+
+      expect(Success.of<Nullable<number>>(null).isSuccess()).toBeTrue();
+      expect(Success.of<Nullable<number>>(null).get()).toBeNull();
+
+      expect(Success.of(intValue).isSuccess()).toBeTrue();
+      expect(Success.of(intValue).get()).toEqual(intValue);
+    });
+
+  });
+
+
+
+  describe('isSuccess', () => {
+
+    it('then true is returned', () => {
+      expect(Success.of<NullableOrUndefined<string>>(undefined).isSuccess()).toBeTrue();
+      expect(Success.of<Nullable<number>>(null).isSuccess()).toBeTrue();
+      expect(Success.of(12).isSuccess()).toBeTrue();
+    });
+
+  });
+
+
+
   describe('get', () => {
 
     it('then internal value is returned', () => {
@@ -1344,79 +1462,12 @@ describe('Success', () => {
 
   });
 
-
-
-  describe('isSuccess', () => {
-
-    it('then true is returned', () => {
-      expect(Success.of<NullableOrUndefined<string>>(undefined).isSuccess()).toBeTrue();
-      expect(Success.of<Nullable<number>>(null).isSuccess()).toBeTrue();
-      expect(Success.of(12).isSuccess()).toBeTrue();
-    });
-
-  });
-
-
-
-  describe('of', () => {
-
-    it('when a value is given then it will be stored internally', () => {
-      const intValue = 11;
-
-      expect(Success.of<NullableOrUndefined<string>>(undefined).isSuccess()).toBeTrue();
-      expect(Success.of<NullableOrUndefined<string>>(undefined).get()).toBeUndefined();
-
-      expect(Success.of<Nullable<number>>(null).isSuccess()).toBeTrue();
-      expect(Success.of<Nullable<number>>(null).get()).toBeNull();
-
-      expect(Success.of(intValue).isSuccess()).toBeTrue();
-      expect(Success.of(intValue).get()).toEqual(intValue);
-    });
-
-  });
-
 });
 
 
 
 
 describe('Failure', () => {
-
-
-  describe('get', () => {
-
-    it('then internal error is thrown', () => {
-      expect(() => Failure.of(new IllegalArgumentError('There was an error')).get()).toThrowError(IllegalArgumentError);
-      expect(() => Failure.of(new ReferenceError('There was an error')).get()).toThrowError(ReferenceError);
-    });
-
-  });
-
-
-
-  describe('getError', () => {
-
-    it('then internal error is returned', () => {
-      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
-      const referenceError = new ReferenceError('ReferenceError: there was an error');
-
-      expect(Failure.of(illegalArgumentError).getError()).toEqual(illegalArgumentError);
-      expect(Failure.of(referenceError).getError()).toEqual(referenceError);
-    });
-
-  });
-
-
-
-  describe('isSuccess', () => {
-
-    it('then false is returned', () => {
-      expect(Failure.of(new IllegalArgumentError('There was an error')).isSuccess()).toBeFalse();
-      expect(Failure.of(new ReferenceError('There was an error')).isSuccess()).toBeFalse();
-    });
-
-  });
-
 
 
   describe('of', () => {
@@ -1439,6 +1490,42 @@ describe('Failure', () => {
       expect(Failure.of(illegalArgumentError).getError()).toEqual(illegalArgumentError);
 
       expect(Failure.of(referenceError).isSuccess()).toBeFalse();
+      expect(Failure.of(referenceError).getError()).toEqual(referenceError);
+    });
+
+  });
+
+
+
+  describe('isSuccess', () => {
+
+    it('then false is returned', () => {
+      expect(Failure.of(new IllegalArgumentError('There was an error')).isSuccess()).toBeFalse();
+      expect(Failure.of(new ReferenceError('There was an error')).isSuccess()).toBeFalse();
+    });
+
+  });
+
+
+
+  describe('get', () => {
+
+    it('then internal error is thrown', () => {
+      expect(() => Failure.of(new IllegalArgumentError('There was an error')).get()).toThrowError(IllegalArgumentError);
+      expect(() => Failure.of(new ReferenceError('There was an error')).get()).toThrowError(ReferenceError);
+    });
+
+  });
+
+
+
+  describe('getError', () => {
+
+    it('then internal error is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+      const referenceError = new ReferenceError('ReferenceError: there was an error');
+
+      expect(Failure.of(illegalArgumentError).getError()).toEqual(illegalArgumentError);
       expect(Failure.of(referenceError).getError()).toEqual(referenceError);
     });
 

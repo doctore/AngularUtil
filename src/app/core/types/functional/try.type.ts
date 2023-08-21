@@ -1,5 +1,5 @@
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
-import { NullableOrUndefined, Optional } from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
 import {
   FFunction0,
   FFunction1,
@@ -32,6 +32,8 @@ import {
   TFunction8,
   TFunction9
 } from '@app-core/types/function';
+import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
+import { Either, Optional } from '@app-core/types/functional';
 
 /**
  *    Represents a computation that may either result in an error, or return a successfully computed value. It's
@@ -51,6 +53,12 @@ export abstract class Try<T> {
 
 
   /**
+   * Returns `true` is this is a {@link Success}, `false` otherwise.
+   */
+  abstract isSuccess(): boolean;
+
+
+  /**
    * Gets the value of this {@link Try} if is a {@link Success} or throws if this is an {@link Failure}.
    *
    * @return the {@link Success} value
@@ -58,12 +66,6 @@ export abstract class Try<T> {
    * @throws {@link Failure#error} if this is an {@link Failure}
    */
   abstract get(): T;
-
-
-  /**
-   * Returns `true` is this is a {@link Success}, `false` otherwise.
-   */
-  abstract isSuccess(): boolean;
 
 
   /**
@@ -77,23 +79,23 @@ export abstract class Try<T> {
   abstract getError(): Error;
 
 
-  static combine<T>(mapperFailure: TFunction2<Error, Error, Error>,
-                    mapperSuccess: FFunction2<T, T, T>,
+  static combine<T>(mapperFailure: FBinaryOperator<Error>,
+                    mapperSuccess: FBinaryOperator<T>,
                     tries: NullableOrUndefined<Try<T>[]>): Try<T>;
 
-  static combine<T>(mapperFailure: TFunction2<Error, Error, Error>,
-                    mapperSuccess: TFunction2<T, T, T>,
+  static combine<T>(mapperFailure: TBinaryOperator<Error>,
+                    mapperSuccess: TBinaryOperator<T>,
                     tries: NullableOrUndefined<Try<T>[]>): Try<T>;
 
   /**
    * Merges the given `tries` in a one result that will be:
    * <p>
    *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`
-   *      or empty. Using provided {@link TFunction2} `mapperSuccess` to get the final value added into the
+   *      or empty. Using provided {@link TBinaryOperator} `mapperSuccess` to get the final value added into the
    *      returned {@link Success}.
    * <p>
    *   2. {@link Failure} instance if there is at least one {@link Failure} in the given `tries`. Using provided
-   *      {@link TFunction2} `mapperFailure` to get the final value added into the returned {@link Success}.
+   *      {@link TBinaryOperator} `mapperFailure` to get the final value added into the returned {@link Success}.
    *
    * <pre>
    * Examples:
@@ -107,9 +109,9 @@ export abstract class Try<T> {
    * </pre>
    *
    * @param mapperFailure
-   *    {@link TFunction2} used to calculate the new {@link Failure} based on two provided ones
+   *    {@link TBinaryOperator} used to calculate the new {@link Failure} based on two provided ones
    * @param mapperSuccess
-   *    {@link FFunction2} | {@link TFunction2}  used to calculate the new {@link Success} based on two provided ones
+   *    {@link TBinaryOperator} used to calculate the new {@link Success} based on two provided ones
    * @param tries
    *    {@link Try} instances to combine
    *
@@ -117,27 +119,20 @@ export abstract class Try<T> {
    *
    * @throws {@link IllegalArgumentError} if `mapperFailure` or `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
-  static combine<T>(mapperFailure: TFunction2<Error, Error, Error>,
-                    mapperSuccess: TFunction2<T, T, T>,
+  static combine<T>(mapperFailure: TBinaryOperator<Error>,
+                    mapperSuccess: TBinaryOperator<T>,
                     tries: NullableOrUndefined<Try<T>[]>): Try<T> {
     if (ArrayUtil.isEmpty(tries)) {
       // @ts-ignore
       return Try.success<T>(null);
     }
-    AssertUtil.notNullOrUndefined(
-      mapperFailure,
-      'mapperFailure must be not null and not undefined'
-    );
-    AssertUtil.notNullOrUndefined(
-      mapperSuccess,
-      'mapperSuccess must be not null and not undefined'
-    );
-    const finalMapperSuccess = Function2.of(mapperSuccess);
+    const finalMapperFailure = BinaryOperator.of(mapperFailure);
+    const finalMapperSuccess = BinaryOperator.of(mapperSuccess);
     let result = tries![0];
     for (let i = 1; i < tries!.length; i++) {
       result = result.ap(
         tries![i],
-        mapperFailure,
+        finalMapperFailure,
         finalMapperSuccess
       );
     }
@@ -145,17 +140,17 @@ export abstract class Try<T> {
   }
 
 
-  static combineGetFirstFailure<T>(mapperSuccess: FFunction2<T, T, T>,
+  static combineGetFirstFailure<T>(mapperSuccess: FBinaryOperator<T>,
                                    tries: NullableOrUndefined<TFunction0<Try<T>>[]>): Try<T>;
 
-  static combineGetFirstFailure<T>(mapperSuccess: TFunction2<T, T, T>,
+  static combineGetFirstFailure<T>(mapperSuccess: TBinaryOperator<T>,
                                    tries: NullableOrUndefined<TFunction0<Try<T>>[]>): Try<T>;
 
   /**
    * Merges the given `tries` in a one result that will be:
    * <p>
    *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`
-   *      or empty. Using provided {@link TFunction2} `mapperSuccess` to get the final value added into the
+   *      or empty. Using provided {@link TBinaryOperator} `mapperSuccess` to get the final value added into the
    *      returned {@link Success}.
    * <p>
    *   2. {@link Failure} instance with the first {@link Failure} found in the given `tries`.
@@ -171,7 +166,7 @@ export abstract class Try<T> {
    * </pre>
    *
    * @param mapperSuccess
-   *    {@link TFunction2} used to calculate the new {@link Success} based on two provided ones
+   *    {@link TBinaryOperator} used to calculate the new {@link Success} based on two provided ones
    * @param tries
    *    {@link TFunction0} of {@link Try} instances to verify
    *
@@ -179,22 +174,19 @@ export abstract class Try<T> {
    *
    * @throws {@link IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
-  static combineGetFirstFailure<T>(mapperSuccess: TFunction2<T, T, T>,
+  static combineGetFirstFailure<T>(mapperSuccess: TBinaryOperator<T>,
                                    tries: NullableOrUndefined<TFunction0<Try<T>>[]>): Try<T> {
     if (ArrayUtil.isEmpty(tries)) {
       // @ts-ignore
       return Try.success<T>(null);
     }
-    AssertUtil.notNullOrUndefined(
-      mapperSuccess,
-      'mapperSuccess must be not null and not undefined'
-    );
+    const finalMapperSuccess = BinaryOperator.of(mapperSuccess);
     let result = Function0.of(tries![0]).apply();
     for (let i = 1; i < tries!.length; i++) {
       result = result.ap(
         Function0.of(tries![i]).apply(),
-        (e1, e2) => e1,
-        mapperSuccess
+        BinaryOperator.returnFirst<Error>(),
+        finalMapperSuccess
       );
       if (!result.isSuccess()) {
         return result;
@@ -223,7 +215,7 @@ export abstract class Try<T> {
           .apply()
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -254,7 +246,7 @@ export abstract class Try<T> {
           .apply(t1)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -290,7 +282,7 @@ export abstract class Try<T> {
           .apply(t1, t2)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -331,7 +323,7 @@ export abstract class Try<T> {
           .apply(t1, t2, t3)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -377,7 +369,7 @@ export abstract class Try<T> {
           .apply(t1, t2, t3, t4)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -428,7 +420,7 @@ export abstract class Try<T> {
           .apply(t1, t2, t3, t4, t5)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -484,7 +476,7 @@ export abstract class Try<T> {
           .apply(t1, t2, t3, t4, t5, t6)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -545,7 +537,7 @@ export abstract class Try<T> {
           .apply(t1, t2, t3, t4, t5, t6, t7)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -611,7 +603,7 @@ export abstract class Try<T> {
           .apply(t1, t2, t3, t4, t5, t6, t7, t8)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -682,7 +674,7 @@ export abstract class Try<T> {
           .apply(t1, t2, t3, t4, t5, t6, t7, t8, t9)
       );
 
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -697,7 +689,7 @@ export abstract class Try<T> {
    * @return {@link Success} with the provided `value`
    */
   static success = <T>(value: T): Try<T> =>
-    Success.of(value);
+    Success.of<T>(value);
 
 
   /**
@@ -711,31 +703,34 @@ export abstract class Try<T> {
    * @throws {@link IllegalArgumentError} if `error` is `null` or `undefined`
    */
   static failure = <T>(error: Error): Try<T> =>
-    Failure.of(error);
+    Failure.of<T>(error);
 
 
   /**
    * Merge given `t` with this {@link Try}, managing the following use cases:
    * <p>
-   *   1. this = {@link Success}, t = {@link Success}  =>  return a {@link Success} instance applying `mapperSuccess`
-   *   2. this = {@link Success}, t = {@link Failure}  =>  return the {@link Failure}
-   *   3. this = {@link Failure}, t = {@link Success}  =>  return the {@link Failure}
-   *   4. this = {@link Failure}, t = {@link Failure}  =>  return a {@link Failure} instance applying `mapperLeft`
+   *   1. `this` = {@link Success}, `t` = {@link Success}  =>  return a {@link Success} instance applying `mapperSuccess`
+   *   2. `this` = {@link Success}, `t` = {@link Failure}  =>  return the {@link Failure}
+   *   3. `this` = {@link Failure}, `t` = {@link Success}  =>  return the {@link Failure}
+   *   4. `this` = {@link Failure}, `t` = {@link Failure}  =>  return a {@link Failure} instance applying `mapperLeft`
    *
-   * If provided `t` is `null` or `undefined`, the current instance will be returned.
+   * @apiNote
+   *    If provided `t` is `null` or `undefined`, the current instance will be returned. If `this` and `t` are {@link Failure}
+   * but `mapperFailure` is `null` or `undefined` then a new {@link Failure} because not provided mapper {@link TBinaryOperator}
+   * will be returned, similar if `this` and `t` are {@link Success} but `mapperSuccess` is `null` or `undefined`.
    *
    * @param t
    *    New {@link Try} to merge with the current one
    * @param mapperFailure
-   *    {@link TFunction2} used to map this {@link Try} and given `t`, both {@link Failure}
+   *    {@link TBinaryOperator} used to map this {@link Try} and given `t`, both {@link Failure}
    * @param mapperSuccess
-   *    {@link TFunction2} used to map this {@link Try} and given `t`, both {@link Success}
+   *    {@link TBinaryOperator} used to map this {@link Try} and given `t`, both {@link Success}
    *
    * @return {@link Try} merging `t` with this {@link Try}
    */
   ap = (t: Try<T>,
-        mapperFailure: TFunction2<Error, Error, Error>,
-        mapperSuccess: TFunction2<T, T, T>): Try<T> => {
+        mapperFailure: TBinaryOperator<Error>,
+        mapperSuccess: TBinaryOperator<T>): Try<T> => {
 
     if (ObjectUtil.isNullOrUndefined(t)) {
       return this;
@@ -745,34 +740,30 @@ export abstract class Try<T> {
 
       // Current and given t are Success, a new merged Success instance will be returned
       if (t.isSuccess()) {
-        return this.mapTry(
+        return this.mapTry<T>(
           t,
           mapperSuccess
         );
-
-      // This is Success but t is Failure
-      } else {
-        return Try.failure(
-          t.getError()
-        );
       }
+      // This is Success but t is Failure
+      return Try.failure<T>(
+        t.getError()
+      );
 
     // This is a Failure instance
     } else {
 
       // Due to only this is Failure, returns this
       if (t.isSuccess()) {
-        return Try.failure(
+        return Try.failure<T>(
           this.getError()
         );
-
-      // Current and given t are Failure, a new merged Failure instance will be returned
-      } else {
-        return this.mapFailureTry(
-          t,
-          mapperFailure
-        );
       }
+      // Current and given t are Failure, a new merged Failure instance will be returned
+      return this.mapFailureTry(
+        t,
+        mapperFailure
+      );
     }
   }
 
@@ -816,7 +807,7 @@ export abstract class Try<T> {
             this.get()
           );
 
-      } catch (error) {
+      } catch(error) {
         const finalError = error instanceof Error
           ? error
           : new Error('An unknown error was thrown, error = ' + error);
@@ -872,12 +863,15 @@ export abstract class Try<T> {
    * Verifies in this {@link Try} has no value, that is:
    * <p>
    *    1. Is a {@link Failure} one.
-   *    2. Is a{@link Success} instance but its internal value is `null` or `undefined`.
+   *    2. Is a {@link Success} instance but its internal value is `null` or `undefined`.
    *
    * @return `true` is the current instance is empty, `false` otherwise
    */
   isEmpty = (): boolean =>
-    !this.isSuccess() || ObjectUtil.isNullOrUndefined(this.get());
+    !this.isSuccess() ||
+    ObjectUtil.isNullOrUndefined(
+      this.get()
+    );
 
 
   /**
@@ -901,7 +895,9 @@ export abstract class Try<T> {
       );
       return this.internalMapTry(mapper);
     }
-    return Try.failure(this.getError());
+    return Try.failure(
+      this.getError()
+    );
   }
 
 
@@ -926,7 +922,9 @@ export abstract class Try<T> {
       );
       return this.internalMapFailureTry(mapper);
     }
-    return Try.success(this.get());
+    return Try.success(
+      this.get()
+    );
   }
 
 
@@ -993,12 +991,28 @@ export abstract class Try<T> {
 
 
   /**
+   * Converts current {@link Try} to an {@link Either}.
+   *
+   * @return {@code Either#right} using {@link Try#get} if current {@link Try} is {@link Success}
+   *         {@code Either#left} using {@link Try#getError} if it is {@link Failure}
+   */
+  toEither = (): Either<Error, T> =>
+    this.isSuccess()
+      ? Either.right(
+          this.get()
+        )
+      : Either.left(
+          this.getError()
+        );
+
+
+  /**
    *    If the current {@link Try} is an instance of {@link Success} wraps the stored value into an {@link Optional} object.
    * Otherwise return {@link Optional#empty}
    *
-   * @return @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-`null` and non-`undefined`,
+   * @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-`null` and non-`undefined`,
    *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is `null` or `undefined`,
-   *         {link Optional#empty} if this is an {@link Failure}
+   *         {@link Optional#empty} if this is an {@link Failure}
    */
   toOptional = (): Optional<T> =>
     this.isEmpty()
@@ -1078,7 +1092,7 @@ export abstract class Try<T> {
             this.getError()
           )
       );
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -1100,7 +1114,7 @@ export abstract class Try<T> {
             this.get()
           )
       );
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -1108,26 +1122,26 @@ export abstract class Try<T> {
 
   /**
    *    When current {@link Try} is a {@link Failure} instance and given `t` too, manages in a safe way the
-   * {@link TFunction2} invocation to map both values.
+   * {@link TBinaryOperator} invocation to map both values.
    *
    * @param t
    *    New {@link Try} to merge with the current one
    * @param mapper
-   *    {@link TFunction2} to apply the stored exception and the one related with `t`
+   *    {@link TBinaryOperator} to apply the stored exception and the one related with `t`
    *
    * @return {@link Try} of type {@link Failure}
    */
   private mapFailureTry = (t: Try<T>,
-                           mapper: TFunction2<Error, Error, Error>): Try<T> => {
+                           mapper: TBinaryOperator<Error>): Try<T> => {
     try {
       return Try.failure(
-        Function2.of(mapper)
+        BinaryOperator.of(mapper)
           .apply(
             this.getError(),
             t.getError()
           )
       );
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -1135,7 +1149,7 @@ export abstract class Try<T> {
 
   /**
    *    When current {@link Try} is a {@link Success} instance and given `t` too, manages in a safe way the
-   * {@link TFunction2} invocation to map both values.
+   * {@link TBinaryOperator} invocation to map both values.
    *
    * @param t
    *    New {@link Try} to merge with the current one
@@ -1154,7 +1168,7 @@ export abstract class Try<T> {
             t.get()
           )
       );
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -1176,7 +1190,7 @@ export abstract class Try<T> {
             this.getError()
           )
       );
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -1196,7 +1210,7 @@ export abstract class Try<T> {
         .apply(
           this.getError()
         );
-    } catch (error) {
+    } catch(error) {
       return Try.failureResultHandler(error);
     }
   }
@@ -1232,9 +1246,12 @@ export class Success<T> extends Try<T> {
    *
    * @return an {@link Success} with the value present
    */
-  static of = <T>(value: T): Success<T> => {
-    return new Success<T>(value);
-  }
+  static of = <T>(value: T): Success<T> =>
+    new Success<T>(value);
+
+
+  override isSuccess = (): boolean =>
+    true;
 
 
   override get = (): T =>
@@ -1244,10 +1261,6 @@ export class Success<T> extends Try<T> {
   override getError = (): Error => {
     throw new ReferenceError("Is not possible to get exception value of a 'Success' Try");
   }
-
-
-  override isSuccess = (): boolean =>
-    true;
 
 }
 
@@ -1282,6 +1295,10 @@ export class Failure<T> extends Try<T> {
   }
 
 
+  override isSuccess = (): boolean =>
+    false;
+
+
   override get = (): T => {
     throw this.error;
   }
@@ -1289,9 +1306,5 @@ export class Failure<T> extends Try<T> {
 
   override getError = (): Error =>
     this.error;
-
-
-  override isSuccess = (): boolean =>
-    false;
 
 }

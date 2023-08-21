@@ -8,8 +8,9 @@ import {
   TFunction2
 } from '@app-core/types/function';
 import { FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
+import { Optional } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
-import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
+import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
 import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import * as _ from 'lodash';
 

@@ -1,5 +1,6 @@
+import { Optional } from '@app-core/types/functional';
 import { ObjectUtil } from '@app-core/util';
-import { NullableOrUndefined, Optional } from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
 import { FConsumer1 } from '@app-core/types/consumer';
 import { FFunction0, FFunction1, Function0, Function1, PartialFunction } from '@app-core/types/function';
 import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
@@ -8,7 +9,7 @@ import { IllegalArgumentError } from '@app-core/errors';
 /**
  * To invoke only this test:
  *
- *    ng test --include src/app/core/types/optional.type.spec.ts
+ *    ng test --include src/app/core/types/functional/optional.type.spec.ts
  */
 describe('Optional', () => {
 
@@ -200,6 +201,17 @@ describe('Optional', () => {
 
   describe('filter', () => {
 
+    it('when the Optional is not empty but predicate is null or undefined then an error is thrown', () => {
+      const optional = Optional.of(9);
+
+      // @ts-ignore
+      expect(() => optional.filter(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => optional.filter(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when the Optional is empty then predicate is not invoked and an empty Optional is returned', () => {
       const isEven: FPredicate1<number> =
         (n: NullableOrUndefined<number>) => 0 == n! % 2;
@@ -253,6 +265,17 @@ describe('Optional', () => {
 
 
   describe('flatMap', () => {
+
+    it('when the Optional is not empty but mapper is null or undefined then an error is thrown', () => {
+      const optional = Optional.of(9);
+
+      // @ts-ignore
+      expect(() => optional.flatMap(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => optional.flatMap(undefined)).toThrowError(IllegalArgumentError);
+    });
+
 
     it('when the Optional is empty then mapper is not invoked', () => {
       const fromNumToString: FFunction1<number, Optional<string>> =

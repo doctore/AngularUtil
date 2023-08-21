@@ -1,5 +1,5 @@
 import { AssertUtil, ObjectUtil } from '@app-core/util';
-import { NullableOrUndefined, Optional } from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
 import {
   FFunction1,
   FFunction2,
@@ -8,6 +8,7 @@ import {
   TFunction1,
   TFunction2
 } from '@app-core/types/function';
+import { Optional } from '@app-core/types/functional';
 import { FPredicate1, FPredicate2, Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/types/predicate';
 
 /**

@@ -8,8 +8,9 @@ import {
   TFunction3
 } from '@app-core/types/function';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
+import { Optional } from '@app-core/types/functional';
 import { Predicate2, TPredicate2 } from '@app-core/types/predicate';
-import { Nullable, NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
+import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 
 /**

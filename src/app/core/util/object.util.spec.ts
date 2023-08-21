@@ -1,6 +1,6 @@
 import { ObjectUtil } from '@app-core/util';
 import { FFunction0, Function0 } from '@app-core/types/function';
-import { Optional } from '@app-core/types';
+import { Optional } from '@app-core/types/functional';
 
 /**
  * To invoke only this test:

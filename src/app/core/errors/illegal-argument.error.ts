@@ -3,9 +3,9 @@
  */
 export class IllegalArgumentError extends Error {
 
-  constructor (m: string) {
+  constructor(m: string) {
     super(m);
-    this.name = IllegalArgumentError.name;
+    this.name = 'IllegalArgumentError';
     Object.setPrototypeOf(this, IllegalArgumentError.prototype);
   }
 

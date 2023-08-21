@@ -125,6 +125,8 @@ export class Optional<T> {
    *
    * @return an {@link Optional} describing the value of this {@link Optional}, if it is present and matches the
    *         given {@link TPredicate1}, {@link Optional#empty} otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `this` is not empty but `predicate` is `null` or `undefined`
    */
   filter = (predicate: TPredicate1<T>): Optional<T> =>
     this.isPresent() && Predicate1.of(predicate).apply(this.value!)
@@ -145,6 +147,8 @@ export class Optional<T> {
    *
    * @return the result of applying an {@link Optional}-bearing mapping {@link TFunction1} to this {@link Optional}'s
    *         value, if a value is present, otherwise an empty {@link Optional}
+   *
+   * @throws {@link IllegalArgumentError} if `this` is not empty but `mapper` is `null` or `undefined`
    */
   flatMap = <U>(mapper: TFunction1<T, Optional<U>>): Optional<U> =>
     this.isPresent()

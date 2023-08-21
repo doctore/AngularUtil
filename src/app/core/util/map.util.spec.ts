@@ -1,8 +1,9 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
 import { FFunction0, FFunction2, FFunction3, Function0, Function2, PartialFunction } from '@app-core/types/function';
+import { Optional } from '@app-core/types/functional';
 import { FBinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate2, Predicate2 } from '@app-core/types/predicate';
-import { NullableOrUndefined, Optional } from '@app-core/types';
+import { NullableOrUndefined } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
 
 

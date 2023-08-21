@@ -1,6 +1,7 @@
 import { ArrayUtil } from '@app-core/util';
 import { Function0, isFFunction0, TFunction0 } from '@app-core/types/function';
-import { NullableOrUndefined, Optional, OrUndefined } from '@app-core/types';
+import { Optional } from '@app-core/types/functional';
+import { NullableOrUndefined, OrUndefined } from '@app-core/types';
 import { Predicate1 } from '@app-core/types/predicate';
 import * as _ from 'lodash';
 
