@@ -917,4 +917,140 @@ export class ArrayUtil {
     );
   }
 
+
+  /**
+   * Converts the given `sourceArray` to a {@link Map} using provided {@code partialFunction}.
+   *
+   * @apiNote
+   *    If several elements return the same key, the last one will be the final value.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3, 1]                         [(1, 2)
+   *    PartialFunction.of(                   (3, 4)]
+   *      (n: number) => 1 == n % 2,
+   *      (n: number) => [n, 1 + n]
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform elements of `sourceArray`
+   *
+   * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceArray`
+   *         on which it is defined and collecting the results
+   *
+   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                        partialFunction: PartialFunction<T, [K, V]>): Map<K, V>;
+
+
+  /**
+   *    Converts the given `sourceArray` into a {@link Map} using provided `discriminatorKey` and {@link Function1#identity}
+   * as values of returned {@link Map}.
+   *
+   * @apiNote
+   *    If several elements return the same key, the last one will be the final value.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                   Result:
+   *    [1, 2, 3, 1]                  [('1', 1),
+   *    (n: number) => '' + n          ('2', 2),
+   *                                   ('3', 3)]
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to transform and include in the returned {@link Map}
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   *
+   * @return {@link Map} applying `discriminatorKey` to each element of `sourceArray` to get {@link Map}'s key,
+   *         and current element as {@link Map}'s value
+   *
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static toMap<T, K>(sourceArray: NullableOrUndefined<T[]>,
+                     discriminatorKey: TFunction1<T, K>): Map<K, T>;
+
+
+  /**
+   *    Converts the given `sourceArray` into a {@link Map} using provided `discriminatorKey` and `valueMapper` if the
+   * current element verifies `filterPredicate` (if provided).
+   *
+   * @apiNote
+   *    If several elements return the same key, the last one will be the final value.
+   *    If `valueMapper` is `null` or `undefined` then {@link Function1#identity} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                   Result:
+   *    [1, 2, 3, 1]                  [('1', 2),
+   *    (n: number) => '' + n          ('3', 4)]
+   *    (n: number) => 1 + n
+   *    (n: number) => 1 == n % 2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to transform and include in the returned {@link Map}
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param valueMapper
+   *    {@link TFunction1} to transform elements of `sourceArray` into values of the returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
+   *         that verifies `filterPredicate`
+   *
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                        discriminatorKey: TFunction1<T, K>,
+                        valueMapper: TFunction1<T, V>,
+                        filterPredicate?: TPredicate1<T>): Map<K, V>;
+
+
+  static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
+                        partialFunctionOrDiscriminatorKey: PartialFunction<T, [K, V]> | TFunction1<T, K>,
+                        valueMapper?: TFunction1<T, V>,
+                        filterPredicate?: TPredicate1<T>): Map<K, V> {
+    const result: Map<K, V> = new Map<K, V>();
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        partialFunctionOrDiscriminatorKey,
+        'partialFunctionOrDiscriminatorKey must be not null and not undefined'
+      );
+      const finalValueMapper = valueMapper
+        ? valueMapper
+        : Function1.identity()
+
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
+        ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
+        : PartialFunction.ofToTuple(
+            filterPredicate,
+            <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
+            <TFunction1<T, V>>finalValueMapper
+          );
+
+      for (let item of sourceArray!) {
+        if (finalPartialFunction.isDefinedAt(item)) {
+          const pairKeyValue: [K, V] = <[K, V]>finalPartialFunction.apply(item);
+          result.set(
+            pairKeyValue[0],
+            pairKeyValue[1]
+          );
+        }
+      }
+    }
+    return result;
+  }
+
 }
