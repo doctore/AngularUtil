@@ -665,6 +665,14 @@ describe('Optional', () => {
     });
 
 
+    it('when the Optional is empty and errorSupplier is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Optional.of(null).orElseThrow(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Optional.of(undefined).orElseThrow(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
     it('when the Optional is empty then errorSupplier is invoked and an error is returned', () => {
       const notValidArgument: FFunction0<IllegalArgumentError> =
         () => new IllegalArgumentError('Not valid argument');

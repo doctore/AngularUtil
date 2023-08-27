@@ -223,10 +223,7 @@ export class Optional<T> {
     if (this.isPresent()) {
       return this.value!;
     }
-    if (Function0.isFunction(other)) {
-      return other.apply();
-    }
-    if (isFFunction0(other)) {
+    if (Function0.isFunction(other) || isFFunction0(other)) {
       return Function0.of(other)
         .apply();
     }
@@ -301,6 +298,8 @@ export class Optional<T> {
    *
    * @return the {@link Optional}'s value if non-`null`,
    *         otherwise {@link Error} using provided {@link TFunction0}
+   *
+   * @throws {@link IllegalArgumentError} if `errorSupplier` is `null` or `undefined` and this {@link Optional} is empty
    */
   orElseThrow = <X extends Error>(errorSupplier: TFunction0<X>): T => {
     if (this.isPresent()) {

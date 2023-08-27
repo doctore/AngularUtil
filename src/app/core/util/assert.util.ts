@@ -59,11 +59,9 @@ export class AssertUtil {
       value,
       'value is null or undefined'
     );
-    if (Function0.isFunction(errorSupplierOrMessage)) {
-      throw errorSupplierOrMessage.apply();
-    }
-    if (isFFunction0(errorSupplierOrMessage)) {
-      throw Function0.of(errorSupplierOrMessage).apply();
+    if (Function0.isFunction(errorSupplierOrMessage) || isFFunction0(errorSupplierOrMessage)) {
+      throw Function0.of(errorSupplierOrMessage)
+        .apply();
     }
     throw new IllegalArgumentError(
       errorSupplierOrMessage
@@ -115,10 +113,7 @@ export class AssertUtil {
     if (ObjectUtil.nonNullOrUndefined(value)) {
       return true;
     }
-    if (Function0.isFunction(errorSupplierOrMessage)) {
-      throw errorSupplierOrMessage.apply();
-    }
-    if (isFFunction0(errorSupplierOrMessage)) {
+    if (Function0.isFunction(errorSupplierOrMessage) || isFFunction0(errorSupplierOrMessage)) {
       throw Function0.of(errorSupplierOrMessage).apply();
     }
     throw new IllegalArgumentError(
