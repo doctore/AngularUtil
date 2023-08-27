@@ -2,7 +2,7 @@ import { Optional, Try } from '@app-core/types/functional';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
 import { BinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
-import { Function0, Function1, TFunction0, TFunction1 } from '@app-core/types/function';
+import { Function0, Function1, isFFunction0, TFunction0, TFunction1 } from '@app-core/types/function';
 
 /**
  *    Represents a value of one of two possible types (a disjoint union). An instance of Either is an instance of
@@ -215,6 +215,94 @@ export abstract class Either<L, R> {
 
 
   /**
+   *    Applies mapperRight` if current {@link Either} is a {@link Right} instance, `mapperLeft` if it is a {@link Left},
+   * transforming internal values into another one.
+   *
+   * <pre>
+   * Example:
+   *
+   *   // Return 11
+   *   Either.right<string, number>(11)
+   *         .fold(
+   *              s -> s.length,
+   *              Function1.identity()
+   *           );
+   *
+   *   // Return 3
+   *   Either.left<string, number>('abc')
+   *         .fold(
+   *              s -> s.length,
+   *              Function1.identity()
+   *           );
+   * </pre>
+   *
+   * @param mapperLeft
+   *    The mapping {@link TFunction1} to apply the value of a {@link Left} instance
+   * @param mapperRight
+   *    The mapping {@link TFunction1} to apply the value of a {@link Right} instance
+   *
+   * @return the result of applying the suitable {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if `mapperRight` is `null` or `undefined` and the current instance is a {@link Right} one
+   *                                      or `mapperLeft` is `null` or `undefined` and the current instance is a {@link Left} one
+   */
+  fold = <U>(mapperLeft: TFunction1<L, U>,
+             mapperRight: TFunction1<R, U>): U => {
+    if (this.isRight()) {
+      AssertUtil.notNullOrUndefined(
+        mapperRight,
+        'mapperRight must be not null and not undefined'
+      );
+      return Function1.of(mapperRight)
+        .apply(
+          this.get()
+        );
+    }
+    AssertUtil.notNullOrUndefined(
+      mapperLeft,
+      'mapperLeft must be not null and not undefined'
+    );
+    return Function1.of(mapperLeft)
+      .apply(
+        this.getLeft()
+      );
+  }
+
+
+  /**
+   * Returns the stored value if the underline instance is {@link Right}, otherwise returns `defaultValue`.
+   *
+   * @param defaultValue
+   *    Returned value if current instance is an {@link Left} one
+   *
+   * @return @type {T} with value stored in {@link Right} instance,
+   *         `defaultValue` otherwise
+   */
+  getOrElse = (defaultValue: R): R =>
+    this.isRight()
+      ? this.get()
+      : defaultValue;
+
+
+  /**
+   * Returns the stored value if the underline instance is {@link Right}, otherwise returns `defaultValue`.
+   *
+   * @param defaultValue
+   *    Returned value if current instance is an {@link Left} one
+   *
+   * @return {@link Optional#empty} if this {@link Either} is an empty {@link Right} instance or provided `defaultValue` is `null` or `undefined`,
+   *         {@link Optional} with the internal value if this {@link Either} is non empty {@link Right} instance,
+   *         {@link Optional} with provided `defaultValue` otherwise
+   */
+  getOrElseOptional = (defaultValue: R): Optional<R> =>
+    Optional.ofNullable(
+      this.getOrElse(
+        defaultValue
+      )
+    );
+
+
+  /**
    * Verifies if the current instance has no value, that is:
    * <p>
    *    1. Is a {@link Failure} one.
@@ -290,6 +378,55 @@ export abstract class Either<L, R> {
 
 
   /**
+   * Returns this {@link Either} if it is {@link Right}, otherwise returns `other`.
+   *
+   * @param other
+   *    An alternative {@link Either}
+   *
+   * @return current {@link Either} if {@link Right}, `other` otherwise.
+   */
+  orElse(other: Either<L, R>): Either<L, R>;
+
+
+  /**
+   * Returns this {@link Either} if it is {@link Right}, otherwise returns the result of evaluating `other`.
+   *
+   * @param other
+   *    {@link TFunction0} returning an alternative {@link Either}
+   *
+   * @return current {@link Either} if {@link Right}, `supplier` result otherwise.
+   */
+  orElse(other: TFunction0<Either<L, R>>): Either<L, R>;
+
+
+  orElse(other: TFunction0<Either<L, R>> | Either<L, R>): Either<L, R> {
+    if (this.isRight()) {
+      return this;
+    }
+    if (Function0.isFunction(other) || isFFunction0(other)) {
+      return Function0.of(other)
+        .apply();
+    }
+    return other;
+  }
+
+
+  /**
+   * If this is a {@link Left}, then return the left value in a new {@link Right} instance or vice versa.
+   *
+   * @return new {@link Either}
+   */
+  swap = (): Either<R, L> =>
+    this.isRight()
+      ? Either.left<R, L>(
+          this.get()
+        )
+      : Either.right<R, L>(
+          this.getLeft()
+        );
+
+
+  /**
    *    Transforms this {@link Either} into a {@link Optional} instance. If the current {@link Either} is an instance
    * of {@link Right} wraps the stored value into an {@link Optional} object, {@link Optional#empty} otherwise.
    *
@@ -303,6 +440,26 @@ export abstract class Either<L, R> {
       : Optional.of(
           this.get()
         );
+
+
+  /**
+   *    Transforms this {@link Either} into a {@link Try} instance. If the current {@link Either} is an instance of
+   * {@link Right} wraps the stored value into a {@link Success} one, {@link Failure} otherwise.
+   *
+   * @param mapperLeft
+   *   {@link TFunction1} that maps the {@link Left} value to a {@link Error} instance
+   *
+   * @return {@link Success} if `this` is {@link Right},
+   *         {@link Failure} otherwise.
+   *
+   * @throws {@link IllegalArgumentError} if `mapperLeft` is `null` or `undefined` and the current instance is a {@link Left} one
+   */
+  toTry = (mapperLeft: TFunction1<L, Error>): Try<R> =>
+    this.mapLeft(mapperLeft)
+      .fold<Try<R>>(
+        Try.failure,
+        Try.success
+      );
 
 }
 

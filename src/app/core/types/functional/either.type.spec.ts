@@ -1,6 +1,6 @@
 import { Either, Left, Right } from '@app-core/types/functional';
 import { Nullable, NullableOrUndefined } from '@app-core/types';
-import { FFunction0, FFunction1, Function0 } from '@app-core/types/function';
+import { FFunction0, FFunction1, Function0, Function1 } from '@app-core/types/function';
 import { FBinaryOperator, BinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
@@ -360,6 +360,96 @@ describe('Either', () => {
 
 
 
+  describe('fold', () => {
+
+    it('when the Either instance is Left but mapperLeft is null or undefined then an error is thrown', () => {
+      const sameNumber: FFunction1<number, number> =
+        Function1.identity<number>().getMapper();
+
+      const either = Either.left<string, number>('abc');
+
+      // @ts-ignore
+      expect(() => either.fold(null, sameNumber)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => either.fold(undefined, sameNumber)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Either instance is Right but mapperRight is null or undefined then an error is thrown', () => {
+      const stringLength: FFunction1<string, number> =
+        (s: string) => s.length;
+
+      const either = Either.right(11);
+
+      // @ts-ignore
+      expect(() => either.fold(stringLength, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => either.fold(stringLength, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Either is Left then mapperLeft is invoked and mapperRight is not', () => {
+      const stringLength: FFunction1<string, number> =
+        (s: string) => s.length;
+
+      const sameNumber: FFunction1<number, number> =
+        Function1.identity<number>().getMapper();
+
+      const stringLengthSpy = jasmine.createSpy('stringLength', stringLength);
+      const sameNumberSpy = jasmine.createSpy('sameNumber', sameNumber);
+
+      Either.left<string, number>('abc').fold(stringLengthSpy, sameNumberSpy);
+
+      expect(stringLengthSpy.calls.count()).toBe(1);
+      expect(sameNumberSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Either is Right then mapperRight is invoked and mapperLeft is not', () => {
+      const stringLength: FFunction1<string, number> =
+        (s: string) => s.length;
+
+      const sameNumber: FFunction1<number, number> =
+        Function1.identity<number>().getMapper();
+
+      const stringLengthSpy = jasmine.createSpy('stringLength', stringLength);
+      const sameNumberSpy = jasmine.createSpy('sameNumber', sameNumber);
+
+      Either.right<string, number>(11).fold(stringLengthSpy, sameNumberSpy);
+
+      expect(stringLengthSpy.calls.count()).toBe(0);
+      expect(sameNumberSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Either is Left then mapperLeft result is returned', () => {
+      const stringLength: Function1<string, number> =
+        Function1.of((s: string) => s.length);
+
+      const sameNumber: Function1<number, number> =
+        Function1.identity<number>();
+
+      const result = Either.left<string, number>('abc').fold(stringLength, sameNumber);
+
+      expect(result).toEqual(3);
+    });
+
+
+    it('when the Either is Right then mapperRight result is returned', () => {
+      const stringLength = (s: string) => s.length;
+      const sameNumber = (n: number) => n;
+
+      const result = Either.right<string, number>(11).fold(stringLength, sameNumber);
+
+      expect(result).toEqual(11);
+    });
+
+  });
+
+
+
   describe('isEmpty', () => {
 
     it('when the Either instance is an empty Right one then true is returned', () => {
@@ -380,6 +470,52 @@ describe('Either', () => {
     it('when the Either instance is a Left one then false is returned', () => {
       expect(Left.of('abc').isEmpty()).toBeTrue();
       expect(Left.of(19).isEmpty()).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('getOrElse', () => {
+
+    it('when the Either instance is a Left one then the defaultValue is returned', () => {
+      const either = Either.left<number, NullableOrUndefined<string>>(19);
+
+      expect(either.getOrElse(undefined)).toBeUndefined();
+      expect(either.getOrElse(null)).toBeNull();
+      expect(either.getOrElse('12')).toEqual('12');
+    });
+
+
+    it('when the Either instance is a Right one then the content of Right is returned', () => {
+      expect(Right.of<number, NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
+      expect(Right.of<number, Nullable<string>>(null).getOrElse('20')).toBeNull();
+      expect(Right.of<number, string>('19').getOrElse('20')).toEqual('19');
+    });
+
+  });
+
+
+
+  describe('getOrElseOptional', () => {
+
+    it('when the Either instance is a Left one then then an Optional with the defaultValue is returned', () => {
+      const either = Either.left<number, NullableOrUndefined<string>>(19);
+
+      expect(either.getOrElseOptional(undefined).isPresent()).toBeFalse();
+      expect(either.getOrElseOptional(null).isPresent()).toBeFalse();
+
+      expect(either.getOrElseOptional('12').isPresent()).toBeTrue();
+      expect(either.getOrElseOptional('12').get()).toEqual('12');
+    });
+
+
+    it('when the Either instance is a Right one then an Optional with the content of Right is returned', () => {
+      expect(Right.of<number, NullableOrUndefined<string>>(undefined).getOrElseOptional('11').isPresent()).toBeFalse();
+      expect(Right.of<number, Nullable<string>>(null).getOrElseOptional('20').isPresent()).toBeFalse();
+
+      expect(Right.of<number, Nullable<string>>('19').getOrElseOptional('20').isPresent()).toBeTrue();
+      expect(Right.of<number, Nullable<string>>('19').getOrElseOptional('20').get()).toEqual('19');
     });
 
   });
@@ -518,6 +654,84 @@ describe('Either', () => {
 
 
 
+  describe('orElse', () => {
+
+    it('when the Either instance is Left and provided other is an Either instance then other is returned', () => {
+      const rightEither = Either.right<number, string>('abc');
+      const leftEither = Either.left<number, string>(11);
+
+      const result = leftEither.orElse(rightEither);
+
+      expect(result.isRight()).toBeTrue();
+      expect(result.get()).toEqual(rightEither.get());
+    });
+
+
+    it('when the Either instance is Left and provided other is a TFunction0 instance then other is returned', () => {
+      const rightEither = Either.right<number, string>('abc');
+      const leftEither = Either.left<number, string>(11);
+
+      const otherRaw = () => rightEither;
+
+      const otherFFunction: FFunction0<Either<number, string>> =
+        () => rightEither;
+
+      const otherFunction: Function0<Either<number, string>> =
+        Function0.of(() => rightEither);
+
+      expect(leftEither.orElse(otherRaw).isRight()).toBeTrue();
+      expect(leftEither.orElse(otherRaw).get()).toEqual(rightEither.get());
+
+      expect(leftEither.orElse(otherFFunction).isRight()).toBeTrue();
+      expect(leftEither.orElse(otherFFunction).get()).toEqual(rightEither.get());
+
+      expect(leftEither.orElse(otherFunction).isRight()).toBeTrue();
+      expect(leftEither.orElse(otherFunction).get()).toEqual(rightEither.get());
+    });
+
+
+    it('when the Try instance is Right then same Try is returned', () => {
+      const rightEither = Either.right<number, string>('abc');
+      const leftEither = Either.left<number, string>(11);
+
+      const other = () => leftEither;
+
+      expect(rightEither.orElse(leftEither).isRight()).toBeTrue();
+      expect(rightEither.orElse(leftEither).get()).toEqual(rightEither.get());
+
+      expect(rightEither.orElse(other).isRight()).toBeTrue();
+      expect(rightEither.orElse(other).get()).toEqual(rightEither.get());
+    });
+
+  });
+
+
+
+  describe('swap', () => {
+
+    it('when the Either instance is Left then new Right one is returned', () => {
+      const either = Either.left<string, number>('abc');
+
+      const result = either.swap();
+
+      expect(result.isRight()).toBeTrue();
+      expect(result.get()).toEqual('abc');
+    });
+
+
+    it('when the Either instance is Right then new Left one is returned', () => {
+      const either = Either.right<string, number>(12);
+
+      const result = either.swap();
+
+      expect(result.isRight()).toBeFalse();
+      expect(result.getLeft()).toEqual(12);
+    });
+
+  });
+
+
+
   describe('toOptional', () => {
 
     it('when the Either instance is an empty Right one then empty Optional is returned', () => {
@@ -544,6 +758,80 @@ describe('Either', () => {
 
       expect(Either.left(12).toOptional().isPresent()).toBeFalse();
       expect(Either.left('abc').toOptional().isPresent()).toBeFalse();
+    });
+
+  });
+
+
+
+
+  describe('toTry', () => {
+
+    it('when the Either instance is an empty Right one then empty Success is returned', () => {
+      const wrapIntoAnError: FFunction1<string, Error> =
+        (s: string) => new Error(s);
+
+      const e1 = Either.right<string, NullableOrUndefined<number>>(null);
+      const e2 = Either.right<string, NullableOrUndefined<number>>(undefined);
+
+      const e1Result = e1.toTry(wrapIntoAnError);
+      const e2Result = e2.toTry(wrapIntoAnError);
+
+      expect(e1Result.isSuccess()).toBeTrue();
+      expect(e1Result.isEmpty()).toBeTrue();
+
+      expect(e2Result.isSuccess()).toBeTrue();
+      expect(e2Result.isEmpty()).toBeTrue();
+    });
+
+
+    it('when the Either instance is a non empty Right one then non empty Success is returned', () => {
+      const wrapIntoAnError: FFunction1<string, Error> =
+        (s: string) => new Error(s);
+
+      const e1 = Either.right<string, number>(11);
+      const e2 = Either.right<string, string>('abc');
+
+      const e1Result = e1.toTry(wrapIntoAnError);
+      const e2Result = e2.toTry(wrapIntoAnError);
+
+      expect(e1Result.isSuccess()).toBeTrue();
+      expect(e1Result.isEmpty()).toBeFalse();
+      expect(e1Result.get()).toEqual(e1.get());
+
+      expect(e2Result.isSuccess()).toBeTrue();
+      expect(e2Result.isEmpty()).toBeFalse();
+      expect(e2Result.get()).toEqual(e2.get());
+    });
+
+
+    it('when the Either instance is a Left one but mapperLeft is null or undefined then an error is thrown', () => {
+      const e1 = Either.left(12);
+      const e2 = Either.left('abc');
+
+      // @ts-ignore
+      expect(() => e1.toTry(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => e2.toTry(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Either instance is a Left one and mapperLeft is valid then an instance of Failure applying mapperLeft is returned', () => {
+      const wrapIntoAnError: FFunction1<string, Error> =
+        (s: string) => new Error(s);
+
+      const e1 = Either.left('abc');
+      const e2 = Either.left('xyz');
+
+      const e1Result = e1.toTry(wrapIntoAnError);
+      const e2Result = e2.toTry(wrapIntoAnError);
+
+      expect(e1Result.isSuccess()).toBeFalse();
+      expect(e1Result.getError().message).toEqual(e1.getLeft());
+
+      expect(e2Result.isSuccess()).toBeFalse();
+      expect(e2Result.getError().message).toEqual(e2.getLeft());
     });
 
   });
