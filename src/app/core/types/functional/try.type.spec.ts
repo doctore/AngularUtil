@@ -901,7 +901,7 @@ describe('Try', () => {
     });
 
 
-    it('when the Try instance is a Failure one then the defaultValue is returned', () => {
+    it('when the Try instance is a Failure one then an Optional with the defaultValue is returned', () => {
       const failure = Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error'));
 
       expect(failure.getOrElseOptional(null).isPresent()).toBeFalse();
@@ -1079,6 +1079,65 @@ describe('Try', () => {
 
       expect(result.isSuccess()).toBeTrue();
       expect(result.get()).toEqual(11);
+    });
+
+  });
+
+
+
+  describe('orElse', () => {
+
+    it('when the Try instance is Failure and provided other is a Try instance then other is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const successTry = Try.success(19);
+      const failureTry = Try.failure<number>(illegalArgumentError);
+
+      const result = failureTry.orElse(successTry);
+
+      expect(result.isSuccess()).toBeTrue();
+      expect(result.get()).toEqual(successTry.get());
+    });
+
+
+    it('when the Try instance is Failure and provided other is a TFunction0 instance then other is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const successTry = Try.success(19);
+      const failureTry = Try.failure<number>(illegalArgumentError);
+
+      const otherRaw = () => successTry;
+
+      const otherFFunction: FFunction0<Try<number>> =
+        () => successTry;
+
+      const otherFunction: Function0<Try<number>> =
+        Function0.of(() => successTry);
+
+      expect(failureTry.orElse(otherRaw).isSuccess()).toBeTrue();
+      expect(failureTry.orElse(otherRaw).get()).toEqual(successTry.get());
+
+      expect(failureTry.orElse(otherFFunction).isSuccess()).toBeTrue();
+      expect(failureTry.orElse(otherFFunction).get()).toEqual(successTry.get());
+
+      expect(failureTry.orElse(otherFunction).isSuccess()).toBeTrue();
+      expect(failureTry.orElse(otherFunction).get()).toEqual(successTry.get());
+    });
+
+
+    it('when the Try instance is Right then same Try is returned', () => {
+      const illegalArgumentError = new IllegalArgumentError('IllegalArgumentError: there was an error');
+
+      const successTry = Try.success(19);
+      const failureTry = Try.failure<number>(illegalArgumentError);
+
+      const other = () => failureTry;
+
+      expect(successTry.orElse(failureTry).isSuccess()).toBeTrue();
+      expect(successTry.orElse(failureTry).get()).toEqual(successTry.get());
+
+      expect(successTry.orElse(other).isSuccess()).toBeTrue();
+      expect(successTry.orElse(other).get()).toEqual(successTry.get());
     });
 
   });

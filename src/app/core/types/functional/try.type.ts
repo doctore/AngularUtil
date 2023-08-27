@@ -21,6 +21,7 @@ import {
   Function7,
   Function8,
   Function9,
+  isFFunction0,
   TFunction0,
   TFunction1,
   TFunction2,
@@ -197,6 +198,7 @@ export abstract class Try<T> {
 
 
   static ofFunction0<T>(func: FFunction0<T>): Try<T>;
+
   static ofFunction0<T>(func: TFunction0<T>): Try<T>;
 
   /**
@@ -775,17 +777,17 @@ export abstract class Try<T> {
    *
    * <pre>
    * Example:
-   *   const tryResult = Try.ofFunction1(
-   *      p1,
-   *      (n) => {
-   *         if (0 > n) {
-   *           throw new SyntaxError('Invalid number');
-   *         } else {
-   *            return 2 * n;
-   *         }
-   *      }
-   *   );
-   *   tryResultToString = tryResult.fold((e) => e.message, (n) => 'Valid number: ' + n);
+   *
+   *   const fromNumToString = (n: number) => '' + n;
+   *   const returnErrorMessage = (error: Error) => error.message;
+   *
+   *   // Return '19'
+   *   Try.success(19)
+   *      .fold(returnErrorMessage, fromNumToString);
+   *
+   *  // Return 'IllegalArgumentError: there was an error'
+   *   Try.failure(new IllegalArgumentError('IllegalArgumentError: there was an error'))
+   *      .fold(returnErrorMessage, fromNumToString);
    * </pre>
    *
    * @param mapperFailure
@@ -929,6 +931,39 @@ export abstract class Try<T> {
 
 
   /**
+   * Returns this {@link Try} if it is {@link Success}, otherwise returns `other`.
+   *
+   * @param other
+   *    An alternative {@link Try}
+   *
+   * @return current {@link Try} if {@link Success}, `other` otherwise.
+   */
+  orElse(other: Try<T>): Try<T>;
+
+
+  /**
+   * Returns this {@link Try} if it is {@link Success}, otherwise returns the result of evaluating `other`.
+   *
+   * @param other
+   *    {@link TFunction0} returning an alternative {@link Try}
+   *
+   * @return current {@link Try} if {@link Success}, `supplier` result otherwise.
+   */
+  orElse(other: TFunction0<Try<T>>): Try<T>;
+
+
+  orElse(other: TFunction0<Try<T>> | Try<T>): Try<T> {
+    if (this.isSuccess()) {
+      return this;
+    }
+    if (Function0.isFunction(other) || isFFunction0(other)) {
+      return this.getWithOtherTry(other);
+    }
+    return other;
+  }
+
+
+  /**
    *    Returns this {@link Try} if it is {@link Success}, otherwise tries to recover the {@link Error} of the
    * {@link Failure} applying `mapper`.
    *
@@ -1030,6 +1065,21 @@ export abstract class Try<T> {
    * <p>
    *    If invoking given `mapperFailure` or `mapperSuccess` an {@link Error} is thrown then returned {@link Try}
    * will be {@link Failure}.
+   *
+   * <pre>
+   * Example:
+   *
+   *   const fromNumToString = (n: number) => '' + n;
+   *   const getErrorMessage = (e: Error) => e.message;
+   *
+   *   // Return '11'
+   *   Try.success(11)
+   *      .transform(getErrorMessage, fromNumToString);
+   *
+   *   // Return 'IllegalArgumentError: there was an error'
+   *   Try.failure(new IllegalArgumentError('IllegalArgumentError: there was an error'))
+   *      .transform(getErrorMessage, fromNumToString);
+   * </pre>
    *
    * @param mapperFailure
    *    {@link TFunction1} with the failure mapping operation
@@ -1210,6 +1260,25 @@ export abstract class Try<T> {
         .apply(
           this.getError()
         );
+    } catch(error) {
+      return Try.failureResultHandler(error);
+    }
+  }
+
+
+  /**
+   * When current {@link Try} is a {@link Failure} instance, manages in a safe way the {@link TFunction0} invocation.
+   *
+   * @param other
+   *    {@link TFunction0} to apply the stored value if the current instance is a {@link Failure} one
+   *
+   * @return {@link Try}
+   */
+  private getWithOtherTry = (other: TFunction0<Try<T>>): Try<T> => {
+    try {
+      return Function0.of(other)
+        .apply();
+
     } catch(error) {
       return Try.failureResultHandler(error);
     }
