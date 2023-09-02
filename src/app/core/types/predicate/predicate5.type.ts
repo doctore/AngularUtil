@@ -198,6 +198,46 @@ export class Predicate5<T1, T2, T3, T4, T5> {
 
 
   /**
+   * Returns a {@link Predicate5} that verifies if provided parameters are `null` or `undefined`.
+   *
+   * @return {@link Predicate5} returning `true` if given parameters are `null` or `undefined`, `false` otherwise
+   */
+  static isNull = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
+    new Predicate5<T1, T2, T3, T4, T5>(
+      (t1: T1,
+       t2: T2,
+       t3: T3,
+       t4: T4,
+       t5: T5) =>
+        ObjectUtil.isNullOrUndefined(t1) &&
+        ObjectUtil.isNullOrUndefined(t2) &&
+        ObjectUtil.isNullOrUndefined(t3) &&
+        ObjectUtil.isNullOrUndefined(t4) &&
+        ObjectUtil.isNullOrUndefined(t5)
+    );
+
+
+  /**
+   * Returns a {@link Predicate5} that verifies if provided parameters are not `null` or `undefined`.
+   *
+   * @return {@link Predicate5} returning `true` if given parameters are not `null` or `undefined`, `false` otherwise
+   */
+  static nonNull = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
+    new Predicate5<T1, T2, T3, T4, T5>(
+      (t1: T1,
+       t2: T2,
+       t3: T3,
+       t4: T4,
+       t5: T5) =>
+        ObjectUtil.nonNullOrUndefined(t1) &&
+        ObjectUtil.nonNullOrUndefined(t2) &&
+        ObjectUtil.nonNullOrUndefined(t3) &&
+        ObjectUtil.nonNullOrUndefined(t4) &&
+        ObjectUtil.nonNullOrUndefined(t5)
+    );
+
+
+  /**
    * Verifies if the given `input` is an instance of {@link Predicate5}.
    *
    * @param input

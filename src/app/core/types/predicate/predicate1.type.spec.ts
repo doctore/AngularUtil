@@ -108,6 +108,60 @@ describe('Predicate1', () => {
 
 
 
+  describe('isNull', () => {
+
+    it('when given parameter is null or undefined then true is returned', () => {
+      const predicate = Predicate1.isNull();
+
+      const nullVariable = null;
+
+      expect(predicate.apply(null)).toBeTrue();
+      expect(predicate.apply(undefined)).toBeTrue();
+      expect(predicate.apply(nullVariable)).toBeTrue();
+    });
+
+
+    it('when given parameter is neither null nor undefined then false is returned', () => {
+      const predicate = Predicate1.isNull();
+
+      const nonNullVariable = true;
+
+      expect(predicate.apply(12)).toBeFalse();
+      expect(predicate.apply('')).toBeFalse();
+      expect(predicate.apply(nonNullVariable)).toBeFalse();
+    });
+
+  });
+
+
+
+  describe('nonNull', () => {
+
+    it('when given parameter is null or undefined then false is returned', () => {
+      const predicate = Predicate1.nonNull();
+
+      const nullVariable = null;
+
+      expect(predicate.apply(null)).toBeFalse();
+      expect(predicate.apply(undefined)).toBeFalse();
+      expect(predicate.apply(nullVariable)).toBeFalse();
+    });
+
+
+    it('when given parameter is neither null nor undefined then true is returned', () => {
+      const predicate = Predicate1.nonNull();
+
+      const nonNullVariable = true;
+
+      expect(predicate.apply(12)).toBeTrue();
+      expect(predicate.apply('')).toBeTrue();
+      expect(predicate.apply(nonNullVariable)).toBeTrue();
+    });
+
+  });
+
+
+
   describe('isPredicate', () => {
 
     it('when no predicate is provided then false is returned', () => {

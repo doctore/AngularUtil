@@ -179,6 +179,38 @@ export class Predicate3<T1, T2, T3> {
 
 
   /**
+   * Returns a {@link Predicate3} that verifies if provided parameters are `null` or `undefined`.
+   *
+   * @return {@link Predicate3} returning `true` if given parameters are `null` or `undefined`, `false` otherwise
+   */
+  static isNull = <T1, T2, T3>(): Predicate3<T1, T2, T3> =>
+    new Predicate3<T1, T2, T3>(
+      (t1: T1,
+       t2: T2,
+       t3: T3) =>
+        ObjectUtil.isNullOrUndefined(t1) &&
+        ObjectUtil.isNullOrUndefined(t2) &&
+        ObjectUtil.isNullOrUndefined(t3)
+    );
+
+
+  /**
+   * Returns a {@link Predicate3} that verifies if provided parameters are not `null` or `undefined`.
+   *
+   * @return {@link Predicate3} returning `true` if given parameters are not `null` or `undefined`, `false` otherwise
+   */
+  static nonNull = <T1, T2, T3>(): Predicate3<T1, T2, T3> =>
+    new Predicate3<T1, T2, T3>(
+      (t1: T1,
+       t2: T2,
+       t3: T3) =>
+        ObjectUtil.nonNullOrUndefined(t1) &&
+        ObjectUtil.nonNullOrUndefined(t2) &&
+        ObjectUtil.nonNullOrUndefined(t3)
+    );
+
+
+  /**
    * Verifies if the given `input` is an instance of {@link Predicate3}.
    *
    * @param input
