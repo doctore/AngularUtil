@@ -9,6 +9,7 @@
       "@app-core/models": ["src/app/core/models/index.ts"],
       "@app-core/services": ["src/app/core/services/index.ts"],
       "@app-core/types": ["src/app/core/types/index.ts"],
+      "@app-core/types/comparator": ["src/app/core/types/comparator/index.ts"],
       "@app-core/types/consumer": ["src/app/core/types/consumer/index.ts"],
       "@app-core/types/function": ["src/app/core/types/function/index.ts"],
       "@app-core/types/function/operator": ["src/app/core/types/function/operator/index.ts"],

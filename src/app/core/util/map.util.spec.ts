@@ -1,4 +1,5 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
+import { Comparator, FComparator } from '@app-core/types/comparator';
 import { FFunction0, FFunction2, FFunction3, Function0, Function2, PartialFunction } from '@app-core/types/function';
 import { Optional } from '@app-core/types/functional';
 import { FBinaryOperator } from '@app-core/types/function/operator';
@@ -1525,8 +1526,8 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       const emptyMap = new Map<number, number>();
-      const compareKeys: FFunction2<[number, number], [number, number], number> =
-        (a: [number, number], b: [number, number]) => a[0] - b[0];
+      const compareKeys: Comparator<[number, number]> =
+        Comparator.of((a: [number, number], b: [number, number]) => a[0] - b[0]);
 
       expect(MapUtil.sort(null)).toEqual(emptyMap);
       expect(MapUtil.sort(undefined)).toEqual(emptyMap);
@@ -1575,7 +1576,7 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'k');
       sourceMap.set(3, 'c');
 
-      const compareKeys: FFunction2<[number, string], [number, string], number> =
+      const compareKeys: FComparator<[number, string]> =
         (a: [number, string], b: [number, string]) => a[0] - b[0];
 
       const expectedResult = new Map<number, string>();

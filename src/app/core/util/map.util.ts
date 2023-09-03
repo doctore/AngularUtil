@@ -1,3 +1,4 @@
+import { Comparator, TComparator } from '@app-core/types/comparator';
 import {
   FFunction3,
   Function2,
@@ -1066,18 +1067,12 @@ export class MapUtil {
    * @param sourceMap
    *    {@link Map} to sort
    * @param comparator
-   *    {@link TFunction2} used to determine the order of the elements. The returned value should verify the formula:
-   *      <p>
-   *        > 0    sort `a` after `b`, e.g. [b, a]
-   *      <p>
-   *        < 0    sort `a` before `b`, e.g. [a, b]
-   *      <p>
-   *        === 0  keep original order of `a` and `b`
+   *    {@link TComparator} used to determine the order of the elements
    *
    * @return new sorted {@link Map}
    */
   static sort = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                       comparator?: Nullable<TFunction2<[K, V], [K, V], number>>): Map<K, V> => {
+                       comparator?: Nullable<TComparator<[K, V]>>): Map<K, V> => {
     if (this.isEmpty(sourceMap)) {
       return new Map<K, V>();
     }
@@ -1086,7 +1081,8 @@ export class MapUtil {
       ? new Map(
           clonedSourceMapAsArray!
             .sort(
-              Function2.of<[K, V], [K, V], number>(comparator!).getMapper()
+              Comparator.of<[K, V]>(comparator!)
+                .getComparator()
             )
         )
       : new Map(

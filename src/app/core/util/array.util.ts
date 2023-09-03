@@ -1,3 +1,4 @@
+import { Comparator, TComparator } from '@app-core/types/comparator';
 import {
   FFunction1,
   FFunction2,
@@ -856,25 +857,20 @@ export class ArrayUtil {
    * @param sourceArray
    *    Array with elements to sort
    * @param comparator
-   *    {@link TFunction2} used to determine the order of the elements. The returned value should verify the formula:
-   *       <p>
-   *       > 0    sort `a` after `b`, e.g. [b, a]
-   *       <p>
-   *       < 0    sort `a` before `b`, e.g. [a, b]
-   *       <p>
-   *       === 0  keep original order of `a` and `b`
+   *    {@link TComparator} used to determine the order of the elements
    *
    * @return new sorted array
    */
   static sort = <T>(sourceArray: NullableOrUndefined<T[]>,
-                    comparator?: Nullable<TFunction2<T, T, number>>): T[] => {
+                    comparator?: Nullable<TComparator<T>>): T[] => {
     if (this.isEmpty(sourceArray)) {
       return [];
     }
     const clonedSourceArray = _.cloneDeep(sourceArray);
     return comparator
       ? clonedSourceArray!.sort(
-          Function2.of(comparator).getMapper()
+          Comparator.of(comparator)
+            .getComparator()
         )
       : clonedSourceArray!.sort();
   }

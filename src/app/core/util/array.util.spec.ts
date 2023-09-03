@@ -1,9 +1,11 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
+import { Comparator, FComparator } from '@app-core/types/comparator';
 import { FFunction1, FFunction2, Function1, Function2, PartialFunction } from '@app-core/types/function';
 import { BinaryOperator, FBinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
+
 
 /**
  * To invoke only this test:
@@ -1080,7 +1082,8 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       const emptyArray: number[] = [];
-      const comparator: FFunction2<number, number, number> = (a, b) => a - b;
+      const comparator: Comparator<number> =
+        Comparator.of((a, b) => a - b);
 
       expect(ArrayUtil.sort(null)).toEqual(emptyArray);
       expect(ArrayUtil.sort(undefined)).toEqual(emptyArray);
@@ -1146,7 +1149,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const comparator: FFunction2<User, User, number> = (u1: User, u2: User) => u2.id - u1.id;
+      const comparator: FComparator<User> = (u1: User, u2: User) => u2.id - u1.id;
 
       verifyArrays(
         ArrayUtil.sort([u3, u1, u2], comparator),
