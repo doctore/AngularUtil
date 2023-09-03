@@ -83,7 +83,7 @@ describe('BinaryOperator', () => {
       expect(BinaryOperator.isBinaryOperator('')).toBeFalse();
       expect(BinaryOperator.isBinaryOperator(12)).toBeFalse();
       expect(BinaryOperator.isBinaryOperator({})).toBeFalse();
-      expect(BinaryOperator.isBinaryOperator({ apply: (n: number) => n*2 })).toBeFalse();
+      expect(BinaryOperator.isBinaryOperator({ apply: (n: number) => n * 2 })).toBeFalse();
     });
 
 

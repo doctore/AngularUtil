@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/types';
-import {FFunction1, Function1, Function2, isFFunction1} from '@app-core/types/function';
+import { FFunction1, Function1, Function2, isFFunction1 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**

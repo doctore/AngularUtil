@@ -1,4 +1,4 @@
-import { Function2 } from '@app-core/types/function';
+import { Function2 } from '../function2.type';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
 
 
@@ -48,7 +48,7 @@ export function isFBinaryOperator<T>(input?: any): input is FBinaryOperator<T> {
  * specialization of {@link Function2} for the case where the operands and result are of the same type.
  *
  * @typeParam <T>
- *   Type of the input and result of {@link BinaryOperator}
+ *   Type of the inputs and result of {@link BinaryOperator}
  */
 export class BinaryOperator<T> extends Function2<T, T, T> {
 

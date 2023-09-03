@@ -1,4 +1,4 @@
-import { Function1 } from '@app-core/types/function';
+import { Function1 } from '../function1.type';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
 
 
