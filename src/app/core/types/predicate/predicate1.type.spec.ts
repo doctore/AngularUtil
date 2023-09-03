@@ -108,10 +108,10 @@ describe('Predicate1', () => {
 
 
 
-  describe('isNull', () => {
+  describe('isNullOrUndefined', () => {
 
     it('when given parameter is null or undefined then true is returned', () => {
-      const predicate = Predicate1.isNull();
+      const predicate = Predicate1.isNullOrUndefined();
 
       const nullVariable = null;
 
@@ -122,7 +122,7 @@ describe('Predicate1', () => {
 
 
     it('when given parameter is neither null nor undefined then false is returned', () => {
-      const predicate = Predicate1.isNull();
+      const predicate = Predicate1.isNullOrUndefined();
 
       const nonNullVariable = true;
 
@@ -135,10 +135,10 @@ describe('Predicate1', () => {
 
 
 
-  describe('nonNull', () => {
+  describe('nonNullOrUndefined', () => {
 
     it('when given parameter is null or undefined then false is returned', () => {
-      const predicate = Predicate1.nonNull();
+      const predicate = Predicate1.nonNullOrUndefined();
 
       const nullVariable = null;
 
@@ -149,7 +149,7 @@ describe('Predicate1', () => {
 
 
     it('when given parameter is neither null nor undefined then true is returned', () => {
-      const predicate = Predicate1.nonNull();
+      const predicate = Predicate1.nonNullOrUndefined();
 
       const nonNullVariable = true;
 

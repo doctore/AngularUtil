@@ -191,7 +191,7 @@ export class Predicate4<T1, T2, T3, T4> {
    *
    * @return {@link Predicate4} returning `true` if given parameters are `null` or `undefined`, `false` otherwise
    */
-  static isNull = <T1, T2, T3, T4>(): Predicate4<T1, T2, T3, T4> =>
+  static isNullOrUndefined = <T1, T2, T3, T4>(): Predicate4<T1, T2, T3, T4> =>
     new Predicate4<T1, T2, T3, T4>(
       (t1: T1,
        t2: T2,
@@ -209,7 +209,7 @@ export class Predicate4<T1, T2, T3, T4> {
    *
    * @return {@link Predicate4} returning `true` if given parameters are not `null` or `undefined`, `false` otherwise
    */
-  static nonNull = <T1, T2, T3, T4>(): Predicate4<T1, T2, T3, T4> =>
+  static nonNullOrUndefined = <T1, T2, T3, T4>(): Predicate4<T1, T2, T3, T4> =>
     new Predicate4<T1, T2, T3, T4>(
       (t1: T1,
        t2: T2,

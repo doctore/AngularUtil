@@ -202,7 +202,7 @@ export class Predicate5<T1, T2, T3, T4, T5> {
    *
    * @return {@link Predicate5} returning `true` if given parameters are `null` or `undefined`, `false` otherwise
    */
-  static isNull = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
+  static isNullOrUndefined = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
     new Predicate5<T1, T2, T3, T4, T5>(
       (t1: T1,
        t2: T2,
@@ -222,7 +222,7 @@ export class Predicate5<T1, T2, T3, T4, T5> {
    *
    * @return {@link Predicate5} returning `true` if given parameters are not `null` or `undefined`, `false` otherwise
    */
-  static nonNull = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
+  static nonNullOrUndefined = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
     new Predicate5<T1, T2, T3, T4, T5>(
       (t1: T1,
        t2: T2,

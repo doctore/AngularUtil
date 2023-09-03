@@ -130,10 +130,10 @@ describe('Predicate3', () => {
 
 
 
-  describe('isNull', () => {
+  describe('isNullOrUndefined', () => {
 
     it('when given parameters are null or undefined then true is returned', () => {
-      const predicate = Predicate3.isNull();
+      const predicate = Predicate3.isNullOrUndefined();
 
       expect(predicate.apply(null, null, null)).toBeTrue();
       expect(predicate.apply(null, undefined, null)).toBeTrue();
@@ -145,7 +145,7 @@ describe('Predicate3', () => {
 
 
     it('when one of the parameters is neither null nor undefined then false is returned', () => {
-      const predicate = Predicate3.isNull();
+      const predicate = Predicate3.isNullOrUndefined();
 
       expect(predicate.apply(null, 12, '')).toBeFalse();
       expect(predicate.apply(undefined, 12, '')).toBeFalse();
@@ -157,7 +157,7 @@ describe('Predicate3', () => {
 
 
     it('when given parameters are neither null nor undefined then false is returned', () => {
-      const predicate = Predicate3.isNull();
+      const predicate = Predicate3.isNullOrUndefined();
 
       const nonNullVariable = true;
 
@@ -170,10 +170,10 @@ describe('Predicate3', () => {
 
 
 
-  describe('nonNull', () => {
+  describe('nonNullOrUndefined', () => {
 
     it('when given parameters are null or undefined then false is returned', () => {
-      const predicate = Predicate3.nonNull();
+      const predicate = Predicate3.nonNullOrUndefined();
 
       expect(predicate.apply(null, null, null)).toBeFalse();
       expect(predicate.apply(null, undefined, null)).toBeFalse();
@@ -185,7 +185,7 @@ describe('Predicate3', () => {
 
 
     it('when one of the parameters is neither null nor undefined then false is returned', () => {
-      const predicate = Predicate3.nonNull();
+      const predicate = Predicate3.nonNullOrUndefined();
 
       expect(predicate.apply(null, 12, '')).toBeFalse();
       expect(predicate.apply(undefined, 12, '')).toBeFalse();
@@ -197,7 +197,7 @@ describe('Predicate3', () => {
 
 
     it('when given parameters are neither null nor undefined then true is returned', () => {
-      const predicate = Predicate3.nonNull();
+      const predicate = Predicate3.nonNullOrUndefined();
 
       const nonNullVariable = true;
 
