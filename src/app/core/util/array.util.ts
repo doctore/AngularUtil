@@ -8,7 +8,7 @@ import {
   TFunction1,
   TFunction2
 } from '@app-core/types/function';
-import { FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
+import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Optional } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
@@ -783,6 +783,168 @@ export class ArrayUtil {
 
 
   /**
+   * Finds the first element of the given `sourceArray` which yields the largest value measured by `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   *  Parameters:                             Result:
+   *    [1, 10, 21, 2]                         21
+   *    (a: number, b: number) => a - b
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to get its largest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return largest value (including `null` or `undefined`) using given {@link TComparator},
+   *         `undefined` if `sourceArray` has no elements
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static max = <T>(sourceArray: NullableOrUndefined<T[]>,
+                   comparator: TComparator<T>): NullableOrUndefined<T> => {
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        comparator,
+        'comparator must be not null and not undefined'
+      );
+      const finalComparator = Comparator.of<T>(comparator);
+      return this.reduce<T>(
+        sourceArray,
+        BinaryOperator.of<T>(
+          (t1: T,
+           t2: T) => {
+            const comparatorResult = finalComparator.compare(
+              t1, t2
+            );
+            return 0 == comparatorResult
+              ? t1
+              : 0 < comparatorResult
+                ? t1
+                : t2;
+          }
+        )
+      );
+    }
+    return undefined;
+  }
+
+
+  /**
+   * Finds the first element of the given `sourceArray` which yields the largest value measured by `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   *  Parameters:                             Result:
+   *    [1, 10, 21, 2]                         Optional(21)
+   *    (a: number, b: number) => a - b
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to get its largest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return {@link Optional} with largest value using given {@link TComparator},
+   *         {@link Optional#empty} if `sourceArray` has no elements or its largest value is `null` or `undefined`
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static maxOptional = <T>(sourceArray: NullableOrUndefined<T[]>,
+                           comparator: TComparator<T>): Optional<T> =>
+    Optional.ofNullable(
+      this.max(
+        sourceArray,
+        comparator
+      )
+    );
+
+
+  /**
+   * Finds the first element of the given `sourceArray` which yields the smallest value measured by `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   *  Parameters:                             Result:
+   *    [1, 10, 21, 2]                         1
+   *    (a: number, b: number) => a - b
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to get its smallest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return smallest value (including `null` or `undefined`) using given {@link TComparator},
+   *         `undefined` if `sourceArray` has no elements
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static min = <T>(sourceArray: NullableOrUndefined<T[]>,
+                   comparator: TComparator<T>): NullableOrUndefined<T> => {
+    if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        comparator,
+        'comparator must be not null and not undefined'
+      );
+      const finalComparator = Comparator.of<T>(comparator);
+      return this.reduce<T>(
+        sourceArray,
+        BinaryOperator.of<T>(
+          (t1: T,
+           t2: T) => {
+            const comparatorResult = finalComparator.compare(
+              t1, t2
+            );
+            return 0 == comparatorResult
+              ? t1
+              : 0 < comparatorResult
+                ? t2
+                : t1;
+          }
+        )
+      );
+    }
+    return undefined;
+  }
+
+
+  /**
+   * Finds the first element of the given `sourceArray` which yields the smallest value measured by `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   *  Parameters:                             Result:
+   *    [1, 10, 21, 2]                         Optional(1)
+   *    (a: number, b: number) => a - b
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to get its smallest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return {@link Optional} with smallest value using given {@link TComparator},
+   *         {@link Optional#empty} if `sourceArray` has no elements or its smallest value is `null` or `undefined`
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static minOptional = <T>(sourceArray: NullableOrUndefined<T[]>,
+                           comparator: TComparator<T>): Optional<T> =>
+    Optional.ofNullable(
+      this.min(
+        sourceArray,
+        comparator
+      )
+    );
+
+
+  /**
    *    Performs a reduction on the elements of `sourceArray`, using an associative accumulation {@link TBinaryOperator},
    * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
    *
@@ -793,8 +955,8 @@ export class ArrayUtil {
    * <pre>
    * Example:
    *
-   *   Parameters:                              Result:
-   *    [5, 7, 9]                                315
+   *   Parameters:                               Result:
+   *    [5, 7, 9]                                 315
    *    (n1: number, n2: number) => n1 * n2
    * </pre>
    *
@@ -803,8 +965,7 @@ export class ArrayUtil {
    * @param accumulator
    *    A {@link TBinaryOperator} which combines elements
    *
-   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
-   *         left to right with the start value `initialValue` on the left.
+   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going left to right
    *
    * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
    */
@@ -843,14 +1004,14 @@ export class ArrayUtil {
    * <pre>
    * Example 1:
    *
-   *   Parameters:                           Result:
-   *    [1, 10, 21, 2]                        [1, 10, 2, 21]
+   *   Parameters:                            Result:
+   *    [1, 10, 21, 2]                         [1, 10, 2, 21]
    *
    *
    * Example 2:
    *
-   *   Parameters:                           Result:
-   *    [1, 10, 21, 2]                        [1, 2, 10, 21]
+   *   Parameters:                            Result:
+   *    [1, 10, 21, 2]                         [1, 2, 10, 21]
    *    (a: number, b: number) => a - b
    * </pre>
    *

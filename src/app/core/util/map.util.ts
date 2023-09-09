@@ -893,7 +893,7 @@ export class MapUtil {
    *         on which it is defined, collecting the results and reduce them
    *
    * @throws {@link IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
-   *                                      with a not empty `sourceArray`
+   *                                      with a not empty `sourceMap`
    */
   static groupMapReduce<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                         reduceValues: TBinaryOperator<V2>,
@@ -989,6 +989,168 @@ export class MapUtil {
 
 
   /**
+   * Finds the first element of provided {@link Map} which yields the largest element measured by given `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   * Parameters:                                                          Result:
+   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          [11, 'k']
+   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} used to find the largest element
+   * @param comparator
+   *    {@link TComparator} to be used for comparing elements
+   *
+   * @return largest element using given {@link TComparator},
+   *         `undefined` if `sourceMap` has no elements
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static max = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                      comparator: TComparator<[K, V]>): OrUndefined<[K, V]> => {
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        comparator,
+        'comparator must be not null and not undefined'
+      );
+      const finalComparator = Comparator.of<[K, V]>(comparator);
+      return this.reduce(
+        sourceMap,
+        BinaryOperator.of<[K, V]>(
+          (prev: [K, V],
+           current: [K, V]) => {
+            const comparatorResult = finalComparator.compare(
+              prev, current
+            );
+            return 0 == comparatorResult
+              ? prev
+              : 0 < comparatorResult
+                ? prev
+                : current;
+          }
+        )
+      );
+    }
+    return undefined;
+  }
+
+
+  /**
+   * Finds the first element of provided {@link Map} which yields the largest element measured by given `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   * Parameters:                                                          Result:
+   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          Optional([11, 'k'])
+   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} used to find the largest element
+   * @param comparator
+   *    {@link TComparator} to be used for comparing elements
+   *
+   * @return {@link Optional} with largest element using given {@link TComparator},
+   *         {@link Optional#empty} if `sourceMap` has no elements
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static maxOptional = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                              comparator: TComparator<[K, V]>): Optional<[K, V]> =>
+    Optional.ofNullable(
+      this.max(
+        sourceMap,
+        comparator
+      )
+    );
+
+
+  /**
+   * Finds the first element of provided {@link Map} which yields the smallest element measured by given `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   * Parameters:                                                          Result:
+   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          [1, 'a']
+   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} used to find the smallest element
+   * @param comparator
+   *    {@link TComparator} to be used for comparing elements
+   *
+   * @return smallest element using given {@link TComparator},
+   *         `undefined` if `sourceMap` has no elements
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static min = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                      comparator: TComparator<[K, V]>): OrUndefined<[K, V]> => {
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        comparator,
+        'comparator must be not null and not undefined'
+      );
+      const finalComparator = Comparator.of<[K, V]>(comparator);
+      return this.reduce(
+        sourceMap,
+        BinaryOperator.of<[K, V]>(
+          (prev: [K, V],
+           current: [K, V]) => {
+            const comparatorResult = finalComparator.compare(
+              prev, current
+            );
+            return 0 == comparatorResult
+              ? prev
+              : 0 < comparatorResult
+                ? current
+                : prev;
+          }
+        )
+      );
+    }
+    return undefined;
+  }
+
+
+  /**
+   * Finds the first element of provided {@link Map} which yields the smallest element measured by given `comparator`.
+   *
+   * <pre>
+   * Example:
+   *
+   * Parameters:                                                          Result:
+   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          Optional([1, 'a'])
+   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} used to find the smallest element
+   * @param comparator
+   *    {@link TComparator} to be used for comparing elements
+   *
+   * @return {@link Optional} with smallest element using given {@link TComparator},
+   *         {@link Optional#empty} if `sourceMap` has no elements
+   *
+   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static minOptional = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                              comparator: TComparator<[K, V]>): Optional<[K, V]> =>
+    Optional.ofNullable(
+      this.min(
+        sourceMap,
+        comparator
+      )
+    );
+
+
+  /**
    * Returns a new {@link Map} based on provided `key`/`value` tuples.
    *
    * @param keyValues
@@ -1040,6 +1202,95 @@ export class MapUtil {
       return undefined;
     }
     return sourceMap.get(key);
+  }
+
+
+  /**
+   *    Performs a reduction on the elements of `sourceArray`, using an associative accumulation {@link TBinaryOperator},
+   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
+   *
+   * @apiNote
+   *    This method is similar to {@link ArrayUtil#foldLeft} but `accumulator` works with the same type that `sourceArray`
+   * and only uses contained elements of provided array.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                               Result:
+   *    [5, 7, 9]                                 315
+   *    (n1: number, n2: number) => n1 * n2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with elements to combine
+   * @param accumulator
+   *    A {@link TBinaryOperator} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
+   *         left to right with the start value `initialValue` on the left
+   *
+   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
+   */
+
+
+  /**
+   *   Performs a reduction on the elements of `sourceMap`, using an associative accumulation {@link TFunction3},
+   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
+   *
+   * @apiNote
+   *    This method is similar to {@link MapUtil#foldLeft} but `accumulator` works with the same type that `sourceMap`
+   * and only uses contained elements of provided {@link Map}.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                         Result:
+   *    [(1, 'Hi'), (2, 'Hello')]                                           [3, 'Hi Hello']
+   *    (prev: [number, string], current: [number, string]) =>
+   *       [prev[0] + current[0], prev[1] + ' ' + current[1]]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with elements to combine
+   * @param accumulator
+   *    A {@link TBinaryOperator} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going left to right
+   *
+   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
+   */
+  static reduce<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                      accumulator: TBinaryOperator<[K, V]>): OrUndefined<[K, V]>;
+
+
+  static reduce<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                      accumulator: FBinaryOperator<[K, V]>): OrUndefined<[K, V]>;
+
+
+  static reduce<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                      accumulator: TBinaryOperator<[K, V]>): OrUndefined<[K, V]> {
+    let result: OrUndefined<[K, V]>;
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        accumulator,
+        'accumulator must be not null and not undefined'
+      );
+      const finalAccumulator = BinaryOperator.of(accumulator);
+      let foundFirstElement = false;
+      for (let [key, value] of sourceMap!) {
+        if (!foundFirstElement) {
+          result = [key, value];
+        } else {
+          result = finalAccumulator.apply(
+            // @ts-ignore
+            result,
+            [key, value]
+          );
+        }
+        foundFirstElement = true;
+      }
+    }
+    return result;
   }
 
 

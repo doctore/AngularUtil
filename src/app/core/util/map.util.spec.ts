@@ -1383,6 +1383,20 @@ describe('MapUtil', () => {
 
   describe('map', () => {
 
+    it('when given sourceMap has no elements and mapFunction is not provided then empty Map is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      // @ts-ignore
+      expect(MapUtil.map(null, null)).toEqual(emptyMap);
+      // @ts-ignore
+      expect(MapUtil.map(undefined, undefined)).toEqual(emptyMap);
+      // @ts-ignore
+      expect(MapUtil.map(emptyMap, null)).toEqual(emptyMap);
+      // @ts-ignore
+      expect(MapUtil.map(emptyMap, undefined)).toEqual(emptyMap);
+    });
+
+
     it('when given sourceMap has no elements and mapFunction is provided then empty Map is returned', () => {
       let emptyMap = new Map<number, string>();
       const keyAndValueLength: FFunction2<number, string, [number, number]> =
@@ -1433,6 +1447,278 @@ describe('MapUtil', () => {
         MapUtil.map(sourceMap, keyPlus1AndValueV2),
         expectedLeyPlus1AndValueV2Result
       );
+    });
+
+  });
+
+
+
+  describe('max', () => {
+
+    it('when given sourceMap has no elements and comparator is not provided then undefined is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      // @ts-ignore
+      expect(MapUtil.max(null, null)).toBeUndefined();
+      // @ts-ignore
+      expect(MapUtil.max(undefined, undefined)).toBeUndefined();
+      // @ts-ignore
+      expect(MapUtil.max(emptyMap, null)).toBeUndefined();
+      // @ts-ignore
+      expect(MapUtil.max(emptyMap, undefined)).toBeUndefined();
+    });
+
+
+    it('when given sourceMap has no elements and comparator is provided then undefined is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      const compareKeys: FComparator<[number, string]> =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
+
+      expect(MapUtil.max(null, compareKeys)).toBeUndefined();
+      expect(MapUtil.max(undefined, compareKeys)).toBeUndefined();
+      expect(MapUtil.max(emptyMap, compareKeys)).toBeUndefined();
+    });
+
+
+    it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.max(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.max(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty and comparator is valid then its largest element is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'abcde');
+      sourceMap.set(4, 'dfeghijklm');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'cd');
+
+      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareElements: Comparator<[number, string]> =
+        Comparator.of(
+          (a: [number, string], b: [number, string]) => {
+            const finalA = a[0] + a[1].length;
+            const finalB = b[0] + b[1].length;
+            return finalA - finalB;
+          }
+        );
+
+      expect(MapUtil.max(sourceMap, compareKeys)).toEqual([11, 'k']);
+      expect(MapUtil.max(sourceMap, compareElements)).toEqual([4, 'dfeghijklm']);
+    });
+
+  });
+
+
+
+  describe('maxOptional', () => {
+
+    it('when given sourceMap has no elements and comparator is not provided then empty Optional is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      // @ts-ignore
+      expect(MapUtil.maxOptional(null, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(MapUtil.maxOptional(undefined, undefined).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(MapUtil.maxOptional(emptyMap, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(MapUtil.maxOptional(emptyMap, undefined).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceMap has no elements and comparator is provided then empty Optional is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      const compareKeys: FComparator<[number, string]> =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
+
+      expect(MapUtil.maxOptional(null, compareKeys).isPresent()).toBeFalse();
+      expect(MapUtil.maxOptional(undefined, compareKeys).isPresent()).toBeFalse();
+      expect(MapUtil.maxOptional(emptyMap, compareKeys).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.maxOptional(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.maxOptional(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty and comparator is valid then its largest element is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'abcde');
+      sourceMap.set(4, 'dfeghijklm');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'cd');
+
+      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareElements: Comparator<[number, string]> =
+        Comparator.of(
+          (a: [number, string], b: [number, string]) => {
+            const finalA = a[0] + a[1].length;
+            const finalB = b[0] + b[1].length;
+            return finalA - finalB;
+          }
+        );
+
+      const resultKeys = MapUtil.maxOptional(sourceMap, compareKeys);
+      const resultElements = MapUtil.maxOptional(sourceMap, compareElements);
+
+      expect(resultKeys.isPresent()).toBeTrue();
+      expect(resultKeys.get()).toEqual([11, 'k']);
+
+      expect(resultElements.isPresent()).toBeTrue();
+      expect(resultElements.get()).toEqual([4, 'dfeghijklm']);
+    });
+
+  });
+
+
+
+  describe('min', () => {
+
+    it('when given sourceMap has no elements and comparator is not provided then undefined is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      // @ts-ignore
+      expect(MapUtil.min(null, null)).toBeUndefined();
+      // @ts-ignore
+      expect(MapUtil.min(undefined, undefined)).toBeUndefined();
+      // @ts-ignore
+      expect(MapUtil.min(emptyMap, null)).toBeUndefined();
+      // @ts-ignore
+      expect(MapUtil.min(emptyMap, undefined)).toBeUndefined();
+    });
+
+
+    it('when given sourceMap has no elements and comparator is provided then undefined is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      const compareKeys: FComparator<[number, string]> =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
+
+      expect(MapUtil.min(null, compareKeys)).toBeUndefined();
+      expect(MapUtil.min(undefined, compareKeys)).toBeUndefined();
+      expect(MapUtil.min(emptyMap, compareKeys)).toBeUndefined();
+    });
+
+
+    it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.min(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.min(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty and comparator is valid then its largest element is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'abcde');
+      sourceMap.set(4, 'dfeghijklm');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'cd');
+
+      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareElements: Comparator<[number, string]> =
+        Comparator.of(
+          (a: [number, string], b: [number, string]) => {
+            const finalA = a[0] + a[1].length;
+            const finalB = b[0] + b[1].length;
+            return finalA - finalB;
+          }
+        );
+
+      expect(MapUtil.min(sourceMap, compareKeys)).toEqual([1, 'abcde']);
+      expect(MapUtil.min(sourceMap, compareElements)).toEqual([3, 'cd']);
+    });
+
+  });
+
+
+
+  describe('minOptional', () => {
+
+    it('when given sourceMap has no elements and comparator is not provided then empty Optional is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      // @ts-ignore
+      expect(MapUtil.minOptional(null, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(MapUtil.minOptional(undefined, undefined).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(MapUtil.minOptional(emptyMap, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(MapUtil.minOptional(emptyMap, undefined).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceMap has no elements and comparator is provided then empty Optional is returned', () => {
+      let emptyMap = new Map<number, string>();
+
+      const compareKeys: FComparator<[number, string]> =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
+
+      expect(MapUtil.minOptional(null, compareKeys).isPresent()).toBeFalse();
+      expect(MapUtil.minOptional(undefined, compareKeys).isPresent()).toBeFalse();
+      expect(MapUtil.minOptional(emptyMap, compareKeys).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
+      let sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.minOptional(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.minOptional(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty and comparator is valid then its largest element is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'abcde');
+      sourceMap.set(4, 'dfeghijklm');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'cd');
+
+      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareElements: Comparator<[number, string]> =
+        Comparator.of(
+          (a: [number, string], b: [number, string]) => {
+            const finalA = a[0] + a[1].length;
+            const finalB = b[0] + b[1].length;
+            return finalA - finalB;
+          }
+        );
+
+      const resultKeys = MapUtil.minOptional(sourceMap, compareKeys);
+      const resultElements = MapUtil.minOptional(sourceMap, compareElements);
+
+      expect(resultKeys.isPresent()).toBeTrue();
+      expect(resultKeys.get()).toEqual([1, 'abcde']);
+
+      expect(resultElements.isPresent()).toBeTrue();
+      expect(resultElements.get()).toEqual([3, 'cd']);
     });
 
   });
@@ -1516,6 +1802,52 @@ describe('MapUtil', () => {
       expect(MapUtil.putIfAbsent(map, key, value)).toBeUndefined();
       expect(map.has(key)).toBeTrue();
       expect(map.get(key)).toEqual(value);
+    });
+
+  });
+
+
+
+  describe('reduce', () => {
+
+    it('when given sourceMap is null, undefined or empty then undefined is returned', () => {
+      const emptyMap = new Map<number, string>();
+
+      const accumulator: FBinaryOperator<[number, string]> =
+        (prev: [number, string], current: [number, string]) => [prev[0] + current[0], prev[1] + ' ' + current[1]];
+
+      expect(MapUtil.reduce(null, accumulator)).toBeUndefined();
+      expect(MapUtil.reduce(undefined, accumulator)).toBeUndefined();
+      expect(MapUtil.reduce(emptyMap, accumulator)).toBeUndefined();
+    });
+
+
+    it('when given sourceMap is not empty but accumulator is null or undefined then an error is thrown', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.reduce(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.reduce(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty and accumulator is valid then accumulator is applied to contained elements', () => {
+      const sourceMap1 = new Map<number, string>();
+      sourceMap1.set(1, 'Hi');
+
+      const sourceMap2 = new Map<number, string>();
+      sourceMap2.set(1, 'Hi');
+      sourceMap2.set(2, 'Hello');
+      sourceMap2.set(3, 'World');
+
+      const accumulator =
+        (prev: [number, string], current: [number, string]): [number, string] => [prev[0] + current[0], prev[1] + ' ' + current[1]];
+
+      expect(MapUtil.reduce(sourceMap1, accumulator)).toEqual([1, 'Hi']);
+      expect(MapUtil.reduce(sourceMap2, accumulator)).toEqual([6, 'Hi Hello World']);
     });
 
   });

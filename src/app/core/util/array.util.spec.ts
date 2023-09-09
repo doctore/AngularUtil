@@ -993,6 +993,22 @@ describe('ArrayUtil', () => {
 
   describe('map', () => {
 
+    it('when given sourceArray has no elements and mapFunction is not provided then empty array is returned', () => {
+      const emptyArray: number[] = [];
+
+      const expectedResult: string[] = [];
+
+      // @ts-ignore
+      expect(ArrayUtil.map(null, null)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(ArrayUtil.map(undefined, undefined)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(ArrayUtil.map(emptyArray, null)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(ArrayUtil.map(emptyArray, undefined)).toEqual(expectedResult);
+    });
+
+
     it('when given sourceArray has no elements and mapFunction is provided then empty array is returned', () => {
       const emptyArray: number[] = [];
       const toString: FFunction1<number, string> =
@@ -1039,6 +1055,257 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('max', () => {
+
+    it('when given sourceArray has no elements and comparator is not provided then undefined is returned', () => {
+      const emptyArray: number[] = [];
+
+      // @ts-ignore
+      expect(ArrayUtil.max(null, null)).toBeUndefined();
+      // @ts-ignore
+      expect(ArrayUtil.max(undefined, undefined)).toBeUndefined();
+      // @ts-ignore
+      expect(ArrayUtil.max(emptyArray, null)).toBeUndefined();
+      // @ts-ignore
+      expect(ArrayUtil.max(emptyArray, undefined)).toBeUndefined();
+    });
+
+
+    it('when given sourceArray has no elements and comparator is provided then undefined is returned', () => {
+      const emptyArray: number[] = [];
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(ArrayUtil.max(null, comparator)).toBeUndefined();
+      expect(ArrayUtil.max(undefined, comparator)).toBeUndefined();
+      expect(ArrayUtil.max(emptyArray, comparator)).toBeUndefined();
+    });
+
+
+    it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.max([1], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.max([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and comparator is valid then its largest value is returned', () => {
+      let numberArray: number[] = [1, 10, 21, 2];
+      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+
+      const numberComparator = (a: number, b: number) => a - b;
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
+            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      expect(ArrayUtil.max(numberArray, numberComparator)).toEqual(21);
+      expect(ArrayUtil.max(stringArray, stringComparator)).toEqual('abc');
+    });
+
+  });
+
+
+
+  describe('maxOptional', () => {
+
+    it('when given sourceArray has no elements and comparator is not provided then empty Optional is returned', () => {
+      const emptyArray: number[] = [];
+
+      // @ts-ignore
+      expect(ArrayUtil.maxOptional(null, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(ArrayUtil.maxOptional(undefined, undefined).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(ArrayUtil.maxOptional(emptyArray, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(ArrayUtil.maxOptional(emptyArray, undefined).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceArray has no elements and comparator is provided then empty Optional is returned', () => {
+      const emptyArray: number[] = [];
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(ArrayUtil.maxOptional(null, comparator).isPresent()).toBeFalse();
+      expect(ArrayUtil.maxOptional(undefined, comparator).isPresent()).toBeFalse();
+      expect(ArrayUtil.maxOptional(emptyArray, comparator).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.maxOptional([1], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.maxOptional([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and comparator is valid then and Optional with its largest value is returned', () => {
+      let numberArray: number[] = [1, 10, 21, 2];
+      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+
+      const numberComparator = (a: number, b: number) => a - b;
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
+            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      const resultNumber = ArrayUtil.maxOptional(numberArray, numberComparator);
+      const resultString = ArrayUtil.maxOptional(stringArray, stringComparator);
+
+      expect(resultNumber.isPresent()).toBeTrue();
+      expect(resultNumber.get()).toEqual(21);
+
+      expect(resultString.isPresent()).toBeTrue();
+      expect(resultString.get()).toEqual('abc');
+    });
+
+  });
+
+
+
+  describe('min', () => {
+
+    it('when given sourceArray has no elements and comparator is not provided then undefined is returned', () => {
+      const emptyArray: number[] = [];
+
+      // @ts-ignore
+      expect(ArrayUtil.min(null, null)).toBeUndefined();
+      // @ts-ignore
+      expect(ArrayUtil.min(undefined, undefined)).toBeUndefined();
+      // @ts-ignore
+      expect(ArrayUtil.min(emptyArray, null)).toBeUndefined();
+      // @ts-ignore
+      expect(ArrayUtil.min(emptyArray, undefined)).toBeUndefined();
+    });
+
+
+    it('when given sourceArray has no elements and comparator is provided then undefined is returned', () => {
+      const emptyArray: number[] = [];
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(ArrayUtil.min(null, comparator)).toBeUndefined();
+      expect(ArrayUtil.min(undefined, comparator)).toBeUndefined();
+      expect(ArrayUtil.min(emptyArray, comparator)).toBeUndefined();
+    });
+
+
+    it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.min([1], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.min([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and comparator is valid then its smallest value is returned', () => {
+      let numberArray: number[] = [1, 10, 21, 2];
+      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+
+      const numberComparator = (a: number, b: number) => a - b;
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
+            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      expect(ArrayUtil.min(numberArray, numberComparator)).toEqual(1);
+      expect(ArrayUtil.min(stringArray, stringComparator)).toBeNull();
+    });
+
+  });
+
+
+
+  describe('minOptional', () => {
+
+    it('when given sourceArray has no elements and comparator is not provided then empty Optional is returned', () => {
+      const emptyArray: number[] = [];
+
+      // @ts-ignore
+      expect(ArrayUtil.minOptional(null, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(ArrayUtil.minOptional(undefined, undefined).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(ArrayUtil.minOptional(emptyArray, null).isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(ArrayUtil.minOptional(emptyArray, undefined).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceArray has no elements and comparator is provided then empty Optional is returned', () => {
+      const emptyArray: number[] = [];
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(ArrayUtil.minOptional(null, comparator).isPresent()).toBeFalse();
+      expect(ArrayUtil.minOptional(undefined, comparator).isPresent()).toBeFalse();
+      expect(ArrayUtil.minOptional(emptyArray, comparator).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.minOptional([1], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.minOptional([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and comparator is valid then and Optional with its largest value is returned', () => {
+      let numberArray: number[] = [1, 10, 21, 2];
+      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+
+      const numberComparator = (a: number, b: number) => a - b;
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
+            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      const resultNumber = ArrayUtil.minOptional(numberArray, numberComparator);
+      const resultString = ArrayUtil.minOptional(stringArray, stringComparator);
+
+      expect(resultNumber.isPresent()).toBeTrue();
+      expect(resultNumber.get()).toEqual(1);
+
+      expect(resultString.isPresent()).toBeFalse();
+    });
+
+  });
+
+
+
   describe('reduce', () => {
 
     it('when given sourceArray is null, undefined or empty then undefined is returned', () => {
@@ -1060,8 +1327,8 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not null then accumulator is applied to contained elements', () => {
-      const intArray: number[] = [2, 3, 4];
+    it('when given sourceArray is not null and accumulator is valid then accumulator is applied to contained elements', () => {
+      const intArray: number[] = [2];
       const stringArray: string[] = ['b', 'c', 'd'];
 
       const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
@@ -1070,7 +1337,7 @@ describe('ArrayUtil', () => {
       const intResult = ArrayUtil.reduce(intArray, intAccumulator);
       const stringResult = ArrayUtil.reduce(stringArray, stringAccumulator);
 
-      expect(intResult).toEqual(24);
+      expect(intResult).toEqual(2);
       expect(stringResult).toEqual('bcd');
     });
 
