@@ -1206,34 +1206,6 @@ export class MapUtil {
 
 
   /**
-   *    Performs a reduction on the elements of `sourceArray`, using an associative accumulation {@link TBinaryOperator},
-   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
-   *
-   * @apiNote
-   *    This method is similar to {@link ArrayUtil#foldLeft} but `accumulator` works with the same type that `sourceArray`
-   * and only uses contained elements of provided array.
-   *
-   * <pre>
-   * Example:
-   *
-   *   Parameters:                               Result:
-   *    [5, 7, 9]                                 315
-   *    (n1: number, n2: number) => n1 * n2
-   * </pre>
-   *
-   * @param sourceArray
-   *    Array with elements to combine
-   * @param accumulator
-   *    A {@link TBinaryOperator} which combines elements
-   *
-   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
-   *         left to right with the start value `initialValue` on the left
-   *
-   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
-   */
-
-
-  /**
    *   Performs a reduction on the elements of `sourceMap`, using an associative accumulation {@link TFunction3},
    * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
    *
