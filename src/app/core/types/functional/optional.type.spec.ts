@@ -684,6 +684,148 @@ describe('Optional', () => {
 
 
 
+  describe('toLeft', () => {
+
+    it('when the Optional is not empty then right function is not invoked', () => {
+      const helloGenerator: FFunction0<string> =
+        () => 'Hello';
+
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+
+      expect(Optional.of(11).toLeft(helloGeneratorSpy).isRight()).toBeFalse();
+
+      expect(helloGeneratorSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is not empty then a Left instance is returned', () => {
+      const o1 = Optional.of(11);
+      const o2 = Optional.of('abd');
+
+      const helloGenerator: FFunction0<string> =
+        () => 'Hello';
+
+      // @ts-ignore
+      expect(o1.toLeft(null).isRight()).toBeFalse();
+      // @ts-ignore
+      expect(o1.toLeft(null).getLeft()).toEqual(o1.get());
+
+
+      // @ts-ignore
+      expect(o2.toLeft(undefined).isRight()).toBeFalse();
+      // @ts-ignore
+      expect(o2.toLeft(undefined).getLeft()).toEqual(o2.get());
+
+      expect(o2.toLeft(helloGenerator).isRight()).toBeFalse();
+      expect(o2.toLeft(helloGenerator).getLeft()).toEqual(o2.get());
+    });
+
+
+    it('when the Optional is empty and right is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Optional.of(null).toLeft(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Optional.of(undefined).toLeft(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Optional is empty then right function is invoked', () => {
+      const helloGenerator: FFunction0<string> =
+        () => 'Hello';
+
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+
+      expect(Optional.ofNullable(null).toLeft(helloGeneratorSpy).isRight()).toBeTrue();
+
+      expect(helloGeneratorSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Optional is empty then right function result is used to return a Right instance', () => {
+      const helloGenerator = () => 'Hello';
+
+      expect(Optional.ofNullable(null).toLeft(helloGenerator).isRight()).toBeTrue();
+      expect(Optional.ofNullable(null).toLeft(helloGenerator).get()).toEqual('Hello');
+
+      expect(Optional.ofNullable(undefined).toLeft(helloGenerator).isRight()).toBeTrue();
+      expect(Optional.ofNullable(undefined).toLeft(helloGenerator).get()).toEqual('Hello');
+    });
+
+  });
+
+
+
+  describe('toRight', () => {
+
+    it('when the Optional is not empty then left function is not invoked', () => {
+      const helloGenerator: FFunction0<string> =
+        () => 'Hello';
+
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+
+      expect(Optional.of(11).toRight(helloGeneratorSpy).isRight()).toBeTrue();
+
+      expect(helloGeneratorSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when the Optional is not empty then a Right instance is returned', () => {
+      const o1 = Optional.of(11);
+      const o2 = Optional.of('abd');
+
+      const helloGenerator: FFunction0<string> =
+        () => 'Hello';
+
+      // @ts-ignore
+      expect(o1.toRight(null).isRight()).toBeTrue();
+      // @ts-ignore
+      expect(o1.toRight(null).get()).toEqual(o1.get());
+
+
+      // @ts-ignore
+      expect(o2.toRight(undefined).isRight()).toBeTrue();
+      // @ts-ignore
+      expect(o2.toRight(undefined).get()).toEqual(o2.get());
+
+      expect(o2.toRight(helloGenerator).isRight()).toBeTrue();
+      expect(o2.toRight(helloGenerator).get()).toEqual(o2.get());
+    });
+
+
+    it('when the Optional is empty and left is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Optional.of(null).toRight(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => Optional.of(undefined).toRight(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when the Optional is empty then left function is invoked', () => {
+      const helloGenerator: FFunction0<string> =
+        () => 'Hello';
+
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+
+      expect(Optional.ofNullable(null).toRight(helloGeneratorSpy).isRight()).toBeFalse();
+
+      expect(helloGeneratorSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when the Optional is empty then left function result is used to return a Left instance', () => {
+      const helloGenerator = () => 'Hello';
+
+      expect(Optional.ofNullable(null).toRight(helloGenerator).isRight()).toBeFalse();
+      expect(Optional.ofNullable(null).toRight(helloGenerator).getLeft()).toEqual('Hello');
+
+      expect(Optional.ofNullable(undefined).toRight(helloGenerator).isRight()).toBeFalse();
+      expect(Optional.ofNullable(undefined).toRight(helloGenerator).getLeft()).toEqual('Hello');
+    });
+
+  });
+
+
+
 
   // Used only for testing purpose
   class User {

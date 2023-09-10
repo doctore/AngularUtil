@@ -2,13 +2,14 @@ import { AssertUtil, ObjectUtil } from '@app-core/util';
 import { Nullable } from '@app-core/types';
 import { Consumer1, TConsumer1 } from '@app-core/types/consumer';
 import { Function0, Function1, isFFunction0, PartialFunction, TFunction0, TFunction1 } from '@app-core/types/function';
+import { Either } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  *    A container object which may or may not contain a non-`null` value. If a value is present,
- * {@link Optional#isPresent} returns `true`. If no value is present, the object is considered <i>empty</i>
- * and {@link Optional#isPresent} returns `false`. *
+ * {@link Optional#isPresent} returns `true`. If no value is present, the object is considered `empty`
+ * and {@link Optional#isPresent} returns `false`.
  * <p>
  *    Additional methods that depend on the presence or absence of a contained value are provided, such as
  * {@link Optional#orElse} (returns a default value if no value is present) and {@link Optional#ifPresent} (performs
@@ -69,7 +70,7 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional} is not empty, and it is defined for the given {@link PartialFunction}'s domain,
+   *    If the {@link Optional} is non-empty, and it is defined for the given {@link PartialFunction}'s domain,
    * returns an {@link Optional} applying {@link PartialFunction#apply} to the {@link Optional}'s value,
    * {@link Optional#empty} otherwise.
    *
@@ -117,7 +118,7 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional} is not empty, and it matches the given {@link TPredicate1}, returns an
+   *    If the {@link Optional} is non-empty, and it matches the given {@link TPredicate1}, returns an
    * {@link Optional} describing the value, {@link Optional#empty} otherwise.
    *
    * @param predicate
@@ -126,7 +127,7 @@ export class Optional<T> {
    * @return an {@link Optional} describing the value of this {@link Optional}, if it is present and matches the
    *         given {@link TPredicate1}, {@link Optional#empty} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `this` is not empty but `predicate` is `null` or `undefined`
+   * @throws {@link IllegalArgumentError} if `this` is non-empty but `predicate` is `null` or `undefined`
    */
   filter = (predicate: TPredicate1<T>): Optional<T> =>
     this.isPresent() && Predicate1.of(predicate).apply(this.value!)
@@ -135,7 +136,7 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional} is not empty, returns the result of applying the given {@link Optional}-bearing
+   *    If the {@link Optional} is non-empty, returns the result of applying the given {@link Optional}-bearing
    * mapping {@link TFunction1} to the value, otherwise returns an empty {@link Optional}.
    * <p>
    *    This method is similar to {@link Optional#map}, but the mapping {@link TFunction1} is one whose result
@@ -148,7 +149,7 @@ export class Optional<T> {
    * @return the result of applying an {@link Optional}-bearing mapping {@link TFunction1} to this {@link Optional}'s
    *         value, if a value is present, otherwise an empty {@link Optional}
    *
-   * @throws {@link IllegalArgumentError} if `this` is not empty but `mapper` is `null` or `undefined`
+   * @throws {@link IllegalArgumentError} if `this` is non-empty but `mapper` is `null` or `undefined`
    */
   flatMap = <U>(mapper: TFunction1<T, Optional<U>>): Optional<U> =>
     this.isPresent()
@@ -158,18 +159,18 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional} is not empty, returns the result of applying the {@link TFunction1} `ifNonEmpty`.
+   *    If the {@link Optional} is non-empty, returns the result of applying the {@link TFunction1} `ifNonEmpty`.
    * Otherwise, evaluates the {@link TFunction0} `ifEmpty`.
    *
    * @param ifEmpty
    *    {@link TFunction0} to apply if this {@link Optional} is empty
    * @param ifNonEmpty
-   *    {@link TFunction1} to apply if this {@link Optional} is not empty
+   *    {@link TFunction1} to apply if this {@link Optional} is non-empty
    *
    * @return the result of applying the right function
    *
    * @throws {@link IllegalArgumentError} if `ifEmpty` is `null` or `undefined` and this {@link Optional} is empty
-   *                                      or `ifNonEmpty` is `null` or `undefined` and this {@link Optional} is not empty
+   *                                      or `ifNonEmpty` is `null` or `undefined` and this {@link Optional} is non-empty
    */
   fold = <U>(ifEmpty: TFunction0<U>,
              ifNonEmpty: TFunction1<T, U>): U =>
@@ -181,7 +182,7 @@ export class Optional<T> {
 
 
   /**
-   * If the {@link Optional} is not empty, returns the value, {@link IllegalArgumentError} otherwise.
+   * If the {@link Optional} is non-empty, returns the value, {@link IllegalArgumentError} otherwise.
    *
    * @apiNote
    *    The preferred alternative to this method is {@link Optional#getOrElse}.
@@ -197,7 +198,7 @@ export class Optional<T> {
 
 
   /**
-   * If the {@link Optional} is not empty, returns the value, `other` otherwise.
+   * If the {@link Optional} is non-empty, returns the value, `other` otherwise.
    *
    * @param other
    *    The value to be returned if {@link Optional}'s value is `null`
@@ -208,7 +209,7 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional} is not empty, returns the value, otherwise returns the result after
+   *    If the {@link Optional} is non-empty, returns the value, otherwise returns the result after
    * invoking provided {@link TFunction0}.
    *
    * @param other
@@ -232,11 +233,11 @@ export class Optional<T> {
 
 
   /**
-   *    If the {@link Optional} is not empty, performs the given {@link TConsumer1} using internal value
+   *    If the {@link Optional} is non-empty, performs the given {@link TConsumer1} using internal value
    * as input parameter, does nothing otherwise.
    *
    * @param action
-   *    {@link TConsumer1} to be invoked, of the curren {@link Optional} is not empty
+   *    {@link TConsumer1} to be invoked, of the curren {@link Optional} is non-empty
    */
   ifPresent = (action: TConsumer1<T>): void => {
     if (this.isPresent()) {
@@ -247,14 +248,14 @@ export class Optional<T> {
 
 
   /**
-   * Returns `true` if the {@link Optional} is not empty, `false` otherwise.
+   * Returns `true` if the {@link Optional} is non-empty, `false` otherwise.
    */
   isPresent = (): boolean =>
     ObjectUtil.nonNullOrUndefined(this.value);
 
 
   /**
-   *    If the {@link Optional} is not empty, returns an {@link Optional} describing (as if by
+   *    If the {@link Optional} is non-empty, returns an {@link Optional} describing (as if by
    * {@link Optional#ofNullable}) the result of applying the given {@link TFunction1} to the
    * {@link Optional}'s value, otherwise returns an empty {@link Optional}.
    * <p>
@@ -269,7 +270,7 @@ export class Optional<T> {
    */
   map = <U>(mapper: TFunction1<T, U>): Optional<U> =>
     this.isPresent()
-      ? Optional.ofNullable(
+      ? Optional.ofNullable<U>(
           Function1.of(mapper)
             .apply(this.value!)
         )
@@ -277,7 +278,7 @@ export class Optional<T> {
 
 
   /**
-   * If the {@link Optional} is not empty, returns the value, `other` otherwise.
+   * If the {@link Optional} is non-empty, returns the value, `other` otherwise.
    *
    * @param other
    *    The value to be returned if {@link Optional}'s value is `null`
@@ -291,7 +292,7 @@ export class Optional<T> {
 
 
   /**
-   * If the {@link Optional} is not empty, returns the value, {@link Error} using provided {@link TFunction0} otherwise.
+   * If the {@link Optional} is non-empty, returns the value, {@link Error} using provided {@link TFunction0} otherwise.
    *
    * @param errorSupplier
    *    The supplying {@link TFunction0} that produces an error to be thrown
@@ -308,5 +309,49 @@ export class Optional<T> {
     throw Function0.of(errorSupplier)
       .apply();
   }
+
+
+  /**
+   *    Returns a {@link Right} containing the given `right` if `this` is an empty {@link Optional}, or {@link Left}
+   * containing current {@link Optional} value if non-empty.
+   *
+   * @param right
+   *    {@link TFunction0} to evaluate and return if `this` is empty
+   *
+   * @return {@link Right} if `this` is an empty {@link Optional}, {@link Left} otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `right` is `null` or `undefined` and this {@link Optional} is empty
+   */
+  toLeft = <R>(right: TFunction0<R>): Either<T, R> =>
+    this.isPresent()
+      ? Either.left<T, R>(
+          this.value!
+        )
+      : Either.right<T, R>(
+          Function0.of(right)
+            .apply()
+        );
+
+
+  /**
+   *    Returns a {@link Left} containing the given `left` if `this` is an empty {@link Optional}, or {@link Right}
+   * containing current {@link Optional} value if non-empty.
+   *
+   * @param left
+   *    {@link TFunction0} to evaluate and return if `this` is empty
+   *
+   * @return {@link Left} if `this` is an empty {@link Optional}, {@link Right} otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `left` is `null` or `undefined` and this {@link Optional} is empty
+   */
+  toRight = <L>(left: TFunction0<L>): Either<L, T> =>
+    this.isPresent()
+      ? Either.right<L, T>(
+          this.value!
+        )
+      : Either.left<L, T>(
+          Function0.of(left)
+            .apply()
+        );
 
 }
