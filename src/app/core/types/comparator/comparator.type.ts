@@ -51,7 +51,7 @@ export function isFComparator<T>(input?: any): input is FComparator<T> {
  * <p>
  *      < 0    sort `a` before `b`, e.g. [a, b]     (`b` is greater than `a`)
  * <p>
- *      === 0  keep original order of `a` and `b`   (`b` is equals to `a`)
+ *        0    keep original order of `a` and `b`   (`b` is equals to `a`)
  *
  * @typeParam <T>
  *   Type of the inputs of {@link Comparator}
