@@ -34,7 +34,7 @@ import {
   TFunction9
 } from '@app-core/types/function';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
-import { Either, Optional } from '@app-core/types/functional';
+import { Either, Optional, Validation } from '@app-core/types/functional';
 
 /**
  *    Represents a computation that may either result in an error, or return a successfully computed value. It's
@@ -871,9 +871,9 @@ export abstract class Try<T> {
    */
   isEmpty = (): boolean =>
     !this.isSuccess() ||
-    ObjectUtil.isNullOrUndefined(
-      this.get()
-    );
+      ObjectUtil.isNullOrUndefined(
+        this.get()
+      );
 
 
   /**
@@ -1028,7 +1028,7 @@ export abstract class Try<T> {
   /**
    * Converts current {@link Try} to an {@link Either}.
    *
-   * @return {@code Either#right} using {@link Try#get} if current {@link Try} is {@link Success}
+   * @return {@code Either#right} using {@link Try#get} if current {@link Try} is {@link Success},
    *         {@code Either#left} using {@link Try#getError} if it is {@link Failure}
    */
   toEither = (): Either<Error, T> =>
@@ -1055,6 +1055,24 @@ export abstract class Try<T> {
        : Optional.of(
            this.get()
          );
+
+
+  /**
+   * Transforms current {@link Try} into a {@link Validation}.
+   *
+   * @return {@link Validation#valid} if this is {@link Success},
+   *         {@link Validation#invalid} if {@link Failure}.
+   */
+  toValidation = (): Validation<Error, T> =>
+    this.isSuccess()
+      ? Validation.valid(
+          this.get()
+        )
+      : Validation.invalid(
+          ObjectUtil.isNullOrUndefined(this.getError())
+            ? []
+            : [this.getError()]
+        );
 
 
   /**

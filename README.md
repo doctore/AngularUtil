@@ -41,6 +41,7 @@ Others related with functional programming:
 * [Predicate](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/predicate) represents an operation that accepts zero or more input arguments and returns a boolean result based on provided data.
 * [Optional](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/optional.type.ts) a container object which may or may not contain a non-null value.
 * [Try](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/try.type.ts) computation representation that may either result in an error, or return a successfully computed value.
+* [Validation](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/validation.type.ts) used to validate the given instance, defining 2 different status to manage the result: `Valid` and `Invalid`.
 
 
 ### Util classes

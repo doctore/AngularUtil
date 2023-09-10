@@ -917,22 +917,22 @@ describe('Try', () => {
   describe('isEmpty', () => {
 
     it('when the Try instance is an empty Success one then true is returned', () => {
-      expect(Success.of(null).isEmpty()).toBeTrue();
-      expect(Success.of(undefined).isEmpty()).toBeTrue();
+      expect(Try.success(null).isEmpty()).toBeTrue();
+      expect(Try.success(undefined).isEmpty()).toBeTrue();
 
-      expect(Success.of<NullableOrUndefined<string>>(undefined).isEmpty()).toBeTrue();
-      expect(Success.of<Nullable<number>>(null).isEmpty()).toBeTrue();
+      expect(Try.success<NullableOrUndefined<string>>(undefined).isEmpty()).toBeTrue();
+      expect(Try.success<Nullable<number>>(null).isEmpty()).toBeTrue();
     });
 
 
-    it('when the Try instance is a non empty Success one then false is returned', () => {
-      expect(Success.of(12).isEmpty()).toBeFalse();
-      expect(Success.of('abc').isEmpty()).toBeFalse();
+    it('when the Try instance is a non-empty Success one then false is returned', () => {
+      expect(Try.success(12).isEmpty()).toBeFalse();
+      expect(Try.success('abc').isEmpty()).toBeFalse();
     });
 
 
-    it('when the Try instance is a Failure one then false is returned', () => {
-      expect(Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error')).isEmpty()).toBeTrue();
+    it('when the Try instance is a Failure one then true is returned', () => {
+      expect(Try.failure(new IllegalArgumentError('IllegalArgumentError: there was an error')).isEmpty()).toBeTrue();
     });
 
   });
@@ -1297,17 +1297,17 @@ describe('Try', () => {
   describe('toEither', () => {
 
     it('when the Try instance is an empty Success one then empty Right is returned', () => {
-      expect(Success.of(null).toEither().isRight()).toBeTrue();
-      expect(Success.of(null).toEither().get()).toBeNull();
+      expect(Try.success(null).toEither().isRight()).toBeTrue();
+      expect(Try.success(null).toEither().get()).toBeNull();
 
-      expect(Success.of(undefined).toEither().isRight()).toBeTrue();
-      expect(Success.of(undefined).toEither().get()).toBeUndefined();
+      expect(Try.success(undefined).toEither().isRight()).toBeTrue();
+      expect(Try.success(undefined).toEither().get()).toBeUndefined();
     });
 
 
     it('when the Try instance is a non empty Success one then non empty Right is returned', () => {
-      const intSuccess = Success.of(12);
-      const stringSuccess = Success.of('abc');
+      const intSuccess = Try.success(12);
+      const stringSuccess = Try.success('abc');
 
       expect(intSuccess.toEither().isRight()).toBeTrue();
       expect(intSuccess.toEither().get()).toEqual(intSuccess.get());
@@ -1319,7 +1319,7 @@ describe('Try', () => {
 
     it('when the Try instance is a Failure one then a Left instance is returned', () => {
       const error = new IllegalArgumentError('IllegalArgumentError: there was an error');
-      const failure = Failure.of(error);
+      const failure = Try.failure(error);
 
       expect(failure.toEither().isRight()).toBeFalse();
       expect(failure.toEither().getLeft()).toEqual(error);
@@ -1332,17 +1332,17 @@ describe('Try', () => {
   describe('toOptional', () => {
 
     it('when the Try instance is an empty Success one then empty Optional is returned', () => {
-      expect(Success.of(null).toOptional().isPresent()).toBeFalse();
-      expect(Success.of(undefined).toOptional().isPresent()).toBeFalse();
+      expect(Try.success(null).toOptional().isPresent()).toBeFalse();
+      expect(Try.success(undefined).toOptional().isPresent()).toBeFalse();
 
-      expect(Success.of<NullableOrUndefined<string>>(undefined).toOptional().isPresent()).toBeFalse();
-      expect(Success.of<Nullable<number>>(null).toOptional().isPresent()).toBeFalse();
+      expect(Try.success<NullableOrUndefined<string>>(undefined).toOptional().isPresent()).toBeFalse();
+      expect(Try.success<Nullable<number>>(null).toOptional().isPresent()).toBeFalse();
     });
 
 
     it('when the Try instance is a non empty Success one then non empty Optional is returned', () => {
-      const intSuccess = Success.of(12);
-      const stringSuccess = Success.of('abc');
+      const intSuccess = Try.success(12);
+      const stringSuccess = Try.success('abc');
 
       expect(intSuccess.toOptional().isPresent()).toBeTrue();
       expect(intSuccess.toOptional().get()).toEqual(intSuccess.get());
@@ -1353,9 +1353,44 @@ describe('Try', () => {
 
 
     it('when the Try instance is a Failure one then empty Optional is returned', () => {
-      const failure = Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error'));
+      const failure = Try.failure(new IllegalArgumentError('IllegalArgumentError: there was an error'));
 
       expect(failure.toOptional().isPresent()).toBeFalse();
+    });
+
+  });
+
+
+
+  describe('toValidation', () => {
+
+    it('when the Try instance is an empty Success one then empty Valid is returned', () => {
+      expect(Try.success(null).toValidation().isValid()).toBeTrue();
+      expect(Try.success(null).toValidation().get()).toBeNull();
+
+      expect(Try.success(undefined).toValidation().isValid()).toBeTrue();
+      expect(Try.success(undefined).toValidation().get()).toBeUndefined();
+    });
+
+
+    it('when the Try instance is a non empty Success one then non empty Valid is returned', () => {
+      const intSuccess = Try.success(12);
+      const stringSuccess = Try.success('abc');
+
+      expect(intSuccess.toValidation().isValid()).toBeTrue();
+      expect(intSuccess.toValidation().get()).toEqual(intSuccess.get());
+
+      expect(stringSuccess.toValidation().isValid()).toBeTrue();
+      expect(stringSuccess.toValidation().get()).toEqual(stringSuccess.get());
+    });
+
+
+    it('when the Try instance is a Failure one then an Invalid instance is returned', () => {
+      const error = new IllegalArgumentError('IllegalArgumentError: there was an error');
+      const failure = Try.failure(error);
+
+      expect(failure.toValidation().isValid()).toBeFalse();
+      expect(failure.toValidation().getErrors()).toEqual([error]);
     });
 
   });
@@ -1446,7 +1481,7 @@ describe('Try', () => {
     });
 
 
-    it('when the Try instance is Success then new Try applying mapperSucess is returned', () => {
+    it('when the Try instance is Success then new Try applying mapperSuccess is returned', () => {
       const fromNumToString = (n: number) => '' + n;
       const getErrorMessage = (e: Error) => e.message;
 

@@ -1,4 +1,4 @@
-import { Optional, Try } from '@app-core/types/functional';
+import { Optional, Try, Validation } from '@app-core/types/functional';
 import { AssertUtil, ObjectUtil } from '@app-core/util';
 import { BinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
@@ -24,12 +24,6 @@ import { Function0, Function1, isFFunction0, TFunction0, TFunction1 } from '@app
 export abstract class Either<L, R> {
 
   /**
-   * Returns `true` is this is a {@link Right}, `false` otherwise.
-   */
-  abstract isRight(): boolean;
-
-
-  /**
    * Gets the value of this {@link Either} if is a {@link Right} or throws {@link ReferenceError} if this is a {@link Left}.
    *
    * @return the {@link Right} value
@@ -47,6 +41,12 @@ export abstract class Either<L, R> {
    * @throws {@link ReferenceError} if this is a {@link Right}
    */
   abstract getLeft(): L;
+
+
+  /**
+   * Returns `true` is this is a {@link Right}, `false` otherwise.
+   */
+  abstract isRight(): boolean;
 
 
   /**
@@ -312,9 +312,9 @@ export abstract class Either<L, R> {
    */
   isEmpty = (): boolean =>
     !this.isRight() ||
-    ObjectUtil.isNullOrUndefined(
-      this.get()
-    );
+      ObjectUtil.isNullOrUndefined(
+        this.get()
+      );
 
 
   /**
@@ -461,6 +461,25 @@ export abstract class Either<L, R> {
         Try.success
       );
 
+
+  /**
+   *    Transforms current {@link Either} into a {@link Validation}. If the current {@link Either} is an instance of
+   * {@link Right} wraps the stored value into a {@link Valid} one, {@link Invalid} otherwise.
+   *
+   * @return {@link Valid} instance if this is {@link Right},
+   *         otherwise {@link Invalid}.
+   */
+  toValidation = (): Validation<L, R> =>
+    this.isRight()
+      ? Validation.valid(
+        this.get()
+      )
+      : Validation.invalid(
+          ObjectUtil.isNullOrUndefined(this.getLeft())
+            ? []
+            : [this.getLeft()]
+      );
+
 }
 
 
@@ -493,10 +512,6 @@ export class Right<L, R> extends Either<L, R> {
     new Right<L, R>(value);
 
 
-  override isRight = (): boolean =>
-    true;
-
-
   override get = (): R =>
     this.value;
 
@@ -504,6 +519,10 @@ export class Right<L, R> extends Either<L, R> {
   override getLeft = (): L => {
     throw new ReferenceError("Is not possible to get left value of a 'Right' Either");
   }
+
+
+  override isRight = (): boolean =>
+    true;
 
 }
 
@@ -526,19 +545,15 @@ export class Left<L, R> extends Either<L, R> {
 
 
   /**
-   * Returns an {@link Right} adding the given `value`.
+   * Returns an {@link Left} adding the given `value`.
    *
    * @param value
    *    The value to store
    *
-   * @return an {@link Right} with the value present
+   * @return an {@link Left} with the value present
    */
   static of = <L, R>(value: L): Left<L, R> =>
     new Left<L, R>(value);
-
-
-  override isRight = (): boolean =>
-    false;
 
 
   override get = (): R => {
@@ -548,5 +563,9 @@ export class Left<L, R> extends Either<L, R> {
 
   override getLeft = (): L =>
     this.value;
+
+
+  override isRight = (): boolean =>
+    false;
 
 }

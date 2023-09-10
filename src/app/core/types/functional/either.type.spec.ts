@@ -60,12 +60,12 @@ describe('Either', () => {
       const leftEither = Either.left('abc');
 
       // @ts-ignore
-      expect(rightEither.ap(null, concatStrings, sumNumbers)).toEqual(rightEither);
+      expect(rightEither.ap(null, concatStrings, sumNumbers).isRight()).toBeTrue();
       // @ts-ignore
-      expect(rightEither.ap(undefined, concatStrings, sumNumbers)).toEqual(rightEither);
+      expect(rightEither.ap(null, concatStrings, sumNumbers)).toEqual(rightEither);
 
       // @ts-ignore
-      expect(leftEither.ap(null, concatStrings, sumNumbers)).toEqual(leftEither);
+      expect(leftEither.ap(undefined, concatStrings, sumNumbers).isRight()).toBeFalse();
       // @ts-ignore
       expect(leftEither.ap(undefined, concatStrings, sumNumbers)).toEqual(leftEither);
     });
@@ -453,23 +453,23 @@ describe('Either', () => {
   describe('isEmpty', () => {
 
     it('when the Either instance is an empty Right one then true is returned', () => {
-      expect(Right.of(null).isEmpty()).toBeTrue();
-      expect(Right.of(undefined).isEmpty()).toBeTrue();
+      expect(Either.right(null).isEmpty()).toBeTrue();
+      expect(Either.right(undefined).isEmpty()).toBeTrue();
 
-      expect(Right.of<number, NullableOrUndefined<string>>(undefined).isEmpty()).toBeTrue();
-      expect(Right.of<boolean, Nullable<number>>(null).isEmpty()).toBeTrue();
+      expect(Either.right<number, NullableOrUndefined<string>>(undefined).isEmpty()).toBeTrue();
+      expect(Either.right<boolean, Nullable<number>>(null).isEmpty()).toBeTrue();
     });
 
 
-    it('when the Either instance is a non empty Right one then false is returned', () => {
-      expect(Right.of(12).isEmpty()).toBeFalse();
-      expect(Right.of('abc').isEmpty()).toBeFalse();
+    it('when the Either instance is a non-empty Right one then false is returned', () => {
+      expect(Either.right(12).isEmpty()).toBeFalse();
+      expect(Either.right('abc').isEmpty()).toBeFalse();
     });
 
 
-    it('when the Either instance is a Left one then false is returned', () => {
-      expect(Left.of('abc').isEmpty()).toBeTrue();
-      expect(Left.of(19).isEmpty()).toBeTrue();
+    it('when the Either instance is a Left one then true is returned', () => {
+      expect(Either.left('abc').isEmpty()).toBeTrue();
+      expect(Either.left(19).isEmpty()).toBeTrue();
     });
 
   });
@@ -488,9 +488,9 @@ describe('Either', () => {
 
 
     it('when the Either instance is a Right one then the content of Right is returned', () => {
-      expect(Right.of<number, NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
-      expect(Right.of<number, Nullable<string>>(null).getOrElse('20')).toBeNull();
-      expect(Right.of<number, string>('19').getOrElse('20')).toEqual('19');
+      expect(Either.right<number, NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
+      expect(Either.right<number, Nullable<string>>(null).getOrElse('20')).toBeNull();
+      expect(Either.right<number, string>('19').getOrElse('20')).toEqual('19');
     });
 
   });
@@ -511,11 +511,11 @@ describe('Either', () => {
 
 
     it('when the Either instance is a Right one then an Optional with the content of Right is returned', () => {
-      expect(Right.of<number, NullableOrUndefined<string>>(undefined).getOrElseOptional('11').isPresent()).toBeFalse();
-      expect(Right.of<number, Nullable<string>>(null).getOrElseOptional('20').isPresent()).toBeFalse();
+      expect(Either.right<number, NullableOrUndefined<string>>(undefined).getOrElseOptional('11').isPresent()).toBeFalse();
+      expect(Either.right<number, Nullable<string>>(null).getOrElseOptional('20').isPresent()).toBeFalse();
 
-      expect(Right.of<number, Nullable<string>>('19').getOrElseOptional('20').isPresent()).toBeTrue();
-      expect(Right.of<number, Nullable<string>>('19').getOrElseOptional('20').get()).toEqual('19');
+      expect(Either.right<number, Nullable<string>>('19').getOrElseOptional('20').isPresent()).toBeTrue();
+      expect(Either.right<number, Nullable<string>>('19').getOrElseOptional('20').get()).toEqual('19');
     });
 
   });
@@ -836,6 +836,53 @@ describe('Either', () => {
 
   });
 
+
+
+  describe('toValidation', () => {
+
+    it('when the Either instance is an empty Right one then empty Valid is returned', () => {
+      expect(Either.right(null).toValidation().isValid()).toBeTrue();
+      expect(Either.right(null).toValidation().get()).toBeNull();
+
+      expect(Either.right(undefined).toValidation().isValid()).toBeTrue();
+      expect(Either.right(undefined).toValidation().get()).toBeUndefined();
+    });
+
+
+    it('when the Either instance is a non empty Right one then non empty Valid is returned', () => {
+      const e1 = Either.right(11);
+      const e2 = Either.right('abc');
+
+      expect(e1.toValidation().isValid()).toBeTrue();
+      expect(e1.toValidation().get()).toEqual(e1.get());
+
+      expect(e2.toValidation().isValid()).toBeTrue();
+      expect(e2.toValidation().get()).toEqual(e2.get());
+    });
+
+
+    it('when the Either instance is an empty Left one then empty Invalid is returned', () => {
+      expect(Either.left(null).toValidation().isValid()).toBeFalse();
+      expect(Either.left(null).toValidation().getErrors()).toEqual([]);
+
+      expect(Either.left(undefined).toValidation().isValid()).toBeFalse();
+      expect(Either.left(undefined).toValidation().getErrors()).toEqual([]);
+    });
+
+
+    it('when the Either instance is a non empty Left one then non empty Invalid is returned', () => {
+      const e1 = Either.left(11);
+      const e2 = Either.left('abc');
+
+      expect(e1.toValidation().isValid()).toBeFalse();
+      expect(e1.toValidation().getErrors()).toEqual([e1.getLeft()]);
+
+      expect(e2.toValidation().isValid()).toBeFalse();
+      expect(e2.toValidation().getErrors()).toEqual([e2.getLeft()]);
+    });
+
+  });
+
 });
 
 
@@ -857,17 +904,6 @@ describe('Right', () => {
 
       expect(Right.of(intValue).isRight()).toBeTrue();
       expect(Right.of(intValue).get()).toEqual(intValue);
-    });
-
-  });
-
-
-
-  describe('isRight', () => {
-
-    it('then true is returned', () => {
-      expect(Right.of('abc').isRight()).toBeTrue();
-      expect(Right.of(12).isRight()).toBeTrue();
     });
 
   });
@@ -897,6 +933,16 @@ describe('Right', () => {
   });
 
 
+
+  describe('isRight', () => {
+
+    it('then true is returned', () => {
+      expect(Right.of('abc').isRight()).toBeTrue();
+      expect(Right.of(12).isRight()).toBeTrue();
+    });
+
+  });
+
 });
 
 
@@ -924,22 +970,11 @@ describe('Left', () => {
 
 
 
-  describe('isRight', () => {
-
-    it('then false is returned', () => {
-      expect(Left.of('abc').isRight()).toBeFalse();
-      expect(Left.of(12).isRight()).toBeFalse();
-    });
-
-  });
-
-
-
   describe('get', () => {
 
-    it('then internal value is returned', () => {
-      expect(() => Left.of<NullableOrUndefined<string>, boolean>(undefined).get()).toThrowError(ReferenceError);
-      expect(() => Left.of<Nullable<number>, string>(null).get()).toThrowError(ReferenceError);
+    it('then ReferenceError is returned', () => {
+      expect(() => Left.of(undefined).get()).toThrowError(ReferenceError);
+      expect(() => Left.of(null).get()).toThrowError(ReferenceError);
       expect(() => Left.of(12).get()).toThrowError(ReferenceError);
     });
 
@@ -949,10 +984,21 @@ describe('Left', () => {
 
   describe('getLeft', () => {
 
-    it('then ReferenceError is returned', () => {
-      expect(Left.of<NullableOrUndefined<string>, boolean>(undefined).getLeft()).toBeUndefined();
-      expect(Left.of<Nullable<number>, string>(null).getLeft()).toBeNull();
+    it('then internal value is returned', () => {
+      expect(Left.of(undefined).getLeft()).toBeUndefined();
+      expect(Left.of(null).getLeft()).toBeNull();
       expect(Left.of(12).getLeft()).toEqual(12);
+    });
+
+  });
+
+
+
+  describe('isRight', () => {
+
+    it('then false is returned', () => {
+      expect(Left.of('abc').isRight()).toBeFalse();
+      expect(Left.of(12).isRight()).toBeFalse();
     });
 
   });
