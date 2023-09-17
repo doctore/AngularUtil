@@ -91,7 +91,7 @@ export abstract class Try<T> {
   /**
    * Merges the given `tries` in a one result that will be:
    * <p>
-   *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`
+   *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`, `undefined`
    *      or empty. Using provided {@link TBinaryOperator} `mapperSuccess` to get the final value added into the
    *      returned {@link Success}.
    * <p>
@@ -101,8 +101,8 @@ export abstract class Try<T> {
    * <pre>
    * Examples:
    *
-   *   mapperFailure = (f1: Error, f2: Error) => f2;
-   *   mapperSuccess = (s1: number, s2: number) => s2;
+   *   mapperFailure = (e1: Error, e2: Error) => e2;
+   *   mapperSuccess = (n1: number, n2: number) => n2;
    *
    *   combine(mapperFailure, mapperSuccess, [Try.success(11), Try.success(7)]);                                                 // Success(7)
    *   combine(mapperFailure, mapperSuccess, [Try.success(13), Try.failure(new TypeError())]);                                   // Failure(new TypeError())
@@ -116,7 +116,7 @@ export abstract class Try<T> {
    * @param tries
    *    {@link Try} instances to combine
    *
-   * @return {@link Try}
+   * @return {@link Try} merging provided `tries`
    *
    * @throws {@link IllegalArgumentError} if `mapperFailure` or `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
@@ -129,7 +129,7 @@ export abstract class Try<T> {
     }
     const finalMapperFailure = BinaryOperator.of(mapperFailure);
     const finalMapperSuccess = BinaryOperator.of(mapperSuccess);
-    let result = tries![0];
+    let result: Try<T> = tries![0];
     for (let i = 1; i < tries!.length; i++) {
       result = result.ap(
         tries![i],
@@ -150,7 +150,7 @@ export abstract class Try<T> {
   /**
    * Merges the given `tries` in a one result that will be:
    * <p>
-   *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`
+   *   1. {@link Success} instance if all given `tries` are {@link Success} ones or such parameters is `null`, `undefined`
    *      or empty. Using provided {@link TBinaryOperator} `mapperSuccess` to get the final value added into the
    *      returned {@link Success}.
    * <p>
@@ -159,7 +159,7 @@ export abstract class Try<T> {
    * <pre>
    * Examples:
    *
-   *   mapperSuccess = (s1: number, s2: number) => s2;
+   *   mapperSuccess = (n1: number, n2: number) => n2;
    *
    *   combineGetFirstFailure(mapperSuccess, [() => Try.success(11), () => Try.success(7)]);                                                       // Success(7)
    *   combineGetFirstFailure(mapperSuccess, [() => Try.success(13), () => Try.failure(new TypeError())]);                                         // Failure(new TypeError())
@@ -171,7 +171,8 @@ export abstract class Try<T> {
    * @param tries
    *    {@link TFunction0} of {@link Try} instances to verify
    *
-   * @return {@link Try}
+   * @return {@link Success} if no one provided {@link TFunction0} returns {@link Failure},
+   *         first one {@link Failure} otherwise.
    *
    * @throws {@link IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
@@ -182,7 +183,7 @@ export abstract class Try<T> {
       return Try.success<T>(null);
     }
     const finalMapperSuccess = BinaryOperator.of(mapperSuccess);
-    let result = Function0.of(tries![0]).apply();
+    let result: Try<T> = Function0.of(tries![0]).apply();
     for (let i = 1; i < tries!.length; i++) {
       result = result.ap(
         Function0.of(tries![i]).apply(),
@@ -1028,8 +1029,8 @@ export abstract class Try<T> {
   /**
    * Converts current {@link Try} to an {@link Either}.
    *
-   * @return {@code Either#right} using {@link Try#get} if current {@link Try} is {@link Success},
-   *         {@code Either#left} using {@link Try#getError} if it is {@link Failure}
+   * @return {@link Right} using {@link Try#get} if current {@link Try} is {@link Success},
+   *         {@link Left} using {@link Try#getError} if it is {@link Failure}
    */
   toEither = (): Either<Error, T> =>
     this.isSuccess()

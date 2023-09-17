@@ -139,9 +139,9 @@ export class PartialFunction<T, R> {
    * @param verifier
    *    {@link TPredicate1} used to know new {@link PartialFunction}'s domain
    * @param keyMapper
-   *    {@link TFunction1} to transform an instance of @type {T} into a {@code K} one
+   *    {@link TFunction1} to transform an instance of @type {T} into a @type {K} one
    * @param valueMapper
-   *    {@link TFunction1} to transform an instance of @type {T} into a {@code V} one
+   *    {@link TFunction1} to transform an instance of @type {T} into a @type {V} one
    *
    * @return {@link PartialFunction} to convert values of @type {T} to @type {[K, V]}
    *
@@ -232,9 +232,9 @@ export class PartialFunction<T, R> {
    * @param verifier
    *    {@link TPredicate2} used to know new {@link PartialFunction}'s domain
    * @param keyMapper
-   *    {@link TFunction2} to transform an instance of @type {[T1, R1]} into a {@code T2} one
+   *    {@link TFunction2} to transform an instance of @type {[T1, R1]} into a @type {T2} one
    * @param valueMapper
-   *    {@link TFunction2} to transform an instance of @type {[T1, R1]} into a {@code R2} one
+   *    {@link TFunction2} to transform an instance of @type {[T1, R1]} into a @type {R2} one
    *
    * @return {@link PartialFunction} to convert values of @type {[T1, R1]} to @type {[T2, R2]}
    *

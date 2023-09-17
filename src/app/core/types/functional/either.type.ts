@@ -1,8 +1,9 @@
 import { Optional, Try, Validation } from '@app-core/types/functional';
-import { AssertUtil, ObjectUtil } from '@app-core/util';
-import { BinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
+import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
+import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { Function0, Function1, isFFunction0, TFunction0, TFunction1 } from '@app-core/types/function';
+import { NullableOrUndefined } from '@app-core/types';
 
 /**
  *    Represents a value of one of two possible types (a disjoint union). An instance of Either is an instance of
@@ -71,6 +72,124 @@ export abstract class Either<L, R> {
    */
   static left = <L, R>(value: L): Either<L, R> =>
     Left.of<L, R>(value);
+
+
+  static combine<L, R>(mapperLeft: FBinaryOperator<L>,
+                       mapperRight: FBinaryOperator<R>,
+                       eithers: NullableOrUndefined<Either<L, R>[]>): Either<L, R>;
+
+  static combine<L, R>(mapperLeft: TBinaryOperator<L>,
+                       mapperRight: TBinaryOperator<R>,
+                       eithers: NullableOrUndefined<Either<L, R>[]>): Either<L, R>;
+
+  /**
+   * Merges the given `eithers` in a one result that will be:
+   * <p>
+   *   1. {@link Right} instance if all given `eithers` are {@link Right} ones or such parameters is `null, `undefined`
+   *      or empty. Using provided {@link TBinaryOperator} `mapperRight` to get the final value added into the
+   *      returned {@link Right}.
+   * <p>
+   *   2. {@link Left} instance if there is at least one {@link Left} in the given `eithers`. Using provided
+   *      {@link TBinaryOperator} `mapperLeft` to get the final value added into the returned {@link Left}.
+   *
+   * <pre>
+   * Examples:
+   *
+   *   mapperLeft = (s1: string, s2: string) => s1;
+   *   mapperRight = (n1: number, n2: number) => n2;
+   *
+   *   combine(mapperLeft, mapperRight, [Either.right(11), Either.right(7)]);                       // Right(7)
+   *   combine(mapperLeft, mapperRight, [Either.right(13), Either.left('A')]);                      // Left('A')
+   *   combine(mapperLeft, mapperRight, [Either.right(10), Either.left('A'), Either.left('B')]);    // Left('A')
+   * </pre>
+   *
+   * @param mapperLeft
+   *    {@link TBinaryOperator} used to calculate the new {@link Left} based on two provided ones
+   * @param mapperRight
+   *    {@link TBinaryOperator} used to calculate the new {@link Right} based on two provided ones
+   * @param eithers
+   *    {@link Either} instances to combine
+   *
+   * @return {@link Either} merging provided `eithers`
+   *
+   * @throws {@link IllegalArgumentError} if `mapperLeft` or `mapperRight` is `null` or `undefined` but `eithers` is not empty
+   */
+  static combine<L, R>(mapperLeft: TBinaryOperator<L>,
+                       mapperRight: TBinaryOperator<R>,
+                       eithers: NullableOrUndefined<Either<L, R>[]>): Either<L, R> {
+    if (ArrayUtil.isEmpty(eithers)) {
+      // @ts-ignore
+      return Either.right<L, R>(null);
+    }
+    const finalMapperLeft = BinaryOperator.of(mapperLeft);
+    const finalMapperRight = BinaryOperator.of(mapperRight);
+    let result: Either<L, R> = eithers![0];
+    for (let i = 1; i < eithers!.length; i++) {
+      result = result.ap(
+        eithers![i],
+        finalMapperLeft,
+        finalMapperRight
+      );
+    }
+    return result;
+  }
+
+
+  static combineGetFirstLeft<L, R>(mapperRight: FBinaryOperator<R>,
+                                   eithers: NullableOrUndefined<TFunction0<Either<L, R>>[]>): Either<L, R>;
+
+  static combineGetFirstLeft<L, R>(mapperRight: TBinaryOperator<R>,
+                                   eithers: NullableOrUndefined<TFunction0<Either<L, R>>[]>): Either<L, R>;
+
+  /**
+   * Merges the given `eithers` in a one result that will be:
+   * <p>
+   *   1. {@link Right} instance if all given `eithers` are {@link Right} ones or such parameters is `null`, `undefined`
+   *      or empty. Using provided {@link TBinaryOperator} `mapperSuccess` to get the final value added into the
+   *      returned {@link Right}.
+   * <p>
+   *   2. {@link Left} instance with the first {@link Left} found in the given `eithers`.
+   *
+   * <pre>
+   * Examples:
+   *
+   *   mapperSuccess = (s1: number, s2: number) => s2;
+   *
+   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(11), () => Either.right(7)]);                               // Right(7)
+   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(13), () => Either.left('A')]);                              // Left('A')
+   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(10), () => Either.left('A')]), () => Either.left('B')]);    // Left('A')
+   * </pre>
+   *
+   * @param mapperRight
+   *    {@link TBinaryOperator} used to calculate the new {@link Right} based on two provided ones
+   * @param eithers
+   *    {@link TFunction0} of {@link Either} instances to verify
+   *
+   * @return {@link Right} if no one provided {@link TFunction0} returns {@link Left},
+   *         first one {@link Left} otherwise.
+   *
+   * @throws {@link IllegalArgumentError} if `mapperRight` is `null` or `undefined` but `eithers` is not empty
+   */
+  static combineGetFirstLeft<L, R>(mapperRight: TBinaryOperator<R>,
+                                   eithers: NullableOrUndefined<TFunction0<Either<L, R>>[]>): Either<L, R> {
+    if (ArrayUtil.isEmpty(eithers)) {
+      // @ts-ignore
+      return Either.right<L, R>(null);
+    }
+    const finalMapperRight = BinaryOperator.of(mapperRight);
+    let result: Either<L, R> = Function0.of(eithers![0]).apply();
+    for (let i = 1; i < eithers!.length; i++) {
+      result = result.ap(
+        Function0.of(eithers![i]).apply(),
+        BinaryOperator.returnFirst<L>(),
+        finalMapperRight
+      );
+      if (!result.isRight()) {
+        return result;
+      }
+    }
+    return result;
+  }
 
 
   /**

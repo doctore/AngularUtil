@@ -573,11 +573,11 @@ export class MapUtil {
    * @param sourceMap
    *    {@link Map} to search `key`
    * @param key
-   *    Key to search in {@code sourceMap}
+   *    Key to search in `sourceMap`
    * @param defaultValue
    *    {@link TFunction0} that yields a default value in case no binding for `key` is found in `sourceMap`
    *
-   * @return value associated with the given `key` if {@code sourceMap} contains it,
+   * @return value associated with the given `key` if `sourceMap` contains it,
    *         `defaultValue` results otherwise.
    */
   static getOrElse<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
@@ -1206,7 +1206,7 @@ export class MapUtil {
 
 
   /**
-   *   Performs a reduction on the elements of `sourceMap`, using an associative accumulation {@link TFunction3},
+   *   Performs a reduction on the elements of `sourceMap`, using an associative accumulation {@link TBinaryOperator},
    * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
    *
    * @apiNote

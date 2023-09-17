@@ -1076,7 +1076,7 @@ export class ArrayUtil {
 
 
   /**
-   * Converts the given `sourceArray` to a {@link Map} using provided {@code partialFunction}.
+   * Converts the given `sourceArray` to a {@link Map} using provided `partialFunction`.
    *
    * @apiNote
    *    If several elements return the same key, the last one will be the final value.

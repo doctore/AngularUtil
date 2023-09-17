@@ -1,6 +1,7 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { Comparable } from '@app-core/types/comparator';
 import { NullableOrUndefined } from '@app-core/types';
+import { Function0, TFunction0 } from '@app-core/types/function';
 import { Optional } from '@app-core/types/functional';
 
 /**
@@ -64,6 +65,78 @@ export abstract class Validation<E, T> {
    */
   static invalid = <E, T>(errors: E[]): Validation<E, T> =>
     Invalid.of<E, T>(errors);
+
+
+  /**
+   * Merges the given `validations` in a one result that will be:
+   * <p>
+   *   1. {@link Valid} instance if all given `validations` are {@link Valid} ones or such parameters is `null`, `undefined` or empty.
+   * <p>
+   *   2. {@link Invalid} instance if there is at least one {@link Invalid} in the given `validations`. In this case, errors of
+   *      all provided {@link Invalid}s will be included in the result.
+   *
+   * <pre>
+   * Examples:
+   *
+   *   combine(Validation.valid(11), Validation.valid(7));                                        // Valid(7)
+   *   combine(Validation.valid(13), Validation.invalid(['A']));                                  // Invalid(['A']))
+   *   combine(Validation.valid(10), Validation.invalid(['A'])), Validation.invalid(['B'])));     // Invalid(['A', 'B']))
+   * </pre>
+   *
+   * @param validations
+   *    {@link Validation} instances to combine
+   *
+   * @return {@link Validation} merging provided `validations`
+   */
+  static combine = <E, T>(validations: NullableOrUndefined<Validation<E, T>[]>): Validation<E, T> => {
+    // @ts-ignore
+    let result: Validation<E, T> = Validation.valid<T, E>(null);
+    if (!ArrayUtil.isEmpty(validations)) {
+      for (let validation of validations!) {
+        result = result.ap(validation);
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Checks the given `validations`, returning a {@link Valid} instance if no {@link Invalid} {@link TFunction0}
+   * was given or the first {@link Invalid} one.
+   *
+   * <pre>
+   * Examples:
+   *
+   *   combineGetFirstInvalid(() => Validation.valid(1), () => Validation.valid(7));                                             // Valid(7)
+   *   combineGetFirstInvalid(() => Validation.valid(3), () => Validation.invalid(['A'])));                                      // Invalid(['A']))
+   *   combineGetFirstInvalid(() => Validation.valid(2), () => Validation.invalid(['A'])), () => Validation.invalid(['B'])));    // Invalid(['A']))
+   * </pre>
+   *
+   * @param validations
+   *    {@link TFunction0} of {@link Validation} instances to verify
+   *
+   * @return {@link Valid} if no one provided {@link TFunction0} returns {@link Invalid},
+   *         first one {@link Invalid} otherwise.
+   *
+   * @throws {@link IllegalArgumentError} if `validations` is not empty but contains `null` or `undefined`
+   */
+  static combineGetFirstInvalid = <E, T>(validations: NullableOrUndefined<TFunction0<Validation<E, T>>[]>): Validation<E, T> => {
+    // @ts-ignore
+    let result: Validation<E, T> = Validation.valid<T, E>(null);
+    if (!ArrayUtil.isEmpty(validations)) {
+      for (let validation of validations!) {
+        result = result.ap(
+          Function0.of(
+            validation
+          ).apply()
+        );
+        if (!result.isValid()) {
+          return result;
+        }
+      }
+    }
+    return result;
+  }
 
 
   /**

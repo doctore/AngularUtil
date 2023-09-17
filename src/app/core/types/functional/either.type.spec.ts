@@ -1,6 +1,14 @@
 import { Either, Left, Right } from '@app-core/types/functional';
 import { Nullable, NullableOrUndefined } from '@app-core/types';
-import { FFunction0, FFunction1, Function0, Function1 } from '@app-core/types/function';
+import {
+  FFunction0,
+  FFunction1,
+  FFunction2,
+  Function0,
+  Function1,
+  Function2,
+  TFunction0
+} from '@app-core/types/function';
 import { FBinaryOperator, BinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
@@ -41,6 +49,139 @@ describe('Either', () => {
 
       expect(Either.left('abc').isRight()).toBeFalse();
       expect(Either.left('abc').getLeft()).toEqual('abc');
+    });
+
+  });
+
+
+
+  describe('combine', () => {
+
+    it('when given eithers are null, undefined or empty then a Right with null value is returned', () => {
+      const mapperLeft = (s1: string, s2: string) => s1;
+      const mapperRight: FFunction2<number, number, number> = (n1: number, n2: number) => n2;
+
+      expect(Either.combine(mapperLeft, mapperRight, null).isRight()).toBeTrue();
+      expect(Either.combine(mapperLeft, mapperRight, null).get()).toBeNull();
+
+      expect(Either.combine(mapperLeft, mapperRight, undefined).isRight()).toBeTrue();
+      expect(Either.combine(mapperLeft, mapperRight, undefined).get()).toBeNull();
+
+      expect(Either.combine(mapperLeft, mapperRight, []).isRight()).toBeTrue();
+      expect(Either.combine(mapperLeft, mapperRight, []).get()).toBeNull();
+    });
+
+
+    it('when given eithers is not empty but mapperLeft is null or undefined then an error is thrown', () => {
+      const eithers = [Either.right(12)];
+      const mapperRight: Function2<number, number, number> =
+        Function2.of((n1: number, n2: number) => n2);
+
+      // @ts-ignore
+      expect(() => Either.combine(null, mapperRight, eithers)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Either.combine(undefined, mapperRight, eithers)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given eithers is not empty but mapperRight is null or undefined then an error is thrown', () => {
+      const eithers = [Either.right(12)];
+      const mapperLeft: Function2<string, string, string> =
+        Function2.of((s1: string, s2: string) => s1);
+
+      // @ts-ignore
+      expect(() => Either.combine(mapperLeft, null, eithers)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Either.combine(mapperLeft, undefined, eithers)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when all eithers are Right then a Right applying mapperRight is returned', () => {
+      const eithers: Either<string, number>[] = [
+        Either.right(12),
+        Either.right(11),
+        Either.right(10)
+      ];
+      const mapperLeft: BinaryOperator<string> =
+        BinaryOperator.of((s1: string, s2: string) => s1);
+      const mapperRight: FBinaryOperator<number> = (n1: number, n2: number) => n2;
+
+      expect(Either.combine(mapperLeft, mapperRight, eithers).isRight()).toBeTrue();
+      expect(Either.combine(mapperLeft, mapperRight, eithers).get()).toEqual(10);
+    });
+
+
+    it('when eithers contains Left then a Left applying mapperLeft is returned', () => {
+      const eithers: Either<string, number>[] = [
+        Either.right(12),
+        Either.right(11),
+        Either.left('A'),
+        Either.left('B')
+      ];
+      const mapperLeft = (s1: string, s2: string) => s1;
+      const mapperRight = (n1: number, n2: number) => n2;
+
+      expect(Either.combine(mapperLeft, mapperRight, eithers).isRight()).toBeFalse();
+      expect(Either.combine(mapperLeft, mapperRight, eithers).getLeft()).toEqual('A');
+    });
+
+  });
+
+
+
+  describe('combineGetFirstLeft', () => {
+
+    it('when given eithers are null, undefined or empty then a Right with null value is returned', () => {
+      const mapperRight: FBinaryOperator<number> = (n1: number, n2: number) => n2;
+
+      expect(Either.combineGetFirstLeft(mapperRight, null).isRight()).toBeTrue();
+      expect(Either.combineGetFirstLeft(mapperRight, null).get()).toBeNull();
+
+      expect(Either.combineGetFirstLeft(mapperRight, undefined).isRight()).toBeTrue();
+      expect(Either.combineGetFirstLeft(mapperRight, undefined).get()).toBeNull();
+
+      expect(Either.combineGetFirstLeft(mapperRight, []).isRight()).toBeTrue();
+      expect(Either.combineGetFirstLeft(mapperRight, []).get()).toBeNull();
+    });
+
+
+    it('when given eithers is not empty but mapperRight is null or undefined then an error is thrown', () => {
+      const eithers = [() => Either.right(12)];
+
+      // @ts-ignore
+      expect(() => Either.combineGetFirstLeft(null, eithers)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Either.combineGetFirstLeft(undefined, eithers)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when all eithers are Right then a Right applying mapperRight is returned', () => {
+      const eithers = [
+        () => Either.right(12),
+        () => Either.right(11),
+        () => Either.right(10)
+      ];
+      const mapperRight: FBinaryOperator<number> = (n1: number, n2: number) => n2;
+
+      expect(Either.combineGetFirstLeft(mapperRight, eithers).isRight()).toBeTrue();
+      expect(Either.combineGetFirstLeft(mapperRight, eithers).get()).toEqual(10);
+    });
+
+
+    it('when eithers contains Left then the first one is returned', () => {
+      const eithers: TFunction0<Either<string, number>>[] = [
+        () => Either.right(12),
+        () => Either.right(11),
+        () => Either.left('A'),
+        () => Either.left('B')
+      ];
+      const mapperRight = (n1: number, n2: number) => n2;
+
+      expect(Either.combineGetFirstLeft(mapperRight, eithers).isRight()).toBeFalse();
+      expect(Either.combineGetFirstLeft(mapperRight, eithers).getLeft()).toEqual('A');
     });
 
   });

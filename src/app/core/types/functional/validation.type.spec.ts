@@ -1,5 +1,7 @@
 import { Invalid, Valid, Validation, ValidationError } from '@app-core/types/functional';
 import { Nullable, NullableOrUndefined } from '@app-core/types';
+import { TFunction0 } from '@app-core/types/function';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * To invoke only this test:
@@ -43,6 +45,105 @@ describe('Validation', () => {
 
       expect(Validation.invalid<string, number>(errors).isValid()).toBeFalse();
       expect(Validation.invalid<string, number>(errors).getErrors()).toEqual(errors);
+    });
+
+  });
+
+
+
+  describe('combine', () => {
+
+    it('when given validations are null, undefined or empty then a Valid with null value is returned', () => {
+      expect(Validation.combine(null).isValid()).toBeTrue();
+      expect(Validation.combine(null).isValid()).toBeTrue();
+
+      expect(Validation.combine(undefined).isValid()).toBeTrue();
+      expect(Validation.combine(undefined).isValid()).toBeTrue();
+
+      expect(Validation.combine([]).isValid()).toBeTrue();
+      expect(Validation.combine([]).isValid()).toBeTrue();
+    });
+
+
+    it('when all validations are Valid then last Valid instance is returned', () => {
+      const validations = [
+        Validation.valid(12),
+        Validation.valid(11),
+        Validation.valid(10)
+      ];
+
+      expect(Validation.combine(validations).isValid()).toBeTrue();
+      expect(Validation.combine(validations).get()).toEqual(10);
+    });
+
+
+    it('when all validations contain Invalid then Invalid instance merging all is returned', () => {
+      const validations: Validation<string, number>[] = [
+        Validation.valid(2),
+        Validation.invalid(['A']),
+        Validation.invalid(['B'])
+      ];
+
+      expect(Validation.combine(validations).isValid()).toBeFalse();
+
+      verifyArrays(
+        Validation.combine(validations).getErrors(),
+        ['A', 'B']
+      );
+    });
+
+  });
+
+
+
+  describe('combineGetFirstInvalid', () => {
+
+    it('when given validations are null, undefined or empty then a Valid with null value is returned', () => {
+      expect(Validation.combineGetFirstInvalid(null).isValid()).toBeTrue();
+      expect(Validation.combineGetFirstInvalid(null).isValid()).toBeTrue();
+
+      expect(Validation.combineGetFirstInvalid(undefined).isValid()).toBeTrue();
+      expect(Validation.combineGetFirstInvalid(undefined).isValid()).toBeTrue();
+
+      expect(Validation.combineGetFirstInvalid([]).isValid()).toBeTrue();
+      expect(Validation.combineGetFirstInvalid([]).isValid()).toBeTrue();
+    });
+
+
+    it('when given validations contains null or undefined elements then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Validation.combineGetFirstInvalid([() => Validation.valid(1), null])).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Validation.combineGetFirstInvalid([undefined, () => Validation.valid(1)])).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when all validations are Valid then last Valid instance is returned', () => {
+      const validations = [
+        () => Validation.valid(12),
+        () => Validation.valid(11),
+        () => Validation.valid(10)
+      ];
+
+      expect(Validation.combineGetFirstInvalid(validations).isValid()).toBeTrue();
+      expect(Validation.combineGetFirstInvalid(validations).get()).toEqual(10);
+    });
+
+
+    it('when all validations contain Invalid then first Invalid instance is returned', () => {
+      const validations: TFunction0<Validation<string, number>>[] = [
+        () => Validation.valid(2),
+        () => Validation.invalid(['A']),
+        () => Validation.invalid(['B'])
+      ];
+
+      expect(Validation.combineGetFirstInvalid(validations).isValid()).toBeFalse();
+
+      verifyArrays(
+        Validation.combineGetFirstInvalid(validations).getErrors(),
+        ['A']
+      );
     });
 
   });
@@ -153,6 +254,18 @@ describe('Validation', () => {
     });
 
   });
+
+
+
+  function verifyArrays(actualArray: any[],
+                        expectedArray: any[]) {
+    expect(expectedArray.length).toEqual(actualArray.length);
+    if (0 < expectedArray.length) {
+      for (let i = 0; i < expectedArray.length; i++) {
+        expect(expectedArray[i]).toEqual(actualArray[i]);
+      }
+    }
+  }
 
 });
 
