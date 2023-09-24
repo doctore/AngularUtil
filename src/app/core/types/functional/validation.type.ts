@@ -2,7 +2,7 @@ import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { Comparable } from '@app-core/types/comparator';
 import { NullableOrUndefined } from '@app-core/types';
 import { Function0, TFunction0 } from '@app-core/types/function';
-import { Optional } from '@app-core/types/functional';
+import { Either, Optional, Try } from '@app-core/types/functional';
 
 /**
  * Class used to validate the given instance, defining 2 different status to manage the result:
@@ -140,6 +140,66 @@ export abstract class Validation<E, T> {
 
 
   /**
+   * Creates a {@link Validation} using the given {@link Either}, following the rules:
+   * <p>
+   *  - If {@link Right} then new {@link Validation} instance will be {@link Valid}
+   *  - If {@link Left}, `null` or `undefined` then new {@link Validation} instance will be {@link Invalid}
+   *
+   * @param either
+   *    {@link Either} used as source
+   *
+   * @return {@link Valid} using {@link Either#get} if current {@link Either} is {@link Right},
+   *         {@link Invalid} using {@link Either#getLeft} otherwise
+   */
+  static fromEither = <E, T>(either: NullableOrUndefined<Either<E, T>>): Validation<E, T> => {
+    if (ObjectUtil.nonNullOrUndefined(either) &&
+        either.isRight()) {
+      return Validation.valid<E, T>(
+        either.get()
+      );
+    }
+    const errors = ObjectUtil.isNullOrUndefined(either) ||
+                   ObjectUtil.isNullOrUndefined(either.getLeft())
+      ? []
+      : [either.getLeft()];
+
+    return Validation.invalid<E, T>(
+      errors
+    );
+  }
+
+
+  /**
+   * Creates a {@link Validation} using the given {@link Try}, following the rules:
+   * <p>
+   *  - If {@link Success} then new {@link Validation} instance will be {@link Valid}
+   *  - If {@link Failure}, `null` or `undefined` then new {@link Validation} instance will be {@link Invalid}
+   *
+   * @param t
+   *    {@link Try} used as source
+   *
+   * @return {@link Valid} using {@link Try#get} if current {@link Try} is {@link Success},
+   *         {@link Invalid} using {@link Try#getError} otherwise
+   */
+  static fromTry = <T>(t: NullableOrUndefined<Try<T>>): Validation<Error, T> => {
+    if (ObjectUtil.nonNullOrUndefined(t) &&
+        t.isSuccess()) {
+      return Validation.valid<Error, T>(
+        t.get()
+      );
+    }
+    const errors = ObjectUtil.isNullOrUndefined(t) ||
+                   ObjectUtil.isNullOrUndefined(t.getError())
+      ? []
+      : [t.getError()];
+
+    return Validation.invalid<Error, T>(
+      errors
+    );
+  }
+
+
+  /**
    * Merge given `validation` with this {@link Validation}, managing the following use cases:
    * <p>
    *   1. `this` = {@link Valid},   `validation` = {@link Valid}    =>  return a {@link Valid} instance with the value of `validation`
@@ -206,6 +266,36 @@ export abstract class Validation<E, T> {
       ObjectUtil.isNullOrUndefined(
         this.get()
       );
+
+
+  /**
+   * Converts current {@link Validation} to an {@link Either}.
+   *
+   * @return {@link Right} using {@link Validation#get} if current {@link Validation} is {@link Valid},
+   *         {@link Left} using {@link Validation#getErrors} if it is {@link Invalid}
+   */
+  toEither = (): Either<E[], T> =>
+    this.isValid()
+      ? Either.right<E[], T>(
+          this.get()
+        )
+      : Either.left<E[], T>(
+          this.getErrors()
+        );
+
+
+  /**
+   *    If the current {@link Validation} is an instance of {@link Valid} wraps the stored value into an {@link Optional} object.
+   * Otherwise return {@link Optional#empty}
+   *
+   * @return {@link Optional}
+   */
+  toOptional = (): Optional<T> =>
+    this.isEmpty()
+      ? Optional.empty<T>()
+      : Optional.of<T>(
+          this.get()
+        );
 
 }
 

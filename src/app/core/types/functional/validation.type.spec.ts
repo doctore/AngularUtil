@@ -1,4 +1,4 @@
-import { Invalid, Valid, Validation, ValidationError } from '@app-core/types/functional';
+import { Either, Invalid, Try, Valid, Validation, ValidationError } from '@app-core/types/functional';
 import { Nullable, NullableOrUndefined } from '@app-core/types';
 import { TFunction0 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
@@ -150,6 +150,75 @@ describe('Validation', () => {
 
 
 
+  describe('fromEither', () => {
+
+    it('when the Either instance is an empty Right one then empty Valid is returned', () => {
+      expect(Validation.fromEither(Either.right(null)).isValid()).toBeTrue();
+      expect(Validation.fromEither(Either.right(null)).get()).toBeNull();
+
+      expect(Validation.fromEither(Either.right(undefined)).isValid()).toBeTrue();
+      expect(Validation.fromEither(Either.right(undefined)).get()).toBeUndefined();
+    });
+
+
+    it('when the Either instance is a non empty Right one then non empty Valid is returned', () => {
+      const intRight = Either.right(12);
+      const stringRight = Either.right('abc');
+
+      expect(Validation.fromEither(intRight).isValid()).toBeTrue();
+      expect(Validation.fromEither(intRight).get()).toEqual(intRight.get());
+
+      expect(Validation.fromEither(stringRight).isValid()).toBeTrue();
+      expect(Validation.fromEither(stringRight).get()).toEqual(stringRight.get());
+    });
+
+
+    it('when the Either instance is a Left one then an Invalid instance is returned', () => {
+      const left = Either.left(true);
+
+      expect(Validation.fromEither(left).isValid()).toBeFalse();
+      expect(Validation.fromEither(left).getErrors()).toEqual([left.getLeft()]);
+    });
+
+  });
+
+
+
+  describe('fromTry', () => {
+
+    it('when the Try instance is an empty Success one then empty Valid is returned', () => {
+      expect(Validation.fromTry(Try.success(null)).isValid()).toBeTrue();
+      expect(Validation.fromTry(Try.success(null)).get()).toBeNull();
+
+      expect(Validation.fromTry(Try.success(undefined)).isValid()).toBeTrue();
+      expect(Validation.fromTry(Try.success(undefined)).get()).toBeUndefined();
+    });
+
+
+    it('when the Try instance is a non empty Success one then non empty Valid is returned', () => {
+      const intSuccess = Try.success(12);
+      const stringSuccess = Try.success('abc');
+
+      expect(Validation.fromTry(intSuccess).isValid()).toBeTrue();
+      expect(Validation.fromTry(intSuccess).get()).toEqual(intSuccess.get());
+
+      expect(Validation.fromTry(stringSuccess).isValid()).toBeTrue();
+      expect(Validation.fromTry(stringSuccess).get()).toEqual(stringSuccess.get());
+    });
+
+
+    it('when the Try instance is a Failure one then an Invalid instance is returned', () => {
+      const error = new IllegalArgumentError('IllegalArgumentError: there was an error');
+      const failure = Try.failure(error);
+
+      expect(Validation.fromTry(failure).isValid()).toBeFalse();
+      expect(Validation.fromTry(failure).getErrors()).toEqual([failure.getError()]);
+    });
+
+  });
+
+
+
   describe('ap', () => {
 
     it('when given validation is null or undefined then this Validation is returned', () => {
@@ -251,6 +320,74 @@ describe('Validation', () => {
       expect(Validation.invalid(undefined).isEmpty()).toBeTrue();
       expect(Validation.invalid([12]).isEmpty()).toBeTrue();
       expect(Validation.invalid(['abc']).isEmpty()).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('toEither', () => {
+
+    it('when the Validation instance is an empty Valid one then empty Right is returned', () => {
+      expect(Validation.valid(null).toEither().isRight()).toBeTrue();
+      expect(Validation.valid(null).toEither().get()).toBeNull();
+
+      expect(Validation.valid(undefined).toEither().isRight()).toBeTrue();
+      expect(Validation.valid(undefined).toEither().get()).toBeUndefined();
+    });
+
+
+    it('when the Validation instance is a non empty Valid one then non empty Right is returned', () => {
+      const intValid = Validation.valid(12);
+      const stringValid = Validation.valid('abc');
+
+      expect(intValid.toEither().isRight()).toBeTrue();
+      expect(intValid.toEither().get()).toEqual(intValid.get());
+
+      expect(stringValid.toEither().isRight()).toBeTrue();
+      expect(stringValid.toEither().get()).toEqual(stringValid.get());
+    });
+
+
+    it('when the Validation instance is an Invalid one then a Left instance is returned', () => {
+      const invalid = Validation.invalid([31]);
+
+      expect(invalid.toEither().isRight()).toBeFalse();
+      expect(invalid.toEither().getLeft()).toEqual(invalid.getErrors());
+    });
+
+  });
+
+
+
+  describe('toOptional', () => {
+
+    it('when the Validation instance is an empty Valid one then empty Optional is returned', () => {
+      expect(Validation.valid(null).toOptional().isPresent()).toBeFalse();
+      expect(Validation.valid(undefined).toOptional().isPresent()).toBeFalse();
+    });
+
+
+    it('when the Validation instance is a non empty Valid one then non empty Optional is returned', () => {
+      const o1 = Validation.valid(11).toOptional();
+      const o2 = Validation.valid('abc').toOptional();
+
+      expect(o1.isPresent()).toBeTrue();
+      expect(o1.get()).toEqual(11);
+
+      expect(o2.isPresent()).toBeTrue();
+      expect(o2.get()).toEqual('abc');
+    });
+
+
+    it('when the Validation instance is an Invalid one then empty Optional is returned', () => {
+      // @ts-ignore
+      expect(Validation.invalid(null).toOptional().isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(Validation.invalid(undefined).toOptional().isPresent()).toBeFalse();
+
+      expect(Validation.invalid([12]).toOptional().isPresent()).toBeFalse();
+      expect(Validation.invalid(['abc']).toOptional().isPresent()).toBeFalse();
     });
 
   });

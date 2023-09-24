@@ -556,7 +556,7 @@ export abstract class Either<L, R> {
   toOptional = (): Optional<R> =>
     this.isEmpty()
       ? Optional.empty<R>()
-      : Optional.of(
+      : Optional.of<R>(
           this.get()
         );
 
@@ -591,13 +591,13 @@ export abstract class Either<L, R> {
   toValidation = (): Validation<L, R> =>
     this.isRight()
       ? Validation.valid(
-        this.get()
-      )
+          this.get()
+        )
       : Validation.invalid(
           ObjectUtil.isNullOrUndefined(this.getLeft())
             ? []
             : [this.getLeft()]
-      );
+        );
 
 }
 

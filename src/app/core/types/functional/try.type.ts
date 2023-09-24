@@ -1034,10 +1034,10 @@ export abstract class Try<T> {
    */
   toEither = (): Either<Error, T> =>
     this.isSuccess()
-      ? Either.right(
+      ? Either.right<Error, T>(
           this.get()
         )
-      : Either.left(
+      : Either.left<Error, T>(
           this.getError()
         );
 
@@ -1053,7 +1053,7 @@ export abstract class Try<T> {
   toOptional = (): Optional<T> =>
     this.isEmpty()
        ? Optional.empty<T>()
-       : Optional.of(
+       : Optional.of<T>(
            this.get()
          );
 
@@ -1066,10 +1066,10 @@ export abstract class Try<T> {
    */
   toValidation = (): Validation<Error, T> =>
     this.isSuccess()
-      ? Validation.valid(
+      ? Validation.valid<Error, T>(
           this.get()
         )
-      : Validation.invalid(
+      : Validation.invalid<Error, T>(
           ObjectUtil.isNullOrUndefined(this.getError())
             ? []
             : [this.getError()]
