@@ -1,8 +1,9 @@
-import { ArrayUtil, ObjectUtil } from '@app-core/util';
+import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { Comparable } from '@app-core/types/comparator';
-import { NullableOrUndefined } from '@app-core/types';
-import { Function0, TFunction0 } from '@app-core/types/function';
+import { NullableOrUndefined, OrUndefined } from '@app-core/types';
+import { Function0, Function1, TFunction0, TFunction1 } from '@app-core/types/function';
 import { Either, Optional, Try } from '@app-core/types/functional';
+import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 
 /**
  * Class used to validate the given instance, defining 2 different status to manage the result:
@@ -254,6 +255,100 @@ export abstract class Validation<E, T> {
 
 
   /**
+   * Filters the current {@link Validation} returning it if:
+   * <p>
+   *   1. Current instance is {@link Invalid}
+   *   2. Current instance is {@link Valid} and stored value verifies given {@link TPredicate1} (or it is `null` or `undefined`)
+   * <p>
+   * {@link Optional#empty()} otherwise.
+   *
+   * @param predicate
+   *    {@link TPredicate1} to apply the stored value if the current instance is a {@link Valid} one
+   *
+   * @return {@link Validation} if matches with given {@link TPredicate1}, `undefined` otherwise.
+   */
+  filter = (predicate: TPredicate1<T>): OrUndefined<Validation<E, T>> => {
+    if (!this.isValid() ||
+        ObjectUtil.isNullOrUndefined(predicate)) {
+      return this;
+    }
+    const finalPredicate = Predicate1.of(predicate);
+    return finalPredicate.apply(this.get())
+      ? this
+      : undefined;
+  }
+
+
+  /**
+   * Filters the current {@link Validation} returning {@link Optional#of} of `this` if:
+   * <p>
+   *   1. Current instance is {@link Invalid}
+   *   2. Current instance is {@link Valid} and stored value verifies given {@link TPredicate1} (or it is `null` or `undefined`)
+   * <p>
+   * {@link Optional#empty()} otherwise.
+   *
+   * @param predicate
+   *    {@link TPredicate1} to apply the stored value if the current instance is a {@link Valid} one
+   *
+   * @return {@link Optional} of {@link Validation}
+   */
+  filterOptional = (predicate: TPredicate1<T>): Optional<Validation<E, T>> =>
+    Optional.ofNullable(
+      this.filter(
+        predicate
+      )
+    );
+
+
+  /**
+   * Filters the current {@link Validation} returning:
+   * <p>
+   *   1. {@link Valid} if `this` is a {@link Valid} and its value matches given {@link TPredicate1} (or it is `null` or `undefined`)
+   *   2. {@link Invalid} applying `mapper` if this is {@link Valid} but its value does not match given {@link TPredicate1}
+   *   3. {@link Invalid} with the existing value if this is a {@link Invalid}
+   *
+   * <pre>
+   * Examples:
+   *
+   *   Validation.valid(11).filterOrElse(i => i > 10, i => 'error');                // Valid(11)
+   *   Validation.valid(7).filterOrElse(i => i > 10, i => 'error');                 // Invalid(['error']))
+   *   Validation.invalid(['warning']).filterOrElse(i => i > 10, i => 'error');     // Invalid(['warning'])
+   * </pre>
+   *
+   * @param predicate
+   *    {@link TPredicate1} to apply the stored value if the current instance is a {@link Valid} one
+   * @param mapper
+   *    {@link TFunction1} that turns a {@link Valid} value into a {@link Invalid} one if this is {@link Valid}
+   *    but its value does not match given {@link TPredicate1}
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`, this is a {@link Valid} but does not match
+   *                                      given {@link TPredicate1}
+   *
+   * @return {@link Valid} if `this` is {@link Valid} and `predicate` matches,
+   *         {@link Invalid} applying `mapper` otherwise.
+   */
+  filterOrElse = (predicate: TPredicate1<T>,
+                  mapper: TFunction1<T, E>): Validation<E, T> => {
+    if (!this.isValid() ||
+        ObjectUtil.isNullOrUndefined(predicate)) {
+      return this;
+    }
+    const finalPredicate = Predicate1.of(predicate);
+    if (finalPredicate.apply(this.get())) {
+      return this;
+    }
+    return Validation.invalid<E, T>(
+      [
+        Function1.of<T, E>(mapper)
+          .apply(
+            this.get()
+          )
+      ]
+    );
+  }
+
+
+  /**
    * Verifies in the current instance has no value, that is:
    * <p>
    *    1. Is a {@link Invalid} one.
@@ -266,6 +361,66 @@ export abstract class Validation<E, T> {
       ObjectUtil.isNullOrUndefined(
         this.get()
       );
+
+
+  /**
+   *    Applies a {@link TFunction1} `mapper` to the stored value of this {@link Validation} if this is a {@link Valid}.
+   * Otherwise, does nothing if this is a {@link Invalid}.
+   *
+   * @param mapper
+   *    The mapping {@link TFunction1} to apply to a value of a {@link Valid} instance.
+   *
+   * @return new {@link Valid} applying `mapper` if `this` is {@link Valid}, current {@link Invalid} otherwise.
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Valid} one
+   */
+  map = <U>(mapper: TFunction1<T, U>): Validation<E, U> => {
+    if (this.isValid()) {
+      AssertUtil.notNullOrUndefined(
+        mapper,
+        'mapper must be not null and not undefined'
+      );
+      return Validation.valid<E, U>(
+        Function1.of(mapper)
+          .apply(
+            this.get()
+          )
+      );
+    }
+    return Validation.invalid<E, U>(
+      this.getErrors()
+    );
+  }
+
+
+  /**
+   *    Applies a {@link TFunction1} `mapper` to the stored value of this {@link Validation} if this is a {@link Invalid}.
+   * Otherwise, does nothing if this is a {@link Valid}.
+   *
+   * @param mapper
+   *    The mapping {@link TFunction1} to apply to a value of a {@link Invalid} instance.
+   *
+   * @return new {@link Invalid} applying `mapper` if `this` is {@link Invalid}, current {@link Valid} otherwise.
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Invalid} one
+   */
+  mapInvalid = <U>(mapper: TFunction1<E[], U[]>): Validation<U, T> => {
+    if (!this.isValid()) {
+      AssertUtil.notNullOrUndefined(
+        mapper,
+        'mapper must be not null and not undefined'
+      );
+      return Validation.invalid<U, T>(
+        Function1.of(mapper)
+          .apply(
+            this.getErrors()
+          )
+      );
+    }
+    return Validation.valid<U, T>(
+      this.get()
+    );
+  }
 
 
   /**
@@ -430,7 +585,7 @@ export class ValidationError implements Comparable<ValidationError> {
    * @param other
    *    {@link ValidationError} to compare
    *
-   * @return negative number, zero, or a positive number as `this` object is less than, equal to, or greater than `other`
+   * @return negative number, zero, or a positive number than `this` object is less than, equal to, or greater than `other`
    */
   compareTo = (other: NullableOrUndefined<ValidationError>): number =>
     Optional.ofNullable(other)

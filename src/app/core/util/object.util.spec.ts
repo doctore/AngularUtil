@@ -86,6 +86,12 @@ describe('ObjectUtil', () => {
     });
 
 
+    it('when one value is null and the other is undefined then false is returned', () => {
+      expect(ObjectUtil.equals(null, undefined)).toBeFalse();
+      expect(ObjectUtil.equals(undefined, null)).toBeFalse();
+    });
+
+
     it('when one of the provided values is null or undefined then false is returned', () => {
       let a, b;
 

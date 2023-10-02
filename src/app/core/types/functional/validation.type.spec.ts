@@ -1,7 +1,8 @@
 import { Either, Invalid, Try, Valid, Validation, ValidationError } from '@app-core/types/functional';
 import { Nullable, NullableOrUndefined } from '@app-core/types';
-import { TFunction0 } from '@app-core/types/function';
+import { FFunction1, Function1, TFunction0 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
+import { FPredicate1 } from '@app-core/types/predicate';
 
 /**
  * To invoke only this test:
@@ -296,6 +297,248 @@ describe('Validation', () => {
 
 
 
+  describe('filter', () => {
+
+    it('when given Validation is an Invalid one then such instance is returned', () => {
+      const isOdd: FPredicate1<number> =
+        (n: number) => 1 == n % 2;
+
+      const v1 = Validation.invalid<string, number>(['Error1']);
+      const v2 = Validation.invalid<string, number>(['Error2', 'Error3']);
+
+      const v1Result = v1.filter(isOdd);
+      const v2Result = v2.filter(isOdd);
+
+      expect(v1Result).toBeDefined();
+      expect(v1Result!.isValid()).toBeFalse();
+      expect(v1Result!.getErrors()).toEqual(v1.getErrors());
+
+      expect(v2Result).toBeDefined();
+      expect(v2Result!.isValid()).toBeFalse();
+      expect(v2Result!.getErrors()).toEqual(v2.getErrors());
+    });
+
+
+    it('when given Validation is a Valid one but predicate is null or undefined then such instance is returned', () => {
+      const v1 = Validation.valid<string, number>(11);
+      const v2 = Validation.valid<string, number>(19);
+
+      // @ts-ignore
+      const v1Result = v1.filter(null);
+      // @ts-ignore
+      const v2Result = v2.filter(undefined);
+
+      expect(v1Result).toBeDefined();
+      expect(v1Result!.isValid()).toBeTrue();
+      expect(v1Result!.get()).toEqual(v1.get());
+
+      expect(v2Result).toBeDefined();
+      expect(v2Result!.isValid()).toBeTrue();
+      expect(v2Result!.get()).toEqual(v2.get());
+    });
+
+
+    it('when given Validation is a Valid one but does not match with provided predicate then undefined is returned', () => {
+      const isEven = (n: number) => 0 == n % 2;
+
+      const v1 = Validation.valid(11);
+      const v2 = Validation.valid(19);
+
+      expect(v1.filter(isEven)).toBeUndefined();
+      expect(v2.filter(isEven)).toBeUndefined();
+    });
+
+
+    it('when given Validation is a Valid one and matches with provided predicate then such instance is returned', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+
+      const v1 = Validation.valid(11);
+      const v2 = Validation.valid(19);
+
+      const v1Result = v1.filter(isOdd);
+      const v2Result = v2.filter(isOdd);
+
+      expect(v1Result).toBeDefined();
+      expect(v1Result!.isValid()).toBeTrue();
+      expect(v1Result!.get()).toEqual(v1.get());
+
+      expect(v2Result).toBeDefined();
+      expect(v2Result!.isValid()).toBeTrue();
+      expect(v2Result!.get()).toEqual(v2.get());
+    });
+
+  });
+
+
+
+  describe('filterOptional', () => {
+
+    it('when given Validation is an Invalid one then not empty Optional containing such instance is returned', () => {
+      const isOdd: FPredicate1<number> =
+        (n: number) => 1 == n % 2;
+
+      const v1 = Validation.invalid<string, number>(['Error1']);
+      const v2 = Validation.invalid<string, number>(['Error2', 'Error3']);
+
+      const v1Result = v1.filterOptional(isOdd);
+      const v2Result = v2.filterOptional(isOdd);
+
+      expect(v1Result.isPresent()).toBeTrue();
+      expect(v1Result.get().isValid()).toBeFalse();
+      expect(v1Result.get().getErrors()).toEqual(v1.getErrors());
+
+      expect(v2Result.isPresent()).toBeTrue();
+      expect(v2Result.get().isValid()).toBeFalse();
+      expect(v2Result.get().getErrors()).toEqual(v2.getErrors());
+    });
+
+
+    it('when given Validation is a Valid one but predicate is null or undefined then not empty Optional containing such instance is returned', () => {
+      const v1 = Validation.valid<string, number>(11);
+      const v2 = Validation.valid<string, number>(19);
+
+      // @ts-ignore
+      const v1Result = v1.filterOptional(null);
+      // @ts-ignore
+      const v2Result = v2.filterOptional(undefined);
+
+      expect(v1Result.isPresent()).toBeTrue();
+      expect(v1Result.get().isValid()).toBeTrue();
+      expect(v1Result.get().get()).toEqual(v1.get());
+
+      expect(v2Result.isPresent()).toBeTrue();
+      expect(v2Result.get().isValid()).toBeTrue();
+      expect(v2Result.get().get()).toEqual(v2.get());
+    });
+
+
+    it('when given Validation is a Valid one but does not match with provided predicate then empty Optional is returned', () => {
+      const isEven = (n: number) => 0 == n % 2;
+
+      const v1 = Validation.valid(11);
+      const v2 = Validation.valid(19);
+
+      const v1Result = v1.filterOptional(isEven);
+      const v2Result = v2.filterOptional(isEven);
+
+      expect(v1Result.isPresent()).toBeFalse();
+      expect(v2Result.isPresent()).toBeFalse();
+    });
+
+
+    it('when given Validation is a Valid one and matches with provided predicate then such instance is returned', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+
+      const v1 = Validation.valid(11);
+      const v2 = Validation.valid(19);
+
+      const v1Result = v1.filterOptional(isOdd);
+      const v2Result = v2.filterOptional(isOdd);
+
+      expect(v1Result.isPresent()).toBeTrue();
+      expect(v1Result.get().isValid()).toBeTrue();
+      expect(v1Result.get().get()).toEqual(v1.get());
+
+      expect(v2Result.isPresent()).toBeTrue();
+      expect(v2Result.get().isValid()).toBeTrue();
+      expect(v2Result.get().get()).toEqual(v2.get());
+    });
+
+  });
+
+
+
+  describe('filterOrElse', () => {
+
+    it('when given Validation is an Invalid one then such instance is returned', () => {
+      const isOdd: FPredicate1<number> =
+        (n: number) => 1 == n % 2;
+
+      const errorMessage: FFunction1<number, string> =
+        (n: number) => 'There was an error with ' + n;
+
+      const v1 = Validation.invalid<string, number>(['Error1']);
+      const v2 = Validation.invalid<string, number>(['Error2', 'Error3']);
+
+      const v1Result = v1.filterOrElse(isOdd, errorMessage);
+      const v2Result = v2.filterOrElse(isOdd, errorMessage);
+
+      expect(v1Result.isValid()).toBeFalse();
+      expect(v1Result.getErrors()).toEqual(v1.getErrors());
+
+      expect(v2Result.isValid()).toBeFalse();
+      expect(v2Result.getErrors()).toEqual(v2.getErrors());
+    });
+
+
+    it('when given Validation is a Valid one but predicate is null or undefined then such instance is returned', () => {
+      const errorMessage: Function1<number, string> =
+        Function1.of((n: number) => 'There was an error with ' + n);
+
+      const v1 = Validation.valid(11);
+      const v2 = Validation.valid(19);
+
+      // @ts-ignore
+      const v1Result = v1.filterOrElse(null, errorMessage);
+      // @ts-ignore
+      const v2Result = v2.filterOrElse(undefined, errorMessage);
+
+      expect(v1Result.isValid()).toBeTrue();
+      expect(v1Result.get()).toEqual(v1.get());
+
+      expect(v2Result.isValid()).toBeTrue();
+      expect(v2Result.get()).toEqual(v2.get());
+    });
+
+
+    it('when given Validation is a Valid one and matches with provided predicate then such instance is returned', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+      const errorMessage = (n: number) => 'There was an error with ' + n;
+
+      const v1 = Validation.valid(11);
+      const v2 = Validation.valid(19);
+
+      const v1Result = v1.filterOrElse(isOdd, errorMessage);
+      const v2Result = v2.filterOrElse(isOdd, errorMessage);
+
+      expect(v1Result.isValid()).toBeTrue();
+      expect(v1Result.get()).toEqual(v1.get());
+
+      expect(v2Result.isValid()).toBeTrue();
+      expect(v2Result.get()).toEqual(v2.get());
+    });
+
+
+    it('when given Validation is a Valid one that does not match with provided predicate but mapper is null or undefined then an error is thrown', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+
+      const v1 = Validation.valid(12);
+      const v2 = Validation.valid(20);
+
+      // @ts-ignore
+      expect(() => v1.filterOrElse(isOdd, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => v2.filterOrElse(isOdd, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given Validation is a Valid one that does not match with provided predicate and mapper is valid then new Invalid instance applying mapper is returned', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+      const errorMessage = 'There was an error with 12';
+
+      const validation = Validation.valid(12);
+
+      const validationResult = validation.filterOrElse(isOdd, (n: number) => errorMessage);
+
+      expect(validationResult.isValid()).toBeFalse();
+      expect(validationResult.getErrors()).toEqual([errorMessage]);
+    });
+
+  });
+
+
+
   describe('isEmpty', () => {
 
     it('when the Validation instance is an empty Valid one then true is returned', () => {
@@ -320,6 +563,138 @@ describe('Validation', () => {
       expect(Validation.invalid(undefined).isEmpty()).toBeTrue();
       expect(Validation.invalid([12]).isEmpty()).toBeTrue();
       expect(Validation.invalid(['abc']).isEmpty()).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('map', () => {
+
+    it('when given Validation is Valid but mapper is null or undefined then an error is thrown', () => {
+      const validation = Validation.valid(11);
+
+      // @ts-ignore
+      expect(() => validation.map(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => validation.map(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given Validation is Invalid then mapper is not invoked', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const validation = Validation.invalid<string, number>(['Error1']);
+
+      validation.map(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when given Validation is Valid then mapper is invoked', () => {
+      const fromNumToString: FFunction1<number, string> =
+        (n: number) => '' + n;
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const validation = Validation.valid<string, number>(19);
+
+      validation.map(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when given Validation is Invalid then same one is returned', () => {
+      const fromNumToString = (n: number) => '' + n;
+      const validation = Validation.invalid<string, number>(['Error1', 'Error2']);
+
+      const result = validation.map(fromNumToString);
+
+      expect(result.isValid()).toBeFalse();
+      expect(result.getErrors()).toEqual(validation.getErrors());
+    });
+
+
+    it('when given Validation is Valid then new Valid applying mapper is returned', () => {
+      const fromNumToString = (n: number) => '' + n;
+      const validation = Validation.valid<string, number>(11);
+
+      const result = validation.map(fromNumToString);
+
+      expect(result.isValid()).toBeTrue();
+      expect(result.get()).toEqual('11');
+    });
+
+  });
+
+
+
+  describe('mapInvalid', () => {
+
+    it('when given Validation is Invalid but mapper is null or undefined then an error is thrown', () => {
+      const validation = Validation.invalid<string, number>(['Error1', 'Error2']);
+
+      // @ts-ignore
+      expect(() => validation.mapInvalid(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => validation.mapInvalid(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given Validation is Valid then mapper is not invoked', () => {
+      const fromNumToString: FFunction1<number[], string[]> =
+        (numArray: number[]) => numArray.map(n => '' + n);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const validation = Validation.valid<number, boolean>(false);
+
+      validation.mapInvalid(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when given Validation is Invalid then mapper is invoked', () => {
+      const fromNumToString: FFunction1<number[], string[]> =
+        (numArray: number[]) => numArray.map(n => '' + n);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const validation = Validation.invalid<number, boolean>([1, 2]);
+
+      validation.mapInvalid(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when given Validation is Valid then same one is returned', () => {
+      const fromNumToString = (numArray: number[]) => numArray.map(n => '' + n);
+      const validation = Validation.valid<number, boolean>(false);
+
+      const result = validation.mapInvalid(fromNumToString);
+
+      expect(result.isValid()).toBeTrue();
+      expect(result.get()).toEqual(validation.get());
+    });
+
+
+    it('when given Validation is Invalid then new Invalid applying mapper is returned', () => {
+      const fromNumToString = (numArray: number[]) => numArray.map(n => '' + n);
+      const validation = Validation.invalid<number, boolean>([1, 2]);
+
+      const result = validation.mapInvalid(fromNumToString);
+
+      expect(result.isValid()).toBeFalse();
+      expect(result.getErrors()).toEqual(['1', '2']);
     });
 
   });

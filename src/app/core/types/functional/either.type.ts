@@ -3,7 +3,7 @@ import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { Function0, Function1, isFFunction0, TFunction0, TFunction1 } from '@app-core/types/function';
-import { NullableOrUndefined } from '@app-core/types';
+import { NullableOrUndefined, OrUndefined } from '@app-core/types';
 
 /**
  *    Represents a value of one of two possible types (a disjoint union). An instance of Either is an instance of
@@ -262,9 +262,72 @@ export abstract class Either<L, R> {
 
 
   /**
+   * Verifies if the current {@link Either} is a {@link Right} instance containing given `value`.
+   *
+   * @param value
+   *    Element to test
+   *
+   * @return `true` if this is a {@link Right} and its value is equal to `value`, `false` otherwise.
+   */
+  contain = (value: R): boolean =>
+    this.isRight()
+      ? ObjectUtil.equals(
+          value,
+          this.get()
+        )
+      : false;
+
+
+  /**
+   * Filters the current {@link Either} returning it if:
+   * <p>
+   *   1. Current instance is {@link Left}
+   *   2. Current instance is {@link Right} and stored value verifies given {@link TPredicate1} (or it is `null` or `undefined`)
+   * <p>
+   * {@link Optional#empty()} otherwise.
+   *
+   * @param predicate
+   *    {@link TPredicate1} to apply the stored value if the current instance is a {@link Right} one
+   *
+   * @return {@link Either} if matches with given {@link TPredicate1}, `undefined` otherwise.
+   */
+  filter = (predicate: TPredicate1<R>): OrUndefined<Either<L, R>> => {
+    if (!this.isRight() ||
+        ObjectUtil.isNullOrUndefined(predicate)) {
+      return this;
+    }
+    const finalPredicate = Predicate1.of(predicate);
+    return finalPredicate.apply(this.get())
+      ? this
+      : undefined;
+  }
+
+
+  /**
+   * Filters the current {@link Either} returning {@link Optional#of} of `this` if:
+   * <p>
+   *   1. Current instance is {@link Left}
+   *   2. Current instance is {@link Right} and stored value verifies given {@link TPredicate1} (or it is `null` or `undefined`)
+   * <p>
+   * {@link Optional#empty()} otherwise.
+   *
+   * @param predicate
+   *    {@link TPredicate1} to apply the stored value if the current instance is a {@link Right} one
+   *
+   * @return {@link Optional} of {@link Either}
+   */
+  filterOptional = (predicate: TPredicate1<R>): Optional<Either<L, R>> =>
+    Optional.ofNullable(
+      this.filter(
+        predicate
+      )
+    );
+
+
+  /**
    * Filters the current {@link Either} returning:
    * <p>
-   *   1. {@link Right} if `this` is a {@link Right} and its value matches given {@link TPredicate1} (or `predicate` is `null` or `undefined`)
+   *   1. {@link Right} if `this` is a {@link Right} and its value matches given {@link TPredicate1} (or it is `null` or `undefined`)
    *   2. {@link Left} applying `zero` if this is {@link Right} but its value does not match given {@link TPredicate1}
    *   3. {@link Left} with the existing value if this is a {@link Left}
    *
@@ -272,8 +335,8 @@ export abstract class Either<L, R> {
    * Examples:
    *
    *   Either.right(11).filterOrElse(i => i > 10, () => 'error');           // Right(11)
-   *   Either.right(7).filterOrElse(i => i > 10, () => 'error');            // Left("error")
-   *   Either.left('warning').filterOrElse(i => i > 10, () => 'error');     // Left("warning")
+   *   Either.right(7).filterOrElse(i => i > 10, () => 'error');            // Left('error')
+   *   Either.left('warning').filterOrElse(i => i > 10, () => 'error');     // Left('warning')
    * </pre>
    *
    * @param predicate
@@ -286,12 +349,12 @@ export abstract class Either<L, R> {
    *                                      with the given {@link TPredicate1}
    *
    * @return {@link Right} if `this` is {@link Right} and `predicate` matches,
-   *         {@link Left} with `zero` otherwise.
+   *         {@link Left} applying `zero` otherwise.
    */
   filterOrElse = (predicate: TPredicate1<R>,
                   zero: TFunction0<L>): Either<L, R> => {
     if (!this.isRight() ||
-      ObjectUtil.isNullOrUndefined(predicate)) {
+        ObjectUtil.isNullOrUndefined(predicate)) {
       return this;
     }
     const finalPredicate = Predicate1.of(predicate);
@@ -443,7 +506,8 @@ export abstract class Either<L, R> {
    * @param mapper
    *    The mapping {@link TFunction1} to apply to a value of a {@link Right} instance.
    *
-   * @return {@link Right} applying `mapper` if `this` is {@link Right}, {@link Left} otherwise.
+   * @return new {@link Right} applying `mapper` if `this` is {@link Right},
+   *         current {@link Left} otherwise.
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Right} one
    */
@@ -473,7 +537,7 @@ export abstract class Either<L, R> {
    * @param mapper
    *    The mapping {@link TFunction1} to apply to a value of a {@link Left} instance.
    *
-   * @return {@link Left} applying `mapper` if `this` is {@link Left}, {@link Right} otherwise.
+   * @return new {@link Left} applying `mapper` if `this` is {@link Left}, current {@link Right} otherwise.
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Left} one
    */
@@ -590,10 +654,10 @@ export abstract class Either<L, R> {
    */
   toValidation = (): Validation<L, R> =>
     this.isRight()
-      ? Validation.valid(
+      ? Validation.valid<L, R>(
           this.get()
         )
-      : Validation.invalid(
+      : Validation.invalid<L, R>(
           ObjectUtil.isNullOrUndefined(this.getLeft())
             ? []
             : [this.getLeft()]

@@ -886,7 +886,7 @@ export abstract class Try<T> {
    * @param mapper
    *    The {@link TFunction1} mapping function to apply to a value of a {@link Success} instance.
    *
-   * @return new {@link Try}
+   * @return new {@link Success} applying `mapper`, current {@link Failure} otherwise
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Success} one
    */
@@ -913,7 +913,7 @@ export abstract class Try<T> {
    * @param mapper
    *    The {@link TFunction1} mapping function to apply to a value of a {@link Failure} instance.
    *
-   * @return new {@link Try}
+   * @return new {@link Failure} applying `mapper`, current {@link Success} otherwise
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
    */
