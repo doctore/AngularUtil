@@ -539,6 +539,162 @@ describe('Validation', () => {
 
 
 
+  describe('flatMap', () => {
+
+    it('when given Validation is Valid but mapper is null or undefined then an error is thrown', () => {
+      const validation = Validation.valid(11);
+
+      // @ts-ignore
+      expect(() => validation.flatMap(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => validation.flatMap(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given Validation is Invalid then mapper is not invoked', () => {
+      const fromNumToString: FFunction1<number, Validation<string, string>> =
+        (n: number) => Validation.valid<string, string>('' + n);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const validation = Validation.invalid<string, number>(['Error1', 'Error2']);
+
+      validation.flatMap(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when given Validation is Valid then mapper is invoked', () => {
+      const fromNumToString: FFunction1<number, Validation<string, string>> =
+        (n: number) => Validation.valid<string, string>('' + n);
+
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+
+      const validation = Validation.valid<string, number>(19);
+
+      validation.flatMap(fromNumToStringSpy);
+
+      expect(fromNumToStringSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when given Validation is Invalid then same one is returned', () => {
+      const fromNumToString = (n: number) => Validation.valid<string, string>('' + n);
+      const validation = Validation.invalid<string, number>(['Error1', 'Error2']);
+
+      const result = validation.flatMap(fromNumToString);
+
+      expect(result.isValid()).toBeFalse();
+      expect(result.getErrors()).toEqual(validation.getErrors());
+    });
+
+
+    it('when given Validation is Valid then new Valid applying mapper is returned', () => {
+      const fromNumToString = (n: number) => Validation.valid<string, string>('' + n);
+      const validation = Validation.valid<string, number>(11);
+
+      const result = validation.flatMap(fromNumToString);
+
+      expect(result.isValid()).toBeTrue();
+      expect(result.get()).toEqual('11');
+    });
+
+  });
+
+
+
+  describe('fold', () => {
+
+    it('when given Validation is Invalid but mapperInvalid is null or undefined then an error is thrown', () => {
+      const sameNumber: FFunction1<number, number> =
+        Function1.identity<number>().getMapper();
+
+      const validation = Validation.invalid<string, number>(['Error1', 'Error2']);
+
+      // @ts-ignore
+      expect(() => validation.fold(null, sameNumber)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => validation.fold(undefined, sameNumber)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given Validation is Valid but mapperValid is null or undefined then an error is thrown', () => {
+      const stringArrayLength: FFunction1<string[], number> =
+        (stringArray: string[]) => stringArray.length;
+
+      const validation = Validation.valid<string, number>(11);
+
+      // @ts-ignore
+      expect(() => validation.fold(stringArrayLength, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => validation.fold(stringArrayLength, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given Validation is Invalid then mapperInvalid is invoked and mapperValid is not', () => {
+      const stringArrayLength: FFunction1<string[], number> =
+        (stringArray: string[]) => stringArray.length;
+
+      const sameNumber: FFunction1<number, number> =
+        Function1.identity<number>().getMapper();
+
+      const stringArrayLengthSpy = jasmine.createSpy('stringArrayLength', stringArrayLength);
+      const sameNumberSpy = jasmine.createSpy('sameNumber', sameNumber);
+
+      Validation.invalid<string, number>(['Error1', 'Error2']).fold(stringArrayLengthSpy, sameNumberSpy);
+
+      expect(stringArrayLengthSpy.calls.count()).toBe(1);
+      expect(sameNumberSpy.calls.count()).toBe(0);
+    });
+
+
+    it('when given Validation is Valid then mapperValid is invoked and mapperInvalid is not', () => {
+      const stringArrayLength: FFunction1<string[], number> =
+        (stringArray: string[]) => stringArray.length;
+
+      const sameNumber: FFunction1<number, number> =
+        Function1.identity<number>().getMapper();
+
+      const stringArrayLengthSpy = jasmine.createSpy('stringArrayLength', stringArrayLength);
+      const sameNumberSpy = jasmine.createSpy('sameNumber', sameNumber);
+
+      Validation.valid<string, number>(11).fold(stringArrayLengthSpy, sameNumberSpy);
+
+      expect(stringArrayLengthSpy.calls.count()).toBe(0);
+      expect(sameNumberSpy.calls.count()).toBe(1);
+    });
+
+
+    it('when given Validation is Invalid then mapperInvalid result is returned', () => {
+      const stringArrayLength: Function1<string[], number> =
+        Function1.of((stringArray: string[]) => stringArray.length);
+
+      const sameNumber: Function1<number, number> =
+        Function1.identity<number>();
+
+      const result = Validation.invalid<string, number>(['Error1', 'Error2']).fold(stringArrayLength, sameNumber);
+
+      expect(result).toEqual(2);
+    });
+
+
+    it('when given Validation is Valid then mapperValid result is returned', () => {
+      const stringArrayLength =(stringArray: string[]) => stringArray.length;
+      const sameNumber = (n: number) => n;
+
+      const result = Validation.valid<string, number>(11).fold(stringArrayLength, sameNumber);
+
+      expect(result).toEqual(11);
+    });
+
+  });
+
+
+
   describe('isEmpty', () => {
 
     it('when the Validation instance is an empty Valid one then true is returned', () => {
@@ -766,6 +922,79 @@ describe('Validation', () => {
     });
 
   });
+
+
+
+  describe('toTry', () => {
+
+    it('when given Validation is an empty Valid one then empty Success is returned', () => {
+      const wrapIntoAnError: FFunction1<string[], Error> =
+        (stringArray: string[]) => new Error('There are ' + stringArray.length + ' errors');
+
+      const v1 = Validation.valid<string, NullableOrUndefined<number>>(null);
+      const v2 = Validation.valid<string, NullableOrUndefined<number>>(undefined);
+
+      const v1Result = v1.toTry(wrapIntoAnError);
+      const v2Result = v2.toTry(wrapIntoAnError);
+
+      expect(v1Result.isSuccess()).toBeTrue();
+      expect(v1Result.isEmpty()).toBeTrue();
+
+      expect(v2Result.isSuccess()).toBeTrue();
+      expect(v2Result.isEmpty()).toBeTrue();
+    });
+
+
+    it('when given Validation is a non empty Valid one then non empty Success is returned', () => {
+      const wrapIntoAnError: FFunction1<string[], Error> =
+        (stringArray: string[]) => new Error('There are ' + stringArray.length + ' errors');
+
+      const v1 = Validation.valid<string, number>(11);
+      const v2 = Validation.valid<string, string>('abc');
+
+      const v1Result = v1.toTry(wrapIntoAnError);
+      const v2Result = v2.toTry(wrapIntoAnError);
+
+      expect(v1Result.isSuccess()).toBeTrue();
+      expect(v1Result.isEmpty()).toBeFalse();
+      expect(v1Result.get()).toEqual(v1.get());
+
+      expect(v2Result.isSuccess()).toBeTrue();
+      expect(v2Result.isEmpty()).toBeFalse();
+      expect(v2Result.get()).toEqual(v2.get());
+    });
+
+
+    it('when given Validation is an Invalid one but mapperInvalid is null or undefined then an error is thrown', () => {
+      const v1 = Validation.invalid([12]);
+      const v2 = Validation.invalid(['abc']);
+
+      // @ts-ignore
+      expect(() => v1.toTry(null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => v2.toTry(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given Validation is an Invalid one and mapperInvalid is valid then an instance of Failure applying mapperInvalid is returned', () => {
+      const wrapIntoAnError = (stringArray: string[]) => new Error('There are ' + stringArray.length + ' errors');
+
+      const v1 = Validation.invalid<string, number>(['Error1', 'Error2']);
+      const v2 = Validation.invalid<string, number>(['Error3']);
+
+      const v1Result = v1.toTry(wrapIntoAnError);
+      const v2Result = v2.toTry(wrapIntoAnError);
+
+      expect(v1Result.isSuccess()).toBeFalse();
+      expect(v1Result.getError().message).toEqual('There are ' + v1.getErrors().length + ' errors');
+
+      expect(v2Result.isSuccess()).toBeFalse();
+      expect(v2Result.getError().message).toEqual('There are ' + v2.getErrors().length + ' errors');
+    });
+
+  });
+
 
 
 

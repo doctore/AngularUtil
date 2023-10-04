@@ -375,7 +375,7 @@ export abstract class Either<L, R> {
    * @param mapper
    *    The mapping {@link TFunction1} to apply the value of a {@link Right} instance
    *
-   * @return {@link Right} applying `mapper` if `this` is {@link Right}, {@link Left} otherwise
+   * @return new {@link Right} applying `mapper` if `this` is {@link Right}, {@link Left} otherwise
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Right} one
    */
@@ -397,7 +397,7 @@ export abstract class Either<L, R> {
 
 
   /**
-   *    Applies mapperRight` if current {@link Either} is a {@link Right} instance, `mapperLeft` if it is a {@link Left},
+   *    Applies `mapperRight` if current {@link Either} is a {@link Right} instance, `mapperLeft` if it is a {@link Left},
    * transforming internal values into another one.
    *
    * <pre>
@@ -406,14 +406,14 @@ export abstract class Either<L, R> {
    *   // Return 11
    *   Either.right<string, number>(11)
    *         .fold(
-   *              s -> s.length,
+   *              (s: string) => s.length,
    *              Function1.identity()
    *           );
    *
    *   // Return 3
    *   Either.left<string, number>('abc')
    *         .fold(
-   *              s -> s.length,
+   *              (s: string) => s.length,
    *              Function1.identity()
    *           );
    * </pre>
@@ -457,7 +457,7 @@ export abstract class Either<L, R> {
    * @param defaultValue
    *    Returned value if current instance is an {@link Left} one
    *
-   * @return @type {T} with value stored in {@link Right} instance,
+   * @return @type {R} with value stored in {@link Right} instance,
    *         `defaultValue` otherwise
    */
   getOrElse = (defaultValue: R): R =>
@@ -506,8 +506,7 @@ export abstract class Either<L, R> {
    * @param mapper
    *    The mapping {@link TFunction1} to apply to a value of a {@link Right} instance.
    *
-   * @return new {@link Right} applying `mapper` if `this` is {@link Right},
-   *         current {@link Left} otherwise.
+   * @return new {@link Right} applying `mapper` if `this` is {@link Right}, current {@link Left} otherwise.
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Right} one
    */
@@ -632,8 +631,7 @@ export abstract class Either<L, R> {
    * @param mapperLeft
    *   {@link TFunction1} that maps the {@link Left} value to a {@link Error} instance
    *
-   * @return {@link Success} if `this` is {@link Right},
-   *         {@link Failure} otherwise.
+   * @return {@link Success} if `this` is {@link Right}, {@link Failure} otherwise.
    *
    * @throws {@link IllegalArgumentError} if `mapperLeft` is `null` or `undefined` and the current instance is a {@link Left} one
    */
@@ -649,8 +647,7 @@ export abstract class Either<L, R> {
    *    Transforms current {@link Either} into a {@link Validation}. If the current {@link Either} is an instance of
    * {@link Right} wraps the stored value into a {@link Valid} one, {@link Invalid} otherwise.
    *
-   * @return {@link Valid} instance if this is {@link Right},
-   *         otherwise {@link Invalid}.
+   * @return {@link Valid} instance if this is {@link Right}, {@link Invalid} otherwise.
    */
   toValidation = (): Validation<L, R> =>
     this.isRight()

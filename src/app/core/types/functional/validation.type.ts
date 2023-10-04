@@ -349,6 +349,89 @@ export abstract class Validation<E, T> {
 
 
   /**
+   *    If the current {@link Validation} is a {@link Valid} instance, returns the result of applying the given
+   * {@link Validation}-bearing mapping function to the value. Otherwise, does nothing if this is a {@link Invalid}.
+   *
+   * @param mapper
+   *    The mapping {@link TFunction1} to apply the value of a {@link Valid} instance
+   *
+   * @return new {@link Valid} applying `mapper` if `this` is {@link Valid}, {@link Invalid} otherwise
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Valid} one
+   */
+  flatMap = <U>(mapper: TFunction1<T, Validation<E, U>>): Validation<E, U> => {
+    if (this.isValid()) {
+      AssertUtil.notNullOrUndefined(
+        mapper,
+        'mapper must be not null and not undefined'
+      );
+      return Function1.of(mapper)
+        .apply(
+          this.get()
+        );
+    }
+    return Validation.invalid<E, U>(
+      this.getErrors()
+    );
+  }
+
+
+  /**
+   *    Applies `mapperValid` if current {@link Validation} is a {@link Valid} instance, `mapperInvalid`  if it is an
+   * {@link Invalid}, transforming internal values into another one.
+   *
+   * <pre>
+   * Example:
+   *
+   *   // Return 11
+   *   Validation.valid<string, number>(11)
+   *         .fold(
+   *              (stringArray: string[]) => stringArray.length,
+   *              Function1.identity()
+   *           );
+   *
+   *   // Return 2
+   *   Validation.invalid<string, number>(['Error1', 'Error2'])
+   *         .fold(
+   *              (stringArray: string[]) => stringArray.length,
+   *              Function1.identity()
+   *           );
+   * </pre>
+   *
+   * @param mapperInvalid
+   *    The mapping {@link TFunction1} to apply the value of a {@link Invalid} instance
+   * @param mapperValid
+   *    The mapping {@link TFunction1} to apply the value of a {@link Valid} instance
+   *
+   * @return the result of applying the right {@link TFunction1}
+   *
+   * @throws {@link IllegalArgumentError} if `mapperValid` is `null` or `undefined` and the current instance is a {@link Valid} one
+   *                                      or `mapperInvalid` is `null` or `undefined` and the current instance is a {@link Invalid} one
+   */
+  fold = <U>(mapperInvalid: TFunction1<E[], U>,
+             mapperValid: TFunction1<T, U>): U => {
+    if (this.isValid()) {
+      AssertUtil.notNullOrUndefined(
+        mapperValid,
+        'mapperValid must be not null and not undefined'
+      );
+      return Function1.of(mapperValid)
+        .apply(
+          this.get()
+        );
+    }
+    AssertUtil.notNullOrUndefined(
+      mapperInvalid,
+      'mapperInvalid must be not null and not undefined'
+    );
+    return Function1.of(mapperInvalid)
+      .apply(
+        this.getErrors()
+      );
+  }
+
+
+  /**
    * Verifies in the current instance has no value, that is:
    * <p>
    *    1. Is a {@link Invalid} one.
@@ -358,9 +441,9 @@ export abstract class Validation<E, T> {
    */
   isEmpty = (): boolean =>
     !this.isValid() ||
-      ObjectUtil.isNullOrUndefined(
-        this.get()
-      );
+    ObjectUtil.isNullOrUndefined(
+      this.get()
+    );
 
 
   /**
@@ -451,6 +534,36 @@ export abstract class Validation<E, T> {
       : Optional.of<T>(
           this.get()
         );
+
+
+  /**
+   *    Transforms this {@link Validation} into a {@link Try} instance. If the current {@link Validation} is an instance
+   * of {@link Valid} wraps the stored value into a {@link Success} one, {@link Failure} otherwise.
+   *
+   * @param mapperInvalid
+   *   {@link TFunction1} that maps the {@link Invalid} value to a {@link Error} instance
+   *
+   * @return {@link Success} if `this` is {@link Valid}, {@link Failure} otherwise.
+   *
+   * @throws {@link IllegalArgumentError} if `mapperInvalid` is `null` or `undefined` and the current instance is an {@link Invalid} one
+   */
+  toTry = (mapperInvalid: TFunction1<E[], Error>): Try<T> => {
+    if (!this.isValid()) {
+      AssertUtil.notNullOrUndefined(
+        mapperInvalid,
+        'mapperInvalid must be not null and not undefined'
+      );
+      return Try.failure<T>(
+        Function1.of(mapperInvalid)
+          .apply(
+            this.getErrors()
+          )
+      );
+    }
+    return Try.success<T>(
+      this.get()
+    );
+  }
 
 }
 

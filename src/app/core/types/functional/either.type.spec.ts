@@ -669,7 +669,7 @@ describe('Either', () => {
       const fromNumToString = (n: number) => Either.right<boolean, string>('' + n);
       const either = Either.right<boolean, number>(11);
 
-      const result: Either<boolean, string> = either.flatMap(fromNumToString);
+      const result = either.flatMap(fromNumToString);
 
       expect(result.isRight()).toBeTrue();
       expect(result.get()).toEqual('11');
@@ -1137,8 +1137,7 @@ describe('Either', () => {
 
 
     it('when given Either is a Left one and mapperLeft is valid then an instance of Failure applying mapperLeft is returned', () => {
-      const wrapIntoAnError: FFunction1<string, Error> =
-        (s: string) => new Error(s);
+      const wrapIntoAnError = (s: string) => new Error(s);
 
       const e1 = Either.left('abc');
       const e2 = Either.left('xyz');
