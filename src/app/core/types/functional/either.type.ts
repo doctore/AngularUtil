@@ -452,36 +452,38 @@ export abstract class Either<L, R> {
 
 
   /**
-   * Returns the stored value if the underline instance is {@link Right}, otherwise returns `defaultValue`.
+   * Returns the stored value if the underline instance is {@link Right}, otherwise returns `other`.
    *
-   * @param defaultValue
+   * @param other
    *    Returned value if current instance is an {@link Left} one
    *
-   * @return @type {R} with value stored in {@link Right} instance,
-   *         `defaultValue` otherwise
+   * @return @type {R} with value stored in {@link Right} instance, `other` otherwise
    */
-  getOrElse = (defaultValue: R): R =>
-    this.isRight()
-      ? this.get()
-      : defaultValue;
+  getOrElse(other: R): R;
 
 
   /**
-   * Returns the stored value if the underline instance is {@link Right}, otherwise returns `defaultValue`.
+   *    Returns the stored value if the underline instance is {@link Right}, otherwise returns the result after
+   * invoking provided {@link TFunction0}.
    *
-   * @param defaultValue
-   *    Returned value if current instance is an {@link Left} one
+   * @param other
+   *    {@link TFunction0} that produces a value to be returned
    *
-   * @return {@link Optional#empty} if this {@link Either} is an empty {@link Right} instance or provided `defaultValue` is `null` or `undefined`,
-   *         {@link Optional} with the internal value if this {@link Either} is non empty {@link Right} instance,
-   *         {@link Optional} with provided `defaultValue` otherwise
+   * @return @type {R} with value stored in {@link Right} instance, otherwise the result of `other`
    */
-  getOrElseOptional = (defaultValue: R): Optional<R> =>
-    Optional.ofNullable(
-      this.getOrElse(
-        defaultValue
-      )
-    );
+  getOrElse(other: TFunction0<R>): R;
+
+
+  getOrElse(other: TFunction0<R> | R): R {
+    if (this.isRight()) {
+      return this.get();
+    }
+    if (Function0.isFunction(other) || isFFunction0(other)) {
+      return Function0.of(other)
+        .apply();
+    }
+    return other;
+  }
 
 
   /**

@@ -1,7 +1,7 @@
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { Comparable } from '@app-core/types/comparator';
 import { NullableOrUndefined, OrUndefined } from '@app-core/types';
-import { Function0, Function1, TFunction0, TFunction1 } from '@app-core/types/function';
+import { Function0, Function1, isFFunction0, TFunction0, TFunction1 } from '@app-core/types/function';
 import { Either, Optional, Try } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 
@@ -432,6 +432,41 @@ export abstract class Validation<E, T> {
 
 
   /**
+   * Returns the stored value if the underline instance is {@link Valid}, otherwise returns `other`.
+   *
+   * @param other
+   *    Returned value if current instance is an {@link Invalid} one
+   *
+   * @return {@code T} value stored in {@link Valid} instance, `other` otherwise
+   */
+  getOrElse(other: T): T;
+
+
+  /**
+   *    Returns the stored value if the underline instance is {@link Valid}, otherwise returns the result after
+   * invoking provided {@link TFunction0}.
+   *
+   * @param other
+   *    {@link TFunction0} that produces a value to be returned
+   *
+   * @return @type {T} with value stored in {@link Valid} instance, otherwise the result of `other`
+   */
+  getOrElse(other: TFunction0<T>): T;
+
+
+  getOrElse(other: TFunction0<T> | T): T {
+    if (this.isValid()) {
+      return this.get();
+    }
+    if (Function0.isFunction(other) || isFFunction0(other)) {
+      return Function0.of(other)
+        .apply();
+    }
+    return other;
+  }
+
+
+  /**
    * Verifies in the current instance has no value, that is:
    * <p>
    *    1. Is a {@link Invalid} one.
@@ -503,6 +538,40 @@ export abstract class Validation<E, T> {
     return Validation.valid<U, T>(
       this.get()
     );
+  }
+
+
+  /**
+   * Returns this {@link Validation} if it is {@link Valid}, otherwise returns `other`.
+   *
+   * @param other
+   *    An alternative {@link Validation}
+   *
+   * @return current {@link Validation} if {@link Valid}, `other` otherwise.
+   */
+  orElse(other: Validation<E, T>): Validation<E, T>;
+
+
+  /**
+   * Returns this {@link Validation} if it is {@link Valid}, otherwise returns the result of evaluating `other`.
+   *
+   * @param other
+   *    {@link TFunction0} returning an alternative {@link Validation}
+   *
+   * @return current {@link Validation} if {@link Valid}, `supplier` result otherwise.
+   */
+  orElse(other: TFunction0<Validation<E, T>>): Validation<E, T>;
+
+
+  orElse(other: TFunction0<Validation<E, T>> | Validation<E, T>): Validation<E, T> {
+    if (this.isValid()) {
+      return this;
+    }
+    if (Function0.isFunction(other) || isFFunction0(other)) {
+      return Function0.of(other)
+        .apply();
+    }
+    return other;
   }
 
 
@@ -663,6 +732,33 @@ export class Invalid<E, T> extends Validation<E, T> {
 
 
 /**
+ *    Defines how to validate a given instance using {@link Validation} functionality. If there are not verified rules
+ * an {@link Invalid} instance must be returned with a {@link ValidationError} array.
+ *
+ * @typeParam  <T>
+ *    Type of the instance to validate
+ *
+ * @see {@link Valid}, {@link Invalid} and {@link ValidationError}
+ */
+export interface Validate<T> {
+
+  /**
+   * Validate the given instance.
+   *
+   * @param instanceToValidate
+   *    Instance to validate
+   *
+   * @return {@link Valid} if all rules were verified,
+   *         {@link Invalid} with a {@link ValidationError} array otherwise.
+   */
+  validate(instanceToValidate: T): Validation<ValidationError, T>;
+
+}
+
+
+
+
+/**
  * Helper class used to manage error messages validating provided class instances. Includes 2 properties:
  * <p>
  *   - `priority`: defines the importance of the error (higher means higher priority)
@@ -704,6 +800,21 @@ export class ValidationError implements Comparable<ValidationError> {
     Optional.ofNullable(other)
       .map<number>(o => this.getPriority() - o.getPriority())
       .getOrElse(1);
+
+
+  /**
+   * Returns `true` if `this` is equals to `other`, `false` otherwise.
+   *
+   * @param other
+   *    {@link ValidationError} to compare
+   *
+   * @return `true` if `this` is equals to `other`, `false` otherwise.
+   */
+  equals = (other: NullableOrUndefined<ValidationError>): boolean =>
+    ObjectUtil.isNullOrUndefined(other)
+      ? false
+      : this.priority === other.getPriority() &&
+        this.errorMessage === other.getErrorMessage();
 
 
   getErrorMessage = (): string =>

@@ -797,7 +797,14 @@ describe('Either', () => {
 
   describe('getOrElse', () => {
 
-    it('when given Either is a Left one then the defaultValue is returned', () => {
+    it('when given Either is a Right one then the content of Right is returned', () => {
+      expect(Either.right<number, NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
+      expect(Either.right<number, Nullable<string>>(null).getOrElse('20')).toBeNull();
+      expect(Either.right<number, string>('19').getOrElse('20')).toEqual('19');
+    });
+
+
+    it('when given Either is a Left one and provided other is a value then other is returned', () => {
       const either = Either.left<number, NullableOrUndefined<string>>(19);
 
       expect(either.getOrElse(undefined)).toBeUndefined();
@@ -806,35 +813,20 @@ describe('Either', () => {
     });
 
 
-    it('when given Either is a Right one then the content of Right is returned', () => {
-      expect(Either.right<number, NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
-      expect(Either.right<number, Nullable<string>>(null).getOrElse('20')).toBeNull();
-      expect(Either.right<number, string>('19').getOrElse('20')).toEqual('19');
-    });
+    it('when the Either instance is a Left one and provided other is a TFunction0 then other is returned', () => {
+      const either = Either.left(19);
 
-  });
+      const otherIntValue = 11;
+      const otherStringValue = 'abd';
 
+      const otherIntFunc = () => otherIntValue;
+      const otherStringFunc: FFunction0<string> = () => otherStringValue;
 
+      const getOrElseIntResult = either.getOrElse(otherIntFunc);
+      const getOrElseStringResult = either.getOrElse(otherStringFunc);
 
-  describe('getOrElseOptional', () => {
-
-    it('when given Either is a Left one then then an Optional with the defaultValue is returned', () => {
-      const either = Either.left<number, NullableOrUndefined<string>>(19);
-
-      expect(either.getOrElseOptional(undefined).isPresent()).toBeFalse();
-      expect(either.getOrElseOptional(null).isPresent()).toBeFalse();
-
-      expect(either.getOrElseOptional('12').isPresent()).toBeTrue();
-      expect(either.getOrElseOptional('12').get()).toEqual('12');
-    });
-
-
-    it('when given Either is a Right one then an Optional with the content of Right is returned', () => {
-      expect(Either.right<number, NullableOrUndefined<string>>(undefined).getOrElseOptional('11').isPresent()).toBeFalse();
-      expect(Either.right<number, Nullable<string>>(null).getOrElseOptional('20').isPresent()).toBeFalse();
-
-      expect(Either.right<number, Nullable<string>>('19').getOrElseOptional('20').isPresent()).toBeTrue();
-      expect(Either.right<number, Nullable<string>>('19').getOrElseOptional('20').get()).toEqual('19');
+      expect(getOrElseIntResult).toEqual(otherIntValue);
+      expect(getOrElseStringResult).toEqual(otherStringValue);
     });
 
   });
@@ -1009,7 +1001,7 @@ describe('Either', () => {
     });
 
 
-    it('when the Try instance is Right then same Try is returned', () => {
+    it('when the Either instance is Right then same Either is returned', () => {
       const rightEither = Either.right<number, string>('abc');
       const leftEither = Either.left<number, string>(11);
 

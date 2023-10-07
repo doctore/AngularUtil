@@ -830,36 +830,39 @@ export abstract class Try<T> {
 
 
   /**
-   * Returns the stored value if the underline instance is {@link Success}, otherwise returns `defaultValue`.
+   * Returns the stored value if the underline instance is {@link Success}, otherwise returns `other`.
    *
-   * @param defaultValue
+   * @param other
    *    Returned value if current instance is an {@link Failure} one
    *
-   * @return @type {T} with value stored in {@link Success} instance,
-   *         `defaultValue` otherwise
+   * @return @type {T} with value stored in {@link Success} instance, `other` otherwise
    */
-  getOrElse = (defaultValue: T): T =>
-    this.isSuccess()
-      ? this.get()
-      : defaultValue;
+  getOrElse(other: T): T;
 
 
   /**
-   * Returns the stored value if the underline instance is {@link Success}, otherwise returns `defaultValue`.
+   *    Returns the stored value if the underline instance is {@link Success}, otherwise returns the result after
+   * invoking provided {@link TFunction0}. This will throw an {@link Error} if it is not a {@link Success} and
+   * {@code other} throws an {@link Error}.
    *
-   * @param defaultValue
-   *    Returned value if current instance is an {@link Failure} one
+   * @param other
+   *    {@link TFunction0} that produces a value to be returned if current instance is an {@link Failure} one
    *
-   * @return {@link Optional#empty} if this {@link Try} is an empty {@link Success} instance or provided `defaultValue` is `null` or `undefined`,
-   *         {@link Optional} with the internal value if this {@link Try} is non empty {@link Success} instance,
-   *         {@link Optional} with provided `defaultValue` otherwise
+   * @return @type {T} with value stored in {@link Success} instance, otherwise the result of `other`
    */
-  getOrElseOptional = (defaultValue: T): Optional<T> =>
-    Optional.ofNullable(
-      this.getOrElse(
-        defaultValue
-      )
-    );
+  getOrElse(other: TFunction0<T>): T;
+
+
+  getOrElse(other: TFunction0<T> | T): T {
+    if (this.isSuccess()) {
+      return this.get();
+    }
+    if (Function0.isFunction(other) || isFFunction0(other)) {
+      return Function0.of(other)
+        .apply();
+    }
+    return other;
+  }
 
 
   /**

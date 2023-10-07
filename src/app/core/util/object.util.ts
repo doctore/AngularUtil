@@ -78,7 +78,7 @@ export class ObjectUtil {
 
 
   /**
-   * Returns `true` if `a` is equals to `b`, {@link false} otherwise.
+   * Returns `true` if `a` is equals to `b`, `false` otherwise.
    *
    * @apiNote
    *    This method supports comparing arrays, array buffers, booleans, date objects, error objects, maps, numbers,
@@ -191,10 +191,7 @@ export class ObjectUtil {
     if (this.nonNullOrUndefined(valueToVerify)) {
       return valueToVerify;
     }
-    if (Function0.isFunction(defaultValue)) {
-      return defaultValue.apply();
-    }
-    if (isFFunction0(defaultValue)) {
+    if (Function0.isFunction(defaultValue) || isFFunction0(defaultValue)) {
       return Function0.of(defaultValue)
         .apply();
     }

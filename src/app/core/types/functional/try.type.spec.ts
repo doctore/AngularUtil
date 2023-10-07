@@ -877,42 +877,35 @@ describe('Try', () => {
   describe('getOrElse', () => {
 
     it('when the Try instance is a Success one then the content of Success is returned', () => {
-      expect(Success.of<NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
-      expect(Success.of<Nullable<number>>(null).getOrElse(20)).toBeNull();
-      expect(Success.of(11).getOrElse(20)).toEqual(11);
+      expect(Try.success<NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
+      expect(Try.success<Nullable<number>>(null).getOrElse(20)).toBeNull();
+      expect(Try.success(11).getOrElse(20)).toEqual(11);
     });
 
 
-    it('when the Try instance is a Failure one then the defaultValue is returned', () => {
-      const failure = Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error'));
+    it('when the Try instance is a Failure one and provided other is a value then other is returned', () => {
+      const failure = Try.failure(new IllegalArgumentError('IllegalArgumentError: there was an error'));
 
       expect(failure.getOrElse(undefined)).toBeUndefined();
       expect(failure.getOrElse(null)).toBeNull();
       expect(failure.getOrElse(12)).toEqual(12);
     });
 
-  });
 
+    it('when the Try instance is a Failure one and provided other is a TFunction0 then other is returned', () => {
+      const failure = Try.failure(new IllegalArgumentError('IllegalArgumentError: there was an error'));
 
+      const otherIntValue = 11;
+      const otherStringValue = 'abd';
 
-  describe('getOrElseOptional', () => {
+      const otherIntFunc = () => otherIntValue;
+      const otherStringFunc: FFunction0<string> = () => otherStringValue;
 
-    it('when the Try instance is a Success one then an Optional with the content of Success is returned', () => {
-      expect(Success.of<NullableOrUndefined<string>>(undefined).getOrElseOptional('11').isPresent()).toBeFalse();
-      expect(Success.of<Nullable<number>>(null).getOrElseOptional(20).isPresent()).toBeFalse();
+      const getOrElseIntResult = failure.getOrElse(otherIntFunc);
+      const getOrElseStringResult = failure.getOrElse(otherStringFunc);
 
-      expect(Success.of(11).getOrElseOptional(20).isPresent()).toBeTrue();
-      expect(Success.of(11).getOrElseOptional(20).get()).toEqual(11);
-    });
-
-
-    it('when the Try instance is a Failure one then an Optional with the defaultValue is returned', () => {
-      const failure = Failure.of(new IllegalArgumentError('IllegalArgumentError: there was an error'));
-
-      expect(failure.getOrElseOptional(null).isPresent()).toBeFalse();
-
-      expect(failure.getOrElseOptional(12).isPresent()).toBeTrue();
-      expect(failure.getOrElseOptional(12).get()).toEqual(12);
+      expect(getOrElseIntResult).toEqual(otherIntValue);
+      expect(getOrElseStringResult).toEqual(otherStringValue);
     });
 
   });

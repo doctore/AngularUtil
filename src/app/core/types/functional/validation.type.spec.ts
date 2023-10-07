@@ -1,8 +1,9 @@
-import { Either, Invalid, Try, Valid, Validation, ValidationError } from '@app-core/types/functional';
+import { Either, Invalid, Try, Valid, Validate, Validation, ValidationError } from '@app-core/types/functional';
 import { Nullable, NullableOrUndefined } from '@app-core/types';
-import { FFunction1, Function1, TFunction0 } from '@app-core/types/function';
+import { FFunction0, FFunction1, Function0, Function1, TFunction0 } from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
 import { FPredicate1 } from '@app-core/types/predicate';
+import { ObjectUtil, StringUtil } from "@app-core/util";
 
 /**
  * To invoke only this test:
@@ -683,12 +684,50 @@ describe('Validation', () => {
 
 
     it('when given Validation is Valid then mapperValid result is returned', () => {
-      const stringArrayLength =(stringArray: string[]) => stringArray.length;
+      const stringArrayLength = (stringArray: string[]) => stringArray.length;
       const sameNumber = (n: number) => n;
 
       const result = Validation.valid<string, number>(11).fold(stringArrayLength, sameNumber);
 
       expect(result).toEqual(11);
+    });
+
+  });
+
+
+
+  describe('getOrElse', () => {
+
+    it('when given Validation is a Valid one then the content of Valid is returned', () => {
+      expect(Validation.valid<number, NullableOrUndefined<string>>(undefined).getOrElse('11')).toBeUndefined();
+      expect(Validation.valid<number, Nullable<string>>(null).getOrElse('20')).toBeNull();
+      expect(Validation.valid<number, string>('19').getOrElse('20')).toEqual('19');
+    });
+
+
+    it('when given Validation is an Invalid one and provided other is a value then other is returned', () => {
+      const validation = Validation.invalid<number, NullableOrUndefined<string>>([19]);
+
+      expect(validation.getOrElse(undefined)).toBeUndefined();
+      expect(validation.getOrElse(null)).toBeNull();
+      expect(validation.getOrElse('12')).toEqual('12');
+    });
+
+
+    it('when the Validation instance is an Invalid one and provided other is a TFunction0 then other is returned', () => {
+      const validation = Validation.invalid([19]);
+
+      const otherIntValue = 11;
+      const otherStringValue = 'abd';
+
+      const otherIntFunc = () => otherIntValue;
+      const otherStringFunc: FFunction0<string> = () => otherStringValue;
+
+      const getOrElseIntResult = validation.getOrElse(otherIntFunc);
+      const getOrElseStringResult = validation.getOrElse(otherStringFunc);
+
+      expect(getOrElseIntResult).toEqual(otherIntValue);
+      expect(getOrElseStringResult).toEqual(otherStringValue);
     });
 
   });
@@ -851,6 +890,59 @@ describe('Validation', () => {
 
       expect(result.isValid()).toBeFalse();
       expect(result.getErrors()).toEqual(['1', '2']);
+    });
+
+  });
+
+
+
+  describe('orElse', () => {
+
+    it('when given Validation is Invalid and provided other is a Validation instance then other is returned', () => {
+      const validValidation = Validation.valid<number, string>('abc');
+      const invalidValidation = Validation.invalid<number, string>([11]);
+
+      const result = invalidValidation.orElse(validValidation);
+
+      expect(result.isValid()).toBeTrue();
+      expect(result.get()).toEqual(validValidation.get());
+    });
+
+
+    it('when given Validation is Invalid and provided other is a TFunction0 instance then other is returned', () => {
+      const validValidation = Validation.valid<number, string>('abc');
+      const invalidValidation = Validation.invalid<number, string>([11]);
+
+      const otherRaw = () => validValidation;
+
+      const otherFFunction: FFunction0<Validation<number, string>> =
+        () => validValidation;
+
+      const otherFunction: Function0<Validation<number, string>> =
+        Function0.of(() => validValidation);
+
+      expect(invalidValidation.orElse(otherRaw).isValid()).toBeTrue();
+      expect(invalidValidation.orElse(otherRaw).get()).toEqual(validValidation.get());
+
+      expect(invalidValidation.orElse(otherFFunction).isValid()).toBeTrue();
+      expect(invalidValidation.orElse(otherFFunction).get()).toEqual(validValidation.get());
+
+      expect(invalidValidation.orElse(otherFunction).isValid()).toBeTrue();
+      expect(invalidValidation.orElse(otherFunction).get()).toEqual(validValidation.get());
+    });
+
+
+    it('when the Validation instance is Valid then same Validation is returned', () => {
+      const validValidation = Validation.valid<number, string>('abc');
+      const invalidValidation = Validation.invalid<number, string>([11]);
+
+      const other = () => invalidValidation;
+
+      expect(validValidation.orElse(invalidValidation).isValid()).toBeTrue();
+      expect(validValidation.orElse(invalidValidation).get()).toEqual(validValidation.get());
+
+      expect(validValidation.orElse(other).isValid()).toBeTrue();
+      expect(validValidation.orElse(other).get()).toEqual(validValidation.get());
     });
 
   });
@@ -1150,6 +1242,258 @@ describe('Invalid', () => {
 
 
 
+describe('Validate', () => {
+
+
+  describe('validateWithCombine', () => {
+
+    it('when provided instance does not verify rules then an Invalid instance with an array of ValidationError is returned', () => {
+      const invalidPizzaName = new Pizza('12#2', 11);
+      const invalidPizzaCost = new Pizza('Margherita', -5);
+      const invalidPizzaNameAndCost = new Pizza('M%1', -7);
+
+      const resultInvalidPizzaName = new PizzaValidatorCombine().validate(invalidPizzaName);
+      const resultInvalidPizzaCost = new PizzaValidatorCombine().validate(invalidPizzaCost);
+      const resultInvalidPizzaNameAndCost = new PizzaValidatorCombine().validate(invalidPizzaNameAndCost);
+
+      expect(resultInvalidPizzaName.isValid()).toBeFalse();
+      expect(resultInvalidPizzaName.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaName.getErrors()[0].equals(
+          ValidationError.of(
+            1,
+            'Name contains invalid characters: "' + invalidPizzaName.name + '"'
+          )
+        )
+      ).toBeTrue();
+
+      expect(resultInvalidPizzaCost.isValid()).toBeFalse();
+      expect(resultInvalidPizzaCost.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaCost.getErrors()[0].equals(
+          ValidationError.of(
+            2,
+            'Cost must be at least: 0'
+          )
+        )
+      ).toBeTrue();
+
+      expect(resultInvalidPizzaNameAndCost.isValid()).toBeFalse();
+      expect(resultInvalidPizzaNameAndCost.getErrors().length).toEqual(2);
+      expect(resultInvalidPizzaNameAndCost.getErrors()[0].equals(
+          ValidationError.of(
+            1,
+            'Name contains invalid characters: "' + invalidPizzaNameAndCost.name + '"'
+          )
+        )
+      ).toBeTrue();
+      expect(resultInvalidPizzaNameAndCost.getErrors()[1].equals(
+          ValidationError.of(
+            2,
+            'Cost must be at least: 0'
+          )
+        )
+      ).toBeTrue();
+    });
+
+
+    it('when provided instance verifies rules then a Valid instance is returned', () => {
+      const validPizzaName = new Pizza('Carbonara', 15);
+
+      const resultValidPizzaName = new PizzaValidatorCombine().validate(validPizzaName);
+
+      expect(resultValidPizzaName.isValid()).toBeTrue();
+      expect(resultValidPizzaName.get().name).toEqual(validPizzaName.name);
+      expect(resultValidPizzaName.get().cost).toEqual(validPizzaName.cost);
+    });
+
+  });
+
+
+
+  describe('validateWithGetFirstInvalid', () => {
+
+    it('when provided instance does not verify rules then an Invalid instance with an array of ValidationError is returned', () => {
+      const invalidPizzaName = new Pizza('12#2', 11);
+      const invalidPizzaCost = new Pizza('Margherita', -5);
+      const invalidPizzaNameAndCost = new Pizza('M%1', -7);
+
+      const resultInvalidPizzaName = new PizzaValidatorGetFirstInvalid().validate(invalidPizzaName);
+      const resultInvalidPizzaCost = new PizzaValidatorGetFirstInvalid().validate(invalidPizzaCost);
+      const resultInvalidPizzaNameAndCost = new PizzaValidatorGetFirstInvalid().validate(invalidPizzaNameAndCost);
+
+      expect(resultInvalidPizzaName.isValid()).toBeFalse();
+      expect(resultInvalidPizzaName.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaName.getErrors()[0].equals(
+          ValidationError.of(
+            1,
+            'Name contains invalid characters: "' + invalidPizzaName.name + '"'
+          )
+        )
+      ).toBeTrue();
+
+      expect(resultInvalidPizzaCost.isValid()).toBeFalse();
+      expect(resultInvalidPizzaCost.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaCost.getErrors()[0].equals(
+          ValidationError.of(
+            2,
+            'Cost must be at least: 0'
+          )
+        )
+      ).toBeTrue();
+
+      expect(resultInvalidPizzaNameAndCost.isValid()).toBeFalse();
+      expect(resultInvalidPizzaNameAndCost.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaNameAndCost.getErrors()[0].equals(
+          ValidationError.of(
+            1,
+            'Name contains invalid characters: "' + invalidPizzaNameAndCost.name + '"'
+          )
+        )
+      ).toBeTrue();
+    });
+
+
+    it('when provided instance verifies rules then a Valid instance is returned', () => {
+      const validPizzaName = new Pizza('Carbonara', 15);
+
+      const resultValidPizzaName = new PizzaValidatorGetFirstInvalid().validate(validPizzaName);
+
+      expect(resultValidPizzaName.isValid()).toBeTrue();
+      expect(resultValidPizzaName.get().name).toEqual(validPizzaName.name);
+      expect(resultValidPizzaName.get().cost).toEqual(validPizzaName.cost);
+    });
+
+  });
+
+
+
+  /**
+   * Classes used for testing purpose
+   */
+  class Pizza {
+    private _name: string;
+    private _cost: number;
+
+    constructor(name: string, cost: number) {
+      this._name = name;
+      this._cost = cost;
+    }
+
+    get name(): string {
+      return this._name;
+    }
+    set name(name: string) {
+      this._name = name;
+    }
+
+    get cost(): number {
+      return this._cost;
+    }
+    set id(cost: number) {
+      this._cost = cost;
+    }
+
+    equals = (other?: Pizza | null): boolean =>
+      ObjectUtil.isNullOrUndefined(other)
+        ? false
+        : this.name === other.name;
+  }
+
+
+  class PizzaValidatorCombine implements Validate<Pizza> {
+
+    private static VALID_NAME_CHARS = /[a-zA-Z ]/gi;
+    private static MIN_COST = 0;
+
+    validate(instanceToValidate: Pizza): Validation<ValidationError, Pizza> {
+      return Validation.combine(
+        [
+          this.validateName(instanceToValidate),
+          this.validateCost(instanceToValidate)
+        ]
+      );
+    }
+
+    validateName = (p: Pizza): Validation<ValidationError, Pizza> => {
+      const onlyValidCharacters = p.name.replace(
+        PizzaValidatorCombine.VALID_NAME_CHARS,
+        ''
+      );
+      return StringUtil.isBlank(onlyValidCharacters)
+        ? Validation.valid(p)
+        : Validation.invalid(
+            [
+              ValidationError.of(
+                1,
+                'Name contains invalid characters: "' + p.name + '"'
+              )
+            ]
+          );
+    }
+
+    validateCost = (p: Pizza): Validation<ValidationError, Pizza> =>
+      p.cost >= PizzaValidatorCombine.MIN_COST
+        ? Validation.valid(p)
+        : Validation.invalid(
+            [
+              ValidationError.of(
+                2,
+                'Cost must be at least: ' + PizzaValidatorCombine.MIN_COST
+              )
+            ]
+          );
+
+  }
+
+
+  class PizzaValidatorGetFirstInvalid implements Validate<Pizza> {
+
+    private static VALID_NAME_CHARS = /[a-zA-Z ]/gi;
+    private static MIN_COST = 0;
+
+    validate(instanceToValidate: Pizza): Validation<ValidationError, Pizza> {
+      return Validation.combineGetFirstInvalid(
+        [
+          () => this.validateName(instanceToValidate),
+          () => this.validateCost(instanceToValidate)
+        ]
+      );
+    }
+
+    validateName = (p: Pizza): Validation<ValidationError, Pizza> => {
+      const onlyValidCharacters = p.name.replace(
+        PizzaValidatorGetFirstInvalid.VALID_NAME_CHARS,
+        ''
+      );
+      return StringUtil.isBlank(onlyValidCharacters)
+        ? Validation.valid(p)
+        : Validation.invalid(
+            [
+              ValidationError.of(
+                1,
+                'Name contains invalid characters: "' + p.name + '"'
+              )
+            ]
+          );
+    }
+
+    validateCost = (p: Pizza): Validation<ValidationError, Pizza> =>
+      p.cost >= PizzaValidatorGetFirstInvalid.MIN_COST
+        ? Validation.valid(p)
+        : Validation.invalid(
+            [
+              ValidationError.of(
+                2,
+                'Cost must be at least: ' + PizzaValidatorGetFirstInvalid.MIN_COST
+              )
+            ]
+          );
+  }
+
+});
+
+
+
+
 describe('ValidationError', () => {
 
 
@@ -1186,6 +1530,57 @@ describe('ValidationError', () => {
 
       expect(validationError2.compareTo(validationError2)).toEqual(0);
       expect(0 < validationError2.compareTo(validationError1)).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('equals', () => {
+
+    it('when other is null or undefined then false is returned', () => {
+      const validationError = ValidationError.of(10, 'Error1');
+
+      expect(validationError.equals(null)).toBeFalse();
+      expect(validationError.equals(undefined)).toBeFalse();
+    });
+
+
+    it('when this and other are not equal then false is returned', () => {
+      const validationError1 = ValidationError.of(10, 'Error1');
+      const validationError2 = ValidationError.of(10, 'Error2');
+      const validationError3 = ValidationError.of(20, 'Error1');
+      const validationError4 = ValidationError.of(20, 'Error2');
+
+      expect(validationError1.equals(validationError2)).toBeFalse();
+      expect(validationError2.equals(validationError1)).toBeFalse();
+
+      expect(validationError1.equals(validationError3)).toBeFalse();
+      expect(validationError3.equals(validationError1)).toBeFalse();
+
+      expect(validationError1.equals(validationError4)).toBeFalse();
+      expect(validationError4.equals(validationError1)).toBeFalse();
+
+      expect(validationError2.equals(validationError3)).toBeFalse();
+      expect(validationError3.equals(validationError2)).toBeFalse();
+
+      expect(validationError2.equals(validationError4)).toBeFalse();
+      expect(validationError4.equals(validationError2)).toBeFalse();
+
+      expect(validationError3.equals(validationError4)).toBeFalse();
+      expect(validationError4.equals(validationError3)).toBeFalse();
+    });
+
+
+    it('when this and other are equal then true is returned', () => {
+      const validationError1 = ValidationError.of(10, 'Error1');
+      const validationError2 = ValidationError.of(10, 'Error1');
+
+      expect(validationError1.equals(validationError2)).toBeTrue();
+      expect(validationError2.equals(validationError1)).toBeTrue();
+
+      expect(validationError1.equals(validationError1)).toBeTrue();
+      expect(validationError2.equals(validationError2)).toBeTrue();
     });
 
   });
