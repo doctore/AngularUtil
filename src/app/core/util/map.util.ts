@@ -567,7 +567,7 @@ export class MapUtil {
    *   Parameters:                      Result:
    *    [(1, 'Hi'), (2, 'Hello')]        'World'
    *    5
-   *    () -> 'World'
+   *    () => 'World'
    * </pre>
    *
    * @param sourceMap
@@ -1267,6 +1267,173 @@ export class MapUtil {
 
 
   /**
+   * Removes from `sourceMap` all of its elements that are contained in the given {@link Map} `toRemoveMap`.
+   *
+   * @apiNote
+   *    {@link ObjectUtil#equals} comparing both key and value will be used to know if the current element should be
+   * removed or not.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                        Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(2, 'Hello')]
+   *    [(1, 'Hi'), (3, 'World'), (4, 'Hola')]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to retain and/or remove
+   * @param toRemoveMap
+   *    {@link Map} with elements to delete
+   *
+   * @return {@link Map} with the elements of `sourceMap` not contained in `toRemoveMap`
+   */
+  static removeAll<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         toRemoveMap: NullableOrUndefined<Map<K, V>>): Map<K, V>;
+
+
+  /**
+   *    Removes from `sourceMap` all of its elements that are contained in the given {@link Map} `toRemoveMap`, based on
+   * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                        Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(2, 'Hello')]
+   *    [(1, 'Hi'), (3, 'World2'), (4, 'Hola')]
+   *    (a: [number, string], b: [number, string]) => a[0] == b[0]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to retain and/or remove
+   * @param toRemoveMap
+   *    {@link Map} with elements to delete
+   * @param areEqualsComparison
+   *    {@link TPredicate2} used to know if two elements are equals or not
+   *
+   * @return {@link Map} with the elements of `sourceMap` not contained in `toRemoveMap`
+   */
+  static removeAll<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         toRemoveMap: NullableOrUndefined<Map<K, V>>,
+                         areEqualsComparison: TPredicate2<[K, V], [K, V]>): Map<K, V>;
+
+
+  static removeAll<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         toRemoveMap: NullableOrUndefined<Map<K, V>>,
+                         areEqualsComparison?: TPredicate2<[K, V], [K, V]>): Map<K, V> {
+    if (this.isEmpty(sourceMap)) {
+      return new Map<K, V>();
+    }
+    if (this.isEmpty(toRemoveMap)) {
+      return sourceMap!;
+    }
+    const finalAreEqualsComparison = this.getFinalAreEqualsComparison(areEqualsComparison);
+    const result = new Map<K, V>();
+    for (let [keySourceItem, valueSourceItem] of sourceMap!) {
+
+      let wasFound = false;
+      for (let [keyToRemoveItem, valueToRemoveItem] of toRemoveMap!) {
+        if (finalAreEqualsComparison.apply([keySourceItem, valueSourceItem], [keyToRemoveItem, valueToRemoveItem])) {
+          wasFound = true;
+          break;
+        }
+      }
+      if (!wasFound) {
+        result.set(
+          keySourceItem,
+          valueSourceItem
+        );
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Retains only the elements of `sourceMap` that are contained in the given {@link Map} `toKeepMap`. In other words,
+   * removes from `sourceMap` all of its elements that are not contained in `toKeepMap`.
+   *
+   * @apiNote
+   *    {@link ObjectUtil#equals} comparing both key and value will be used to know if the current element should be
+   * retained or not.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                        Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(1, 'Hi'), (3, 'World')]
+   *    [(1, 'Hi'), (3, 'World'), (4, 'Hola')]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to retain and/or remove
+   * @param toKeepMap
+   *    {@link Map} with elements to keep
+   *
+   * @return {@link Map} with the elements of `sourceMap` contained in `toKeepMap`
+   */
+  static retainAll<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         toKeepMap: NullableOrUndefined<Map<K, V>>): Map<K, V>;
+
+
+  /**
+   *    Retains only the elements of `sourceMap` that are contained in the given {@link Map} `toKeepMap`, based on
+   * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                        Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(1, 'Hi'), (3, 'World')]
+   *    [(1, 'Hi'), (3, 'World2'), (4, 'Hola')]
+   *    (a: [number, string], b: [number, string]) => a[0] == b[0]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to retain and/or remove
+   * @param toKeepMap
+   *    {@link Map} with elements to keep
+   * @param areEqualsComparison
+   *    {@link TPredicate2} used to know if two elements are equals or not
+   *
+   * @return {@link Map} with the elements of `sourceMap` contained in `toKeepMap`
+   */
+  static retainAll<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         toKeepMap: NullableOrUndefined<Map<K, V>>,
+                         areEqualsComparison: TPredicate2<[K, V], [K, V]>): Map<K, V>;
+
+
+  static retainAll<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         toKeepMap: NullableOrUndefined<Map<K, V>>,
+                         areEqualsComparison?: TPredicate2<[K, V], [K, V]>): Map<K, V> {
+    if (this.isEmpty(sourceMap) ||
+        this.isEmpty(toKeepMap)) {
+      return new Map<K, V>();
+    }
+    const finalAreEqualsComparison = this.getFinalAreEqualsComparison(areEqualsComparison);
+    const result = new Map<K, V>();
+    for (let [keySourceItem, valueSourceItem] of sourceMap!) {
+
+      let wasFound = false;
+      for (let [keyToKeepItem, valueToKeepItem] of toKeepMap!) {
+        if (finalAreEqualsComparison.apply([keySourceItem, valueSourceItem], [keyToKeepItem, valueToKeepItem])) {
+          wasFound = true;
+          break;
+        }
+      }
+      if (wasFound) {
+        result.set(
+          keySourceItem,
+          valueSourceItem
+        );
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Sorts the given `sourceMap` using `comparator` if provided or default ordination otherwise.
    *
    * @apiNote
@@ -1353,5 +1520,24 @@ export class MapUtil {
     }
     return result;
   }
+
+
+  /**
+   * Returns the final version of provided {@link TPredicate2} to know if two tuples of types `[K, V]` are equals.
+   *
+   * @param areEqualsComparison
+   *   {@link TPredicate2} used to know if two elements are equals or not
+   *
+   * @return provided `areEqualsComparison` if not `null` or `undefined`,
+   *         new {@link Predicate2} using {@link ObjectUtil#equals} to compare both elements contained in the tuple
+   */
+  private static getFinalAreEqualsComparison = <K, V>(areEqualsComparison?: TPredicate2<[K, V], [K, V]>): Predicate2<[K, V], [K, V]> =>
+    ObjectUtil.isNullOrUndefined(areEqualsComparison)
+      ? Predicate2.of<[K, V], [K, V]>(
+          (e1: [K, V], e2: [K, V]) =>
+            ObjectUtil.equals(e1[0], e2[0]) &&
+              ObjectUtil.equals(e1[1], e2[1])
+        )
+      : Predicate2.of<[K, V], [K, V]>(areEqualsComparison);
 
 }

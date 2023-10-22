@@ -103,7 +103,7 @@ export class PartialFunction<T, R> {
    * @param mapper
    *    {@link TFunction1} required for {@link PartialFunction#apply}
    *
-   * @return {@link PartialFunction} to convert values of @type {T} to @type {R}
+   * @return {@link PartialFunction} to convert values of type `T` to `R` one
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
@@ -139,11 +139,11 @@ export class PartialFunction<T, R> {
    * @param verifier
    *    {@link TPredicate1} used to know new {@link PartialFunction}'s domain
    * @param keyMapper
-   *    {@link TFunction1} to transform an instance of @type {T} into a @type {K} one
+   *    {@link TFunction1} to transform an instance of type `T` into `K` one
    * @param valueMapper
-   *    {@link TFunction1} to transform an instance of @type {T} into a @type {V} one
+   *    {@link TFunction1} to transform an instance of type `T` into a `V` one
    *
-   * @return {@link PartialFunction} to convert values of @type {T} to @type {[K, V]}
+   * @return {@link PartialFunction} to convert values of type `T` to the tuple `[K, V]`
    *
    * @throws {@link IllegalArgumentError} if `keyMapper` or `valueMapper` are `null` or `undefined`
    */
@@ -192,7 +192,7 @@ export class PartialFunction<T, R> {
    * @param mapper
    *    {@link TFunction2} required for {@link PartialFunction#apply}
    *
-   * @return {@link PartialFunction} to convert tuples of [@type {T1}, @type {R1}] to [@type {T2}, @type {R2}]
+   * @return {@link PartialFunction} to convert tuples of type `[T1, R1]` to `[T2, R2]`
    *
    * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
@@ -232,11 +232,11 @@ export class PartialFunction<T, R> {
    * @param verifier
    *    {@link TPredicate2} used to know new {@link PartialFunction}'s domain
    * @param keyMapper
-   *    {@link TFunction2} to transform an instance of @type {[T1, R1]} into a @type {T2} one
+   *    {@link TFunction2} to transform an instance of types `T1` and `R1` into a `T2` one
    * @param valueMapper
-   *    {@link TFunction2} to transform an instance of @type {[T1, R1]} into a @type {R2} one
+   *    {@link TFunction2} to transform an instance of types `T1` and `R1` into a `R2` one
    *
-   * @return {@link PartialFunction} to convert values of @type {[T1, R1]} to @type {[T2, R2]}
+   * @return {@link PartialFunction} to convert values of tuples `[T1, R1]` to `[T2, R2]`
    *
    * @throws {@link IllegalArgumentError} if `keyMapper` or `valueMapper` are `null` or `undefined`
    */

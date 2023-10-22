@@ -294,7 +294,7 @@ export class Predicate3<T1, T2, T3> {
 
 
   /**
-   * Evaluates this {@link Predicate3} for the given @type {T1}, @type {T2} and @type {T3} instances.
+   * Evaluates this {@link Predicate3} for the given types `T1`, `T2` and `T3` instances.
    *
    * @param t1
    *    The first input argument

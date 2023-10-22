@@ -835,7 +835,7 @@ export abstract class Try<T> {
    * @param other
    *    Returned value if current instance is an {@link Failure} one
    *
-   * @return @type {T} with value stored in {@link Success} instance, `other` otherwise
+   * @return `T` value stored in {@link Success} instance, `other` otherwise
    */
   getOrElse(other: T): T;
 
@@ -848,7 +848,7 @@ export abstract class Try<T> {
    * @param other
    *    {@link TFunction0} that produces a value to be returned if current instance is an {@link Failure} one
    *
-   * @return @type {T} with value stored in {@link Success} instance, otherwise the result of `other`
+   * @return `T` value stored in {@link Success} instance, otherwise the result of `other`
    */
   getOrElse(other: TFunction0<T>): T;
 
@@ -1314,7 +1314,7 @@ export abstract class Try<T> {
 /**
  * The successful result of a {@link Try} operation.
  * <p>
- *    Both `null` and `undefined` could be stored in the internal `value` if defined @type {T}
+ *    Both `null` and `undefined` could be stored in the internal `value` if defined type `T`
  * allows them. Methods providing {@link Optional} as result, like {@link Success#toOptional} with take into account,
  * that is, is this {@link Success} instance is empty (`value` is `null` or `undefined`), then
  * {@link Optional#empty} will be returned.

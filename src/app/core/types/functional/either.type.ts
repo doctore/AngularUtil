@@ -457,7 +457,7 @@ export abstract class Either<L, R> {
    * @param other
    *    Returned value if current instance is an {@link Left} one
    *
-   * @return @type {R} with value stored in {@link Right} instance, `other` otherwise
+   * @return `R` value stored in {@link Right} instance, `other` otherwise
    */
   getOrElse(other: R): R;
 
@@ -469,7 +469,7 @@ export abstract class Either<L, R> {
    * @param other
    *    {@link TFunction0} that produces a value to be returned
    *
-   * @return @type {R} with value stored in {@link Right} instance, otherwise the result of `other`
+   * @return `R` value stored in {@link Right} instance, otherwise the result of `other`
    */
   getOrElse(other: TFunction0<R>): R;
 

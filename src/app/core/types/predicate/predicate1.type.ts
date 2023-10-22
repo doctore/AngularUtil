@@ -240,7 +240,7 @@ export class Predicate1<T> {
 
 
   /**
-   * Evaluates this {@link Predicate1} for the given @type {T} instance.
+   * Evaluates this {@link Predicate1} for the given type `T` instance.
    *
    * @param t
    *    The input argument

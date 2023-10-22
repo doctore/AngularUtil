@@ -23,12 +23,12 @@ export class JsonUtil {
 
 
   /**
-   * Transforms the given JSON-formatted `jsonArray` into an array of instances of @type {T}.
+   * Transforms the given JSON-formatted `jsonArray` into an array of instances of type `T`.
    *
    * @param jsonArray
    *    JSON-formatted string to transform
    *
-   * @return an array of instances of type @type {T}  if the `jsonArray` could be converted,
+   * @return an array of instances of type `T` if the `jsonArray` could be converted,
    *         an empty array if `jsonArray` is `undefined`
    */
   static arrayFromJSON = <T>(jsonArray?: Nullable<string>): T[] => {
@@ -122,12 +122,12 @@ export class JsonUtil {
 
 
   /**
-   * Transforms the given JSON-formatted `json` into an instance of type @type {T}.
+   * Transforms the given JSON-formatted `json` into an instance of type `T`.
    *
    * @param json
    *    JSON-formatted string to transform
    *
-   * @return an instance of type @type {T} if the `json` could be converted.
+   * @return an instance of type `T` if the `json` could be converted.
    *
    * @throws {@link SyntaxError} if provided `json` is not a valid JSON-formatted string
    */

@@ -1345,6 +1345,194 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('removeAll', () => {
+
+    it('when given sourceArray is null, undefined or empty then empty array is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+
+      const numberComparison = (n1: number, n2: number) => n1 == n2;
+      const stringComparison = (s1: string, s2: string) => s1 == s2;
+      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+
+      expect(ArrayUtil.removeAll(null, [1, 2])).toEqual([]);
+      expect(ArrayUtil.removeAll(undefined, ['a', 'b'])).toEqual([]);
+      expect(ArrayUtil.removeAll([], [u1, u2])).toEqual([]);
+
+      expect(ArrayUtil.removeAll(null, [1, 2], numberComparison)).toEqual([]);
+      expect(ArrayUtil.removeAll(undefined, ['a', 'b'], stringComparison)).toEqual([]);
+      expect(ArrayUtil.removeAll([], [u1, u2], userComparison)).toEqual([]);
+    });
+
+
+    it('when given toRemoveArray is null, undefined or empty then given sourceArray is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+
+      const numberComparison = (n1: number, n2: number) => n1 == n2;
+      const stringComparison = (s1: string, s2: string) => s1 == s2;
+      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+
+      verifyArrays(
+        ArrayUtil.removeAll([1, 2], null),
+        [1, 2]
+      );
+      verifyArrays(
+        ArrayUtil.removeAll(['a', 'b'], undefined),
+        ['a', 'b']
+      );
+      verifyArrays(
+        ArrayUtil.removeAll([u1, u2], []),
+        [u1, u2]
+      );
+
+      verifyArrays(
+        ArrayUtil.removeAll([1, 2], null, numberComparison),
+        [1, 2]
+      );
+      verifyArrays(
+        ArrayUtil.removeAll(['a', 'b'], undefined, stringComparison),
+        ['a', 'b']
+      );
+      verifyArrays(
+        ArrayUtil.removeAll([u1, u2], [], userComparison),
+        [u1, u2]
+      );
+    });
+
+
+    it('when no areEqualsComparison is provided then default equals comparison is used', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 1, name: 'role3' } as Role;
+
+      verifyArrays(
+        ArrayUtil.removeAll([1, 2, 3], [1, 3, 4]),
+        [2]
+      );
+      verifyArrays(
+        ArrayUtil.removeAll(['a', 'b', 'c', 'f'], ['b', 'c', 'd']),
+        ['a', 'f']
+      );
+      verifyArrays(
+        ArrayUtil.removeAll([r1, r2, r3], [r1]),
+        [r2, r3]
+      );
+    });
+
+
+    it('when areEqualsComparison is provided then default it is used to compare elements', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user3');
+
+      const numberComparison = (n1: number, n2: number) => n1 == n2;
+      const stringComparison = (s1: string, s2: string) => s1.length == s2.length;
+      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+
+      verifyArrays(
+        ArrayUtil.removeAll([1, 2, 3, 4], [1, 3, 5], numberComparison),
+        [2, 4]
+      );
+      verifyArrays(
+        ArrayUtil.removeAll(['a', 'bb', 'ccc', 'dddd'], ['a', 'cc'], stringComparison),
+        ['ccc', 'dddd']
+      );
+      verifyArrays(
+        ArrayUtil.removeAll([u1, u2, u3], [u1], userComparison),
+        [u2]
+      );
+    });
+
+  });
+
+
+
+  describe('retainAll', () => {
+
+    it('when given sourceArray is null, undefined or empty then empty array is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+
+      const numberComparison = (n1: number, n2: number) => n1 == n2;
+      const stringComparison = (s1: string, s2: string) => s1 == s2;
+      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+
+      expect(ArrayUtil.retainAll(null, [1, 2])).toEqual([]);
+      expect(ArrayUtil.retainAll(undefined, ['a', 'b'])).toEqual([]);
+      expect(ArrayUtil.retainAll([], [u1, u2])).toEqual([]);
+
+      expect(ArrayUtil.retainAll(null, [1, 2], numberComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll(undefined, ['a', 'b'], stringComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll([], [u1, u2], userComparison)).toEqual([]);
+    });
+
+
+    it('when given toKeepArray is null, undefined or empty then empty array is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+
+      const numberComparison = (n1: number, n2: number) => n1 == n2;
+      const stringComparison = (s1: string, s2: string) => s1 == s2;
+      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+
+      expect(ArrayUtil.retainAll([1, 2], null )).toEqual([]);
+      expect(ArrayUtil.retainAll(['a', 'b'], undefined )).toEqual([]);
+      expect(ArrayUtil.retainAll([u1, u2], [] )).toEqual([]);
+
+      expect(ArrayUtil.retainAll([1, 2], null, numberComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll(['a', 'b'], undefined , stringComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll([u1, u2], [], userComparison)).toEqual([]);
+    });
+
+
+    it('when no areEqualsComparison is provided then default equals comparison is used', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 1, name: 'role3' } as Role;
+
+      verifyArrays(
+        ArrayUtil.retainAll([1, 2, 3], [1, 3, 4]),
+        [1, 3]
+      );
+      verifyArrays(
+        ArrayUtil.retainAll(['a', 'b', 'c', 'f'], ['b', 'c', 'd']),
+        ['b', 'c']
+      );
+      verifyArrays(
+        ArrayUtil.retainAll([r1, r2, r3], [r1, r2]),
+        [r1, r2]
+      );
+    });
+
+
+    it('when areEqualsComparison is provided then default it is used to compare elements', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user3');
+
+      const numberComparison = (n1: number, n2: number) => n1 == n2;
+      const stringComparison = (s1: string, s2: string) => s1.length == s2.length;
+      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+
+      verifyArrays(
+        ArrayUtil.retainAll([1, 2, 3, 4], [1, 3, 5], numberComparison),
+        [1, 3]
+      );
+      verifyArrays(
+        ArrayUtil.retainAll(['a', 'bb', 'ccc', 'dddd'], ['a', 'cc'], stringComparison),
+        ['a', 'bb']
+      );
+      verifyArrays(
+        ArrayUtil.retainAll([u1, u2, u3], [u1], userComparison),
+        [u1, u3]
+      );
+    });
+
+  });
+
+
+
   describe('sort', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {

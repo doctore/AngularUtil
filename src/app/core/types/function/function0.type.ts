@@ -102,7 +102,7 @@ export class Function0<R> {
 
 
   /**
-   * Applies this {@link Function0} returning an instance of @type {R}.
+   * Applies this {@link Function0} returning an instance of type `R`.
    *
    * @return new instance of R
    */

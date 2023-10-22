@@ -262,7 +262,7 @@ export class Predicate2<T1, T2> {
 
 
   /**
-   * Evaluates this {@link Predicate2} for the given @type {T1} and @type {T2} instances.
+   * Evaluates this {@link Predicate2} for the given types `T1` and `T2` instances.
    *
    * @param t1
    *    The first input argument

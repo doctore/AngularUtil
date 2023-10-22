@@ -449,7 +449,7 @@ export abstract class Validation<E, T> {
    * @param other
    *    {@link TFunction0} that produces a value to be returned
    *
-   * @return @type {T} with value stored in {@link Valid} instance, otherwise the result of `other`
+   * @return `T` value stored in {@link Valid} instance, otherwise the result of `other`
    */
   getOrElse(other: TFunction0<T>): T;
 

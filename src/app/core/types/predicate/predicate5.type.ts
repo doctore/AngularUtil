@@ -325,7 +325,7 @@ export class Predicate5<T1, T2, T3, T4, T5> {
 
 
   /**
-   * Evaluates this {@link Predicate5} for the given @type {T1}, @type {T2}, @type {T3} and @type {T4} instances.
+   * Evaluates this {@link Predicate5} for the given types `T1`, `T2`, `T3`, `T4` and `T5` instances.
    *
    * @param t1
    *    The first input argument

@@ -10,7 +10,7 @@ import {
 } from '@app-core/types/function';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Optional } from '@app-core/types/functional';
-import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
+import { Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
 import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import * as _ from 'lodash';
@@ -995,6 +995,163 @@ export class ArrayUtil {
 
 
   /**
+   * Removes from `sourceArray` all of its elements that are contained in the given array `toRemoveArray`.
+   *
+   * @apiNote
+   *    {@link ObjectUtil#equals} comparing items will be used to know if the current element should be removed or not.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3]                            [2]
+   *    [1, 3, 4]
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to retain and/or remove
+   * @param toRemoveArray
+   *    Array with elements to delete
+   *
+   * @return array with the elements of `sourceArray` not contained in `toRemoveArray`
+   */
+  static removeAll<T>(sourceArray: NullableOrUndefined<T[]>,
+                      toRemoveArray: NullableOrUndefined<T[]>): T[];
+
+
+  /**
+   *    Removes from `sourceArray` all of its elements that are contained in the given array `toRemoveArray`, based on
+   * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                       Result:
+   *    [{'x':2, 'y': 1}, {'x': 1, 'y': 0}, {'x': 1, 'y': 3}]             [{'x':2, 'y': 1}]
+   *    [{'x': 1, 'y': 23}]
+   *    (a: object, b: object) => a.x == b.x
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to retain and/or remove
+   * @param toRemoveArray
+   *    Array with elements to delete
+   * @param areEqualsComparison
+   *    {@link TPredicate2} used to know if two elements are equals or not
+   *
+   * @return array with the elements of `sourceArray` not contained in `toRemoveArray`
+   */
+  static removeAll<T>(sourceArray: NullableOrUndefined<T[]>,
+                      toRemoveArray: NullableOrUndefined<T[]>,
+                      areEqualsComparison: TPredicate2<T, T>): T[];
+
+
+  static removeAll<T>(sourceArray: NullableOrUndefined<T[]>,
+                      toRemoveArray: NullableOrUndefined<T[]>,
+                      areEqualsComparison?: TPredicate2<T, T>): T[] {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    if (this.isEmpty(toRemoveArray)) {
+      return sourceArray!;
+    }
+    const finalAreEqualsComparison = this.getFinalAreEqualsComparison(areEqualsComparison);
+    const result: T[] = [];
+    for (let sourceItem of sourceArray!) {
+      const wasFound = toRemoveArray!.find(
+        (toRemoveItem: T) =>
+          finalAreEqualsComparison.apply(
+            sourceItem,
+            toRemoveItem
+          )
+      );
+      if (!wasFound) {
+        result.push(sourceItem);
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Retains only the elements of `sourceArray` that are contained in the given array `toKeepArray`. In other words,
+   * removes from `sourceArray` all of its elements that are not contained in `toKeepArray`.
+   *
+   * @apiNote
+   *    {@link ObjectUtil#equals} comparing items will be used to know if the current element should be retained or not.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3]                            [1, 3]
+   *    [1, 3, 4]
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to retain and/or remove
+   * @param toKeepArray
+   *    Array with elements to keep
+   *
+   * @return array with the elements of `sourceArray` contained in `toKeepArray`
+   */
+  static retainAll<T>(sourceArray: NullableOrUndefined<T[]>,
+                      toKeepArray: NullableOrUndefined<T[]>): T[];
+
+
+  /**
+   *    Retains only the elements of `sourceArray` that are contained in the given array `toKeepArray`, based on
+   * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                       Result:
+   *    [{'x':2, 'y': 1}, {'x': 1, 'y': 0}, {'x': 1, 'y': 3}]             [{'x': 1, 'y': 0}, {'x': 1, 'y': 3}]
+   *    [{'x': 1, 'y': 23}]
+   *    (a: object, b: object) => a.x == b.x
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to retain and/or remove
+   * @param toKeepArray
+   *    Array with elements to keep
+   * @param areEqualsComparison
+   *    {@link TPredicate2} used to know if two elements are equals or not
+   *
+   * @return array with the elements of `sourceArray` contained in `toKeepArray`
+   */
+  static retainAll<T>(sourceArray: NullableOrUndefined<T[]>,
+                      toKeepArray: NullableOrUndefined<T[]>,
+                      areEqualsComparison: TPredicate2<T, T>): T[];
+
+
+  static retainAll<T>(sourceArray: NullableOrUndefined<T[]>,
+                      toKeepArray: NullableOrUndefined<T[]>,
+                      areEqualsComparison?: TPredicate2<T, T>): T[] {
+    if (this.isEmpty(sourceArray) ||
+        this.isEmpty(toKeepArray)) {
+      return [];
+    }
+    const finalAreEqualsComparison = this.getFinalAreEqualsComparison(areEqualsComparison);
+    const result: T[] = [];
+    for (let sourceItem of sourceArray!) {
+      const wasFound = toKeepArray!.find(
+        (toKeepItem: T) =>
+          finalAreEqualsComparison.apply(
+            sourceItem,
+            toKeepItem
+          )
+      );
+      if (wasFound) {
+        result.push(sourceItem);
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Sorts the given `sourceArray` using `comparator` if provided or default ordination otherwise.
    *
    * @apiNote
@@ -1209,5 +1366,23 @@ export class ArrayUtil {
     }
     return result;
   }
+
+
+  /**
+   * Returns the final version of provided {@link TPredicate2} to know if two elements of type `T` are equals.
+   *
+   * @param areEqualsComparison
+   *   {@link TPredicate2} used to know if two elements are equals or not
+   *
+   * @return provided `areEqualsComparison` if not `null` or `undefined`,
+   *         new {@link Predicate2} using {@link ObjectUtil#equals} to compare both elements
+   */
+  private static getFinalAreEqualsComparison = <T>(areEqualsComparison?: TPredicate2<T, T>): Predicate2<T, T> =>
+    ObjectUtil.isNullOrUndefined(areEqualsComparison)
+      ? Predicate2.of<T, T>(
+        (t1: T, t2: T) =>
+          ObjectUtil.equals(t1, t2)
+        )
+      : Predicate2.of(areEqualsComparison);
 
 }

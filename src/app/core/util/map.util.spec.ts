@@ -1854,6 +1854,218 @@ describe('MapUtil', () => {
 
 
 
+  describe('removeAll', () => {
+
+    it('when given sourceMap is null, undefined or empty then empty map is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const emptyMap = new Map<number, string>();
+
+      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+
+      expect(MapUtil.removeAll(null, sourceMap)).toEqual(emptyMap);
+      expect(MapUtil.removeAll(undefined, sourceMap)).toEqual(emptyMap);
+      expect(MapUtil.removeAll(emptyMap, sourceMap)).toEqual(emptyMap);
+
+      expect(MapUtil.removeAll(null, sourceMap, mapElementsComparison)).toEqual(emptyMap);
+      expect(MapUtil.removeAll(undefined, sourceMap, mapElementsComparison)).toEqual(emptyMap);
+      expect(MapUtil.removeAll(emptyMap, sourceMap, mapElementsComparison)).toEqual(emptyMap);
+    });
+
+
+    it('when given toRemoveMap is null, undefined or empty then given sourceMap is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const emptyMap = new Map<number, string>();
+
+      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+
+      verifyMaps(
+        MapUtil.removeAll(sourceMap, null),
+        sourceMap
+      );
+      verifyMaps(
+        MapUtil.removeAll(sourceMap, undefined),
+        sourceMap
+      );
+      verifyMaps(
+        MapUtil.removeAll(sourceMap, emptyMap),
+        sourceMap
+      );
+
+      verifyMaps(
+        MapUtil.removeAll(sourceMap, null, mapElementsComparison),
+        sourceMap
+      );
+      verifyMaps(
+        MapUtil.removeAll(sourceMap, undefined, mapElementsComparison),
+        sourceMap
+      );
+      verifyMaps(
+        MapUtil.removeAll(sourceMap, emptyMap, mapElementsComparison),
+        sourceMap
+      );
+    });
+
+
+    it('when no areEqualsComparison is provided then default equals comparison is used', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 1, name: 'role3' } as Role;
+
+      const sourceMap1 = new Map<number, string>();
+      sourceMap1.set(1, 'Hi');
+      sourceMap1.set(2, 'Hello');
+      sourceMap1.set(3, 'World');
+
+      const sourceMap2 = new Map<number, Role>();
+      sourceMap2.set(1, r1);
+      sourceMap2.set(2, r2);
+      sourceMap2.set(3, r3);
+
+      verifyMaps(
+        MapUtil.removeAll(sourceMap1, MapUtil.of([[1, 'Hi'], [3, 'World'], [4, 'Hola']])),
+        MapUtil.of([[2, 'Hello']])
+      );
+      verifyMaps(
+        MapUtil.removeAll(sourceMap2, MapUtil.of([[1, r1]])),
+        MapUtil.of([[2, r2], [3, r3]])
+      );
+    });
+
+
+    it('when areEqualsComparison is provided then default it is used to compare elements', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user3');
+
+      const sourceMap = new Map<number, User>();
+      sourceMap.set(1, u1);
+      sourceMap.set(2, u2);
+      sourceMap.set(3, u3);
+
+      const mapElementsComparison = (e1: [number, User], e2: [number, User]) => e1[1].equals(e2[1]);
+
+      verifyMaps(
+        MapUtil.removeAll(sourceMap, MapUtil.of([[1, u1]]), mapElementsComparison),
+        MapUtil.of([[2, u2]])
+      );
+    });
+
+  });
+
+
+
+  describe('retainAll', () => {
+
+    it('when given sourceMap is null, undefined or empty then empty map is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const emptyMap = new Map<number, string>();
+
+      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+
+      expect(MapUtil.retainAll(null, sourceMap)).toEqual(emptyMap);
+      expect(MapUtil.retainAll(undefined, sourceMap)).toEqual(emptyMap);
+      expect(MapUtil.retainAll(emptyMap, sourceMap)).toEqual(emptyMap);
+
+      expect(MapUtil.retainAll(null, sourceMap, mapElementsComparison)).toEqual(emptyMap);
+      expect(MapUtil.retainAll(undefined, sourceMap, mapElementsComparison)).toEqual(emptyMap);
+      expect(MapUtil.retainAll(emptyMap, sourceMap, mapElementsComparison)).toEqual(emptyMap);
+    });
+
+
+    it('when given toKeepMap is null, undefined or empty then empty map is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const emptyMap = new Map<number, string>();
+
+      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+
+      verifyMaps(
+        MapUtil.retainAll(sourceMap, null),
+        emptyMap
+      );
+      verifyMaps(
+        MapUtil.retainAll(sourceMap, undefined),
+        emptyMap
+      );
+      verifyMaps(
+        MapUtil.retainAll(sourceMap, emptyMap),
+        emptyMap
+      );
+
+      verifyMaps(
+        MapUtil.retainAll(sourceMap, null, mapElementsComparison),
+        emptyMap
+      );
+      verifyMaps(
+        MapUtil.retainAll(sourceMap, undefined, mapElementsComparison),
+        emptyMap
+      );
+      verifyMaps(
+        MapUtil.retainAll(sourceMap, emptyMap, mapElementsComparison),
+        emptyMap
+      );
+    });
+
+
+    it('when no areEqualsComparison is provided then default equals comparison is used', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 1, name: 'role3' } as Role;
+
+      const sourceMap1 = new Map<number, string>();
+      sourceMap1.set(1, 'Hi');
+      sourceMap1.set(2, 'Hello');
+      sourceMap1.set(3, 'World');
+
+      const sourceMap2 = new Map<number, Role>();
+      sourceMap2.set(1, r1);
+      sourceMap2.set(2, r2);
+      sourceMap2.set(3, r3);
+
+      verifyMaps(
+        MapUtil.retainAll(sourceMap1, MapUtil.of([[1, 'Hi'], [3, 'World'], [4, 'Hola']])),
+        MapUtil.of([[1, 'Hi'], [3, 'World']])
+      );
+      verifyMaps(
+        MapUtil.retainAll(sourceMap2, MapUtil.of([[1, r1]])),
+        MapUtil.of([[1, r1]])
+      );
+    });
+
+
+    it('when areEqualsComparison is provided then default it is used to compare elements', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user3');
+
+      const sourceMap = new Map<number, User>();
+      sourceMap.set(1, u1);
+      sourceMap.set(2, u2);
+      sourceMap.set(3, u3);
+
+      const mapElementsComparison = (e1: [number, User], e2: [number, User]) => e1[1].equals(e2[1]);
+
+      verifyMaps(
+        MapUtil.retainAll(sourceMap, MapUtil.of([[1, u1]]), mapElementsComparison),
+        MapUtil.of([[1, u1], [3, u3]])
+      );
+    });
+
+  });
+
+
+
   describe('sort', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
