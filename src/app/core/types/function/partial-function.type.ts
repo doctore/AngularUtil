@@ -217,13 +217,54 @@ export class PartialFunction<T, R> {
   }
 
 
-  static of2ToTuple<T1, T2, R1, R2>(verifier: NullableOrUndefined<FPredicate2<T1, R1>>,
-                                    keyMapper: FFunction2<T1, R1, T2>,
-                                    valueMapper: FFunction2<T1, R1, R2>,): PartialFunction<[T1, R1], [T2, R2]>;
+  static of2FromTuple<T1, T2, R>(verifier: NullableOrUndefined<FPredicate2<T1, T2>>,
+                                 mapper: FFunction2<T1, T2, R>): PartialFunction<[T1, T2], R>;
 
-  static of2ToTuple<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
-                                    keyMapper: TFunction2<T1, R1, T2>,
-                                    valueMapper: TFunction2<T1, R1, R2>,): PartialFunction<[T1, R1], [T2, R2]>;
+  static of2FromTuple<T1, T2, R>(verifier: NullableOrUndefined<TPredicate2<T1, T2>>,
+                                 mapper: TFunction2<T1, T2, R>): PartialFunction<[T1, T2], R>;
+
+  /**
+   *    Returns a new {@link PartialFunction} based on provided {@link TPredicate2} `verifier` and
+   * {@link TFunction2} `mapper`.
+   *
+   * @param verifier
+   *    {@link TPredicate2} used to know new {@link PartialFunction}'s domain
+   * @param mapper
+   *    {@link TFunction2} required for {@link PartialFunction#apply}
+   *
+   * @return {@link PartialFunction} to convert values of tuples `[T1, T2]` to `R`
+   *
+   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
+   */
+  static of2FromTuple<T1, T2, R>(verifier: NullableOrUndefined<TPredicate2<T1, T2>>,
+                                 mapper: TFunction2<T1, T2, R>): PartialFunction<[T1, T2], R> {
+    AssertUtil.notNullOrUndefined(
+      mapper,
+      'mapper must be not null and not undefined'
+    );
+    const finalVerifier = ObjectUtil.isNullOrUndefined(verifier)
+      ? Predicate2.alwaysTrue<T1, T2>()
+      : Predicate2.of(verifier);
+
+    return new PartialFunction<[T1, T2], R>(
+      Predicate1.of(
+        ([t1, t2]) => finalVerifier.apply(t1, t2)
+      ),
+      Function1.of<[T1, T2], R>(
+        ([t1, t2]) =>
+          Function2.of(mapper).apply(t1, t2)
+      )
+    );
+  }
+
+
+  static of2ToTuples<T1, T2, R1, R2>(verifier: NullableOrUndefined<FPredicate2<T1, R1>>,
+                                     keyMapper: FFunction2<T1, R1, T2>,
+                                     valueMapper: FFunction2<T1, R1, R2>,): PartialFunction<[T1, R1], [T2, R2]>;
+
+  static of2ToTuples<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
+                                     keyMapper: TFunction2<T1, R1, T2>,
+                                     valueMapper: TFunction2<T1, R1, R2>,): PartialFunction<[T1, R1], [T2, R2]>;
 
   /**
    *    Returns a new {@link PartialFunction} based on provided {@link TPredicate2} `verifier` and
@@ -240,9 +281,9 @@ export class PartialFunction<T, R> {
    *
    * @throws {@link IllegalArgumentError} if `keyMapper` or `valueMapper` are `null` or `undefined`
    */
-  static of2ToTuple<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
-                                    keyMapper: TFunction2<T1, R1, T2>,
-                                    valueMapper: TFunction2<T1, R1, R2>,): PartialFunction<[T1, R1], [T2, R2]> {
+  static of2ToTuples<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
+                                     keyMapper: TFunction2<T1, R1, T2>,
+                                     valueMapper: TFunction2<T1, R1, R2>,): PartialFunction<[T1, R1], [T2, R2]> {
     AssertUtil.notNullOrUndefined(
       keyMapper,
       'keyMapper must be not null and not undefined'

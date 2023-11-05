@@ -1,6 +1,13 @@
 import { MapUtil, ObjectUtil } from '@app-core/util';
 import { Comparator, FComparator } from '@app-core/types/comparator';
-import { FFunction0, FFunction2, FFunction3, Function0, Function2, PartialFunction } from '@app-core/types/function';
+import {
+  FFunction0,
+  FFunction2,
+  FFunction3,
+  Function0,
+  Function2,
+  PartialFunction
+} from '@app-core/types/function';
 import { Optional } from '@app-core/types/functional';
 import { FBinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate2, Predicate2 } from '@app-core/types/predicate';
@@ -56,7 +63,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but partialFunction or orElseMapper are null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<string, number>();
+      const sourceMap = new Map<string, number>();
       sourceMap.set('a', 1);
 
       const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
@@ -79,7 +86,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but defaultMapper or orElseMapper are null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<string, number>();
+      const sourceMap = new Map<string, number>();
       sourceMap.set('a', 1);
 
       const isKeyEven = (k: number, v: string) => 1 == k % 2;
@@ -98,7 +105,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and partialFunction and orElseMapper are valid then a new filtered and transformed Map is returned', () => {
-      let sourceMap = new Map<string, number>();
+      const sourceMap = new Map<string, number>();
       sourceMap.set('A', 1);
       sourceMap.set('B', 2);
       sourceMap.set('D', 4);
@@ -124,7 +131,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and and defaultMapper and orElseMapper are valid but filterPredicate is null or undefined then all elements will be transformed using defaultMapper', () => {
-      let sourceMap = new Map<string, number>();
+      const sourceMap = new Map<string, number>();
       sourceMap.set('A', 1);
       sourceMap.set('B', 2);
       sourceMap.set('D', 4);
@@ -153,7 +160,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and defaultMapper, orElseMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      let sourceMap = new Map<string, number>();
+      const sourceMap = new Map<string, number>();
       sourceMap.set('A', 1);
       sourceMap.set('B', 2);
       sourceMap.set('D', 4);
@@ -205,7 +212,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but partialFunction is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       // @ts-ignore
@@ -217,7 +224,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but mapFunction is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       const isKeyEven = (k: number, v: string) => 1 == k % 2;
@@ -231,7 +238,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
@@ -254,7 +261,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and mapFunction is valid but filterPredicate is null or undefined then all elements will be transformed', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
@@ -280,7 +287,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and mapFunction and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
@@ -426,7 +433,7 @@ describe('MapUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      let sourceMap = new Map<number, Role>();
+      const sourceMap = new Map<number, Role>();
       sourceMap.set(r1.id, r1);
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
@@ -448,7 +455,7 @@ describe('MapUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      let sourceMap = new Map<number, User>();
+      const sourceMap = new Map<number, User>();
       sourceMap.set(u1.id, u1);
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
@@ -499,7 +506,7 @@ describe('MapUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      let sourceMap = new Map<number, Role>();
+      const sourceMap = new Map<number, Role>();
       sourceMap.set(r1.id, r1);
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
@@ -515,7 +522,7 @@ describe('MapUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      let sourceMap = new Map<number, User>();
+      const sourceMap = new Map<number, User>();
       sourceMap.set(u1.id, u1);
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
@@ -531,7 +538,7 @@ describe('MapUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      let sourceMap = new Map<number, Role>();
+      const sourceMap = new Map<number, Role>();
       sourceMap.set(r1.id, r1);
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
@@ -555,7 +562,7 @@ describe('MapUtil', () => {
       const u3 = new User(3, 'user3');
       const u4 = new User(4, 'user4');
 
-      let sourceMap = new Map<number, User>();
+      const sourceMap = new Map<number, User>();
       sourceMap.set(u1.id, u1);
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
@@ -606,7 +613,7 @@ describe('MapUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      let sourceMap = new Map<number, Role>();
+      const sourceMap = new Map<number, Role>();
       sourceMap.set(r1.id, r1);
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
@@ -623,7 +630,7 @@ describe('MapUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      let sourceMap = new Map<number, User>();
+      const sourceMap = new Map<number, User>();
       sourceMap.set(u1.id, u1);
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
@@ -640,7 +647,7 @@ describe('MapUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      let sourceMap = new Map<number, Role>();
+      const sourceMap = new Map<number, Role>();
       sourceMap.set(r1.id, r1);
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
@@ -663,7 +670,7 @@ describe('MapUtil', () => {
       const u3 = new User(3, 'user3');
       const u4 = new User(4, 'user4');
 
-      let sourceMap = new Map<number, User>();
+      const sourceMap = new Map<number, User>();
       sourceMap.set(u1.id, u1);
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
@@ -705,7 +712,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but accumulator is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, number>();
+      const sourceMap = new Map<number, number>();
       sourceMap.set(1, 2);
 
       // @ts-ignore
@@ -717,7 +724,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not null then initialValue applying accumulator is returned', () => {
-      let sourceMap = new Map<number, number>();
+      const sourceMap = new Map<number, number>();
       sourceMap.set(1, 2);
       sourceMap.set(5, 6);
 
@@ -732,7 +739,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not null and there is a filter then initialValue applying accumulator only to the elements match filter is returned', () => {
-      let sourceMap = new Map<number, number>();
+      const sourceMap = new Map<number, number>();
       sourceMap.set(1, 2);
       sourceMap.set(4, 3);
       sourceMap.set(5, 6);
@@ -1273,7 +1280,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but reduceValues or partialFunction is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       const sumValues = (n1: number, n2: number) => n1 + n2;
@@ -1296,7 +1303,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but reduceValues, discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       const sumValues: FBinaryOperator<number> =
@@ -1326,7 +1333,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and reduceValues and partialFunction are valid then a new filtered and transformed Map is returned', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
       sourceMap.set(2, 'Hola');
       sourceMap.set(4, '');
@@ -1354,7 +1361,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and reduceValues, discriminatorKey and valueMapper are valid then a transformed Map is returned', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
       sourceMap.set(2, 'Hola');
       sourceMap.set(4, '');
@@ -1409,7 +1416,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but mapFunction is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       // @ts-ignore
@@ -1421,7 +1428,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has elements and mapFunction is valid then a new transformed Map is returned', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
@@ -1482,7 +1489,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       // @ts-ignore
@@ -1547,7 +1554,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       // @ts-ignore
@@ -1618,7 +1625,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       // @ts-ignore
@@ -1683,7 +1690,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap is not empty but comparator is null or undefined then an error is thrown', () => {
-      let sourceMap = new Map<number, string>();
+      const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
       // @ts-ignore
@@ -2141,7 +2148,7 @@ describe('MapUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      let sourceMap = new Map<number, Role>();
+      const sourceMap = new Map<number, Role>();
       sourceMap.set(r1.id, r1);
       sourceMap.set(r3.id, r3);
       sourceMap.set(r2.id, r2);
@@ -2165,7 +2172,7 @@ describe('MapUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      let sourceMap = new Map<number, User>();
+      const sourceMap = new Map<number, User>();
       sourceMap.set(u1.id, u1);
       sourceMap.set(u3.id, u3);
       sourceMap.set(u2.id, u2);
@@ -2233,7 +2240,7 @@ describe('MapUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      let sourceMap = new Map<number, Role>();
+      const sourceMap = new Map<number, Role>();
       sourceMap.set(r1.id, r1);
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
@@ -2257,7 +2264,7 @@ describe('MapUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      let sourceMap = new Map<number, User>();
+      const sourceMap = new Map<number, User>();
       sourceMap.set(u1.id, u1);
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
@@ -2276,6 +2283,171 @@ describe('MapUtil', () => {
   });
 
 
+
+  describe('toArray', () => {
+
+    it('when given sourceMap has no elements and partialFunction is provided then empty array is returned', () => {
+      const emptyMap = new Map<number, string>();
+
+      const keyAndValueAsStringForOddKeys: PartialFunction<[number, string], string> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 1 == k % 2,
+          ([k, v]: [number, string]) => k + '-' + v
+        );
+
+      const expectedResult: string[] = [];
+
+      expect(MapUtil.toArray(null, keyAndValueAsStringForOddKeys)).toEqual(expectedResult);
+      expect(MapUtil.toArray(undefined, keyAndValueAsStringForOddKeys)).toEqual(expectedResult);
+      expect(MapUtil.toArray(emptyMap, keyAndValueAsStringForOddKeys)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap has no elements and keyValueMapper is provided then empty array is returned', () => {
+      const emptyMap = new Map<number, string>();
+
+      const keyAndValueAsString = (k: number, v: string) => k + '-' + v;
+
+      const expectedResult: string[] = [];
+
+      expect(MapUtil.toArray(null, keyAndValueAsString)).toEqual(expectedResult);
+      expect(MapUtil.toArray(undefined, keyAndValueAsString)).toEqual(expectedResult);
+      expect(MapUtil.toArray(emptyMap, keyAndValueAsString)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap has no elements and keyValueMapper and filterPredicate are provided then empty array is returned', () => {
+      const emptyMap = new Map<number, string>();
+
+      const keyAndValueAsString = (k: number, v: string) => k + '-' + v;
+      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
+
+      const expectedResult: string[] = [];
+
+      expect(MapUtil.toArray(null, keyAndValueAsString, isKeyOdd)).toEqual(expectedResult);
+      expect(MapUtil.toArray(undefined, keyAndValueAsString, isKeyOdd)).toEqual(expectedResult);
+      expect(MapUtil.toArray(emptyMap, keyAndValueAsString, isKeyOdd)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMap is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+
+      // @ts-ignore
+      expect(() => MapUtil.toArray(sourceMap, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.toArray(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is not empty but keyValueMapper is null or undefined then an error is thrown', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+
+      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
+
+      // @ts-ignore
+      expect(() => MapUtil.toArray(sourceMap, null, isKeyOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.toArray(sourceMap, undefined, isKeyOdd)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const keyAndValueAsStringForOddKeys: PartialFunction<[number, string], string> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 1 == k % 2,
+          ([k, v]: [number, string]) => k + '-' + v
+        );
+
+      const expectedResult: string[] = ['1-Hi', '3-World'];
+
+      verifyArrays(
+        MapUtil.toArray(sourceMap, keyAndValueAsStringForOddKeys),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and only a valid keyValueMapper is provided then all elements will be transformed using keyValueMapper', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const keyAndValueAsString: Function2<number, string, string> =
+        Function2.of((k: number, v: string) => k + '-' + v);
+
+      const expectedResult: string[] = ['1-Hi', '2-Hello', '3-World'];
+
+      verifyArrays(
+        MapUtil.toArray(sourceMap, keyAndValueAsString),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and keyValueMapper is valid but filterPredicate is null or undefined then all elements will be transformed using keyValueMapper', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const keyAndValueAsString: FFunction2<number, string, string> =
+        (k: number, v: string) => k + '-' + v;
+
+      const expectedResult: string[] = ['1-Hi', '2-Hello', '3-World'];
+
+      verifyArrays(
+        // @ts-ignore
+        MapUtil.toArray(sourceMap, keyAndValueAsString, null),
+        expectedResult
+      );
+
+      verifyArrays(
+        MapUtil.toArray(sourceMap, keyAndValueAsString, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceMap has elements and keyValueMapper and filterPredicate are valid then a new filtered and transformed array is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'Hi');
+      sourceMap.set(2, 'Hello');
+      sourceMap.set(3, 'World');
+
+      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
+      const keyAndValueAsString = (k: number, v: string) => k + '-' + v;
+
+      const expectedResult: string[] = ['1-Hi', '3-World'];
+
+      verifyArrays(
+        MapUtil.toArray(sourceMap, keyAndValueAsString, isKeyOdd),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+
+  function verifyArrays(actualArray: any[],
+                        expectedArray: any[]) {
+    expect(expectedArray.length).toEqual(actualArray.length);
+    if (0 < expectedArray.length) {
+      for (let i = 0; i < expectedArray.length; i++) {
+        expect(expectedArray[i]).toEqual(actualArray[i]);
+      }
+    }
+  }
 
 
   function verifyMaps(actualMap: Map<any, any>,

@@ -802,7 +802,7 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.of2ToTuple(
+        : PartialFunction.of2ToTuples(
             filterPredicate,
             <TFunction2<K1, V1, K2>>partialFunctionOrDiscriminatorKey,
             <TFunction2<K1, V1, V2>>valueMapper
@@ -923,7 +923,7 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.of2ToTuple(
+        : PartialFunction.of2ToTuples(
             Predicate2.alwaysTrue<K1, V1>(),
             <TFunction2<K1, V1, K2>>partialFunctionOrDiscriminatorKey,
             <TFunction2<K1, V1, V2>>valueMapper
@@ -1515,6 +1515,118 @@ export class MapUtil {
       for (let [key, value] of sourceMap!) {
         if (finalFilterPredicate.apply(key, value)) {
           result.set(key, value);
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Converts the given {@link Map} `sourceMap` in to an array using provided `keyValueMapper`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                          Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]              ['1-Hi', '2-Hello', '3-World']
+   *    (k: number, v: string) => k + '-' + v
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to transform and include in the returned array
+   * @param keyValueMapper
+   *    {@link TFunction2} to transform elements of `sourceMap` into elements of the returned array
+   *
+   * @return array applying `keyValueMapper` to each element of `sourceMap`
+   *
+   * @throws {@link IllegalArgumentError} if `keyValueMapper` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                          keyValueMapper: TFunction2<K, V, R>): R[];
+
+
+  /**
+   *    Converts the given {@link Map} `sourceMap` in to an array using provided `keyValueMapper`, only with
+   * the elements that satisfy the {@link TPredicate2} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                    Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                        ['3-World']
+   *    (k: number, v: string) => k + '-' + v
+   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to transform and include in the returned array
+   * @param keyValueMapper
+   *    {@link TFunction2} to transform elements of `sourceMap` into elements of the returned array
+   * @param filterPredicate
+   *    {@link TPredicate2} used to filter values from `sourceMap` that will be added in the returned array
+   *
+   * @return array applying the given `keyValueMapper` to each element of `sourceMap` that verifies `filterPredicate`
+   *
+   * @throws {@link IllegalArgumentError} if `keyValueMapper` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                          keyValueMapper: TFunction2<K, V, R>,
+                          filterPredicate?: TPredicate2<K, V>): R[];
+
+
+  /**
+   * Converts the given {@link Map} `sourceMap` in to an array using provided {@link PartialFunction} `partialFunction`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                    Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                        ['3-World']
+   *    PartialFunction.of(
+   *      (k: number, v: string) => 1 == k % 2 && 2 < v.length(),
+   *      (k: number, v: string) => k + '-' + v
+   *    )
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to transform and include in the returned array
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform elements of `sourceMap`
+   *
+   * @return array applying `partialFunction` to each element of `sourceMap`
+   *
+   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                          partialFunction: PartialFunction<[K, V], R>): R[];
+
+
+  static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                          partialFunctionOrKeyValueMapper: PartialFunction<[K, V], R> | TFunction2<K, V, R>,
+                          filterPredicate?: TPredicate2<K, V>): R[] {
+    const result: R[] = [];
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        partialFunctionOrKeyValueMapper,
+        'partialFunctionOrKeyValueMapper must be not null and not undefined'
+      );
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrKeyValueMapper)
+        ? <PartialFunction<[K, V], R>>partialFunctionOrKeyValueMapper
+        : PartialFunction.of2FromTuple(
+            filterPredicate,
+            <TFunction2<K, V, R>>partialFunctionOrKeyValueMapper
+          );
+      for (let [key, value] of sourceMap!) {
+        if (finalPartialFunction.isDefinedAt([key, value])) {
+          result.push(
+            finalPartialFunction.apply(
+              [key, value]
+            )
+          );
         }
       }
     }

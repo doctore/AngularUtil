@@ -95,7 +95,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and partialFunction and orElseMapper are valid then a new filtered and transformed array is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [1, 2, 3, 6];
 
       const plus1ForOdd: PartialFunction<number, number> =
         PartialFunction.of(
@@ -115,7 +115,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and defaultMapper and orElseMapper are valid but filterPredicate is null or undefined then all elements will be transformed using defaultMapper', () => {
-      let sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [1, 2, 3, 6];
 
       const plus1: FFunction1<number, number> = (n: number) => 1 + n;
       const multiply2: Function1<number, number> =
@@ -137,7 +137,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and defaultMapper, orElseMapper and filterPredicate are valid then a new filtered and transformed array is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [1, 2, 3, 6];
 
       const isOdd = (n: number) => 1 == n % 2;
       const plus1 = (n: number) => 1 + n;
@@ -208,7 +208,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed array is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [1, 2, 3, 6];
       const multiply2AndStringForEven: PartialFunction<number, string> =
         PartialFunction.of(
           (n: number) => 0 == n % 2,
@@ -225,7 +225,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and mapFunction is valid but filterPredicate is null or undefined then all elements will be transformed', () => {
-      let sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [1, 2, 3, 6];
       const multiply2AndString: FFunction1<number, string> =
         (n: number) => '' + (2 * n);
 
@@ -245,7 +245,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and mapFunction and filterPredicate are valid then a new filtered and transformed array is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [1, 2, 3, 6];
 
       const isEven = (n: number) => 0 == n % 2;
       const multiply2AndString = (n: number) => '' + (2 * n);
@@ -634,7 +634,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
 
       const numberAsKeyAndPlus1AsValueForOdd: PartialFunction<number, [number, number]> =
         PartialFunction.of(
@@ -654,7 +654,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
 
       const sameValue: Function1<number, number> =
         Function1.of((n: number) => n);
@@ -682,7 +682,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
 
       const isOdd = (n: number) => 1 == n % 2;
       const sameValue = (n: number) => n;
@@ -763,7 +763,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
 
       const sameValue: Function1<number, number> =
         Function1.of((n: number) => n);
@@ -804,7 +804,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
 
       const lessThan10 = (n: number) => 10 > n;
       const sameValue = (n: number) => n;
@@ -922,7 +922,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and reduceValues and partialFunction are valid then a new filtered and transformed Map is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 7, 11, 12];
+      const sourceArray: number[] = [1, 2, 3, 6, 7, 11, 12];
 
       const sumValues = (n1: number, n2: number) => n1 + n2;
       const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<number, [number, number]> =
@@ -944,7 +944,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and reduceValues, discriminatorKey and valueMapper are valid then a transformed Map is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 7];
+      const sourceArray: number[] = [1, 2, 3, 6, 7];
 
       const sumValues = (n1: number, n2: number) => n1 + n2;
       const mod3 = (n: number) => n % 3;
@@ -1032,7 +1032,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and mapFunction is valid then a new transformed array is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [1, 2, 3, 6];
 
       const toString = (n: number) => '' + n;
       const plus2: Function1<number, number> =
@@ -1749,7 +1749,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
 
       const numberAsKeyAndPlus1AsValueForOdd: PartialFunction<number, [number, number]> =
         PartialFunction.of(
@@ -1769,7 +1769,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and only a valid discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
 
       const sameValue: Function1<number, number> =
         Function1.of((n: number) => n);
@@ -1788,7 +1788,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
 
       const sameValue: Function1<number, number> =
         Function1.of((n: number) => n);
@@ -1816,7 +1816,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      let sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
 
       const isOdd = (n: number) => 1 == n % 2;
       const sameValue = (n: number) => n;
