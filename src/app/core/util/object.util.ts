@@ -98,7 +98,7 @@ export class ObjectUtil {
    *
    *   // Will return { id: 10, name: 'user1' }
    *   ObjectUtil.copyProperties(
-   *      new User(10, 'user1'),
+   *      new User(10, 'user1', 31),
    *      'id',
    *      'name'
    *   );
@@ -150,7 +150,7 @@ export class ObjectUtil {
    *
    *   // Will return Optional({ id: 10, name: 'user1' })
    *   ObjectUtil.copyPropertiesOptional(
-   *      new User(10, 'user1'),
+   *      new User(10, 'user1', 31),
    *      'id',
    *      'name'
    *   );
