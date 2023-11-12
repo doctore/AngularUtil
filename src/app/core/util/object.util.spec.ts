@@ -22,7 +22,7 @@ describe('ObjectUtil', () => {
 
   describe('coalesce', () => {
 
-    it('when given valuesToVerify are null, undefined then undefined is returned', () => {
+    it('when given valuesToVerify are null or undefined then undefined is returned', () => {
       expect(ObjectUtil.coalesce(null)).toBeUndefined();
       expect(ObjectUtil.coalesce(undefined)).toBeUndefined();
     });
@@ -48,9 +48,9 @@ describe('ObjectUtil', () => {
 
   describe('coalesceOptional', () => {
 
-    it('when given valuesToVerify are null, undefined then empty Optional is returned', () => {
-      expect(ObjectUtil.coalesceOptional(null).isPresent()).toBeFalse()
-      expect(ObjectUtil.coalesceOptional(undefined).isPresent()).toBeFalse()
+    it('when given valuesToVerify are null or undefined then empty Optional is returned', () => {
+      expect(ObjectUtil.coalesceOptional(null).isPresent()).toBeFalse();
+      expect(ObjectUtil.coalesceOptional(undefined).isPresent()).toBeFalse();
     });
 
 
@@ -58,8 +58,8 @@ describe('ObjectUtil', () => {
       let undefinedVariable;
       const nullVariable = null;
 
-      expect(ObjectUtil.coalesceOptional(null, undefined, null, undefined).isPresent()).toBeFalse()
-      expect(ObjectUtil.coalesceOptional(undefined, nullVariable, undefinedVariable, null).isPresent()).toBeFalse()
+      expect(ObjectUtil.coalesceOptional(null, undefined, null, undefined).isPresent()).toBeFalse();
+      expect(ObjectUtil.coalesceOptional(undefined, nullVariable, undefinedVariable, null).isPresent()).toBeFalse();
     });
 
 
@@ -72,6 +72,95 @@ describe('ObjectUtil', () => {
 
       expect(optional2.isPresent()).toBeTrue();
       expect(optional2.get()).toEqual(15);
+    });
+
+  });
+
+
+
+  describe('copyProperties', () => {
+
+    it('when given sourceObject is null or undefined then undefined is returned', () => {
+      // @ts-ignore
+      expect(ObjectUtil.copyProperties(null, 'id')).toBeUndefined();
+      // @ts-ignore
+      expect(ObjectUtil.copyProperties(undefined, 'id')).toBeUndefined();
+    });
+
+
+    it('when given propertiesToCopy has no elements then undefined is returned', () => {
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user name', [role]);
+
+      expect(ObjectUtil.copyProperties(user, null)).toBeUndefined();
+      expect(ObjectUtil.copyProperties(user, undefined)).toBeUndefined();
+      expect(ObjectUtil.copyProperties(user)).toBeUndefined();
+    });
+
+
+    it('when given sourceObject and propertiesToCopy are valid then a new object containing required properties of sourceObject is returned', () => {
+      const role1 = { id: 10, name: 'role1 name' } as Role;
+      const role2 = { id: 11, name: 'role2 name' } as Role;
+      const user = new User(10, 'user name', [role1, role2]);
+
+      const expectedWithIdAndName = {
+        id: user.id,
+        name: user.name
+      };
+      const expectedWithIdAndRoles = {
+        id: user.id,
+        roles: user.roles
+      };
+
+      expect(ObjectUtil.copyProperties(user, 'id', 'name')).toEqual(expectedWithIdAndName);
+      expect(ObjectUtil.copyProperties(user, 'id', 'roles')).toEqual(expectedWithIdAndRoles);
+    });
+
+  });
+
+
+
+  describe('copyPropertiesOptional', () => {
+
+    it('when given sourceObject is null or undefined then empty Optional is returned', () => {
+      // @ts-ignore
+      expect(ObjectUtil.copyPropertiesOptional(null, 'id').isPresent()).toBeFalse();
+      // @ts-ignore
+      expect(ObjectUtil.copyPropertiesOptional(undefined, 'id').isPresent()).toBeFalse();
+    });
+
+
+    it('when given propertiesToCopy has no elements then empty Optional is returned', () => {
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user name', [role]);
+
+      expect(ObjectUtil.copyPropertiesOptional(user, null).isPresent()).toBeFalse();
+      expect(ObjectUtil.copyPropertiesOptional(user, undefined).isPresent()).toBeFalse();
+      expect(ObjectUtil.copyPropertiesOptional(user).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceObject and propertiesToCopy are valid then an Optional with a new object containing required properties of sourceObject is returned', () => {
+      const role1 = { id: 10, name: 'role1 name' } as Role;
+      const role2 = { id: 11, name: 'role2 name' } as Role;
+      const user = new User(10, 'user name', [role1, role2]);
+
+      const expectedWithIdAndName = {
+        id: user.id,
+        name: user.name
+      };
+      const expectedWithIdAndRoles = {
+        id: user.id,
+        roles: user.roles
+      };
+
+      const resultWithIdAndName = ObjectUtil.copyPropertiesOptional(user, 'id', 'name');
+      expect(resultWithIdAndName.isPresent()).toBeTrue();
+      expect(resultWithIdAndName.get()).toEqual(expectedWithIdAndName);
+
+      const resultWithIdAndRoles = ObjectUtil.copyPropertiesOptional(user, 'id', 'roles');
+      expect(resultWithIdAndRoles.isPresent()).toBeTrue();
+      expect(resultWithIdAndRoles.get()).toEqual(expectedWithIdAndRoles);
     });
 
   });
@@ -130,9 +219,11 @@ describe('ObjectUtil', () => {
 
 
     it('when comparing objects with equals method then the result of such method is returned', () => {
-      const user1 = new User(10, 'user1');
-      const user2 = new User(11, 'user2');
-      const user3 = new User(10, 'user3');
+      const role = { id: 10, name: 'role name' } as Role;
+
+      const user1 = new User(10, 'user1', [role]);
+      const user2 = new User(11, 'user2', [role]);
+      const user3 = new User(10, 'user3', [role]);
 
       expect(ObjectUtil.equals(user1, user2)).toBeFalse();
       expect(ObjectUtil.equals(user2, user1)).toBeFalse();
@@ -261,10 +352,13 @@ describe('ObjectUtil', () => {
   class User {
     private _id: number;
     private _name: string;
+    private _roles: Role[];
 
-    constructor(id: number, name: string) {
+
+    constructor(id: number, name: string, roles: Role[]) {
       this._id = id;
       this._name = name;
+      this._roles = roles;
     }
 
     get id(): number {
@@ -279,6 +373,13 @@ describe('ObjectUtil', () => {
     }
     set name(name: string) {
       this._name = name;
+    }
+
+    get roles(): Role[] {
+      return this._roles;
+    }
+    set roles(roles: Role[]) {
+      this._roles = roles;
     }
 
     equals = (other?: User | null): boolean =>

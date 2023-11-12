@@ -78,6 +78,110 @@ export class ObjectUtil {
 
 
   /**
+   *    Using provided `sourceObject` returns a new object containing the property-value pairs that match with given
+   * array of properties `propertiesToCopy`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   class User {
+   *     public id: number;
+   *     public name: string;
+   *     public age: number;
+   *
+   *     constructor(id: number, name: string, age: number) {
+   *       this.id = id;
+   *       this.name = name;
+   *       this.age = age;
+   *     }
+   *   }
+   *
+   *   // Will return { id: 10, name: 'user1' }
+   *   ObjectUtil.copyProperties(
+   *      new User(10, 'user1'),
+   *      'id',
+   *      'name'
+   *   );
+   * </pre>
+   *
+   * @param sourceObject
+   *    Instance with the property values to copy
+   * @param propertiesToCopy
+   *    Array of the property to copy in the returned object
+   *
+   * @return new object containing the property-value pairs that match with `propertiesToCopy`, included in `sourceObject`,
+   *         `undefined` if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements.
+   */
+  static copyProperties = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
+                                                 ...propertiesToCopy: NullableOrUndefined<K>[]): OrUndefined<Pick<T, K>> => {
+    if (this.isNullOrUndefined(sourceObject) ||
+        ArrayUtil.isEmpty(propertiesToCopy) ||
+        (1 == propertiesToCopy.length) && (this.isNullOrUndefined(propertiesToCopy[0]))) {
+      return undefined;
+    }
+    const result = {} as Pick<T, K>;
+    for (let property of propertiesToCopy!) {
+      if (this.nonNullOrUndefined(property)) {
+        result[property] = _.cloneDeep(sourceObject![property]);
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Using provided `sourceObject` returns an {@link Optional} containing a new object with the property-value pairs
+   * that match with given array of properties `propertiesToCopy`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   class User {
+   *     public id: number;
+   *     public name: string;
+   *     public age: number;
+   *
+   *     constructor(id: number, name: string, age: number) {
+   *       this.id = id;
+   *       this.name = name;
+   *       this.age = age;
+   *     }
+   *   }
+   *
+   *   // Will return Optional({ id: 10, name: 'user1' })
+   *   ObjectUtil.copyPropertiesOptional(
+   *      new User(10, 'user1'),
+   *      'id',
+   *      'name'
+   *   );
+   * </pre>
+   *
+   * @param sourceObject
+   *    Instance with the property values to copy
+   * @param propertiesToCopy
+   *    Array of the property to copy in the returned object
+   *
+   * @return {@link Optional} new object containing the property-value pairs that match with `propertiesToCopy`, included in `sourceObject`,
+   *         {@link Optional#empty} if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements.
+   */
+  static copyPropertiesOptional = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
+                                                         ...propertiesToCopy: NullableOrUndefined<K>[]): Optional<Pick<T, K>> => {
+    if (this.isNullOrUndefined(sourceObject) ||
+        ArrayUtil.isEmpty(propertiesToCopy) ||
+        (1 == propertiesToCopy.length) && (this.isNullOrUndefined(propertiesToCopy[0]))) {
+      return Optional.empty<Pick<T, K>>();
+    }
+    const result = {} as Pick<T, K>;
+    for (let property of propertiesToCopy!) {
+      if (this.nonNullOrUndefined(property)) {
+        result[property] = _.cloneDeep(sourceObject![property]);
+      }
+    }
+    return Optional.of<Pick<T, K>>(result);
+  }
+
+
+  /**
    * Returns `true` if `a` is equals to `b`, `false` otherwise.
    *
    * @apiNote
@@ -114,7 +218,7 @@ export class ObjectUtil {
    *   );
    *
    *  // Will return false
-   *   ObjectUtil.equals(
+   *  ObjectUtil.equals(
    *      new User(10, 'user1'),
    *      new User(11, 'user1')
    *   );
