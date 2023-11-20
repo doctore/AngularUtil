@@ -312,10 +312,10 @@ export class MapUtil {
 
 
   /**
-   * Counts the number of elements in `sourceMaps` which satisfy the `filterPredicate`.
+   * Counts the number of elements in `sourceMap` which satisfy the `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then the size of `sourceMaps` will be returned.
+   *    If `filterPredicate` is `null` or `undefined` then the size of `sourceMap` will be returned.
    *
    * <pre>
    * Example:
