@@ -298,16 +298,15 @@ describe('ArrayUtil', () => {
 
 
 
-  describe('dropWhile', () => {
+  describe('filter', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       const emptyArray: Role[] = [];
-      const isEven: Predicate1<Role> =
-        Predicate1.of((role: Role) => 0 == role.id % 2);
+      const isIdEven = (role: Role) => 0 == role.id % 2;
 
-      expect(ArrayUtil.dropWhile(null, isEven)).toEqual(emptyArray);
-      expect(ArrayUtil.dropWhile(undefined, isEven)).toEqual(emptyArray);
-      expect(ArrayUtil.dropWhile(emptyArray, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.filter(null, isIdEven)).toEqual(emptyArray);
+      expect(ArrayUtil.filter(undefined, isIdEven)).toEqual(emptyArray);
+      expect(ArrayUtil.filter(emptyArray, isIdEven)).toEqual(emptyArray);
     });
 
 
@@ -318,12 +317,74 @@ describe('ArrayUtil', () => {
 
       verifyArrays(
         // @ts-ignore
-        ArrayUtil.dropWhile([r1, r2, r3], undefined),
+        ArrayUtil.filter([r1, r2, r3], undefined),
         [r1, r2, r3]
       );
       verifyArrays(
         // @ts-ignore
-        ArrayUtil.dropWhile([3, 5, 2], null),
+        ArrayUtil.filter([3, 5, 2], null),
+        [3, 5, 2]
+      );
+    });
+
+
+    it('using interfaces, when given sourceArray has elements then filtered array is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const isIdOdd = (role: Role) => 1 == role.id % 2;
+
+      verifyArrays(
+        ArrayUtil.filter([r1, r2, r3], isIdOdd),
+        [r1, r3]
+      );
+    });
+
+
+    it('using classes, when given sourceArray has elements then filtered array is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const isIdOdd = (user: User) => 1 == user.id % 2;
+
+      verifyArrays(
+        ArrayUtil.filter([u1, u2, u3], isIdOdd),
+        [u1, u3]
+      );
+    });
+
+  });
+
+
+
+  describe('filterNot', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: Role[] = [];
+      const isEven: Predicate1<Role> =
+        Predicate1.of((role: Role) => 0 == role.id % 2);
+
+      expect(ArrayUtil.filterNot(null, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.filterNot(undefined, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.filterNot(emptyArray, isEven)).toEqual(emptyArray);
+    });
+
+
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then sourceArray is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      verifyArrays(
+        // @ts-ignore
+        ArrayUtil.filterNot([r1, r2, r3], undefined),
+        [r1, r2, r3]
+      );
+      verifyArrays(
+        // @ts-ignore
+        ArrayUtil.filterNot([3, 5, 2], null),
         [3, 5, 2]
       );
     });
@@ -338,7 +399,7 @@ describe('ArrayUtil', () => {
         (role: NullableOrUndefined<Role>) => 1 == role!.id % 2;
 
       verifyArrays(
-        ArrayUtil.dropWhile([r1, r2, r3], isIdOdd),
+        ArrayUtil.filterNot([r1, r2, r3], isIdOdd),
         [r2]
       );
     });
@@ -352,7 +413,7 @@ describe('ArrayUtil', () => {
       const isIdOdd = (user: User) => 1 == user.id % 2;
 
       verifyArrays(
-        ArrayUtil.dropWhile([u1, u2, u3], isIdOdd),
+        ArrayUtil.filterNot([u1, u2, u3], isIdOdd),
         [u2]
       );
     });
@@ -1645,67 +1706,6 @@ describe('ArrayUtil', () => {
       verifyArrays(
         ArrayUtil.sort([u3, u1, u2], comparator),
         [u3, u2, u1]
-      );
-    });
-
-  });
-
-
-
-  describe('takeWhile', () => {
-
-    it('when given sourceArray has no elements then empty array is returned', () => {
-      const emptyArray: Role[] = [];
-      const isIdEven = (role: Role) => 0 == role.id % 2;
-
-      expect(ArrayUtil.takeWhile(null, isIdEven)).toEqual(emptyArray);
-      expect(ArrayUtil.takeWhile(undefined, isIdEven)).toEqual(emptyArray);
-      expect(ArrayUtil.takeWhile(emptyArray, isIdEven)).toEqual(emptyArray);
-    });
-
-
-    it('when given sourceArray is not empty but filterPredicate is null or undefined then sourceArray is returned', () => {
-      const r1 = { id: 1, name: 'role1' } as Role;
-      const r2 = { id: 2, name: 'role2' } as Role;
-      const r3 = { id: 3, name: 'role3' } as Role;
-
-      verifyArrays(
-        // @ts-ignore
-        ArrayUtil.takeWhile([r1, r2, r3], undefined),
-        [r1, r2, r3]
-      );
-      verifyArrays(
-        // @ts-ignore
-        ArrayUtil.takeWhile([3, 5, 2], null),
-        [3, 5, 2]
-      );
-    });
-
-
-    it('using interfaces, when given sourceArray has elements then filtered array is returned', () => {
-      const r1 = { id: 1, name: 'role1' } as Role;
-      const r2 = { id: 2, name: 'role2' } as Role;
-      const r3 = { id: 3, name: 'role3' } as Role;
-
-      const isIdOdd = (role: Role) => 1 == role.id % 2;
-
-      verifyArrays(
-        ArrayUtil.takeWhile([r1, r2, r3], isIdOdd),
-        [r1, r3]
-      );
-    });
-
-
-    it('using classes, when given sourceArray has elements then filtered array is returned', () => {
-      const u1 = new User(1, 'user1');
-      const u2 = new User(2, 'user2');
-      const u3 = new User(3, 'user3');
-
-      const isIdOdd = (user: User) => 1 == user.id % 2;
-
-      verifyArrays(
-        ArrayUtil.takeWhile([u1, u2, u3], isIdOdd),
-        [u1, u3]
       );
     });
 

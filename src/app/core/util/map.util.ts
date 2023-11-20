@@ -352,6 +352,47 @@ export class MapUtil {
 
 
   /**
+   *    Returns a new {@link Map} using `sourceMap` as source, adding from the result the elements that verify the
+   * given {@link TPredicate2} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                  Result:
+   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(3, 'World')]
+   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} to filter
+   * @param filterPredicate
+   *    {@link TPredicate2} used to find given elements to filter
+   *
+   * @return empty {@link Map} if `sourceMap` has no elements or no one verifies provided `filterPredicate`,
+   *         otherwise a new {@link Map} with the elements of `sourceMap` which verify `filterPredicate`
+   */
+  static filter = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         filterPredicate: TPredicate2<K, V>): Map<K, V> => {
+    const result = new Map<K, V>();
+    if (!this.isEmpty(sourceMap)) {
+      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+        ? Predicate2.alwaysTrue<K, V>()
+        : Predicate2.of(filterPredicate);
+
+      for (let [key, value] of sourceMap!) {
+        if (finalFilterPredicate.apply(key, value)) {
+          result.set(key, value);
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
    *    Returns a new {@link Map} using `sourceMap` as source, removing from the result the elements that verify the
    * given {@link TPredicate2} `filterPredicate`.
    *
@@ -374,14 +415,13 @@ export class MapUtil {
    * @return empty {@link Map} if `sourceMap` has no elements,
    *         otherwise a new {@link Map} with the elements of `sourceMap` which do not verify `filterPredicate`
    */
-  static dropWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+  static filterNot = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                             filterPredicate: TPredicate2<K, V>): Map<K, V> => {
-
     const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
       ? Predicate2.alwaysFalse<K, V>()
       : Predicate2.of(filterPredicate);
 
-    return this.takeWhile(
+    return this.filter(
       sourceMap,
       finalFilterPredicate.not()
     );
@@ -1518,47 +1558,6 @@ export class MapUtil {
       : new Map(
           clonedSourceMapAsArray!.sort()
         );
-  }
-
-
-  /**
-   *    Returns a new {@link Map} using `sourceMap` as source, adding from the result the elements that verify the
-   * given {@link TPredicate2} `filterPredicate`.
-   *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
-   *
-   * <pre>
-   * Example:
-   *
-   *   Parameters:                                                  Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(3, 'World')]
-   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
-   * </pre>
-   *
-   * @param sourceMap
-   *    {@link Map} to filter
-   * @param filterPredicate
-   *    {@link TPredicate2} used to find given elements to filter
-   *
-   * @return empty {@link Map} if `sourceMap` has no elements or no one verifies provided `filterPredicate`,
-   *         otherwise a new {@link Map} with the elements of `sourceMap` which verify `filterPredicate`
-   */
-  static takeWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                            filterPredicate: TPredicate2<K, V>): Map<K, V> => {
-    const result = new Map<K, V>();
-    if (!this.isEmpty(sourceMap)) {
-      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-        ? Predicate2.alwaysTrue<K, V>()
-        : Predicate2.of(filterPredicate);
-
-      for (let [key, value] of sourceMap!) {
-        if (finalFilterPredicate.apply(key, value)) {
-          result.set(key, value);
-        }
-      }
-    }
-    return result;
   }
 
 

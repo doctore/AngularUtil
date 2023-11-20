@@ -265,6 +265,44 @@ export class ArrayUtil {
 
 
   /**
+   *    Returns a new array using `sourceArray` as source, adding from the result the elements that verify the
+   * given {@link TPredicate1} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                                                      Result:
+   *    [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}]         [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
+   *    (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter
+   *
+   * @return empty array if `sourceArray` has no elements or no one verifies provided `filterPredicate`,
+   *         otherwise a new array with the elements of `sourceArray` which verify `filterPredicate`
+   */
+  static filter = <T>(sourceArray: NullableOrUndefined<T[]>,
+                      filterPredicate: TPredicate1<T>): T[] => {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      ? Predicate1.alwaysTrue<T>()
+      : Predicate1.of(filterPredicate);
+
+    return sourceArray!.filter(
+      (obj: T) => finalFilterPredicate.apply(obj)
+    );
+  }
+
+
+  /**
    *    Returns a new array using `sourceArray` as source, removing from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *
@@ -287,14 +325,13 @@ export class ArrayUtil {
    * @return empty array if `sourceArray` has no elements,
    *         otherwise a new array with the elements of `sourceArray` which do not verify `filterPredicate`
    */
-  static dropWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
+  static filterNot = <T>(sourceArray: NullableOrUndefined<T[]>,
                          filterPredicate: TPredicate1<T>): T[] => {
-
     const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
       ? Predicate1.alwaysFalse<T>()
       : Predicate1.of(filterPredicate);
 
-    return this.takeWhile(
+    return this.filter(
       sourceArray,
       finalFilterPredicate.not()
     );
@@ -1231,44 +1268,6 @@ export class ArrayUtil {
             .getComparator()
         )
       : clonedSourceArray!.sort();
-  }
-
-
-  /**
-   *    Returns a new array using `sourceArray` as source, adding from the result the elements that verify the
-   * given {@link TPredicate1} `filterPredicate`.
-   *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
-   *
-   * <pre>
-   * Example:
-   *
-   *   Parameters:                                                                      Result:
-   *    [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}]         [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
-   *    (user: NullableOrUndefined<User>) => 1 == user!.id % 2
-   * </pre>
-   *
-   * @param sourceArray
-   *    Array to filter
-   * @param filterPredicate
-   *    {@link TPredicate1} used to find given elements to filter
-   *
-   * @return empty array if `sourceArray` has no elements or no one verifies provided `filterPredicate`,
-   *         otherwise a new array with the elements of `sourceArray` which verify `filterPredicate`
-   */
-  static takeWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
-                         filterPredicate: TPredicate1<T>): T[] => {
-    if (this.isEmpty(sourceArray)) {
-      return [];
-    }
-    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-      ? Predicate1.alwaysTrue<T>()
-      : Predicate1.of(filterPredicate);
-
-    return sourceArray!.filter(
-      (obj: T) => finalFilterPredicate.apply(obj)
-    );
   }
 
 

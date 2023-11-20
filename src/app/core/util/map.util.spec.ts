@@ -427,16 +427,16 @@ describe('MapUtil', () => {
 
 
 
-  describe('dropWhile', () => {
+  describe('filter', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       const emptyMap = new Map<number, number>();
       const areKeyValueEven: Predicate2<number, number> =
         Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.dropWhile(null, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.dropWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.dropWhile(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.filter(null, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.filter(undefined, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.filter(emptyMap, areKeyValueEven)).toEqual(emptyMap);
     });
 
 
@@ -457,13 +457,103 @@ describe('MapUtil', () => {
 
       verifyMaps(
         // @ts-ignore
-        MapUtil.dropWhile(roleMap, undefined),
+        MapUtil.filter(roleMap, undefined),
+        roleMap
+      );
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.filter(stringsMap, null),
+        stringsMap
+      );
+    });
+
+
+    it('using interfaces, when given sourceMap has elements then filtered Map is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceMap = new Map<number, Role>();
+      sourceMap.set(r1.id, r1);
+      sourceMap.set(r2.id, r2);
+      sourceMap.set(r3.id, r3);
+
+      const expectedResult = new Map<number, Role>();
+      expectedResult.set(r1.id, r1);
+      expectedResult.set(r3.id, r3);
+
+      const isKeyAndRoleIdOdd: FPredicate2<number, Role> =
+        (k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2;
+
+      verifyMaps(
+        MapUtil.filter(sourceMap, isKeyAndRoleIdOdd),
+        expectedResult
+      );
+    });
+
+
+    it('using classes, when given sourceMap and keyValuesToKeepIfFound has elements then filtered Map is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceMap = new Map<number, User>();
+      sourceMap.set(u1.id, u1);
+      sourceMap.set(u2.id, u2);
+      sourceMap.set(u3.id, u3);
+
+      const expectedResult = new Map<number, User>();
+      expectedResult.set(u2.id, u2);
+
+      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
+
+      verifyMaps(
+        MapUtil.filter(sourceMap, isKeyAndUserIdEven),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('filterNot', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      const emptyMap = new Map<number, number>();
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+
+      expect(MapUtil.filterNot(null, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.filterNot(undefined, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.filterNot(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap is not empty but filterPredicate is null or undefined then sourceMap is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      let roleMap = new Map<number, Role>();
+      roleMap.set(r1.id, r1);
+      roleMap.set(r2.id, r2);
+      roleMap.set(r3.id, r3);
+
+      let stringsMap = new Map<string, string>();
+      stringsMap.set('', '');
+      stringsMap.set('3', '30');
+      stringsMap.set('4', '40');
+
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.filterNot(roleMap, undefined),
         roleMap
       );
 
       verifyMaps(
         // @ts-ignore
-        MapUtil.dropWhile(stringsMap, null),
+        MapUtil.filterNot(stringsMap, null),
         stringsMap
       );
     });
@@ -485,7 +575,7 @@ describe('MapUtil', () => {
       const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
 
       verifyMaps(
-        MapUtil.dropWhile(sourceMap, isKeyAndRoleIdOdd),
+        MapUtil.filterNot(sourceMap, isKeyAndRoleIdOdd),
         expectedResult
       );
     });
@@ -508,7 +598,7 @@ describe('MapUtil', () => {
       const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
 
       verifyMaps(
-        MapUtil.dropWhile(sourceMap, isKeyAndUserIdEven),
+        MapUtil.filterNot(sourceMap, isKeyAndUserIdEven),
         expectedResult
       );
     });
@@ -2227,96 +2317,6 @@ describe('MapUtil', () => {
 
       verifyMaps(
         MapUtil.sort(sourceMap, compareKeys),
-        expectedResult
-      );
-    });
-
-  });
-
-
-
-  describe('takeWhile', () => {
-
-    it('when given sourceMap has no elements then empty Map is returned', () => {
-      const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
-
-      expect(MapUtil.takeWhile(null, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.takeWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.takeWhile(emptyMap, areKeyValueEven)).toEqual(emptyMap);
-    });
-
-
-    it('when given sourceMap is not empty but filterPredicate is null or undefined then sourceMap is returned', () => {
-      const r1 = { id: 1, name: 'role1' } as Role;
-      const r2 = { id: 2, name: 'role2' } as Role;
-      const r3 = { id: 3, name: 'role3' } as Role;
-
-      let roleMap = new Map<number, Role>();
-      roleMap.set(r1.id, r1);
-      roleMap.set(r2.id, r2);
-      roleMap.set(r3.id, r3);
-
-      let stringsMap = new Map<string, string>();
-      stringsMap.set('', '');
-      stringsMap.set('3', '30');
-      stringsMap.set('4', '40');
-
-      verifyMaps(
-        // @ts-ignore
-        MapUtil.takeWhile(roleMap, undefined),
-        roleMap
-      );
-      verifyMaps(
-        // @ts-ignore
-        MapUtil.takeWhile(stringsMap, null),
-        stringsMap
-      );
-    });
-
-
-    it('using interfaces, when given sourceMap has elements then filtered Map is returned', () => {
-      const r1 = { id: 1, name: 'role1' } as Role;
-      const r2 = { id: 2, name: 'role2' } as Role;
-      const r3 = { id: 3, name: 'role3' } as Role;
-
-      const sourceMap = new Map<number, Role>();
-      sourceMap.set(r1.id, r1);
-      sourceMap.set(r2.id, r2);
-      sourceMap.set(r3.id, r3);
-
-      const expectedResult = new Map<number, Role>();
-      expectedResult.set(r1.id, r1);
-      expectedResult.set(r3.id, r3);
-
-      const isKeyAndRoleIdOdd: FPredicate2<number, Role> =
-        (k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2;
-
-      verifyMaps(
-        MapUtil.takeWhile(sourceMap, isKeyAndRoleIdOdd),
-        expectedResult
-      );
-    });
-
-
-    it('using classes, when given sourceMap and keyValuesToKeepIfFound has elements then filtered Map is returned', () => {
-      const u1 = new User(1, 'user1');
-      const u2 = new User(2, 'user2');
-      const u3 = new User(3, 'user3');
-
-      const sourceMap = new Map<number, User>();
-      sourceMap.set(u1.id, u1);
-      sourceMap.set(u2.id, u2);
-      sourceMap.set(u3.id, u3);
-
-      const expectedResult = new Map<number, User>();
-      expectedResult.set(u2.id, u2);
-
-      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
-
-      verifyMaps(
-        MapUtil.takeWhile(sourceMap, isKeyAndUserIdEven),
         expectedResult
       );
     });

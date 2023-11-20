@@ -145,7 +145,7 @@ export class StringUtil {
     if (this.isEmpty(sourceString)) {
       return [];
     }
-    const finalSeparators = ArrayUtil.takeWhile(
+    const finalSeparators = ArrayUtil.filter(
       separators,
       s => ObjectUtil.nonNullOrUndefined(s)
     );
