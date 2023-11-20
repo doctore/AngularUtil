@@ -262,6 +262,42 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('count', () => {
+
+    it('when given sourceArray has no elements then 0 is returned', () => {
+      const emptyArray: number[] = [];
+      const isEven: Predicate1<number> =
+        Predicate1.of((n: number) => 0 == n % 2);
+
+      expect(ArrayUtil.count(null, isEven)).toEqual(0);
+      expect(ArrayUtil.count(undefined, isEven)).toEqual(0);
+      expect(ArrayUtil.count(emptyArray, isEven)).toEqual(0);
+    });
+
+
+    it('when given sourceArray has elements but filterPredicate is null or undefined then sourceArray length is returned', () => {
+      const sourceArray: number[] = [1, 2, 3, 6];
+
+      expect(ArrayUtil.count(sourceArray, null)).toEqual(4);
+      expect(ArrayUtil.count(sourceArray, undefined)).toEqual(4);
+    });
+
+
+    it('when given sourceArray has elements and filterPredicate is valid then the number of elements matching filterPredicate is returned', () => {
+      const sourceArray: number[] = [1, 2, 3, 6, 7];
+
+      const isEven = (n: number) => 0 == n % 2;
+      const isOdd: FPredicate1<number> =
+        (n: number) => 1 == n % 2;
+
+      expect(ArrayUtil.count(sourceArray, isEven)).toEqual(2);
+      expect(ArrayUtil.count(sourceArray, isOdd)).toEqual(3);
+    });
+
+  });
+
+
+
   describe('dropWhile', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {

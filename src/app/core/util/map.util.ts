@@ -110,7 +110,7 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDefaultMapper)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDefaultMapper
-        : PartialFunction.of2(
+        : PartialFunction.of2ToTuple(
             filterPredicate,
             <TFunction2<K1, V1, [K2, V2]>>partialFunctionOrDefaultMapper
           );
@@ -208,7 +208,7 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrMapFunction)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrMapFunction
-        : PartialFunction.of2(
+        : PartialFunction.of2ToTuple(
             filterPredicate,
             <TFunction2<K1, V1, [K2, V2]>>partialFunctionOrMapFunction
           );
@@ -305,6 +305,46 @@ export class MapUtil {
             );
           }
         }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Counts the number of elements in `sourceMaps` which satisfy the `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then the size of `sourceMaps` will be returned.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                       Result:
+   *    [(1, 'Hi'), (2, 'Hello')]                         1
+   *    (k: number, v: string) => 0 == k % 2
+   * </pre>
+   *
+   * @param sourceMap
+   *    Source {@link Map} with the elements to filter
+   * @param filterPredicate
+   *   {@link TPredicate2} to filter elements from `sourceMap`
+   *
+   * @return the number of elements satisfying the {@link TPredicate2} `filterPredicate`
+   */
+  static count = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                        filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): number => {
+    if (this.isEmpty(sourceMap)) {
+      return 0;
+    }
+    if (ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return sourceMap!.size;
+    }
+    const finalFilterPredicate = Predicate2.of(filterPredicate);
+    let result = 0;
+    for (let [key, value] of sourceMap!) {
+      if (finalFilterPredicate.apply(key, value)) {
+        result++;
       }
     }
     return result;
@@ -802,7 +842,7 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.of2ToTuples(
+        : PartialFunction.of2KeyValueMapper(
             filterPredicate,
             <TFunction2<K1, V1, K2>>partialFunctionOrDiscriminatorKey,
             <TFunction2<K1, V1, V2>>valueMapper
@@ -923,7 +963,7 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<[K1, V1], [K2, V2]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.of2ToTuples(
+        : PartialFunction.of2KeyValueMapper(
             Predicate2.alwaysTrue<K1, V1>(),
             <TFunction2<K1, V1, K2>>partialFunctionOrDiscriminatorKey,
             <TFunction2<K1, V1, V2>>valueMapper
@@ -1616,7 +1656,7 @@ export class MapUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrKeyValueMapper)
         ? <PartialFunction<[K, V], R>>partialFunctionOrKeyValueMapper
-        : PartialFunction.of2FromTuple(
+        : PartialFunction.of2(
             filterPredicate,
             <TFunction2<K, V, R>>partialFunctionOrKeyValueMapper
           );

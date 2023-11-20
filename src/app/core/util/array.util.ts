@@ -225,6 +225,46 @@ export class ArrayUtil {
 
 
   /**
+   * Counts the number of elements in `sourceArray` which satisfy the `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then the length of `sourceArray` will be returned.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 2, 3, 6]                         2
+   *    (n: number) => 0 == n % 2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter
+   * @param filterPredicate
+   *   {@link TPredicate1} to filter elements from `sourceArray`
+   *
+   * @return the number of elements satisfying the {@link TPredicate2} `filterPredicate`
+   */
+  static count = <T>(sourceArray: NullableOrUndefined<T[]>,
+                     filterPredicate: NullableOrUndefined<TPredicate1<T>>): number => {
+    if (this.isEmpty(sourceArray)) {
+      return 0;
+    }
+    if (ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return sourceArray!.length;
+    }
+    const finalFilterPredicate = Predicate1.of(filterPredicate);
+    let result = 0;
+    for (let item of sourceArray!) {
+      if (finalFilterPredicate.apply(item)) {
+        result++;
+      }
+    }
+    return result;
+  }
+
+
+  /**
    *    Returns a new array using `sourceArray` as source, removing from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *
@@ -503,7 +543,7 @@ export class ArrayUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.ofToTuple(
+        : PartialFunction.ofKeyValueMapper(
             filterPredicate,
             <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
             <TFunction1<T, V>>valueMapper
@@ -704,7 +744,7 @@ export class ArrayUtil {
       );
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.ofToTuple(
+        : PartialFunction.ofKeyValueMapper(
             Predicate1.alwaysTrue<T>(),
             <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
             <TFunction1<T, V>>valueMapper
@@ -1348,7 +1388,7 @@ export class ArrayUtil {
 
       const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
         ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.ofToTuple(
+        : PartialFunction.ofKeyValueMapper(
             filterPredicate,
             <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
             <TFunction1<T, V>>finalValueMapper

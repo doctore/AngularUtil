@@ -386,6 +386,47 @@ describe('MapUtil', () => {
 
 
 
+  describe('count', () => {
+
+    it('when given sourceMap has no elements then 0 is returned', () => {
+      const emptyMap = new Map<number, number>();
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+
+      expect(MapUtil.count(null, areKeyValueEven)).toEqual(0);
+      expect(MapUtil.count(undefined, areKeyValueEven)).toEqual(0);
+      expect(MapUtil.count(emptyMap, areKeyValueEven)).toEqual(0);
+    });
+
+
+    it('when given sourceMap has elements but filterPredicate is null or undefined then sourceMap size is returned', () => {
+      const sourceMap = new Map<number, number>();
+      sourceMap.set(11, 19);
+      sourceMap.set(22, 77);
+
+      expect(MapUtil.count(sourceMap, null)).toEqual(2);
+      expect(MapUtil.count(sourceMap, undefined)).toEqual(2);
+    });
+
+
+    it('when given sourceMap has elements and filterPredicate is valid then the number of elements matching filterPredicate is returned', () => {
+      const sourceMap = new Map<number, number>();
+      sourceMap.set(8, 6);
+      sourceMap.set(11, 77);
+      sourceMap.set(23, 55);
+
+      const areKeyValueEven = (k: number, v: number) => 0 == k % 2 && 0 == v % 2;
+      const isKeyOdd: FPredicate2<number, number> =
+        (k: number, v: number) => 1 == k % 2;
+
+      expect(MapUtil.count(sourceMap, areKeyValueEven)).toEqual(1);
+      expect(MapUtil.count(sourceMap, isKeyOdd)).toEqual(2);
+    });
+
+  });
+
+
+
   describe('dropWhile', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
