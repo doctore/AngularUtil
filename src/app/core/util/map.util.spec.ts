@@ -386,6 +386,38 @@ describe('MapUtil', () => {
 
 
 
+  describe('copy', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      const emptyMap = new Map<number, number>();
+
+      expect(MapUtil.copy(null)).toEqual(emptyMap);
+      expect(MapUtil.copy(undefined)).toEqual(emptyMap);
+      expect(MapUtil.copy(emptyMap)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap has elements then a copy is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(11, "AB");
+      sourceMap.set(22, "CDF");
+      sourceMap.set(30, "ZrT");
+
+      const result = MapUtil.copy(sourceMap);
+
+      verifyMaps(
+        result,
+        sourceMap
+      );
+      sourceMap.clear();
+      expect(sourceMap.size).toEqual(0);
+      expect(result.size).toEqual(3);
+    });
+
+  });
+
+
+
   describe('count', () => {
 
     it('when given sourceMap has no elements then 0 is returned', () => {
@@ -456,12 +488,10 @@ describe('MapUtil', () => {
       stringsMap.set('4', '40');
 
       verifyMaps(
-        // @ts-ignore
         MapUtil.filter(roleMap, undefined),
         roleMap
       );
       verifyMaps(
-        // @ts-ignore
         MapUtil.filter(stringsMap, null),
         stringsMap
       );
@@ -546,13 +576,11 @@ describe('MapUtil', () => {
       stringsMap.set('4', '40');
 
       verifyMaps(
-        // @ts-ignore
         MapUtil.filterNot(roleMap, undefined),
         roleMap
       );
 
       verifyMaps(
-        // @ts-ignore
         MapUtil.filterNot(stringsMap, null),
         stringsMap
       );

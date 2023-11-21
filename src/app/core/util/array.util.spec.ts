@@ -262,6 +262,35 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('copy', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+
+      expect(ArrayUtil.copy(null)).toEqual([]);
+      expect(ArrayUtil.copy(undefined)).toEqual([]);
+      expect(ArrayUtil.copy(emptyArray)).toEqual([]);
+    });
+
+
+    it('when given sourceArray has elements then a copy is returned', () => {
+      const sourceArray: number[] = [1, 2, 3, 6];
+
+      const result = ArrayUtil.copy(sourceArray);
+
+      verifyArrays(
+        result,
+        sourceArray
+      );
+      sourceArray.splice(0);
+      expect(sourceArray.length).toEqual(0);
+      expect(result.length).toEqual(4);
+    });
+
+  });
+
+
+
   describe('count', () => {
 
     it('when given sourceArray has no elements then 0 is returned', () => {
@@ -316,12 +345,10 @@ describe('ArrayUtil', () => {
       const r3 = { id: 3, name: 'role3' } as Role;
 
       verifyArrays(
-        // @ts-ignore
         ArrayUtil.filter([r1, r2, r3], undefined),
         [r1, r2, r3]
       );
       verifyArrays(
-        // @ts-ignore
         ArrayUtil.filter([3, 5, 2], null),
         [3, 5, 2]
       );
@@ -378,12 +405,10 @@ describe('ArrayUtil', () => {
       const r3 = { id: 3, name: 'role3' } as Role;
 
       verifyArrays(
-        // @ts-ignore
         ArrayUtil.filterNot([r1, r2, r3], undefined),
         [r1, r2, r3]
       );
       verifyArrays(
-        // @ts-ignore
         ArrayUtil.filterNot([3, 5, 2], null),
         [3, 5, 2]
       );

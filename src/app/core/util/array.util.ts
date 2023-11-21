@@ -225,6 +225,29 @@ export class ArrayUtil {
 
 
   /**
+   * Returns a new array containing the elements of provided `sourceArray`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:             Result:
+   *    [1, 2, 3, 6]            [1, 2, 3, 6]
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to copy
+   *
+   * @return new array containing all elements included in `sourceArray`
+   */
+  static copy = <T>(sourceArray: NullableOrUndefined<T[]>): T[] => {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    return sourceArray!.slice(0);
+  }
+
+
+  /**
    * Counts the number of elements in `sourceArray` which satisfy the `filterPredicate`.
    *
    * @apiNote
@@ -269,7 +292,7 @@ export class ArrayUtil {
    * given {@link TPredicate1} `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
    *
    * <pre>
    * Example:
@@ -288,16 +311,15 @@ export class ArrayUtil {
    *         otherwise a new array with the elements of `sourceArray` which verify `filterPredicate`
    */
   static filter = <T>(sourceArray: NullableOrUndefined<T[]>,
-                      filterPredicate: TPredicate1<T>): T[] => {
-    if (this.isEmpty(sourceArray)) {
-      return [];
+                      filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
+    if (this.isEmpty(sourceArray) ||
+        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return this.copy(sourceArray);
     }
-    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-      ? Predicate1.alwaysTrue<T>()
-      : Predicate1.of(filterPredicate);
-
+    const finalFilterPredicate = Predicate1.of(filterPredicate!);
     return sourceArray!.filter(
-      (obj: T) => finalFilterPredicate.apply(obj)
+      (obj: T) =>
+        finalFilterPredicate.apply(obj)
     );
   }
 
@@ -307,7 +329,7 @@ export class ArrayUtil {
    * given {@link TPredicate1} `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysFalse} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
    *
    * <pre>
    * Example:
@@ -326,14 +348,14 @@ export class ArrayUtil {
    *         otherwise a new array with the elements of `sourceArray` which do not verify `filterPredicate`
    */
   static filterNot = <T>(sourceArray: NullableOrUndefined<T[]>,
-                         filterPredicate: TPredicate1<T>): T[] => {
+                         filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
     const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-      ? Predicate1.alwaysFalse<T>()
-      : Predicate1.of(filterPredicate);
+      ? Predicate1.alwaysTrue<T>()
+      : Predicate1.of(filterPredicate).not();
 
     return this.filter(
       sourceArray,
-      finalFilterPredicate.not()
+      finalFilterPredicate
     );
   }
 

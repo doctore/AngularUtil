@@ -312,6 +312,32 @@ export class MapUtil {
 
 
   /**
+   * Returns a new {@link Map} containing the elements of provided `sourceMap`.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [(1, 'Hi'), (2, 'Hello')]            [(1, 'Hi'), (2, 'Hello')]
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} with the elements to copy
+   *
+   * @return new {@link Map} containing all elements included in `sourceMap`
+   */
+  static copy = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>): Map<K, V> => {
+    const result = new Map<K, V>();
+    if (!this.isEmpty(sourceMap)) {
+      for (let [key, value] of sourceMap!) {
+        result.set(key, value);
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Counts the number of elements in `sourceMap` which satisfy the `filterPredicate`.
    *
    * @apiNote
@@ -356,7 +382,7 @@ export class MapUtil {
    * given {@link TPredicate2} `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
    *
    * <pre>
    * Example:
@@ -375,17 +401,16 @@ export class MapUtil {
    *         otherwise a new {@link Map} with the elements of `sourceMap` which verify `filterPredicate`
    */
   static filter = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                         filterPredicate: TPredicate2<K, V>): Map<K, V> => {
+                         filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
+    if (this.isEmpty(sourceMap) ||
+        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return this.copy(sourceMap);
+    }
+    const finalFilterPredicate = Predicate2.of(filterPredicate);
     const result = new Map<K, V>();
-    if (!this.isEmpty(sourceMap)) {
-      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-        ? Predicate2.alwaysTrue<K, V>()
-        : Predicate2.of(filterPredicate);
-
-      for (let [key, value] of sourceMap!) {
-        if (finalFilterPredicate.apply(key, value)) {
-          result.set(key, value);
-        }
+    for (let [key, value] of sourceMap!) {
+      if (finalFilterPredicate.apply(key, value)) {
+        result.set(key, value);
       }
     }
     return result;
@@ -397,7 +422,7 @@ export class MapUtil {
    * given {@link TPredicate2} `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysFalse} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
    *
    * <pre>
    * Example:
@@ -416,14 +441,14 @@ export class MapUtil {
    *         otherwise a new {@link Map} with the elements of `sourceMap` which do not verify `filterPredicate`
    */
   static filterNot = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                            filterPredicate: TPredicate2<K, V>): Map<K, V> => {
+                            filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
     const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-      ? Predicate2.alwaysFalse<K, V>()
-      : Predicate2.of(filterPredicate);
+      ? Predicate2.alwaysTrue<K, V>()
+      : Predicate2.of(filterPredicate).not();
 
     return this.filter(
       sourceMap,
-      finalFilterPredicate.not()
+      finalFilterPredicate
     );
   }
 
