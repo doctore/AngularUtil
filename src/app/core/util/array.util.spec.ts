@@ -327,6 +327,46 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('dropWhile', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+      const isEven = (n: number) => 0 == n % 2;
+
+      expect(ArrayUtil.dropWhile(null, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.dropWhile(undefined, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.dropWhile(emptyArray, isEven)).toEqual(emptyArray);
+    });
+
+
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then sourceArray is returned', () => {
+      const sourceArray: number[] = [1, 10, 21, 2];
+
+      verifyArrays(
+        ArrayUtil.dropWhile(sourceArray, undefined),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.dropWhile(sourceArray, null),
+        sourceArray
+      );
+    });
+
+
+    it('when given sourceArray is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
+      const sourceArray: number[] = [1, 3, 10, 21, 5];
+      const isOdd = (n: number) => 1 == n % 2;
+
+      verifyArrays(
+        ArrayUtil.dropWhile(sourceArray, isOdd),
+        [10, 21, 5]
+      );
+    });
+
+  });
+
+
+
   describe('filter', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
@@ -1731,6 +1771,46 @@ describe('ArrayUtil', () => {
       verifyArrays(
         ArrayUtil.sort([u3, u1, u2], comparator),
         [u3, u2, u1]
+      );
+    });
+
+  });
+
+
+
+  describe('takeWhile', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+      const isEven = (n: number) => 0 == n % 2;
+
+      expect(ArrayUtil.takeWhile(null, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.takeWhile(undefined, isEven)).toEqual(emptyArray);
+      expect(ArrayUtil.takeWhile(emptyArray, isEven)).toEqual(emptyArray);
+    });
+
+
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then sourceArray is returned', () => {
+      const sourceArray: number[] = [1, 10, 21, 2];
+
+      verifyArrays(
+        ArrayUtil.takeWhile(sourceArray, undefined),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.takeWhile(sourceArray, null),
+        sourceArray
+      );
+    });
+
+
+    it('when given sourceArray is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
+      const sourceArray: number[] = [1, 3, 10, 21, 5];
+      const isOdd = (n: number) => 1 == n % 2;
+
+      verifyArrays(
+        ArrayUtil.takeWhile(sourceArray, isOdd),
+        [1, 3]
       );
     });
 

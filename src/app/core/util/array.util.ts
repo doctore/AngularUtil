@@ -288,6 +288,50 @@ export class ArrayUtil {
 
 
   /**
+   *    Returns an array removing the longest prefix of elements included in `sourceArray` that satisfy the
+   * {@link TPredicate1} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 3, 4, 5, 6]                      [4, 5, 6]
+   *    (n: number) => 1 == n % 2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter
+   *
+   * @return the longest suffix of provided `sourceArray` whose elements all satisfy `filterPredicate`
+   */
+  static dropWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
+                         filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
+    if (this.isEmpty(sourceArray) ||
+      ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return this.copy(sourceArray);
+    }
+    const finalFilterPredicate = Predicate1.of(filterPredicate!);
+    const result: T[] = [];
+    let wasFoundFirstElementDoesMatchPredicate = false;
+    for (let item of sourceArray!) {
+      if (!finalFilterPredicate.apply(item) &&
+          !wasFoundFirstElementDoesMatchPredicate) {
+        wasFoundFirstElementDoesMatchPredicate = true;
+      }
+      if (wasFoundFirstElementDoesMatchPredicate) {
+        result.push(item);
+      }
+    }
+    return result;
+  }
+
+
+  /**
    *    Returns a new array using `sourceArray` as source, adding from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *
@@ -1290,6 +1334,47 @@ export class ArrayUtil {
             .getComparator()
         )
       : clonedSourceArray!.sort();
+  }
+
+
+  /**
+   *    Returns an array with the longest prefix of elements included in `sourceArray` that satisfy the
+   * {@link TPredicate1} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                          Result:
+   *    [1, 3, 4, 5, 6]                      [1, 3]
+   *    (n: number) => 1 == n % 2
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter
+   *
+   * @return the longest prefix of provided `sourceArray` whose elements all satisfy `filterPredicate`
+   */
+  static takeWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
+                         filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
+    if (this.isEmpty(sourceArray) ||
+        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return this.copy(sourceArray);
+    }
+    const finalFilterPredicate = Predicate1.of(filterPredicate!);
+    const result: T[] = [];
+    for (let item of sourceArray!) {
+      if (finalFilterPredicate.apply(item)) {
+        result.push(item);
+      } else {
+        return result;
+      }
+    }
+    return result;
   }
 
 

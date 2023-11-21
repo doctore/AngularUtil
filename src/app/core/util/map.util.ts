@@ -378,6 +378,55 @@ export class MapUtil {
 
 
   /**
+   *    Returns a {@link Map} removing the longest prefix of elements included in `sourceMap` that satisfy the
+   * {@link TPredicate2} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                          Result:
+   *    [(2, 'Hi'), (4, 'Hello'), (3, 'World')]              [(3, 'World')]
+   *    (k: number, v: string) => 0 == k % 2
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} to filter
+   * @param filterPredicate
+   *    {@link TPredicate2} used to find given elements to filter
+   *
+   * @return the longest suffix of provided `sourceMap` whose elements all satisfy `filterPredicate`
+   */
+  static dropWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                            filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
+    if (this.isEmpty(sourceMap) ||
+      ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return this.copy(sourceMap);
+    }
+    const finalFilterPredicate = Predicate2.of(filterPredicate!);
+    const result = new Map<K, V>();
+    let wasFoundFirstElementDoesMatchPredicate = false;
+    if (!this.isEmpty(sourceMap)) {
+      for (let [key, value] of sourceMap!) {
+        if (!finalFilterPredicate.apply(key, value) &&
+            !wasFoundFirstElementDoesMatchPredicate) {
+          wasFoundFirstElementDoesMatchPredicate = true;
+        }
+        if (wasFoundFirstElementDoesMatchPredicate) {
+          result.set(
+            key,
+            value
+          );
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
    *    Returns a new {@link Map} using `sourceMap` as source, adding from the result the elements that verify the
    * given {@link TPredicate2} `filterPredicate`.
    *
@@ -1583,6 +1632,52 @@ export class MapUtil {
       : new Map(
           clonedSourceMapAsArray!.sort()
         );
+  }
+
+
+  /**
+   *    Returns a {@link Map} with the longest prefix of elements included in `sourceMap` that satisfy the
+   * {@link TPredicate2} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
+   *
+   * <pre>
+   * Example:
+   *
+   *   Parameters:                                          Result:
+   *    [(2, 'Hi'), (4, 'Hello'), (3, 'World')]              [(2, 'Hi'), (4, 'Hello')]
+   *    (k: number, v: string) => 0 == k % 2
+   * </pre>
+   *
+   * @param sourceMap
+   *    {@link Map} to filter
+   * @param filterPredicate
+   *    {@link TPredicate2} used to find given elements to filter
+   *
+   * @return the longest prefix of provided `sourceMap` whose elements all satisfy `filterPredicate`
+   */
+  static takeWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                            filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
+    if (this.isEmpty(sourceMap) ||
+        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return this.copy(sourceMap);
+    }
+    const finalFilterPredicate = Predicate2.of(filterPredicate!);
+    const result = new Map<K, V>();
+    if (!this.isEmpty(sourceMap)) {
+      for (let [key, value] of sourceMap!) {
+        if (finalFilterPredicate.apply(key, value)) {
+          result.set(
+            key,
+            value
+          );
+        } else {
+          return result;
+        }
+      }
+    }
+    return result;
   }
 
 

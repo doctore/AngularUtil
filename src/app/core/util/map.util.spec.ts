@@ -459,6 +459,60 @@ describe('MapUtil', () => {
 
 
 
+  describe('dropWhile', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      const emptyMap = new Map<number, number>();
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+
+      expect(MapUtil.dropWhile(null, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.dropWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.dropWhile(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap is not empty but filterPredicate is null or undefined then sourceMap is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+      sourceMap.set(4, 'd');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'c');
+
+      verifyMaps(
+        MapUtil.dropWhile(sourceMap, undefined),
+        sourceMap
+      );
+      verifyMaps(
+        MapUtil.dropWhile(sourceMap, null),
+        sourceMap
+      );
+    });
+
+
+    it('when given sourceMap is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(2, 'Hi');
+      sourceMap.set(4, 'Hello');
+      sourceMap.set(11, 'World');
+      sourceMap.set(12, 'Hola');
+
+      const isKeyEvenAndValueLongerThan1 = (k: number, v: string) => 0 == k % 2 && 1 < v.length;
+
+      const expectedResult = new Map<number, string>();
+      expectedResult.set(11, 'World');
+      expectedResult.set(12, 'Hola');
+
+      verifyMaps(
+        MapUtil.dropWhile(sourceMap, isKeyEvenAndValueLongerThan1),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('filter', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
@@ -2338,13 +2392,67 @@ describe('MapUtil', () => {
 
       const compareKeys = (a: [number, User], b: [number, User]) => b[0] - a[0];
 
-      let expectedResult = new Map<number, User>();
+      const expectedResult = new Map<number, User>();
       expectedResult.set(u3.id, u3);
       expectedResult.set(u2.id, u2);
       expectedResult.set(u1.id, u1);
 
       verifyMaps(
         MapUtil.sort(sourceMap, compareKeys),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('takeWhile', () => {
+
+    it('when given sourceMap has no elements then empty Map is returned', () => {
+      const emptyMap = new Map<number, number>();
+      const areKeyValueEven: Predicate2<number, number> =
+        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
+
+      expect(MapUtil.takeWhile(null, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.takeWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.takeWhile(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+    });
+
+
+    it('when given sourceMap is not empty but filterPredicate is null or undefined then sourceMap is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+      sourceMap.set(4, 'd');
+      sourceMap.set(11, 'k');
+      sourceMap.set(3, 'c');
+
+      verifyMaps(
+        MapUtil.takeWhile(sourceMap, undefined),
+        sourceMap
+      );
+      verifyMaps(
+        MapUtil.takeWhile(sourceMap, null),
+        sourceMap
+      );
+    });
+
+
+    it('when given sourceMap is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(2, 'Hi');
+      sourceMap.set(4, 'Hello');
+      sourceMap.set(11, 'World');
+      sourceMap.set(12, 'Hola');
+
+      const isKeyOddAndValueLongerThan1 = (k: number, v: string) => 1 == k % 2 && 1 < v.length;
+
+      const expectedResult = new Map<number, string>();
+      sourceMap.set(2, 'Hi');
+      sourceMap.set(4, 'Hello');
+
+      verifyMaps(
+        MapUtil.takeWhile(sourceMap, isKeyOddAndValueLongerThan1),
         expectedResult
       );
     });
