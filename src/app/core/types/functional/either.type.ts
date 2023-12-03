@@ -155,9 +155,9 @@ export abstract class Either<L, R> {
    *
    *   mapperSuccess = (s1: number, s2: number) => s2;
    *
-   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(11), () => Either.right(7)]);                               // Right(7)
-   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(13), () => Either.left('A')]);                              // Left('A')
-   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(10), () => Either.left('A')]), () => Either.left('B')]);    // Left('A')
+   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(11), () => Either.right(7)]);                             // Right(7)
+   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(13), () => Either.left('A')]);                            // Left('A')
+   *   combineGetFirstLeft(mapperSuccess, [() => Either.right(10), () => Either.left('A'), () => Either.left('B')]);    // Left('A')
    * </pre>
    *
    * @param mapperRight

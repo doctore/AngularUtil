@@ -48,7 +48,7 @@ export class MapUtil {
    *    {@link TFunction2} to transform elements of `sourceMap` do not verify {@link PartialFunction#isDefinedAt}
    *
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
-   *         on which it is defined and collecting the results or `orElseMapper` otherwise
+   *         on which it is defined and collecting the results, `orElseMapper` otherwise
    *
    * @throws {@link IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
    */
@@ -84,7 +84,7 @@ export class MapUtil {
    *    {@link TPredicate2} to filter elements of `sourceMap`
    *
    * @return new {@link Map} from applying the given `defaultMapper` to each element of `sourceMap` that verifies `filterPredicate`
-   *         and collecting the results or `orElseMapper` otherwise
+   *         and collecting the results, `orElseMapper` otherwise
    *
    * @throws {@link IllegalArgumentError} if `defaultMapper` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
    */
@@ -588,7 +588,7 @@ export class MapUtil {
    * @param accumulator
    *    A {@link TFunction3} which combines elements
    *
-   * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going
+   * @return result of inserting `accumulator` between consecutive elements of `sourceMap`, going
    *         left to right with the start value `initialValue` on the left.
    *
    * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
@@ -806,7 +806,7 @@ export class MapUtil {
    * Example:
    *
    *   Parameters:                                                   Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (11, 'Ok')]           [(evenKey", [(2, 'Hello')])
+   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (11, 'Ok')]           [("evenKey", [(2, 'Hello')])
    *    (k: number, v: string) => {                                    ("oddKey", [(1, 'Hi'), (7, 'World')]]
    *      const keys: string[] = [];                                   ("smaller5Key", [(1, 'Hi'), (2, 'Hello')])
    *      if (0 == k % 2) {                                            ("greaterEqual5Key", [(7, 'World')])]
@@ -887,7 +887,7 @@ export class MapUtil {
    *
    *   Parameters:                                                   Result:
    *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')]            [(1, [2, 5])
-   *    PartialFunction.of(                                            (2, [2]]
+   *    PartialFunction.of(                                            (2, [2])]
    *      ([k, v]: [number, string]) => 1 == k % 2 || 6 < k,
    *      ([k, v]: [number, string]) => [k % 3, v.length]
    *    )
@@ -919,7 +919,7 @@ export class MapUtil {
    *
    *   Parameters:                                                   Result:
    *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')]            [(1, [2, 5])
-   *    (k: number, v: string) => k % 3                                (2, [2]]
+   *    (k: number, v: string) => k % 3                                (2, [2])]
    *    (k: number, v: string) => v.length
    *    (k: number, v: string) => 1 == k % 2 || 6 < k
    * </pre>
@@ -1004,7 +1004,7 @@ export class MapUtil {
    *    {@link PartialFunction} to filter and transform elements of `sourceMap`
    *
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
-   *         on which it is defined, collecting the results and reduce them
+   *         on which it is defined, collecting the results and reduce them using provided `reduceValues`
    *
    * @throws {@link IllegalArgumentError} if `reduceValues` or `partialFunction` are `null` or `undefined` with a not
    *                                      empty `sourceMap`
@@ -1044,7 +1044,7 @@ export class MapUtil {
    *    {@link TFunction2} to transform elements of `sourceMap`
    *
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceMap`,
-   *         on which it is defined, collecting the results and reduce them
+   *         collecting the results and reduce them using provided `reduceValues`
    *
    * @throws {@link IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
    *                                      with a not empty `sourceMap`
@@ -1158,8 +1158,7 @@ export class MapUtil {
    * @param comparator
    *    {@link TComparator} to be used for comparing elements
    *
-   * @return largest element using given {@link TComparator},
-   *         `undefined` if `sourceMap` has no elements
+   * @return largest element using given {@link TComparator}, `undefined` if `sourceMap` has no elements
    *
    * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
    */
@@ -1239,8 +1238,7 @@ export class MapUtil {
    * @param comparator
    *    {@link TComparator} to be used for comparing elements
    *
-   * @return smallest element using given {@link TComparator},
-   *         `undefined` if `sourceMap` has no elements
+   * @return smallest element using given {@link TComparator}, `undefined` if `sourceMap` has no elements
    *
    * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
    */

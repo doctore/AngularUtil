@@ -1047,7 +1047,7 @@ export abstract class Try<T> {
 
   /**
    *    If the current {@link Try} is an instance of {@link Success} wraps the stored value into an {@link Optional} object.
-   * Otherwise return {@link Optional#empty}
+   * Otherwise, return {@link Optional#empty}
    *
    * @return {@link Optional} if is this {@link Try} is a {@link Success} and its value is non-`null` and non-`undefined`,
    *         {@link Optional#empty} if is this {@link Try} is a {@link Success} and its value is `null` or `undefined`,

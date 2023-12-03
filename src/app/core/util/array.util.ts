@@ -49,7 +49,7 @@ export class ArrayUtil {
    *    {@link TFunction1} to transform elements of `sourceArray` do not verify {@link PartialFunction#isDefinedAt}
    *
    * @return new array from applying the given {@link PartialFunction} to each element of `sourceArray`
-   *         on which it is defined and collecting the results or `orElseMapper` otherwise
+   *         on which it is defined and collecting the results, `orElseMapper` otherwise
    *
    * @throws {@link IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceArray`
    */
@@ -487,7 +487,7 @@ export class ArrayUtil {
    * @param accumulator
    *    A {@link TFunction2} which combines elements
    *
-   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
+   * @return result of inserting `accumulator` between consecutive elements of `sourceArray`, going
    *         left to right with the start value `initialValue` on the left.
    *
    * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
@@ -774,7 +774,7 @@ export class ArrayUtil {
    *    {@link PartialFunction} to filter and transform elements of `sourceArray`
    *
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceArray`
-   *         on which it is defined, collecting the results and reduce them
+   *         on which it is defined, collecting the results and reduce them using provided `reduceValues`
    *
    * @throws {@link IllegalArgumentError} if `reduceValues` or `partialFunction` are `null` or `undefined` with a not
    *                                      empty `sourceArray`
@@ -814,7 +814,7 @@ export class ArrayUtil {
    *    {@link TFunction1} to transform elements of `sourceArray`
    *
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`,
-   *         collecting the results and reduce them
+   *         collecting the results and reduce them using provided `reduceValues`
    *
    * @throws {@link IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
    *                                      with a not empty `sourceArray`

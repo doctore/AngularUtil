@@ -20,7 +20,7 @@ export class NumberUtil {
    * value. For example:
    *
    * <pre>
-   *    NumberUtil.compare(11.144, 11.143, 0.001));
+   *    NumberUtil.compare(11.144, 11.143, 0.001);
    *
    *    Will return 0 (both are equals), because:
    *      Math.abs(11.144 - 11.143) = 0.000999999568 => lower than 0.001, so they are considered equal values

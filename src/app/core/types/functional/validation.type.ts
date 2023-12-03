@@ -80,8 +80,8 @@ export abstract class Validation<E, T> {
    * Examples:
    *
    *   combine(Validation.valid(11), Validation.valid(7));                                        // Valid(7)
-   *   combine(Validation.valid(13), Validation.invalid(['A']));                                  // Invalid(['A']))
-   *   combine(Validation.valid(10), Validation.invalid(['A'])), Validation.invalid(['B'])));     // Invalid(['A', 'B']))
+   *   combine(Validation.valid(13), Validation.invalid(['A']));                                  // Invalid(['A'])
+   *   combine(Validation.valid(10), Validation.invalid(['A']), Validation.invalid(['B']));       // Invalid(['A', 'B'])
    * </pre>
    *
    * @param validations
@@ -108,9 +108,9 @@ export abstract class Validation<E, T> {
    * <pre>
    * Examples:
    *
-   *   combineGetFirstInvalid(() => Validation.valid(1), () => Validation.valid(7));                                             // Valid(7)
-   *   combineGetFirstInvalid(() => Validation.valid(3), () => Validation.invalid(['A'])));                                      // Invalid(['A']))
-   *   combineGetFirstInvalid(() => Validation.valid(2), () => Validation.invalid(['A'])), () => Validation.invalid(['B'])));    // Invalid(['A']))
+   *   combineGetFirstInvalid(() => Validation.valid(1), () => Validation.valid(7));                                            // Valid(7)
+   *   combineGetFirstInvalid(() => Validation.valid(3), () => Validation.invalid(['A']));                                      // Invalid(['A'])
+   *   combineGetFirstInvalid(() => Validation.valid(2), () => Validation.invalid(['A']), () => Validation.invalid(['B']));     // Invalid(['A'])
    * </pre>
    *
    * @param validations
@@ -311,7 +311,7 @@ export abstract class Validation<E, T> {
    * Examples:
    *
    *   Validation.valid(11).filterOrElse(i => i > 10, i => 'error');                // Valid(11)
-   *   Validation.valid(7).filterOrElse(i => i > 10, i => 'error');                 // Invalid(['error']))
+   *   Validation.valid(7).filterOrElse(i => i > 10, i => 'error');                 // Invalid(['error'])
    *   Validation.invalid(['warning']).filterOrElse(i => i > 10, i => 'error');     // Invalid(['warning'])
    * </pre>
    *
@@ -593,7 +593,7 @@ export abstract class Validation<E, T> {
 
   /**
    *    If the current {@link Validation} is an instance of {@link Valid} wraps the stored value into an {@link Optional} object.
-   * Otherwise return {@link Optional#empty}
+   * Otherwise, return {@link Optional#empty}
    *
    * @return {@link Optional}
    */
@@ -640,7 +640,7 @@ export abstract class Validation<E, T> {
 
 
 /**
- * An valid {@link Validation}.
+ * A valid {@link Validation}.
  *
  * @typeParam <T>
  *    Type of the {@link Valid} value of an {@link Validation}
