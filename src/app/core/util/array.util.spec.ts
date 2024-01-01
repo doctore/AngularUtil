@@ -1173,7 +1173,7 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements and mapFunction is provided then empty array is returned', () => {
       const emptyArray: number[] = [];
-      const toString: FFunction1<number, string> =
+      const toString: FFunction1<NullableOrUndefined<number>, string> =
         (n: NullableOrUndefined<number>) => '' + n!;
 
       const expectedResult: string[] = [];
@@ -1811,6 +1811,35 @@ describe('ArrayUtil', () => {
       verifyArrays(
         ArrayUtil.takeWhile(sourceArray, isOdd),
         [1, 3]
+      );
+    });
+
+  });
+
+
+
+  describe('toArray', () => {
+
+    it('when no elements are provided then empty array is returned', () => {
+      expect(ArrayUtil.toArray()).toEqual([]);
+    });
+
+
+    it('when elements are provided then returned array contains all given ones', () => {
+      expect(ArrayUtil.toArray(null)).toEqual([null]);
+      expect(ArrayUtil.toArray(undefined)).toEqual([undefined]);
+
+      verifyArrays(
+        ArrayUtil.toArray(1, null, 3),
+        [1, null, 3]
+      );
+      verifyArrays(
+        ArrayUtil.toArray('a', 'bc', undefined, '5rt'),
+        ['a', 'bc', undefined, '5rt']
+      );
+      verifyArrays(
+        ArrayUtil.toArray(undefined, 1, null, 3),
+        [undefined, 1, null, 3]
       );
     });
 

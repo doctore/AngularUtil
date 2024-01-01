@@ -30,15 +30,14 @@ export class ArrayUtil {
    * verifies {@link PartialFunction#isDefinedAt}, `orElseMapper` otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         [2, 4, 4, 12]
-   *    PartialFunction.of(
-   *      (n: number) => 1 == n % 2,
-   *      (n: number) => 1 + n
+   *    applyOrElse(                                       Result:
+   *      [1, 2, 3, 6],                                     [2, 4, 4, 12]
+   *      PartialFunction.of(
+   *        (n: number) => 1 == n % 2,
+   *        (n: number) => 1 + n
+   *      ),
+   *      (n: number) => 2 * n
    *    )
-   *    (n: number) => 2 * n
    * </pre>
    *
    * @param sourceArray
@@ -67,16 +66,15 @@ export class ArrayUtil {
    * `filterPredicate`, `orElseMapper` otherwise.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be updated using `defaultMapper`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         [2, 4, 4, 12]
-   *    (n: number) => 1 + n
-   *    (n: number) => 2 * n
-   *    (n: number) => 1 == n % 2
+   *    applyOrElse(                                       Result:
+   *      [1, 2, 3, 6],                                     [2, 4, 4, 12]
+   *      (n: number) => 1 + n,
+   *      (n: number) => 2 * n,
+   *      (n: number) => 1 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -136,13 +134,12 @@ export class ArrayUtil {
    *  - Transform its filtered elements using {@link PartialFunction#apply} of `partialFunction`
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         ['4', '12']
-   *    PartialFunction.of(
-   *      (n: number) => 0 == n % 2,
-   *      (n: number) => '' + (2 * n)
+   *    collect(                                           Result:
+   *      [1, 2, 3, 6],                                     ['4', '12']
+   *      PartialFunction.of(
+   *        (n: number) => 0 == n % 2,
+   *        (n: number) => '' + (2 * n)
+   *      )
    *    )
    * </pre>
    *
@@ -167,15 +164,14 @@ export class ArrayUtil {
    *  - Transform its filtered elements using the {@link TFunction1} `mapFunction`
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be transformed.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         ['4', '12']
-   *    (n: number) => '' + (2 * n)
-   *    (n: number) => 0 == n % 2
+   *    collect(                                           Result:
+   *      [1, 2, 3, 6],                                     ['4', '12']
+   *      (n: number) => '' + (2 * n),
+   *      (n: number) => 0 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -227,13 +223,6 @@ export class ArrayUtil {
   /**
    * Returns a new array containing the elements of provided `sourceArray`.
    *
-   * <pre>
-   * Example:
-   *
-   *   Parameters:             Result:
-   *    [1, 2, 3, 6]            [1, 2, 3, 6]
-   * </pre>
-   *
    * @param sourceArray
    *    Array with the elements to copy
    *
@@ -254,11 +243,10 @@ export class ArrayUtil {
    *    If `filterPredicate` is `null` or `undefined` then the length of `sourceArray` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         2
-   *    (n: number) => 0 == n % 2
+   *    count(                                   Result:
+   *      [1, 2, 3, 6],                           2
+   *      (n: number) => 0 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -266,7 +254,7 @@ export class ArrayUtil {
    * @param filterPredicate
    *   {@link TPredicate1} to filter elements from `sourceArray`
    *
-   * @return the number of elements satisfying the {@link TPredicate2} `filterPredicate`
+   * @return the number of elements satisfying the {@link TPredicate1} `filterPredicate`
    */
   static count = <T>(sourceArray: NullableOrUndefined<T[]>,
                      filterPredicate: NullableOrUndefined<TPredicate1<T>>): number => {
@@ -295,11 +283,10 @@ export class ArrayUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 3, 4, 5, 6]                      [4, 5, 6]
-   *    (n: number) => 1 == n % 2
+   *    dropWhile(                               Result:
+   *      [1, 3, 4, 5, 6],                        [4, 5, 6]
+   *      (n: number) => 1 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -312,7 +299,7 @@ export class ArrayUtil {
   static dropWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
                          filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
     if (this.isEmpty(sourceArray) ||
-      ObjectUtil.isNullOrUndefined(filterPredicate)) {
+        ObjectUtil.isNullOrUndefined(filterPredicate)) {
       return this.copy(sourceArray);
     }
     const finalFilterPredicate = Predicate1.of(filterPredicate!);
@@ -339,11 +326,10 @@ export class ArrayUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                                      Result:
-   *    [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}]         [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
-   *    (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    filter(                                                                               Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -376,11 +362,10 @@ export class ArrayUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                                      Result:
-   *    [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}]         [{id: 2, name: 'user2'}]
-   *    (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    filterNot(                                                                            Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            [{id: 2, name: 'user2'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -408,11 +393,10 @@ export class ArrayUtil {
    * Returns from the given `sourceArray` the first element that verifies the provided `filterPredicate`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                                      Result:
-   *    [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}]         [{id: 1, name: 'user1'}]
-   *    (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    find(                                                                                 Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            [{id: 1, name: 'user1'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -442,11 +426,10 @@ export class ArrayUtil {
    * `filterPredicate`, {@link Optional#empty} otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                         Result:
-   *    [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]                    Optional({id: 2, name: 'user2'})
-   *    (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    findOptional(                                                          Result:
+   *      [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}],                     Optional({id: 2, name: 'user2'})
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -472,12 +455,11 @@ export class ArrayUtil {
    * elements of `sourceArray`, going left to right.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                              Result:
-   *    [5, 7, 9]                                315
-   *    1
-   *    (n1: number, n2: number) => n1 * n2
+   *    foldLeft(                                          Result:
+   *      [5, 7, 9],                                        315
+   *      1,
+   *      (n1: number, n2: number) => n1 * n2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -506,14 +488,16 @@ export class ArrayUtil {
    *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to elements
    * of `sourceArray` that verify `filterPredicate`, going left to right.
    *
-   * <pre>
-   * Example:
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be used to calculate the final value.
    *
-   *   Parameters:                              Result:
-   *    [5, 7, 8, 9]                             315
-   *    1
-   *    (n1: number, n2: number) => n1 * n2
-   *    (n: number) => 1 == n % 2
+   * <pre>
+   *    foldLeft(                                          Result:
+   *      [5, 7, 8, 9]                                      315
+   *      1,
+   *      (n1: number, n2: number) => n1 * n2,
+   *      (n: number) => 1 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -573,13 +557,12 @@ export class ArrayUtil {
    * the same `key` in an array of values.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         [(1, [2])
-   *    PartialFunction.of(                   (3, [4])]
-   *      (n: number) => 1 == n % 2,
-   *      (n: number) => [n, 1 + n]
+   *    groupMap(                                          Result:
+   *      [1, 2, 3, 6],                                     [(1, [2])
+   *      PartialFunction.of(                                (3, [4])]
+   *        (n: number) => 1 == n % 2,
+   *        (n: number) => [n, 1 + n]
+   *      )
    *    )
    * </pre>
    *
@@ -602,16 +585,15 @@ export class ArrayUtil {
    * element verifies `filterPredicate`. All values with the same `key` will be added in an array.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         [(2, [2])
-   *    (n: number) => 1 + n                  (4, [6])
-   *    (n: number) => 2 * n
-   *    (n: number) => 1 == n % 2
+   *    groupMap(                                          Result:
+   *      [1, 2, 3, 6],                                     [(2, [2])
+   *      (n: number) => 1 + n,                              (4, [6])
+   *      (n: number) => 2 * n,
+   *      (n: number) => 1 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -674,30 +656,28 @@ export class ArrayUtil {
    * element verifies `filterPredicate`. All values with the same `key` will be added in an array.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied. This method is
-   * similar to {@link ArrayUtil#groupMap} but `discriminatorKey` returns an array of related key values.
+   *    This method is similar to {@link ArrayUtil#groupMap} but `discriminatorKey` returns an array of related key values.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                 Result:
-   *    [1, 2, 3, 6, 11, 12]                        [("even",  [2, 6])
-   *    (n: number) => {                             ("odd",   [1, 3])
-   *      const keys: string[] = [];                 ("smaller5", [1, 2, 3])
-   *      if (0 == n % 2) {                          ("greaterEqual5", [6])]
-   *        keys.push("even");
-   *      } else {
-   *        keys.push("odd");
-   *      }
-   *      if (5 > n) {
-   *        keys.push("smaller5");
-   *      } else {
-   *        keys.push("greaterEqual5");
-   *      }
-   *      return keys;
-   *    }
-   *    (n: number) => n
-   *    (n: number) => 10 > n
+   *    groupMapMultiKey(                                  Result:
+   *      [1, 2, 3, 6, 11, 12],                            [('even',  [2, 6])
+   *      (n: number) => {                                  ('odd',   [1, 3])
+   *        const keys: string[] = [];                      ('smaller5', [1, 2, 3])
+   *        if (0 == n % 2) {                               ('greaterEqual5', [6])]
+   *          keys.push('even');
+   *        } else {
+   *          keys.push('odd');
+   *        }
+   *        if (5 > n) {
+   *          keys.push('smaller5');
+   *        } else {
+   *          keys.push('greaterEqual5');
+   *        }
+   *        return keys;
+   *      },
+   *      (n: number) => n,
+   *      (n: number) => 10 > n
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -755,14 +735,13 @@ export class ArrayUtil {
    * after applying {@link PartialFunction#apply} are then reduced into a single value with `reduceValues`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                  Intermediate Map:          Result:
-   *    [1, 2, 3, 6, 7, 11, 12]                      [(0,  [4, 7])              [(0, 11),
-   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])               (1, 10)
-   *    PartialFunction.of(                           (2,  [3])]                 (2, 3)]
-   *      (n: number) => 10 > n,
-   *      (n: number) => [n % 3, n + 1]
+   *    groupMapReduce(                                    Intermediate Map:             Result:
+   *      [1, 2, 3, 6, 7, 11, 12],                          [(0,  [4, 7])                 [(0, 11),
+   *      (n1: number, n2: number) => n1 + n2,               (1,  [2, 8])                  (1, 10)
+   *      PartialFunction.of(                                (2,  [3])]                    (2, 3)]
+   *        (n: number) => 10 > n,
+   *        (n: number) => [n % 3, n + 1]
+   *      )
    *    )
    * </pre>
    *
@@ -795,13 +774,12 @@ export class ArrayUtil {
    * then reduced into a single value with `reduceValues`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                  Intermediate Map:          Result:
-   *    [1, 2, 3, 6, 7]                              [(0,  [4, 7])              [(0, 11),
-   *    (n1: number, n2: number) => n1 + n2           (1,  [2, 8])               (1, 10)
-   *    (n: number) => n % 3                          (2,  [3])]                 (2, 3)]
-   *    (n: number) => n + 1
+   *    groupMapReduce(                                    Intermediate Map:             Result:
+   *      [1, 2, 3, 6, 7],                                  [(0,  [4, 7])                 [(0, 11),
+   *      (n1: number, n2: number) => n1 + n2,               (1,  [2, 8])                  (1, 10)
+   *      (n: number) => n % 3,                              (2,  [3])]                    (2, 3)]
+   *      (n: number) => n + 1
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -888,11 +866,10 @@ export class ArrayUtil {
    * Returns an array by applying the {@link TFunction1} `mapFunction` a function to all elements of `sourceArray`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 6]                         ['2', '4', '6', '12']
-   *    (n: number) => '' + (2 * n)
+   *    map(                                     Result:
+   *      [1, 2, 3, 6]                            ['2', '4', '6', '12']
+   *      (n: number) => '' + (2 * n)
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -929,11 +906,10 @@ export class ArrayUtil {
    * Finds the first element of the given `sourceArray` which yields the largest value measured by `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   *  Parameters:                             Result:
-   *    [1, 10, 21, 2]                         21
-   *    (a: number, b: number) => a - b
+   *    max(                                               Result:
+   *      [1, 10, 21, 2],                                   21
+   *      (a: number, b: number) => a - b
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -979,11 +955,10 @@ export class ArrayUtil {
    * Finds the first element of the given `sourceArray` which yields the largest value measured by `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   *  Parameters:                             Result:
-   *    [1, 10, 21, 2]                         Optional(21)
-   *    (a: number, b: number) => a - b
+   *    maxOptional(                                       Result:
+   *      [1, 10, 21, 2],                                   Optional(21)
+   *      (a: number, b: number) => a - b
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1010,11 +985,10 @@ export class ArrayUtil {
    * Finds the first element of the given `sourceArray` which yields the smallest value measured by `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   *  Parameters:                             Result:
-   *    [1, 10, 21, 2]                         1
-   *    (a: number, b: number) => a - b
+   *    min(                                               Result:
+   *      [1, 10, 21, 2],                                   1
+   *      (a: number, b: number) => a - b
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1060,11 +1034,10 @@ export class ArrayUtil {
    * Finds the first element of the given `sourceArray` which yields the smallest value measured by `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   *  Parameters:                             Result:
-   *    [1, 10, 21, 2]                         Optional(1)
-   *    (a: number, b: number) => a - b
+   *    minOptional(                                       Result:
+   *      [1, 10, 21, 2],                                   Optional(1)
+   *      (a: number, b: number) => a - b
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1096,11 +1069,10 @@ export class ArrayUtil {
    * and only uses contained elements of provided array.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                               Result:
-   *    [5, 7, 9]                                 315
-   *    (n1: number, n2: number) => n1 * n2
+   *    reduce(                                            Result:
+   *      [5, 7, 9]                                         315
+   *      (n1: number, n2: number) => n1 * n2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1144,11 +1116,10 @@ export class ArrayUtil {
    *    {@link ObjectUtil#equals} comparing items will be used to know if the current element should be removed or not.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3]                            [2]
-   *    [1, 3, 4]
+   *    removeAll(                               Result:
+   *      [1, 2, 3]                              [2]
+   *      [1, 3, 4]
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1167,12 +1138,11 @@ export class ArrayUtil {
    * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                       Result:
-   *    [{'x':2, 'y': 1}, {'x': 1, 'y': 0}, {'x': 1, 'y': 3}]             [{'x':2, 'y': 1}]
-   *    [{'x': 1, 'y': 23}]
-   *    (a: object, b: object) => a.x == b.x
+   *    removeAll(                                                             Result:
+   *      [{'x':2, 'y': 1}, {'x': 1, 'y': 0}, {'x': 1, 'y': 3}],                [{'x':2, 'y': 1}]
+   *      [{'x': 1, 'y': 23}],
+   *      (a: object, b: object) => a.x == b.x
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1224,11 +1194,10 @@ export class ArrayUtil {
    *    {@link ObjectUtil#equals} comparing items will be used to know if the current element should be retained or not.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3]                            [1, 3]
-   *    [1, 3, 4]
+   *    retainAll(                               Result:
+   *      [1, 2, 3],                              [1, 3]
+   *      [1, 3, 4]
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1247,12 +1216,11 @@ export class ArrayUtil {
    * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                       Result:
-   *    [{'x':2, 'y': 1}, {'x': 1, 'y': 0}, {'x': 1, 'y': 3}]             [{'x': 1, 'y': 0}, {'x': 1, 'y': 3}]
-   *    [{'x': 1, 'y': 23}]
-   *    (a: object, b: object) => a.x == b.x
+   *    retainAll(                                                             Result:
+   *      [{'x':2, 'y': 1}, {'x': 1, 'y': 0}, {'x': 1, 'y': 3}],                [{'x': 1, 'y': 0}, {'x': 1, 'y': 3}]
+   *      [{'x': 1, 'y': 23}],
+   *      (a: object, b: object) => a.x == b.x
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1302,17 +1270,13 @@ export class ArrayUtil {
    * sequences of UTF-16 code units values.
    *
    * <pre>
-   * Example 1:
-   *
-   *   Parameters:                            Result:
-   *    [1, 10, 21, 2]                         [1, 10, 2, 21]
-   *
-   *
-   * Example 2:
-   *
-   *   Parameters:                            Result:
-   *    [1, 10, 21, 2]                         [1, 2, 10, 21]
-   *    (a: number, b: number) => a - b
+   *    sort(                                              Result:
+   *      [1, 10, 21, 2]                                    [1, 10, 2, 21]
+   *    )
+   *    sort(                                              Result:
+   *      [1, 10, 21, 2],                                   [1, 2, 10, 21]
+   *      (a: number, b: number) => a - b
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1345,11 +1309,10 @@ export class ArrayUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 3, 4, 5, 6]                      [1, 3]
-   *    (n: number) => 1 == n % 2
+   *    takeWhile(                               Result:
+   *      [1, 3, 4, 5, 6],                        [1, 3]
+   *      (n: number) => 1 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -1379,19 +1342,47 @@ export class ArrayUtil {
 
 
   /**
+   * Returns an array containing the given `elements`.
+   *
+   * <pre>
+   *    toArray(                       Result:
+   *      2                             [2, null, 1]
+   *      null,
+   *      1
+   *    )
+   * </pre>
+   *
+   * @param elements
+   *    Items to include in the returned array
+   *
+   * @return an array which contains all the input `elements`
+   */
+  static toArray = <T>(...elements: NullableOrUndefined<T>[]): T[] => {
+    if (ArrayUtil.isEmpty(elements)) {
+      return [];
+    }
+    const result: T[] = [];
+    for (let elto of elements!) {
+        // @ts-ignore
+        result.push(elto);
+    }
+    return result;
+  }
+
+
+  /**
    * Converts the given `sourceArray` to a {@link Map} using provided `partialFunction`.
    *
    * @apiNote
    *    If several elements return the same key, the last one will be the final value.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [1, 2, 3, 1]                         [(1, 2)
-   *    PartialFunction.of(                   (3, 4)]
-   *      (n: number) => 1 == n % 2,
-   *      (n: number) => [n, 1 + n]
+   *    toMap(                                   Result:
+   *      [1, 2, 3, 1],                           [(1, 2)
+   *      PartialFunction.of(                      (3, 4)]
+   *        (n: number) => 1 == n % 2,
+   *        (n: number) => [n, 1 + n]
+   *      )
    *    )
    * </pre>
    *
@@ -1417,12 +1408,10 @@ export class ArrayUtil {
    *    If several elements return the same key, the last one will be the final value.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                   Result:
-   *    [1, 2, 3, 1]                  [('1', 1),
-   *    (n: number) => '' + n          ('2', 2),
-   *                                   ('3', 3)]
+   *    toMap(                                   Result:
+   *      [1, 2, 3, 1],                           [('1', 1),
+   *      (n: number) => '' + n                    ('2', 2),
+   *    )                                          ('3', 3)]
    * </pre>
    *
    * @param sourceArray
@@ -1446,16 +1435,15 @@ export class ArrayUtil {
    * @apiNote
    *    If several elements return the same key, the last one will be the final value.
    *    If `valueMapper` is `null` or `undefined` then {@link Function1#identity} will be applied.
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate1#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then no one element will be filtered to insert in the returned {@link Map}.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                   Result:
-   *    [1, 2, 3, 1]                  [('1', 2),
-   *    (n: number) => '' + n          ('3', 4)]
-   *    (n: number) => 1 + n
-   *    (n: number) => 1 == n % 2
+   *    toMap(                                   Result:
+   *      [1, 2, 3, 1],                           [('1', 2),
+   *      (n: number) => '' + n,                   ('3', 4)]
+   *      (n: number) => 1 + n,
+   *      (n: number) => 1 == n % 2
+   *    )
    * </pre>
    *
    * @param sourceArray
