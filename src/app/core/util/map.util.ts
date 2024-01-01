@@ -29,15 +29,14 @@ export class MapUtil {
    * verifies {@link PartialFunction#isDefinedAt}, `orElseMapper` otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                        Result:
-   *    [('A', 1), ('B', 2)]                               [('A', 2), ('B', 4)]
-   *    PartialFunction.of(
-   *      ([k, v]: [string, number]) => 1 == v % 2,
-   *      ([k, v]: [string, number]) => [k, 1 + v]
+   *    applyOrElse(                                                 Result:
+   *      [('A', 1), ('B', 2)],                                       [('A', 2), ('B', 4)]
+   *      PartialFunction.of(
+   *        ([k, v]: [string, number]) => 1 == v % 2,
+   *        ([k, v]: [string, number]) => [k, 1 + v]
+   *      ),
+   *      (k: string, v: number)=> [k, 2 * v]
    *    )
-   *    (k: string, v: number)=> [k, 2 * v]
    * </pre>
    *
    * @param sourceMap
@@ -62,16 +61,15 @@ export class MapUtil {
    * `filterPredicate`, `orElseMapper` otherwise.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be updated using `defaultMapper`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                        Result:
-   *    [('A', 1), ('B', 2)]                               [('A', 2), ('B', 4)]
-   *    (k: string, v: number) => [k, 1 + v]
-   *    (k: string, v: number) => [k, 2 * v]
-   *    (k: string, v: number) => 1 == v % 2
+   *    applyOrElse(                                       Result:
+   *      [('A', 1), ('B', 2)],                             [('A', 2), ('B', 4)]
+   *      (k: string, v: number) => [k, 1 + v],
+   *      (k: string, v: number) => [k, 2 * v],
+   *      (k: string, v: number) => 1 == v % 2
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -138,13 +136,12 @@ export class MapUtil {
    *  - Transform its filtered elements using {@link PartialFunction#apply} of `partialFunction`
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                        Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                          [(1, 2)]
-   *    PartialFunction.of(
-   *      ([k, v]: [number, string]) => 1 == k % 2,
-   *      ([k, v]: [number, string]) => [k, v.length]
+   *    collect(                                                     Result:
+   *      [(1, 'Hi'), (2, 'Hello')],                                  [(1, 2)]
+   *      PartialFunction.of(
+   *        ([k, v]: [number, string]) => 1 == k % 2,
+   *        [k, v]: [number, string]) => [k, v.length]
+   *      )
    *    )
    * </pre>
    *
@@ -169,15 +166,14 @@ export class MapUtil {
    *  - Transform its filtered elements using the {@link TFunction2} `mapFunction`
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be transformed.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                       Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                         [(1, 2)]
-   *    (k: number, v: string) => [k, v.length]
-   *    (k: number, v: string) => 1 == k % 2
+   *    collect(                                                     Result:
+   *      [(1, 'Hi'), (2, 'Hello')],                                  [(1, 2)]
+   *      (k: number, v: string) => [k, v.length],
+   *      (k: number, v: string) => 1 == k % 2
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -231,13 +227,12 @@ export class MapUtil {
    * if the key exists its value will be updated with the latest one.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                  Result:
-   *    [                                            [(1, 'Hi'), (2, 'Dear'), (5, 'World')]
-   *      [(1, 'Hi'), (2, 'Hello')],
-   *      [(2, 'Dear'), (5, 'World')]
-   *    ]
+   *    concat(                                            Result:
+   *      [                                                 [(1, 'Hi'), (2, 'Dear'), (5, 'World')]
+   *        [(1, 'Hi'), (2, 'Hello')],
+   *        [(2, 'Dear'), (5, 'World')]
+   *      ]
+   *    )
    * </pre>
    *
    * @param sourceMaps
@@ -252,14 +247,13 @@ export class MapUtil {
    * Returns a new {@link Map} containing the elements of provided `sourceMaps`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                  Result:
-   *    [                                            [(1, 'Hi'), (2, 'Hello'), (5, 'World')]
-   *      [(1, 'Hi'), (2, 'Hello')],
-   *      [(2, 'Dear'), (5, 'World')]
-   *    ]
-   *    (oldV: string, newV: string) => oldV
+   *    concat(                                            Result:
+   *      [                                                 [(1, 'Hi'), (2, 'Hello'), (5, 'World')]
+   *        [(1, 'Hi'), (2, 'Hello')],
+   *        [(2, 'Dear'), (5, 'World')]
+   *      ],
+   *      (oldV: string, newV: string) => oldV
+   *    )
    * </pre>
    *
    * @param mergeValueFunction
@@ -314,13 +308,6 @@ export class MapUtil {
   /**
    * Returns a new {@link Map} containing the elements of provided `sourceMap`.
    *
-   * <pre>
-   * Example:
-   *
-   *   Parameters:                          Result:
-   *    [(1, 'Hi'), (2, 'Hello')]            [(1, 'Hi'), (2, 'Hello')]
-   * </pre>
-   *
    * @param sourceMap
    *    {@link Map} with the elements to copy
    *
@@ -344,11 +331,10 @@ export class MapUtil {
    *    If `filterPredicate` is `null` or `undefined` then the size of `sourceMap` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                       Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                         1
-   *    (k: number, v: string) => 0 == k % 2
+   *    count(                                             Result:
+   *      [(1, 'Hi'), (2, 'Hello')],                        1
+   *      (k: number, v: string) => 0 == k % 2
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -385,11 +371,10 @@ export class MapUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                          Result:
-   *    [(2, 'Hi'), (4, 'Hello'), (3, 'World')]              [(3, 'World')]
-   *    (k: number, v: string) => 0 == k % 2
+   *    dropWhile(                                                   Result:
+   *      [(2, 'Hi'), (4, 'Hello'), (3, 'World')],                    [(3, 'World')]
+   *      (k: number, v: string) => 0 == k % 2
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -434,11 +419,10 @@ export class MapUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                  Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(3, 'World')]
-   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   *    filter(                                                                Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              [(3, 'World')]
+   *      (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -474,11 +458,10 @@ export class MapUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                  Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      [(1, 'Hi'), (2, 'Hello')]
-   *    (k: number, v: string) => 1 == k % 2 && 2 > v.length()
+   *    filterNot(                                                             Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              [(1, 'Hi'), (2, 'Hello')]
+   *      (k: number, v: string) => 1 == k % 2 && 2 > v.length()
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -506,11 +489,10 @@ export class MapUtil {
    * Returns from the given `sourceMap` the first element that verifies the provided `filterPredicate`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                  Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      (3, 'World')
-   *    (k: number, v: string) => 1 == k % 2 && 2 > v.length()
+   *    find(                                                                  Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              (3, 'World')
+   *      (k: number, v: string) => 1 == k % 2 && 2 > v.length()
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -543,11 +525,10 @@ export class MapUtil {
    * `filterPredicate`, {@link Optional#empty} otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                  Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                      Optional(3, 'World')
-   *    (k: number, v: string) => 1 == k % 2 && 2 > v.length()
+   *    findOptional(                                                          Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              Optional(3, 'World')
+   *      (k: number, v: string) => 1 == k % 2 && 2 > v.length()
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -573,12 +554,11 @@ export class MapUtil {
    * elements of `sourceMap`, going left to right.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                         Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                                           10
-   *    0
-   *    (prev: number, k: number, v: string) => prev + k + v.length()
+   *    foldLeft(                                                              Result:
+   *      [(1, 'Hi'), (2, 'Hello')],                                            10
+   *      0,
+   *      (prev: number, k: number, v: string) => prev + k + v.length()
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -608,13 +588,12 @@ export class MapUtil {
    * elements of `sourceMap`, going left to right.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                         Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                             3
-   *    0
-   *    (prev: number, k: number, v: string) => prev + k + v.length()
-   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   *    foldLeft(                                                              Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              3
+   *      0,
+   *      (prev: number, k: number, v: string) => prev + k + v.length(),
+   *      (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -688,12 +667,11 @@ export class MapUtil {
    * Returns the value associated with the given `key` if `sourceMap` contains it, `defaultValue` otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                      Result:
-   *    [(1, 'Hi'), (2, 'Hello')]        'Hi'
-   *    1
-   *    'World'
+   *    getOrElse(                               Result:
+   *      [(1, 'Hi'), (2, 'Hello')],              'Hi'
+   *      1,
+   *      'World'
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -716,12 +694,11 @@ export class MapUtil {
    * `defaultValue` otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                      Result:
-   *    [(1, 'Hi'), (2, 'Hello')]        'World'
-   *    5
-   *    () => 'World'
+   *    getOrElse(                               Result:
+   *      [(1, 'Hi'), (2, 'Hello')]               'World'
+   *      5,
+   *      () => 'World'
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -757,15 +734,14 @@ export class MapUtil {
    * Partitions `sourceMap` into a {@link Map} of maps according to given `discriminator` {@link TFunction2}.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                   Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (11, 'Ok')]           [(0, [(2, 'Hello')])
-   *    (k: number, v: string) => k % 2                                (1, [(1, 'Hi'), (7, 'World')]]
-   *    (k: number, v: string) => 10 > k
+   *    groupBy(                                                               Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (11, 'Ok')],                  [(0, [(2, 'Hello')])
+   *      (k: number, v: string) => k % 2,                                       (1, [(1, 'Hi'), (7, 'World')]]
+   *      (k: number, v: string) => 10 > k
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -799,29 +775,27 @@ export class MapUtil {
    * Partitions `sourceMap` into a {@link Map} of maps according to given `discriminator` {@link TFunction2}.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied. This method is
-   *  to {@link MapUtil#groupBy} but `discriminator` returns an array of related key values.
+   *    This method is to {@link MapUtil#groupBy} but `discriminator` returns an array of related key values.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                   Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (11, 'Ok')]           [("evenKey", [(2, 'Hello')])
-   *    (k: number, v: string) => {                                    ("oddKey", [(1, 'Hi'), (7, 'World')]]
-   *      const keys: string[] = [];                                   ("smaller5Key", [(1, 'Hi'), (2, 'Hello')])
-   *      if (0 == k % 2) {                                            ("greaterEqual5Key", [(7, 'World')])]
-   *        keys.push("evenKey");
-   *      else {
-   *        keys.push("oddKey");
-   *      }
-   *      if (5 > k) {
-   *        keys.push("smaller5Key");
-   *      } else {
-   *        keys.push("greaterEqual5Key");
-   *      }
-   *      return keys;
-   *    }
-   *    (k: number, v: string) => 10 > k
+   *    groupByMultiKey(                                                       Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (11, 'Ok')],                  [('evenKey', [(2, 'Hello')])
+   *      (k: number, v: string) => {                                            ('oddKey', [(1, 'Hi'), (7, 'World')]]
+   *        const keys: string[] = [];                                           ('smaller5Key', [(1, 'Hi'), (2, 'Hello')])
+   *        if (0 == k % 2) {                                                    ('greaterEqual5Key', [(7, 'World')])]
+   *          keys.push('evenKey');
+   *        else {
+   *          keys.push('oddKey');
+   *        }
+   *        if (5 > k) {
+   *          keys.push('smaller5Key');
+   *        } else {
+   *          keys.push('greaterEqual5Key');
+   *        }
+   *        return keys;
+   *      },
+   *      (k: number, v: string) => 10 > k
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -883,13 +857,12 @@ export class MapUtil {
    * the same `key` in an array of values.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                   Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')]            [(1, [2, 5])
-   *    PartialFunction.of(                                            (2, [2])]
-   *      ([k, v]: [number, string]) => 1 == k % 2 || 6 < k,
-   *      ([k, v]: [number, string]) => [k % 3, v.length]
+   *    groupMap(                                                              Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')],                   [(1, [2, 5])
+   *      PartialFunction.of(                                                    (2, [2])]
+   *        ([k, v]: [number, string]) => 1 == k % 2 || 6 < k,
+   *        ([k, v]: [number, string]) => [k % 3, v.length]
+   *      )
    *    )
    * </pre>
    *
@@ -912,16 +885,15 @@ export class MapUtil {
    * element verifies `filterPredicate`. All values with the same `key` will be added in an array.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                   Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')]            [(1, [2, 5])
-   *    (k: number, v: string) => k % 3                                (2, [2])]
-   *    (k: number, v: string) => v.length
-   *    (k: number, v: string) => 1 == k % 2 || 6 < k
+   *    groupMap(                                                              Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')],                   [(1, [2, 5])
+   *      (k: number, v: string) => k % 3,                                       (2, [2])]
+   *      (k: number, v: string) => v.length,
+   *      (k: number, v: string) => 1 == k % 2 || 6 < k
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -985,14 +957,13 @@ export class MapUtil {
    * after applying {@link PartialFunction#apply} are then reduced into a single value with `reduceValues`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                                      Intermediate Map:         Result:
-   *    [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')]           [(0,  [2])                [(0, 2),
-   *    (n1: number, n2: number) => n1 + n2                                               (1,  [3, 1])              (1, 4)
-   *    PartialFunction.of(                                                               (2,  [5, 6])]             (2, 11)]
-   *      ([k, v]: [number, string]) => 10 > k,
-   *      ([k, v]: [number, string]) => [k % 3, v.length + 1]
+   *    groupMapReduce(                                                                  Intermediate Map:             Result:
+   *      [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')],         [(0,  [2])                    [(0, 2),
+   *      (n1: number, n2: number) => n1 + n2,                                             (1,  [3, 1])                  (1, 4)
+   *      PartialFunction.of(                                                              (2,  [5, 6])]                 (2, 11)]
+   *        ([k, v]: [number, string]) => 10 > k,
+   *        ([k, v]: [number, string]) => [k % 3, v.length + 1]
+   *      )
    *    )
    * </pre>
    *
@@ -1025,13 +996,12 @@ export class MapUtil {
    * then reduced into a single value with `reduceValues`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                                     Intermediate Map:          Result:
-   *    [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')]          [(0,  [2])                 [(0, 2),
-   *    (n1: number, n2: number) => n1 + n2                                              (1,  [3, 1])               (1, 4)
-   *    (n: number) => n % 3                                                             (2,  [5, 6, 4])]           (2, 15)]
-   *    (s: string) => s.length + 1
+   *    groupMapReduce(                                                                  Intermediate Map:             Result:
+   *      [(1, 'Hi'), (2, 'Hola'), (4, ''), (5, 'World'), (6, '!'), (11, 'ABC')],          [(0,  [2])                 [(0, 2),
+   *      (n1: number, n2: number) => n1 + n2,                                              (1,  [3, 1])               (1, 4)
+   *      (n: number) => n % 3,                                                             (2,  [5, 6, 4])]           (2, 15)]
+   *      (s: string) => s.length + 1
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1105,11 +1075,10 @@ export class MapUtil {
    * Returns a new {@link Map} by applying the {@link TFunction2} `mapFunction` a function to all elements of `sourceMap`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                       Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                         [(1, 2), (2, 4)]
-   *    (k: number, v: string) => [k, v.length]
+   *    map(                                               Result:
+   *      [(1, 'Hi'), (2, 'Hello')],                        [(1, 2), (2, 4)]
+   *      (k: number, v: string) => [k, v.length]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1146,11 +1115,10 @@ export class MapUtil {
    * Finds the first element of provided {@link Map} which yields the largest element measured by given `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   * Parameters:                                                          Result:
-   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          [11, 'k']
-   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    max(                                                                   Result:
+   *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')],                            [11, 'k']
+   *      (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1195,11 +1163,10 @@ export class MapUtil {
    * Finds the first element of provided {@link Map} which yields the largest element measured by given `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   * Parameters:                                                          Result:
-   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          Optional([11, 'k'])
-   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    maxOptional(                                                           Result:
+   *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')],                            Optional([11, 'k'])
+   *      (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1226,11 +1193,10 @@ export class MapUtil {
    * Finds the first element of provided {@link Map} which yields the smallest element measured by given `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   * Parameters:                                                          Result:
-   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          [1, 'a']
-   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    min(                                                                   Result:
+   *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')],                            [1, 'a']
+   *      (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1275,11 +1241,10 @@ export class MapUtil {
    * Finds the first element of provided {@link Map} which yields the smallest element measured by given `comparator`.
    *
    * <pre>
-   * Example:
-   *
-   * Parameters:                                                          Result:
-   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                          Optional([1, 'a'])
-   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    minOptional(                                                           Result:
+   *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')],                            Optional([1, 'a'])
+   *      (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1366,12 +1331,11 @@ export class MapUtil {
    * and only uses contained elements of provided {@link Map}.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                         Result:
-   *    [(1, 'Hi'), (2, 'Hello')]                                           [3, 'Hi Hello']
-   *    (prev: [number, string], current: [number, string]) =>
-   *       [prev[0] + current[0], prev[1] + ' ' + current[1]]
+   *    reduce(                                                                Result:
+   *      [(1, 'Hi'), (2, 'Hello')],                                            [3, 'Hi Hello']
+   *      (prev: [number, string], current: [number, string]) =>
+   *        [prev[0] + current[0], prev[1] + ' ' + current[1]]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1426,11 +1390,10 @@ export class MapUtil {
    * removed or not.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                        Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(2, 'Hello')]
-   *    [(1, 'Hi'), (3, 'World'), (4, 'Hola')]
+   *    removeAll(                                                   Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                    [(2, 'Hello')]
+   *      [(1, 'Hi'), (3, 'World'), (4, 'Hola')]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1449,12 +1412,11 @@ export class MapUtil {
    * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                        Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(2, 'Hello')]
-   *    [(1, 'Hi'), (3, 'World2'), (4, 'Hola')]
-   *    (a: [number, string], b: [number, string]) => a[0] == b[0]
+   *    removeAll(                                                             Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              [(2, 'Hello')]
+   *      [(1, 'Hi'), (3, 'World'), (4, 'Hola')],
+   *      (a: [number, string], b: [number, string]) => a[0] == b[0]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1511,11 +1473,10 @@ export class MapUtil {
    * retained or not.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                        Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(1, 'Hi'), (3, 'World')]
-   *    [(1, 'Hi'), (3, 'World'), (4, 'Hola')]
+   *    retainAll(                                                   Result:
+   *      [[(1, 'Hi'), (2, 'Hello'), (3, 'World')]                    [(1, 'Hi'), (3, 'World')]
+   *      [(1, 'Hi'), (3, 'World'), (4, 'Hola')]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1534,12 +1495,11 @@ export class MapUtil {
    * provided {@link TPredicate2} `areEqualsComparison` to know when two elements are equals.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                        Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                            [(1, 'Hi'), (3, 'World')]
-   *    [(1, 'Hi'), (3, 'World2'), (4, 'Hola')]
-   *    (a: [number, string], b: [number, string]) => a[0] == b[0]
+   *    retainAll(                                                             Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                               [(1, 'Hi'), (3, 'World')]
+   *      [(1, 'Hi'), (3, 'World'), (4, 'Hola')],
+   *      (a: [number, string], b: [number, string]) => a[0] == b[0]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1593,17 +1553,13 @@ export class MapUtil {
    * sequences of UTF-16 code units values.
    *
    * <pre>
-   * Example 1:
-   *
-   *   Parameters:                                                      Result:
-   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                        [(1, 'a'), (11, 'k'), (3, 'c'), (4, 'd')]
-   *
-   *
-   * Example 2:
-   *
-   *  Parameters:                                                       Result:
-   *    [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                        [(1, 'a'), (3, 'c'), (4, 'd'), (11, 'k')]
-   *    (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    sort(                                                                  Result:
+   *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                             [(1, 'a'), (11, 'k'), (3, 'c'), (4, 'd')]
+   *    )
+   *    sort(                                                                   Result:
+   *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')],                            [(1, 'a'), (3, 'c'), (4, 'd'), (11, 'k')]
+   *      (a: [number, string], b: [number, string]) => a[0] - b[0]
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1641,11 +1597,10 @@ export class MapUtil {
    *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                          Result:
-   *    [(2, 'Hi'), (4, 'Hello'), (3, 'World')]              [(2, 'Hi'), (4, 'Hello')]
-   *    (k: number, v: string) => 0 == k % 2
+   *    takeWhile(                                                   Result:
+   *      [(2, 'Hi'), (4, 'Hello'), (3, 'World')],                    [(2, 'Hi'), (4, 'Hello')]
+   *      (k: number, v: string) => 0 == k % 2
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1683,11 +1638,10 @@ export class MapUtil {
    * Converts the given {@link Map} `sourceMap` in to an array using provided `keyValueMapper`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                          Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]              ['1-Hi', '2-Hello', '3-World']
-   *    (k: number, v: string) => k + '-' + v
+   *    toArray(                                                     Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                    ['1-Hi', '2-Hello', '3-World']
+   *      (k: number, v: string) => k + '-' + v
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1708,15 +1662,14 @@ export class MapUtil {
    * the elements that satisfy the {@link TPredicate2} `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then {@link Predicate2#alwaysTrue} will be applied.
+   *    If `filterPredicate` is `null` or `undefined` then no one element will be filtered to insert in the returned array.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                    Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                        ['3-World']
-   *    (k: number, v: string) => k + '-' + v
-   *    (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   *    toArray(                                                               Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              ['3-World']
+   *      (k: number, v: string) => k + '-' + v,
+   *      (k: number, v: string) => 1 == k % 2 && 2 < v.length()
+   *    )
    * </pre>
    *
    * @param sourceMap
@@ -1739,13 +1692,12 @@ export class MapUtil {
    * Converts the given {@link Map} `sourceMap` in to an array using provided {@link PartialFunction} `partialFunction`.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                                                    Result:
-   *    [(1, 'Hi'), (2, 'Hello'), (3, 'World')]                        ['3-World']
-   *    PartialFunction.of(
-   *      (k: number, v: string) => 1 == k % 2 && 2 < v.length(),
-   *      (k: number, v: string) => k + '-' + v
+   *    toArray(                                                               Result:
+   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              ['3-World']
+   *      PartialFunction.of(
+   *        (k: number, v: string) => 1 == k % 2 && 2 < v.length(),
+   *        (k: number, v: string) => k + '-' + v
+   *      )
    *    )
    * </pre>
    *

@@ -19,10 +19,12 @@ export class ObjectUtil {
    * Returns the first not `null` and not `undefined` value of the provided ones.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                    Result:
-   *    null, undefined, 12, 15        12
+   *    coalesce(                      Result:
+   *      null,                         0
+   *      undefined,
+   *      12,
+   *      15
+   *    )
    * </pre>
    *
    * @param valuesToVerify
@@ -51,10 +53,12 @@ export class ObjectUtil {
    * {@link Optional#empty} otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                    Result:
-   *    null, undefined, 12, 15        Optional(12)
+   *    coalesce(                      Result:
+   *      null,                         Optional(12)
+   *      undefined,
+   *      12,
+   *      15
+   *    )
    * </pre>
    *
    * @param valuesToVerify
@@ -271,11 +275,10 @@ export class ObjectUtil {
    * the result after invoking `defaultValue` otherwise.
    *
    * <pre>
-   * Example:
-   *
-   *   Parameters:                    Result:
-   *    null                           'DEFAULT VALUE'
-   *    () => 'DEFAULT VALUE'
+   *    getOrElse(                               Result:
+   *      null,                                   'DEFAULT VALUE'
+   *      () => 'DEFAULT VALUE'
+   *    )
    * </pre>
    *
    * @param valueToVerify
