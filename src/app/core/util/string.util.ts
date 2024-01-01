@@ -353,7 +353,7 @@ export class StringUtil {
 
 
   static join<T>(sourceArray: NullableOrUndefined<T[]>,
-                 toString: FFunction1<T, string>,
+                 toString: TFunction1<T, string>,
                  filterPredicate?: TPredicate1<T>,
                  separator?: string): string {
     if (ArrayUtil.isEmpty(sourceArray)) {
