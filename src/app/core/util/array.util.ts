@@ -422,6 +422,42 @@ export class ArrayUtil {
 
 
   /**
+   * Returns from the given `sourceArray` the last element that verifies the provided `filterPredicate`.
+   *
+   * <pre>
+   *    findLast(                                                                             Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            [{id: 3, name: 'user3'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to search
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter
+   *
+   * @return `undefined` if `sourceArray` has no elements, `filterPredicate` is `null` or `undefined`
+   *         or no one verifies provided `filterPredicate`.
+   *         Otherwise, the last element that verifies `filterPredicate`.
+   */
+  static findLast = <T>(sourceArray: NullableOrUndefined<T[]>,
+                        filterPredicate: TPredicate1<T>): OrUndefined<T> => {
+    if (this.isEmpty(sourceArray) ||
+        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return undefined;
+    }
+    const finalFilterPredicate = Predicate1.of(filterPredicate);
+    for (let i = sourceArray!.length - 1; i >= 0; i--) {
+      const currentElement = sourceArray![i];
+      if (finalFilterPredicate.apply(currentElement)) {
+        return currentElement;
+      }
+    }
+    return undefined;
+  }
+
+
+  /**
    *    Returns an {@link Optional} containing the first element of the given `sourceArray` that verifies the provided
    * `filterPredicate`, {@link Optional#empty} otherwise.
    *

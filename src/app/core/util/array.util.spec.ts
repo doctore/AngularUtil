@@ -568,6 +568,87 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('findLast', () => {
+
+    it('when given sourceArray is undefined, null or is an empty array then undefined is returned', () => {
+      let undefinedArray: Role[];
+      // @ts-ignore
+      let nullArray: Role[] = null;
+      let emptyArray: Role[] = [];
+
+      const isIdOdd: Predicate1<Role> =
+        Predicate1.of((role: Role) => 1 == role.id % 2);
+
+      // @ts-ignore
+      expect(ArrayUtil.findLast(undefinedArray, isIdOdd)).toBeUndefined();
+      expect(ArrayUtil.findLast(nullArray, isIdOdd)).toBeUndefined();
+      expect(ArrayUtil.findLast(emptyArray, isIdOdd)).toBeUndefined();
+    });
+
+
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then undefined is returned', () => {
+      // @ts-ignore
+      expect(ArrayUtil.findLast([1], undefined)).toBeUndefined();
+
+      // @ts-ignore
+      expect(ArrayUtil.findLast([1], null)).toBeUndefined();
+    });
+
+
+    it('using interfaces, when there is no element that matches provided filter then undefined is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 2, name: 'role3' } as Role;
+      const r4 = { id: 4, name: 'role2' } as Role;
+
+      const isIdGreaterThan10: Predicate1<Role> =
+        Predicate1.of((role: Role) => 10 < role.id);
+
+      expect(ArrayUtil.findLast([r1, r2, r3, r4], isIdGreaterThan10)).toBeUndefined();
+    });
+
+
+    it('using classes, when there is no element that matches provided filter then undefined is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const sourceArray = [u1, u2, u3, u4];
+
+      const isIdGreaterThan10: FPredicate1<NullableOrUndefined<User>> =
+        (user: NullableOrUndefined<User>) => 10 < user!.id;
+
+      expect(ArrayUtil.findLast(sourceArray, isIdGreaterThan10)).toBeUndefined();
+    });
+
+
+    it('using interfaces, when there is an element that matches provided filter then expected element is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 2, name: 'role3' } as Role;
+      const r4 = { id: 4, name: 'role2' } as Role;
+
+      const isEven = (role: Role) => 0 == role!.id % 2;
+
+      expect(ArrayUtil.findLast([r1, r2, r3, r4], isEven)).toEqual(r4);
+    });
+
+
+    it('using classes, when there is an element that matches provided filter then expected element is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+
+      const isIdOdd = (user: User) => 1 == user.id % 2;
+
+      expect(ArrayUtil.findLast([u1, u2, u3, u4], isIdOdd)).toEqual(u3);
+    });
+
+  });
+
+
+
   describe('findOptional', () => {
 
     it('when given sourceArray is undefined, null or is an empty array then empty Optional is returned', () => {
