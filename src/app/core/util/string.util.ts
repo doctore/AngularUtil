@@ -1,7 +1,9 @@
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
 import { FFunction1, Function1, TFunction1 } from '@app-core/types/function';
+import { Optional } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
+import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  * Helper functions to manage strings.
@@ -18,15 +20,17 @@ export class StringUtil {
 
   static EMPTY_STRING: string = '';
 
+  static INDEX_NOT_FOUND: number = -1;
+
 
   /**
    * Abbreviates the given `sourceString` using provided `abbreviationString` as replacement marker.
    * <p>
    *    The following use cases will not return the expected replaced {@link String}:</p>
    *    <ul>
-   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} will be returned</li>
-   *      <li>If `maxLength` is less than or equal to 0 then empty {@link String} will be returned</li>
-   *      <li>If `maxLength` is greater than or equal to `sourceString`'s length then `sourceString` will be returned</li>
+   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If `maxLength` is less than or equal to 0 then empty {@link String} is returned</li>
+   *      <li>If `maxLength` is greater than or equal to `sourceString`'s length then `sourceString` is returned</li>
    *    </ul>
    * <p>
    *    If `sourceString` is less than the first character of `sourceString` and `abbreviationString`'s length,
@@ -39,6 +43,7 @@ export class StringUtil {
    * Examples:
    * <pre>
    *    abbreviate(null, *, *)           = ''
+   *    abbreviate(undefined, *, *)      = ''
    *    abbreviate('abc', -1, '.')       = ''
    *    abbreviate('abc', 1, '.')        = IllegalArgumentError (minimum `maxLength` must be 2)
    *    abbreviate('abc', 3, '.')        = 'abc'
@@ -58,8 +63,8 @@ export class StringUtil {
    * @return the abbreviated {@link String} if `maxLength` is greater than `sourceString`'s length,
    *         `sourceString` otherwise
    *
-   * @throws IllegalArgumentError if `maxLength` is less than the first character of `sourceString`
-   *                              and `abbreviationString`'s length
+   * @throws {@link IllegalArgumentError} if `maxLength` is less than the first character of `sourceString`
+   *                                      and `abbreviationString`'s length
    */
   static abbreviate = (sourceString: NullableOrUndefined<string>,
                        maxLength: number,
@@ -93,9 +98,9 @@ export class StringUtil {
    * <p>
    * The following use cases will not return the expected replaced {@link String}:
    *    <ul>
-   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} will be returned</li>
-   *      <li>If `maxLength` is less than or equal to 0 then empty {@link String} will be returned</li>
-   *      <li>If `maxLength` is greater than or equal to `sourceString`'s length then `sourceString` will be returned</li>
+   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If `maxLength` is less than or equal to 0 then empty {@link String} is returned</li>
+   *      <li>If `maxLength` is greater than or equal to `sourceString`'s length then `sourceString` is returned</li>
    *    </ul>
    * <p>
    *    If `maxLength` is less than the first and last characters of `sourceString` and `abbreviationString`'s length,
@@ -108,6 +113,7 @@ export class StringUtil {
    * Examples:
    * <pre>
    *    abbreviateMiddle(null, *, *)           = ''
+   *    abbreviateMiddle(undefined, *, *)      = ''
    *    abbreviateMiddle('abc', -1, '.')       = ''
    *    abbreviateMiddle('abc', 2, '.')        = IllegalArgumentError (minimum `maxLength` must be 3)
    *    abbreviateMiddle('abc', 3, '.')        = 'abc'
@@ -127,8 +133,8 @@ export class StringUtil {
    * @return the abbreviated {@link String} if `maxLength` is greater than `sourceString`'s length,
    *         `sourceString` otherwise
    *
-   * @throws IllegalArgumentError if `maxLength` is less than the first and last characters of `sourceString` and
-   *                              `abbreviationString`'s length
+   * @throws {@link IllegalArgumentError} if `maxLength` is less than the first and last characters of `sourceString` and
+   *                                      `abbreviationString`'s length
    */
   static abbreviateMiddle = (sourceString: NullableOrUndefined<string>,
                              maxLength: number,
@@ -150,12 +156,161 @@ export class StringUtil {
       'given sourceString: ' + sourceString + ' using abbreviationString: ' + finalAbbreviationString
     );
     const sizeOfDisplayedSourceString = maxLength - finalAbbreviationString.length;
-    const startOffset = Math.floor((sizeOfDisplayedSourceString / 2) + (sizeOfDisplayedSourceString % 2));
-    const endOffset = Math.ceil(sourceString!.length - (sizeOfDisplayedSourceString / 2));
-
+    const startOffset = Math.floor(
+      (sizeOfDisplayedSourceString / 2) + (sizeOfDisplayedSourceString % 2)
+    );
+    const endOffset = Math.ceil(
+      sourceString!.length - (sizeOfDisplayedSourceString / 2)
+    );
     return sourceString!.substring(0, startOffset)
       + finalAbbreviationString
       + sourceString!.substring(endOffset);
+  }
+
+
+  /**
+   * Verifies if the given `sourceString` contains `stringToSearch` ignoring case.
+   *
+   * <pre>
+   *    containsIgnoreCase(null, *)       = false
+   *    containsIgnoreCase(undefined, *)  = false
+   *    containsIgnoreCase('', 'a')       = false
+   *    containsIgnoreCase('abc', 'ac')   = false
+   *    containsIgnoreCase('', '')        = true
+   *    containsIgnoreCase('a', '')       = true
+   *    containsIgnoreCase('ABcD', 'bC')  = true
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to check if contains `stringToSearch`
+   * @param stringToSearch
+   *    {@link String} to search
+   *
+   * @return `true` if `sourceString` contains `stringToSearch`, `false` otherwise.
+   */
+  static containsIgnoreCase = (sourceString: NullableOrUndefined<string>,
+                               stringToSearch: NullableOrUndefined<string>): boolean => {
+    if (ObjectUtil.isNullOrUndefined(sourceString) ||
+        ObjectUtil.isNullOrUndefined(stringToSearch)) {
+      return false;
+    }
+    return StringUtil.INDEX_NOT_FOUND !=
+             sourceString.toLowerCase().indexOf(
+               stringToSearch.toLowerCase()
+             );
+  }
+
+
+  /**
+   * Counts how many times `stringToSearch` appears in the given `sourceString`.
+   *
+   * @apiNote
+   *    Only counts non-overlapping matches.
+   * <p>
+   * Examples:
+   * <pre>
+   *    count(null, *)        = 0
+   *    count('', *)          = 0
+   *    count(*, null)        = 0
+   *    count('', null)       = 0
+   *    count('abcab', 'ab')  = 2
+   *    count('abcab', 'xx')  = 0
+   *    count('aaaaa', 'aa')  = 2
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to check
+   * @param stringToSearch
+   *    {@link String} to count
+   *
+   * @return the number of occurrences, 0 if `stringToSearch` or `sourceString` are `null`, `undefined` or empty
+   */
+  static count = (sourceString: NullableOrUndefined<string>,
+                  stringToSearch: NullableOrUndefined<string>): number => {
+    if (this.isEmpty(sourceString) ||
+        this.isEmpty(stringToSearch)) {
+      return 0;
+    }
+    let count = 0;
+    let idx = 0;
+    while ((idx = sourceString!.indexOf(stringToSearch!, idx)) != StringUtil.INDEX_NOT_FOUND) {
+      count++;
+      idx += stringToSearch!.length;
+    }
+    return count;
+  }
+
+
+  /**
+   * Selects all characters of `sourceString` which satisfy the {@link TPredicate1} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then `sourceString` will be returned.
+   *
+   * <pre>
+   *    filter(                                         Result:
+   *      'abcDEfgIoU12',                                'aEIoU'
+   *      c => -1 != 'aeiouAEIOU'.indexOf(c)
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter characters from `sourceString`
+   *
+   * @return characters of `sourceString` which satisfy `filterPredicate`
+   */
+  static filter = (sourceString: NullableOrUndefined<string>,
+                   filterPredicate: NullableOrUndefined<TPredicate1<string>>): string => {
+    if (this.isEmpty(sourceString)) {
+      return StringUtil.EMPTY_STRING;
+    }
+    if (ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return sourceString!;
+    }
+    const finalFilterPredicate = Predicate1.of(filterPredicate);
+    let result = '';
+    for (let i = 0; i < sourceString!.length; i++) {
+      const currentChar = sourceString![i];
+      if (finalFilterPredicate.apply(currentChar)) {
+        result += currentChar;
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Selects all characters of `sourceString` which do not satisfy the {@link TPredicate1} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then `sourceString` will be returned.
+   *
+   * <pre>
+   *    filterNot(                                      Result:
+   *      'abcDEfgIoU12',                                'abcDEfgIoU12'
+   *      c => -1 != 'aeiouAEIOU'.indexOf(c)
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter characters from `sourceString`
+   *
+   * @return characters of `sourceString` which do not satisfy `filterPredicate`
+   */
+  static filterNot = (sourceString: NullableOrUndefined<string>,
+                      filterPredicate: NullableOrUndefined<TPredicate1<string>>): string => {
+    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      ? null
+      : Predicate1.of(filterPredicate).not();
+
+    return this.filter(
+      sourceString,
+      finalFilterPredicate
+    );
   }
 
 
@@ -176,13 +331,39 @@ export class StringUtil {
 
 
   /**
+   * Return the given `sourceString` if is not `null`, `undefined` or empty. Otherwise, returns `defaultValue`.
+   *
+   * <pre>
+   *    getNotEmptyOrElse(null, 'other')       = 'other'
+   *    getNotEmptyOrElse(undefined, 'other')  = 'other'
+   *    getNotEmptyOrElse('', 'other')         = 'other'
+   *    getNotEmptyOrElse('', '')              = ''
+   *    getNotEmptyOrElse('  ', 'other')       = '  '
+   *    getNotEmptyOrElse('abc', 'other')      = 'abc'
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to check
+   * @param defaultValue
+   *    Alternative value to return
+   *
+   * @return `sourceString` if contains characters, `defaultValue` otherwise
+   */
+  static getNotEmptyOrElse = (sourceString: NullableOrUndefined<string>,
+                              defaultValue: string): string =>
+      Optional.ofNullable<string>(sourceString)
+        .filter(s => !this.isEmpty(s))
+        .getOrElse(defaultValue);
+
+
+  /**
    *    Abbreviates the given `sourceString` to the length passed, replacing the middle characters with the supplied
    * `abbreviationString`.
    * <p>
    * The following use cases will not return the expected replaced {@link String}:
    *    <ul>
-   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} will be returned</li>
-   *      <li>If `maxLength` is less than or equal to 0 then empty {@link String} will be returned</li>
+   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If `maxLength` is less than or equal to 0 then empty {@link String} is returned</li>
    *    </ul>
    * <p>
    *    If `maxLength` is less than the first and last characters of `sourceString` and `abbreviationString`'s length,
@@ -208,6 +389,7 @@ export class StringUtil {
    * Examples:
    * <pre>
    *    hideMiddle(null, *, *)           = ''
+   *    hideMiddle(undefined, *, *)      = ''
    *    hideMiddle('abc', -1, '.')       = ''
    *    hideMiddle('abc', 2, '.')        = IllegalArgumentError (minimum `maxLength` must be 3)
    *    hideMiddle('abc', 3, '.')        = 'a.c'
@@ -227,8 +409,8 @@ export class StringUtil {
    * @return the abbreviated {@link String} if `maxLength` is greater than 2,
    *         `sourceString` otherwise
    *
-   * @throws IllegalArgumentError if `maxLength` is less than the first and last characters of `sourceString` and
-   *                              `abbreviationString`'s length
+   * @throws {@link IllegalArgumentError} if `maxLength` is less than the first and last characters of `sourceString` and
+   *                                      `abbreviationString`'s length
    */
   static hideMiddle = (sourceString: NullableOrUndefined<string>,
                        maxLength: number,
@@ -253,9 +435,12 @@ export class StringUtil {
       ? maxLength - finalAbbreviationString.length
       : sourceString!.length - finalAbbreviationString.length;
 
-    const startOffset = Math.floor((sizeOfDisplayedSourceString / 2) + (sizeOfDisplayedSourceString % 2));
-    const endOffset = Math.ceil(sourceString!.length - (sizeOfDisplayedSourceString / 2));
-
+    const startOffset = Math.floor(
+      (sizeOfDisplayedSourceString / 2) + (sizeOfDisplayedSourceString % 2)
+    );
+    const endOffset = Math.ceil(
+      sourceString!.length - (sizeOfDisplayedSourceString / 2)
+    );
     return sourceString!.substring(0, startOffset)
       + finalAbbreviationString
       + sourceString!.substring(endOffset);
@@ -387,11 +572,12 @@ export class StringUtil {
    * @apiNote
    *    If `size` is less than 0 then 0 will be used. If `padString` is `null`, `undefined` or empty then
    * {@link StringUtil#BLANK_SPACE} will be used.
-   *
+   * <p>
+   * Examples:
    * <pre>
-   *    leftPad(null, -1, *)     = ''
-   *    leftPad(null, 0, *)      = ''
-   *    leftPad(null, 2, 'z')    = 'zz'
+   *    leftPad(null, -1, *)     = ''       // Same result with undefined
+   *    leftPad(null, 0, *)      = ''       // Same result with undefined
+   *    leftPad(null, 2, 'z')    = 'zz'     // Same result with undefined
    *    leftPad('', 3, 'z')      = 'zzz'
    *    leftPad('bat', -1, 'z')  = 'bat'
    *    leftPad('bat', 1, 'z')   = 'bat'
@@ -438,11 +624,12 @@ export class StringUtil {
    * @apiNote
    *    If `size` is less than 0 then 0 will be used. If `padString` is `null`, `undefined` or empty then
    * {@link StringUtil#BLANK_SPACE} will be used.
-   *
+   * <p>
+   * Examples:
    * <pre>
-   *    rightPad(null, -1, *)     = ''
-   *    rightPad(null, 0, *)      = ''
-   *    rightPad(null, 2, 'z')    = 'zz'
+   *    rightPad(null, -1, *)     = ''      // Same result with undefined
+   *    rightPad(null, 0, *)      = ''      // Same result with undefined
+   *    rightPad(null, 2, 'z')    = 'zz'    // Same result with undefined
    *    rightPad('', 3, 'z')      = 'zzz'
    *    rightPad('bat', -1, 'z')  = 'bat'
    *    rightPad('bat', 1, 'z')   = 'bat'
@@ -574,5 +761,197 @@ export class StringUtil {
     }
     return currentSplitValues;
   }
+
+
+  /**
+   * Returns the substring of `sourceString` after first occurrence of a `separator`. `separator` is not returned.
+   * <p>
+   *    The following are special use cases:</p>
+   *    <ul>
+   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If `separator` is `null` or `undefined` then empty {@link String} is returned</li>
+   *      <li>If `separator` is empty then `sourceString` is returned</li>
+   *      <li>If nothing is found, empty {@link String} is returned</li>
+   *    </ul>
+   * <p>
+   * Examples:
+   * <pre>
+   *    substringAfter(null, *)       = ''
+   *    substringAfter(undefined, *)  = ''
+   *    substringAfter('', *)         = ''
+   *    substringAfter(*, null)       = ''
+   *    substringAfter(*, undefined)  = ''
+   *    substringAfter('abc', '')     = 'abc'
+   *    substringAfter('abc', 'z')    = ''
+   *    substringAfter('abc', 'a')    = 'bd'
+   *    substringAfter('abc', 'c')    = ''
+   *    substringAfter('abcb', 'b')   = 'cb'
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to get a substring from
+   * @param separator
+   *     {@link String} to search for
+   *
+   * @return the substring after the first occurrence of the `separator`,
+   *         empty {@link String} if `sourceString` is `null`, `undefined` or empty
+   */
+  static substringAfter = (sourceString: NullableOrUndefined<string>,
+                           separator: NullableOrUndefined<string>): string => {
+    if (this.isEmpty(sourceString) ||
+        ObjectUtil.isNullOrUndefined(separator)) {
+      return StringUtil.EMPTY_STRING;
+    }
+    const pos = sourceString!.indexOf(separator);
+    return StringUtil.INDEX_NOT_FOUND == pos
+      ? StringUtil.EMPTY_STRING
+      : sourceString!.substring(pos + separator!.length);
+  }
+
+
+  /**
+   * Returns the substring of `sourceString` after the last occurrence of a `separator`. `separator` is not returned.
+   * <p>
+   *    The following are special use cases:</p>
+   *    <ul>
+   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If `separator` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If nothing is found, empty {@link String} is returned</li>
+   *    </ul>
+   * <p>
+   * Examples:
+   * <pre>
+   *    substringAfterLast(null, *)       = ''
+   *    substringAfterLast('', *)         = ''
+   *    substringAfterLast(*, null)       = ''
+   *    substringAfterLast(*, '')         = ''
+   *    substringAfterLast('abc', 'z')    = ''
+   *    substringAfterLast('abc', 'a')    = 'bd'
+   *    substringAfterLast('abc', 'c')    = ''
+   *    substringAfterLast('abcba', 'b')  = 'a'
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to get a substring from
+   * @param separator
+   *     {@link String} to search for
+   *
+   * @return the substring after the last occurrence of the `separator`,
+   *         empty {@link String} if `sourceString` is `null`, `undefined` or empty
+   */
+  static substringAfterLast = (sourceString: NullableOrUndefined<string>,
+                               separator: NullableOrUndefined<string>): string => {
+    if (this.isEmpty(sourceString) ||
+        this.isEmpty(separator)) {
+      return StringUtil.EMPTY_STRING;
+    }
+    const pos = sourceString!.lastIndexOf(separator!);
+    if (pos == StringUtil.INDEX_NOT_FOUND ||
+        pos == sourceString!.length - separator!.length) {
+      return StringUtil.EMPTY_STRING;
+    }
+    return sourceString!.substring(pos + separator!.length);
+  }
+
+
+  /**
+   * Returns the substring of `sourceString` before the first occurrence of a `separator`. `separator` is not returned.
+   * <p>
+   *    The following are special use cases:</p>
+   *    <ul>
+   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If `separator` is `null`, `undefined` or empty then `sourceString` is returned</li>
+   *      <li>If nothing is found, `sourceString` is returned</li>
+   *    </ul>
+   * <p>
+   * Examples:
+   * <pre>
+   *    substringBefore(null, *)           = ''
+   *    substringBefore(undefined, *)      = ''
+   *    substringBefore('', *)             = ''
+   *    substringBefore('abc', null)       = 'abc'
+   *    substringBefore('abc', undefined)  = 'abc'
+   *    substringBefore('abc', '')         = 'abc'
+   *    substringBefore('a', 'a')          = ''
+   *    substringBefore('a', 'z')          = 'a'
+   *    substringBefore('abc', 'c')        = 'ab'
+   *    substringBefore('abcb', 'b')       = 'a'
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to get a substring from
+   * @param separator
+   *     {@link String} to search for
+   *
+   * @return the substring before the first occurrence of the `separator`,
+   *         empty {@link String} if `sourceString` is `null`, `undefined` or empty
+   */
+  static substringBefore = (sourceString: NullableOrUndefined<string>,
+                            separator: NullableOrUndefined<string>): string =>
+    Optional.ofNullable<string>(sourceString)
+      .map<string>(source => {
+        if (this.isEmpty(separator)) {
+          return source;
+        }
+        const pos = source.indexOf(separator!);
+        return StringUtil.INDEX_NOT_FOUND == pos
+          ? source
+          : source.substring(0, pos);
+      })
+      .getOrElse(StringUtil.EMPTY_STRING);
+
+
+  /**
+   * Returns the substring of `sourceString` before the last occurrence of a `separator`. `separator` is not returned.
+   * <p>
+   *    The following are special use cases:</p>
+   *    <ul>
+   *      <li>If `sourceString` is `null`, `undefined` or empty then empty {@link String} is returned</li>
+   *      <li>If `separator` is `null`, `undefined` or empty then `sourceString` is returned</li>
+   *      <li>If nothing is found, `sourceString` is returned.</li>
+   *    </ul>
+   * <p>
+   * Examples:
+   * <pre>
+   *    substringBeforeLast(null, *)           = ''
+   *    substringBeforeLast(undefined, *)      = ''
+   *    substringBeforeLast('', *)             = ''
+   *    substringBeforeLast('abc', null)       = 'abc'
+   *    substringBeforeLast('abc', undefined)  = 'abc'
+   *    substringBeforeLast('abc', '')         = 'abc'
+   *    substringBeforeLast('a', 'a')          = ''
+   *    substringBeforeLast('a', 'z')          = 'a'
+   *    substringBeforeLast('abc', 'c')        = 'ab'
+   *    substringBeforeLast('abcb', 'b')       = 'abc'
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to get a substring from
+   * @param separator
+   *     {@link String} to search for
+   *
+   * @return the substring before the last occurrence of the `separator`,
+   *         empty {@link String} if `sourceString` is `null`, `undefined` or empty
+   */
+  static substringBeforeLast = (sourceString: NullableOrUndefined<string>,
+                                separator: NullableOrUndefined<string>): string =>
+    Optional.ofNullable<string>(sourceString)
+      .map<string>(source => {
+        if (this.isEmpty(separator)) {
+          return source;
+        }
+        const pos = source.lastIndexOf(separator!);
+        return StringUtil.INDEX_NOT_FOUND == pos
+          ? source
+          : source.substring(0, pos);
+      })
+      .getOrElse(StringUtil.EMPTY_STRING);
+
+
+
+  // TODO:
+  // filter, filterNot
+
+
 
 }

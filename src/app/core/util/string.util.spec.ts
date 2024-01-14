@@ -1,7 +1,8 @@
-import {ObjectUtil, StringUtil} from '@app-core/util';
+import { ObjectUtil, StringUtil } from '@app-core/util';
 import { IllegalArgumentError } from '@app-core/errors';
-import {FFunction1} from "@app-core/types/function";
-import {NullableOrUndefined} from "@app-core/types";
+import { FFunction1 } from '@app-core/types/function';
+import { NullableOrUndefined } from '@app-core/types';
+import { FPredicate1 } from "@app-core/types/predicate";
 
 /**
  * To invoke only this test:
@@ -24,11 +25,11 @@ describe('StringUtil', () => {
   describe('abbreviate', () => {
 
     it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.abbreviate(null, 0, null)).toEqual('');
+      expect(StringUtil.abbreviate(null, 5, '...')).toEqual('');
       expect(StringUtil.abbreviate(undefined, 0)).toEqual('');
       expect(StringUtil.abbreviate(undefined, 0, undefined)).toEqual('');
       expect(StringUtil.abbreviate(undefined, 2, '.')).toEqual('');
-      expect(StringUtil.abbreviate(null, 0, null)).toEqual('');
-      expect(StringUtil.abbreviate(null, 5, '...')).toEqual('');
       expect(StringUtil.abbreviate('', 1, '-')).toEqual('');
     });
 
@@ -113,11 +114,11 @@ describe('StringUtil', () => {
   describe('abbreviateMiddle', () => {
 
     it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.abbreviateMiddle(null, 0, null)).toEqual('');
+      expect(StringUtil.abbreviateMiddle(null, 5, '...')).toEqual('');
       expect(StringUtil.abbreviateMiddle(undefined, 0)).toEqual('');
       expect(StringUtil.abbreviateMiddle(undefined, 0, undefined)).toEqual('');
       expect(StringUtil.abbreviateMiddle(undefined, 2, '.')).toEqual('');
-      expect(StringUtil.abbreviateMiddle(null, 0, null)).toEqual('');
-      expect(StringUtil.abbreviateMiddle(null, 5, '...')).toEqual('');
       expect(StringUtil.abbreviateMiddle('', 1, '-')).toEqual('');
     });
 
@@ -200,6 +201,189 @@ describe('StringUtil', () => {
 
 
 
+  describe('containsIgnoreCase', () => {
+
+    it('when given sourceString is null or undefined then false is returned', () => {
+      expect(StringUtil.containsIgnoreCase(null, null)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(null, undefined)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(null, '')).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(null, 'ab')).toBeFalse();
+
+      expect(StringUtil.containsIgnoreCase(undefined, null)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(undefined, undefined)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(undefined, '')).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(undefined, 'ab')).toBeFalse();
+    });
+
+
+    it('when given stringToSearch is null or undefined then false is returned', () => {
+      expect(StringUtil.containsIgnoreCase(null, null)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(undefined, null)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase('', null)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase('ab', null)).toBeFalse();
+
+      expect(StringUtil.containsIgnoreCase(null, undefined)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase(undefined, undefined)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase('', undefined)).toBeFalse();
+      expect(StringUtil.containsIgnoreCase('ab', undefined)).toBeFalse();
+    });
+
+
+    it('when given sourceString contains characters but stringToSearch does not appear then false is returned', () => {
+      expect(StringUtil.containsIgnoreCase('', 'abd')).toBeFalse();
+      expect(StringUtil.containsIgnoreCase('abcab', 'abd')).toBeFalse();
+      expect(StringUtil.containsIgnoreCase('abcab', 'x')).toBeFalse();
+      expect(StringUtil.containsIgnoreCase('abcab', 'xx')).toBeFalse();
+    });
+
+
+    it('when given sourceString contains stringToSearch then true is returned', () => {
+      expect(StringUtil.containsIgnoreCase('', '')).toBeTrue();
+      expect(StringUtil.containsIgnoreCase('ab', '')).toBeTrue();
+
+      expect(StringUtil.containsIgnoreCase('abcd', 'bc')).toBeTrue();
+      expect(StringUtil.containsIgnoreCase('abcd', 'D')).toBeTrue();
+      expect(StringUtil.containsIgnoreCase('ABcD', 'bC')).toBeTrue();
+      expect(StringUtil.containsIgnoreCase('abcd', 'ABCD')).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('count', () => {
+
+    it('when given sourceString is null, undefined or empty then 0 is returned', () => {
+      expect(StringUtil.count(null, null)).toEqual(0);
+      expect(StringUtil.count(null, undefined)).toEqual(0);
+      expect(StringUtil.count(null, '')).toEqual(0);
+      expect(StringUtil.count(null, 'ab')).toEqual(0);
+
+      expect(StringUtil.count(undefined, null)).toEqual(0);
+      expect(StringUtil.count(undefined, undefined)).toEqual(0);
+      expect(StringUtil.count(undefined, '')).toEqual(0);
+      expect(StringUtil.count(undefined, 'ab')).toEqual(0);
+
+      expect(StringUtil.count('', null)).toEqual(0);
+      expect(StringUtil.count('', undefined)).toEqual(0);
+      expect(StringUtil.count('', '')).toEqual(0);
+      expect(StringUtil.count('', 'ab')).toEqual(0);
+    });
+
+
+    it('when given stringToSearch is null, undefined or empty then 0 is returned', () => {
+      expect(StringUtil.count(null, null)).toEqual(0);
+      expect(StringUtil.count(undefined, null)).toEqual(0);
+      expect(StringUtil.count('', null)).toEqual(0);
+      expect(StringUtil.count('ab', null)).toEqual(0);
+
+      expect(StringUtil.count(null, undefined)).toEqual(0);
+      expect(StringUtil.count(undefined, undefined)).toEqual(0);
+      expect(StringUtil.count('', undefined)).toEqual(0);
+      expect(StringUtil.count('ab', undefined)).toEqual(0);
+
+      expect(StringUtil.count(null, '')).toEqual(0);
+      expect(StringUtil.count(undefined, '')).toEqual(0);
+      expect(StringUtil.count('', '')).toEqual(0);
+      expect(StringUtil.count('ab', '')).toEqual(0);
+    });
+
+
+    it('when given sourceString contains characters but stringToSearch does not appear then 0 is returned', () => {
+      expect(StringUtil.count('abcab', 'abd')).toEqual(0);
+      expect(StringUtil.count('abcab', 'x')).toEqual(0);
+      expect(StringUtil.count('abcab', 'xx')).toEqual(0);
+    });
+
+
+    it('when given sourceString contains stringToSearch then the number of occurrences is returned', () => {
+      expect(StringUtil.count('aa', 'aa')).toEqual(1);
+      expect(StringUtil.count('aaa', 'aa')).toEqual(1);
+
+      expect(StringUtil.count('aaaa', 'aa')).toEqual(2);
+      expect(StringUtil.count('aaaaa', 'aa')).toEqual(2);
+      expect(StringUtil.count('abcab', 'ab')).toEqual(2);
+
+      expect(StringUtil.count('abcabb', 'b')).toEqual(3);
+      expect(StringUtil.count('bcabbd', 'b')).toEqual(3);
+    });
+
+  });
+
+
+
+  describe('filter', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      const isVowel: FPredicate1<string> = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      expect(StringUtil.filter(null, null)).toEqual('');
+      expect(StringUtil.filter(null, undefined)).toEqual('');
+      expect(StringUtil.filter(null, isVowel)).toEqual('');
+
+      expect(StringUtil.filter(undefined, null)).toEqual('');
+      expect(StringUtil.filter(undefined, undefined)).toEqual('');
+      expect(StringUtil.filter(undefined, isVowel)).toEqual('');
+
+      expect(StringUtil.filter('', null)).toEqual('');
+      expect(StringUtil.filter('', undefined)).toEqual('');
+      expect(StringUtil.filter('', isVowel)).toEqual('');
+    });
+
+
+    it('when given filterPredicate is null or undefined then sourceString is returned', () => {
+      expect(StringUtil.filter('abc', null)).toEqual('abc');
+      expect(StringUtil.filter('142', undefined)).toEqual('142');
+    });
+
+
+    it('when given sourceString contains characters and filterPredicate is not null then filtered string is returned', () => {
+      const isVowel = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      expect(StringUtil.filter('abcEioU3', isVowel)).toEqual('aEioU');
+      expect(StringUtil.filter('142', isVowel)).toEqual('');
+    });
+
+  });
+
+
+
+  describe('filterNot', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      const isVowel: FPredicate1<string> = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      expect(StringUtil.filterNot(null, null)).toEqual('');
+      expect(StringUtil.filterNot(null, undefined)).toEqual('');
+      expect(StringUtil.filterNot(null, isVowel)).toEqual('');
+
+      expect(StringUtil.filterNot(undefined, null)).toEqual('');
+      expect(StringUtil.filterNot(undefined, undefined)).toEqual('');
+      expect(StringUtil.filterNot(undefined, isVowel)).toEqual('');
+
+      expect(StringUtil.filterNot('', null)).toEqual('');
+      expect(StringUtil.filterNot('', undefined)).toEqual('');
+      expect(StringUtil.filterNot('', isVowel)).toEqual('');
+    });
+
+
+    it('when given filterPredicate is null or undefined then sourceString is returned', () => {
+      expect(StringUtil.filterNot('abc', null)).toEqual('abc');
+      expect(StringUtil.filterNot('142', undefined)).toEqual('142');
+    });
+
+
+    it('when given sourceString contains characters and filterPredicate is not null then filtered string is returned', () => {
+      const isVowel = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      expect(StringUtil.filterNot('abcEioU3', isVowel)).toEqual('bc3');
+      expect(StringUtil.filterNot('142', isVowel)).toEqual('142');
+    });
+
+  });
+
+
+
   describe('getDigits', () => {
 
     it('when given sourceString is null, undefined, empty or whitespace then empty string is returned', () => {
@@ -221,14 +405,40 @@ describe('StringUtil', () => {
 
 
 
+  describe('getNotEmptyOrElse', () => {
+
+    it('when given sourceString is null, undefined or empty then defaultValue is returned', () => {
+      expect(StringUtil.getNotEmptyOrElse(null, '')).toEqual('');
+      expect(StringUtil.getNotEmptyOrElse(null, 'ab')).toEqual('ab');
+
+      expect(StringUtil.getNotEmptyOrElse(undefined, '')).toEqual('');
+      expect(StringUtil.getNotEmptyOrElse(undefined, 'ab')).toEqual('ab');
+
+      expect(StringUtil.getNotEmptyOrElse('', '')).toEqual('');
+      expect(StringUtil.getNotEmptyOrElse('', 'ab')).toEqual('ab');
+    });
+
+
+    it('when given sourceString contains characters then sourceString returned', () => {
+      const sourceString = 'abcab';
+
+      expect(StringUtil.getNotEmptyOrElse(sourceString, 'abd')).toEqual(sourceString);
+      expect(StringUtil.getNotEmptyOrElse(sourceString, 'x')).toEqual(sourceString);
+      expect(StringUtil.getNotEmptyOrElse(sourceString, 'xx')).toEqual(sourceString);
+    });
+
+  });
+
+
+
   describe('hideMiddle', () => {
 
     it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.hideMiddle(null, 0, null)).toEqual('');
+      expect(StringUtil.hideMiddle(null, 5, '...')).toEqual('');
       expect(StringUtil.hideMiddle(undefined, 0)).toEqual('');
       expect(StringUtil.hideMiddle(undefined, 0, undefined)).toEqual('');
       expect(StringUtil.hideMiddle(undefined, 2, '.')).toEqual('');
-      expect(StringUtil.hideMiddle(null, 0, null)).toEqual('');
-      expect(StringUtil.hideMiddle(null, 5, '...')).toEqual('');
       expect(StringUtil.hideMiddle('', 1, '-')).toEqual('');
     });
 
@@ -607,6 +817,191 @@ describe('StringUtil', () => {
       expect(StringUtil.splitMultilevel('ABC,DEF', ',')).toEqual(['ABC', 'DEF']);
       expect(StringUtil.splitMultilevel('1,2.3,6,7.8.9', ',', '.')).toEqual(['1', '2', '3', '6', '7', '8', '9']);
       expect(StringUtil.splitMultilevel('1,13&%7,8,22&3', ',', '&%')).toEqual(['1', '13', '7', '8', '22&3']);
+    });
+
+  });
+
+
+
+  describe('substringAfter', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.substringAfter(null, null)).toEqual('');
+      expect(StringUtil.substringAfter(null, undefined)).toEqual('');
+      expect(StringUtil.substringAfter(null, '')).toEqual('');
+      expect(StringUtil.substringAfter(null, 'ab')).toEqual('');
+
+      expect(StringUtil.substringAfter(undefined, null)).toEqual('');
+      expect(StringUtil.substringAfter(undefined, undefined)).toEqual('');
+      expect(StringUtil.substringAfter(undefined, '')).toEqual('');
+      expect(StringUtil.substringAfter(undefined, 'ab')).toEqual('');
+
+      expect(StringUtil.substringAfter('', null)).toEqual('');
+      expect(StringUtil.substringAfter('', undefined)).toEqual('');
+      expect(StringUtil.substringAfter('', '')).toEqual('');
+      expect(StringUtil.substringAfter('', 'ab')).toEqual('');
+    });
+
+
+    it('when given separator is null or undefined then empty string is returned', () => {
+      expect(StringUtil.substringAfter('ab', null)).toEqual('');
+      expect(StringUtil.substringAfter('ab', undefined)).toEqual('');
+    });
+
+
+    it('when given separator is empty then sourceString is returned', () => {
+      expect(StringUtil.substringAfter('ab', '')).toEqual('ab');
+      expect(StringUtil.substringAfter('aaaaa', '')).toEqual('aaaaa');
+    });
+
+
+    it('when given sourceString contains characters but separator does not appear then empty string is returned', () => {
+      expect(StringUtil.substringAfter('a', 'z')).toEqual('');
+      expect(StringUtil.substringAfter('aba', 'bc')).toEqual('');
+      expect(StringUtil.substringAfter('abcab', 'abd')).toEqual('');
+    });
+
+
+    it('when given sourceString contains separator then the substring after the first occurrence is returned', () => {
+      expect(StringUtil.substringAfter('a', 'a')).toEqual('');
+      expect(StringUtil.substringAfter('abc', 'c')).toEqual('');
+      expect(StringUtil.substringAfter('abcb', 'b')).toEqual('cb');
+      expect(StringUtil.substringAfter('aaaa', 'aa')).toEqual('aa');
+    });
+
+  });
+
+
+
+  describe('substringAfterLast', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.substringAfterLast(null, null)).toEqual('');
+      expect(StringUtil.substringAfterLast(null, undefined)).toEqual('');
+      expect(StringUtil.substringAfterLast(null, '')).toEqual('');
+      expect(StringUtil.substringAfterLast(null, 'ab')).toEqual('');
+
+      expect(StringUtil.substringAfterLast(undefined, null)).toEqual('');
+      expect(StringUtil.substringAfterLast(undefined, undefined)).toEqual('');
+      expect(StringUtil.substringAfterLast(undefined, '')).toEqual('');
+      expect(StringUtil.substringAfterLast(undefined, 'ab')).toEqual('');
+
+      expect(StringUtil.substringAfterLast('', null)).toEqual('');
+      expect(StringUtil.substringAfterLast('', undefined)).toEqual('');
+      expect(StringUtil.substringAfterLast('', '')).toEqual('');
+      expect(StringUtil.substringAfterLast('', 'ab')).toEqual('');
+    });
+
+
+    it('when given separator is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.substringAfterLast('ab', null)).toEqual('');
+      expect(StringUtil.substringAfterLast('ab', undefined)).toEqual('');
+      expect(StringUtil.substringAfterLast('ab', '')).toEqual('');
+    });
+
+
+    it('when given sourceString contains characters but separator does not appear then empty string is returned', () => {
+      expect(StringUtil.substringAfterLast('a', 'z')).toEqual('');
+      expect(StringUtil.substringAfterLast('aba', 'bc')).toEqual('');
+      expect(StringUtil.substringAfterLast('abcab', 'abd')).toEqual('');
+    });
+
+
+    it('when given sourceString contains separator then the substring after the last occurrence is returned', () => {
+      expect(StringUtil.substringAfterLast('a', 'a')).toEqual('');
+      expect(StringUtil.substringAfterLast('abc', 'c')).toEqual('');
+      expect(StringUtil.substringAfterLast('abcba', 'b')).toEqual('a');
+      expect(StringUtil.substringAfterLast('aaaa', 'aa')).toEqual('');
+    });
+
+  });
+
+
+
+  describe('substringBefore', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.substringBefore(null, null)).toEqual('');
+      expect(StringUtil.substringBefore(null, undefined)).toEqual('');
+      expect(StringUtil.substringBefore(null, '')).toEqual('');
+      expect(StringUtil.substringBefore(null, 'ab')).toEqual('');
+
+      expect(StringUtil.substringBefore(undefined, null)).toEqual('');
+      expect(StringUtil.substringBefore(undefined, undefined)).toEqual('');
+      expect(StringUtil.substringBefore(undefined, '')).toEqual('');
+      expect(StringUtil.substringBefore(undefined, 'ab')).toEqual('');
+
+      expect(StringUtil.substringBefore('', null)).toEqual('');
+      expect(StringUtil.substringBefore('', undefined)).toEqual('');
+      expect(StringUtil.substringBefore('', '')).toEqual('');
+      expect(StringUtil.substringBefore('', 'ab')).toEqual('');
+    });
+
+
+    it('when given separator is null, undefined or empty then sourceString is returned', () => {
+      expect(StringUtil.substringBefore('ab', null)).toEqual('ab');
+      expect(StringUtil.substringBefore('ab', undefined)).toEqual('ab');
+      expect(StringUtil.substringBefore('ab', '')).toEqual('ab');
+    });
+
+
+    it('when given sourceString contains characters but separator does not appear then sourceString is returned', () => {
+      expect(StringUtil.substringBefore('a', 'z')).toEqual('a');
+      expect(StringUtil.substringBefore('aba', 'bc')).toEqual('aba');
+      expect(StringUtil.substringBefore('abcab', 'abd')).toEqual('abcab');
+    });
+
+
+    it('when given sourceString contains separator then the substring before the first occurrence is returned', () => {
+      expect(StringUtil.substringBefore('a', 'a')).toEqual('');
+      expect(StringUtil.substringBefore('abc', 'c')).toEqual('ab');
+      expect(StringUtil.substringBefore('abcb', 'b')).toEqual('a');
+      expect(StringUtil.substringBefore('aaaa', 'aa')).toEqual('');
+    });
+
+  });
+
+
+
+  describe('substringBeforeLast', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      expect(StringUtil.substringBeforeLast(null, null)).toEqual('');
+      expect(StringUtil.substringBeforeLast(null, undefined)).toEqual('');
+      expect(StringUtil.substringBeforeLast(null, '')).toEqual('');
+      expect(StringUtil.substringBeforeLast(null, 'ab')).toEqual('');
+
+      expect(StringUtil.substringBeforeLast(undefined, null)).toEqual('');
+      expect(StringUtil.substringBeforeLast(undefined, undefined)).toEqual('');
+      expect(StringUtil.substringBeforeLast(undefined, '')).toEqual('');
+      expect(StringUtil.substringBeforeLast(undefined, 'ab')).toEqual('');
+
+      expect(StringUtil.substringBeforeLast('', null)).toEqual('');
+      expect(StringUtil.substringBeforeLast('', undefined)).toEqual('');
+      expect(StringUtil.substringBeforeLast('', '')).toEqual('');
+      expect(StringUtil.substringBeforeLast('', 'ab')).toEqual('');
+    });
+
+
+    it('when given separator is null, undefined or empty then sourceString is returned', () => {
+      expect(StringUtil.substringBeforeLast('ab', null)).toEqual('ab');
+      expect(StringUtil.substringBeforeLast('ab', undefined)).toEqual('ab');
+      expect(StringUtil.substringBeforeLast('ab', '')).toEqual('ab');
+    });
+
+
+    it('when given sourceString contains characters but separator does not appear then sourceString is returned', () => {
+      expect(StringUtil.substringBeforeLast('a', 'z')).toEqual('a');
+      expect(StringUtil.substringBeforeLast('aba', 'bc')).toEqual('aba');
+      expect(StringUtil.substringBeforeLast('abcab', 'abd')).toEqual('abcab');
+    });
+
+
+    it('when given sourceString contains separator then the substring before the last occurrence is returned', () => {
+      expect(StringUtil.substringBeforeLast('a', 'a')).toEqual('');
+      expect(StringUtil.substringBeforeLast('abc', 'c')).toEqual('ab');
+      expect(StringUtil.substringBeforeLast('abcb', 'b')).toEqual('abc');
+      expect(StringUtil.substringBeforeLast('aaaa', 'aa')).toEqual('aa');
     });
 
   });
