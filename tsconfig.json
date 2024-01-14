@@ -19,6 +19,7 @@
       "@app-core/types/tuple": ["src/app/core/types/tuple/index.ts"],
       "@app-core/util": ["src/app/core/util/index.ts"],
       "@app-shared/dialog": ["src/app/shared/dialog/index.ts"],
+      "@app-shared/directive": ["src/app/shared/directive/index.ts"],
       "@app-env/*": ["src/environments/*"]
     },
     "outDir": "./dist/out-tsc",

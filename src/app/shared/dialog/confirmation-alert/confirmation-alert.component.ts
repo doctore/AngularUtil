@@ -59,10 +59,10 @@ import * as _ from 'lodash';
  *      }
  */
 @Component({
-  standalone: true,
   selector: 'app-confirmation-alert',
   templateUrl: './confirmation-alert.component.html',
   styleUrls: ['./confirmation-alert.component.scss'],
+  standalone: true,
   imports: [
     CommonModule,
     ModalModule

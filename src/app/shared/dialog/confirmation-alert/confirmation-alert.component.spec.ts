@@ -1,9 +1,14 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ConfirmationAlertComponent } from './confirmation-alert.component';
+import { ConfirmationAlertComponent } from '@app-shared/dialog';
 import { BsModalService, ModalModule } from 'ngx-bootstrap/modal';
 import { By } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 
+/**
+ * To invoke only this test:
+ *
+ *    ng test --include src/app/shared/dialog/confirmation-alert/confirmation-alert.component.spec.ts
+ */
 describe('ConfirmationAlertComponent', () => {
 
   let modalService: any;
