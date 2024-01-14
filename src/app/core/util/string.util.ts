@@ -289,7 +289,7 @@ export class StringUtil {
    *
    * <pre>
    *    filterNot(                                      Result:
-   *      'abcDEfgIoU12',                                'abcDEfgIoU12'
+   *      'abcDEfgIoU12',                                'bcDfg12'
    *      c => -1 != 'aeiouAEIOU'.indexOf(c)
    *    )
    * </pre>
