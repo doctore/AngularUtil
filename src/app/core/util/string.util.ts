@@ -947,11 +947,4 @@ export class StringUtil {
       })
       .getOrElse(StringUtil.EMPTY_STRING);
 
-
-
-  // TODO:
-  // filter, filterNot
-
-
-
 }
