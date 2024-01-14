@@ -379,7 +379,7 @@ export class ArrayUtil {
   static filterNot = <T>(sourceArray: NullableOrUndefined<T[]>,
                          filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
     const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-      ? Predicate1.alwaysTrue<T>()
+      ? null
       : Predicate1.of(filterPredicate).not();
 
     return this.filter(

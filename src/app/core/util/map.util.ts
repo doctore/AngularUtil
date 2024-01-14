@@ -475,7 +475,7 @@ export class MapUtil {
   static filterNot = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                             filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
     const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
-      ? Predicate2.alwaysTrue<K, V>()
+      ? null
       : Predicate2.of(filterPredicate).not();
 
     return this.filter(
