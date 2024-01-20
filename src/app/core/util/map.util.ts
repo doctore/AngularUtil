@@ -130,7 +130,7 @@ export class MapUtil {
 
 
   /**
-   * Returns a {@link Map} after:
+   * Returns a new {@link Map} after applying to `sourceMap`:
    * <p>
    *  - Filter its elements using {@link PartialFunction#isDefinedAt} of `partialFunction`
    *  - Transform its filtered elements using {@link PartialFunction#apply} of `partialFunction`
@@ -160,7 +160,7 @@ export class MapUtil {
 
 
   /**
-   * Returns a {@link Map} after:
+   * Returns a new {@link Map} after applying to `sourceMap`:
    * <p>
    * - Filter its elements using the {@link TPredicate2} `filterPredicate`
    *  - Transform its filtered elements using the {@link TFunction2} `mapFunction`

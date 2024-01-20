@@ -128,7 +128,7 @@ export class ArrayUtil {
 
 
   /**
-   * Returns a new array after:
+   * Returns a new array after applying to `sourceArray`:
    * <p>
    *  - Filter its elements using {@link PartialFunction#isDefinedAt} of `partialFunction`
    *  - Transform its filtered elements using {@link PartialFunction#apply} of `partialFunction`
@@ -158,7 +158,7 @@ export class ArrayUtil {
 
 
   /**
-   * Returns a new array after:
+   * Returns a new array after applying to `sourceArray`:
    * <p>
    *  - Filter its elements using the {@link TPredicate1} `filterPredicate`
    *  - Transform its filtered elements using the {@link TFunction1} `mapFunction`

@@ -19,7 +19,7 @@ import { Directive, HostListener, Input } from '@angular/core';
  */
 @Directive({
   selector: '[disableDblClick]',
-  standalone: true,
+  standalone: true
 })
 export class DisableDblClickDirective {
 

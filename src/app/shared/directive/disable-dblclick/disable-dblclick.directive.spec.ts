@@ -43,8 +43,7 @@ describe('DisableDblClickDirective default values', () => {
     inputElement.click();
 
     expect(inputElement.disabled).toBeTrue();
-
-    tick(500);
+    tick(550);
 
     expect(inputElement.disabled).toBeFalse();
   }));
@@ -88,11 +87,9 @@ describe('DisableDblClickDirective custom values disabling double click', () => 
     inputElement.click();
 
     expect(inputElement.disabled).toBeTrue();
-
     tick(550);
 
     expect(inputElement.disabled).toBeTrue();
-
     tick(550);
 
     expect(inputElement.disabled).toBeFalse();
@@ -137,11 +134,9 @@ describe('DisableDblClickDirective custom values not disabling double click', ()
     inputElement.click();
 
     expect(inputElement.disabled).toBeFalse();
-
     tick(550);
 
     expect(inputElement.disabled).toBeFalse();
-
     tick(550);
 
     expect(inputElement.disabled).toBeFalse();
