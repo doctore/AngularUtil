@@ -924,15 +924,18 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is not empty but accumulator is null or undefined then an error is thrown', () => {
+    it('when given accumulator is null or undefined then initialValue is returned', () => {
+      const intValue = 19;
+
       const sourceMap = new Map<number, number>();
       sourceMap.set(1, 2);
+      sourceMap.set(2, 4);
 
-      // @ts-ignore
-      expect(() => MapUtil.foldLeft(sourceMap, 11, null)).toThrowError(IllegalArgumentError);
+      const nullAccumulatorResult = MapUtil.foldLeft(sourceMap, intValue, null);
+      const undefinedAccumulatorResult = MapUtil.foldLeft(sourceMap, intValue, undefined);
 
-      // @ts-ignore
-      expect(() => MapUtil.foldLeft(sourceMap, 11, undefined)).toThrowError(IllegalArgumentError);
+      expect(nullAccumulatorResult).toEqual(intValue);
+      expect(undefinedAccumulatorResult).toEqual(intValue);
     });
 
 

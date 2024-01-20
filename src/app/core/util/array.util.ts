@@ -490,6 +490,9 @@ export class ArrayUtil {
    *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all
    * elements of `sourceArray`, going left to right.
    *
+   * @apiNote
+   *    If `sourceArray` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
+   *
    * <pre>
    *    foldLeft(                                          Result:
    *      [5, 7, 9],                                        315
@@ -507,17 +510,15 @@ export class ArrayUtil {
    *
    * @return result of inserting `accumulator` between consecutive elements of `sourceArray`, going
    *         left to right with the start value `initialValue` on the left.
-   *
-   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
    */
   static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: TFunction2<R, T, R>): R;
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R;
 
 
   static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: FFunction2<R, T, R>): R;
+                        accumulator: NullableOrUndefined<FFunction2<R, T, R>>): R;
 
 
   /**
@@ -525,7 +526,8 @@ export class ArrayUtil {
    * of `sourceArray` that verify `filterPredicate`, going left to right.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be used to calculate the final value.
+   *    If `sourceArray` or `accumulator` are `null` or `undefined` then `initialValue` is returned. If `filterPredicate`
+   * is `null` or `undefined` then all elements will be used to calculate the final value.
    *
    * <pre>
    *    foldLeft(                                          Result:
@@ -547,26 +549,25 @@ export class ArrayUtil {
    *
    * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
    *         left to right with the start value `initialValue` on the left.
-   *
-   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
    */
   static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: TFunction2<R, T, R>,
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>,
                         filterPredicate: TPredicate1<T>): R;
 
 
   static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: FFunction2<R, T, R>,
+                        accumulator: NullableOrUndefined<FFunction2<R, T, R>>,
                         filterPredicate: TPredicate1<T>): R;
 
 
   static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: TFunction2<R, T, R>,
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>,
                         filterPredicate?: TPredicate1<T>): R {
-    if (this.isEmpty(sourceArray)) {
+    if (this.isEmpty(sourceArray) ||
+        ObjectUtil.isNullOrUndefined(accumulator)) {
       return initialValue
     }
     const finalAccumulator = Function2.of(accumulator);

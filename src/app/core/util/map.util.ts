@@ -553,6 +553,9 @@ export class MapUtil {
    *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction3} to all
    * elements of `sourceMap`, going left to right.
    *
+   * @apiNote
+   *    If `sourceMap` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
+   *
    * <pre>
    *    foldLeft(                                                              Result:
    *      [(1, 'Hi'), (2, 'Hello')],                                            10
@@ -570,22 +573,24 @@ export class MapUtil {
    *
    * @return result of inserting `accumulator` between consecutive elements of `sourceMap`, going
    *         left to right with the start value `initialValue` on the left.
-   *
-   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
    */
   static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                            initialValue: R,
-                           accumulator: TFunction3<R, K, V, R>): R;
+                           accumulator: NullableOrUndefined<TFunction3<R, K, V, R>>): R;
 
 
   static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                            initialValue: R,
-                           accumulator: FFunction3<R, K, V, R>): R;
+                           accumulator: NullableOrUndefined<FFunction3<R, K, V, R>>): R;
 
 
   /**
    *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction3} to all
    * elements of `sourceMap`, going left to right.
+   *
+   * @apiNote
+   *    If `sourceMap` or `accumulator` are `null` or `undefined` then `initialValue` is returned. If `filterPredicate`
+   *  is `null` or `undefined` then all elements will be used to calculate the final value.
    *
    * <pre>
    *    foldLeft(                                                              Result:
@@ -607,26 +612,25 @@ export class MapUtil {
    *
    * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going
    *         left to right with the start value `initialValue` on the left.
-   *
-   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
    */
   static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                            initialValue: R,
-                           accumulator: TFunction3<R, K, V, R>,
+                           accumulator: NullableOrUndefined<TFunction3<R, K, V, R>>,
                            filterPredicate: TPredicate2<K, V>): R;
 
 
   static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                            initialValue: R,
-                           accumulator: FFunction3<R, K, V, R>,
+                           accumulator: NullableOrUndefined<FFunction3<R, K, V, R>>,
                            filterPredicate: TPredicate2<K, V>): R;
 
 
   static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                            initialValue: R,
-                           accumulator: TFunction3<R, K, V, R>,
+                           accumulator: NullableOrUndefined<TFunction3<R, K, V, R>>,
                            filterPredicate?: TPredicate2<K, V>): R {
-    if (this.isEmpty(sourceMap)) {
+    if (this.isEmpty(sourceMap) ||
+        ObjectUtil.isNullOrUndefined(accumulator)) {
       return initialValue
     }
     const finalAccumulator = Function3.of(accumulator);

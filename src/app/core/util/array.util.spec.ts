@@ -761,12 +761,15 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty but accumulator is null or undefined then an error is thrown', () => {
-      // @ts-ignore
-      expect(() => ArrayUtil.foldLeft([2], 11, null)).toThrowError(IllegalArgumentError);
+    it('when given accumulator is null or undefined then initialValue is returned', () => {
+      const intValue = 10;
+      const intArray: number[] = [2, 3, 4];
 
-      // @ts-ignore
-      expect(() => ArrayUtil.foldLeft([2], 11, undefined)).toThrowError(IllegalArgumentError);
+      const nullAccumulatorResult = ArrayUtil.foldLeft(intArray, intValue, null);
+      const undefinedAccumulatorResult = ArrayUtil.foldLeft(intArray, intValue, undefined);
+
+      expect(nullAccumulatorResult).toEqual(intValue);
+      expect(undefinedAccumulatorResult).toEqual(intValue);
     });
 
 
