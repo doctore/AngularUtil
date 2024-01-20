@@ -4,6 +4,7 @@
 - [Elements included in this project](#elements-included-in-this-project)
   - [New types](#new-types)
   - [Util classes](#util-classes)
+  - [Angular components](#angular-components) 
 - [How to use the project](#how-to-use-the-project)
   - [Development server](#development-server)
   - [Code scaffolding](#code-scaffolding)
@@ -53,6 +54,14 @@ Others related with functional programming:
 * [NumberUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/number.util.ts)
 * [ObjectUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/object.util.ts)
 * [StringUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/string.util.ts)
+
+
+### Angular components
+
+Some new components have been added to the project
+
+* [Confirmation Alert](https://github.com/doctore/AngularUtil/tree/main/src/app/shared/dialog/confirmation-alert): dialog to display tittle and message in a modal, sending events when the user clicks on provided buttons.
+* [Disable Double Click](https://github.com/doctore/AngularUtil/tree/main/src/app/shared/directive/disable-dblclick): directive to disable temporarily the double click events in required DOM elements.
 <br><br>
 
 
