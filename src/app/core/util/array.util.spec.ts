@@ -174,7 +174,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has no elements and mapFunction and filterPredicate are provided then empty array is returned', () => {
-      let emptyArray: number[] = [];
+      const emptyArray: number[] = [];
       const isEven: FPredicate1<number> = (n: number) => 0 == n % 2;
       const multiply2AndString: FFunction1<number, string> = (n: number) => '' + (2 * n);
 
@@ -331,7 +331,7 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       const emptyArray: number[] = [];
-      const isEven = (n: number) => 0 == n % 2;
+      const isEven: FPredicate1<number> = (n: number) => 0 == n % 2;
 
       expect(ArrayUtil.dropWhile(null, isEven)).toEqual(emptyArray);
       expect(ArrayUtil.dropWhile(undefined, isEven)).toEqual(emptyArray);
@@ -343,11 +343,11 @@ describe('ArrayUtil', () => {
       const sourceArray: number[] = [1, 10, 21, 2];
 
       verifyArrays(
-        ArrayUtil.dropWhile(sourceArray, undefined),
+        ArrayUtil.dropWhile(sourceArray, null),
         sourceArray
       );
       verifyArrays(
-        ArrayUtil.dropWhile(sourceArray, null),
+        ArrayUtil.dropWhile(sourceArray, undefined),
         sourceArray
       );
     });
@@ -1866,7 +1866,7 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
       const emptyArray: number[] = [];
-      const isEven = (n: number) => 0 == n % 2;
+      const isEven: FPredicate1<number> = (n: number) => 0 == n % 2;
 
       expect(ArrayUtil.takeWhile(null, isEven)).toEqual(emptyArray);
       expect(ArrayUtil.takeWhile(undefined, isEven)).toEqual(emptyArray);
@@ -1878,11 +1878,11 @@ describe('ArrayUtil', () => {
       const sourceArray: number[] = [1, 10, 21, 2];
 
       verifyArrays(
-        ArrayUtil.takeWhile(sourceArray, undefined),
+        ArrayUtil.takeWhile(sourceArray, null),
         sourceArray
       );
       verifyArrays(
-        ArrayUtil.takeWhile(sourceArray, null),
+        ArrayUtil.takeWhile(sourceArray, undefined),
         sourceArray
       );
     });

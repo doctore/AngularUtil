@@ -1,8 +1,9 @@
 import { ObjectUtil, StringUtil } from '@app-core/util';
 import { IllegalArgumentError } from '@app-core/errors';
-import { FFunction1 } from '@app-core/types/function';
+import { FFunction1, FFunction2, PartialFunction } from '@app-core/types/function';
 import { NullableOrUndefined } from '@app-core/types';
-import { FPredicate1 } from "@app-core/types/predicate";
+import { FPredicate1 } from '@app-core/types/predicate';
+import { FUnaryOperator } from '@app-core/types/function/operator';
 
 /**
  * To invoke only this test:
@@ -201,6 +202,99 @@ describe('StringUtil', () => {
 
 
 
+  describe('collect', () => {
+
+    it('when given sourceString is null, undefined or empty and partialFunction is provided then empty string is returned', () => {
+      const emptyString = '';
+      const ifVowelAdd2ElseRemove: PartialFunction<string, string> =
+        PartialFunction.of(
+          (s: string) => -1 != 'aeiouAEIOU'.indexOf(s),
+          (s: string) => s + '2'
+        );
+
+      expect(StringUtil.collect(null, ifVowelAdd2ElseRemove)).toEqual(emptyString);
+      expect(StringUtil.collect(undefined, ifVowelAdd2ElseRemove)).toEqual(emptyString);
+      expect(StringUtil.collect(emptyString, ifVowelAdd2ElseRemove)).toEqual(emptyString);
+    });
+
+
+    it('when given sourceString is null, undefined or empty and mapFunction and filterPredicate are provided then empty string is returned', () => {
+      const emptyString = '';
+      const isVowel: FPredicate1<string> =
+          (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+      const add2: FFunction1<string, string> =
+          (s: string) => s + '2';
+
+      expect(StringUtil.collect(null, add2, isVowel)).toEqual(emptyString);
+      expect(StringUtil.collect(undefined, add2, isVowel)).toEqual(emptyString);
+      expect(StringUtil.collect(emptyString, add2, isVowel)).toEqual(emptyString);
+    });
+
+
+    it('when given sourceString is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => StringUtil.collect('abc', null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => StringUtil.collect('abc', undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceString is not empty but mapFunction is null or undefined then an error is thrown', () => {
+      const isVowel: FPredicate1<string> =
+          (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      // @ts-ignore
+      expect(() => StringUtil.collect('abc', null, isVowel)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => StringUtil.collect('abc', undefined, isVowel)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceString has elements and partialFunction is valid then a new filtered and transformed string is returned', () => {
+      const sourceString = 'abcDEfgIoU12';
+      const ifVowelAdd2ElseRemove: PartialFunction<string, string> =
+        PartialFunction.of(
+          (s: string) => -1 != 'aeiouAEIOU'.indexOf(s),
+          (s: string) => s + '2'
+        );
+
+      const expectedResult = 'a2E2I2o2U2';
+
+      expect(StringUtil.collect(sourceString, ifVowelAdd2ElseRemove)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceString has elements and mapFunction is valid but filterPredicate is null or undefined then all elements will be transformed', () => {
+      const sourceString = 'abcDEfgIoU12';
+      const add2: FFunction1<string, string> =
+          (s: string) => s + '2';
+
+      const expectedResult = 'a2b2c2D2E2f2g2I2o2U21222';
+
+      // @ts-ignore
+      expect(StringUtil.collect(sourceString, add2, null)).toEqual(expectedResult);
+      // @ts-ignore
+      expect(StringUtil.collect(sourceString, add2, undefined)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceString has elements and mapFunction and filterPredicate are valid then a new filtered and transformed string is returned', () => {
+      const sourceString = 'abcDEfgIoU12';
+
+      const isVowel = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+      const add2 = (s: string) => s + '2';
+
+      const expectedResult = 'a2E2I2o2U2';
+
+      expect(StringUtil.collect(sourceString, add2, isVowel)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
   describe('containsIgnoreCase', () => {
 
     it('when given sourceString is null or undefined then false is returned', () => {
@@ -312,6 +406,40 @@ describe('StringUtil', () => {
 
 
 
+  describe('dropWhile', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      const emptyString = '';
+      const isVowel: FPredicate1<string> =
+          (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      expect(StringUtil.dropWhile(null, isVowel)).toEqual(emptyString);
+      expect(StringUtil.dropWhile(undefined, isVowel)).toEqual(emptyString);
+      expect(StringUtil.dropWhile(emptyString, isVowel)).toEqual(emptyString);
+    });
+
+
+    it('when given sourceString is not empty but filterPredicate is null or undefined then sourceString is returned', () => {
+      const sourceString = 'aEibc12';
+
+      expect(StringUtil.dropWhile(sourceString, null)).toEqual(sourceString);
+      expect(StringUtil.dropWhile(sourceString, undefined)).toEqual(sourceString);
+    });
+
+
+    it('when given sourceString is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
+        const sourceString = 'aEibc12';
+        const isVowel = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+        const expectedResult = 'bc12';
+
+        expect(StringUtil.dropWhile(sourceString, isVowel)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
   describe('filter', () => {
 
     it('when given sourceString is null, undefined or empty then empty string is returned', () => {
@@ -378,6 +506,44 @@ describe('StringUtil', () => {
 
       expect(StringUtil.filterNot('abcEioU3', isVowel)).toEqual('bc3');
       expect(StringUtil.filterNot('142', isVowel)).toEqual('142');
+    });
+
+  });
+
+
+
+  describe('foldLeft', () => {
+
+    it('when given sourceString is null, undefined or empty then initialValue is returned', () => {
+      const initialValue = 1;
+
+      const sumASCIIValues: FFunction2<number, string, number> =
+          (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>) => n! + s!.charCodeAt(0);
+
+      expect(StringUtil.foldLeft(null, initialValue, sumASCIIValues)).toEqual(initialValue);
+      expect(StringUtil.foldLeft(undefined, initialValue, sumASCIIValues)).toEqual(initialValue);
+      expect(StringUtil.foldLeft('', initialValue, sumASCIIValues)).toEqual(initialValue);
+    });
+
+
+    it('when given accumulator is null or undefined then initialValue is returned', () => {
+      const sourceString = 'ab12';
+      const initialValue = 1;
+
+      expect(StringUtil.foldLeft(sourceString, initialValue, null)).toEqual(initialValue);
+      expect(StringUtil.foldLeft(sourceString, initialValue, undefined)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceString is not empty then initialValue applying accumulator is returned', () => {
+      const sourceString = 'ab12';
+      const initialValue = 1;
+
+      const sumASCIIValues = (n: number, s: string) => n + s.charCodeAt(0);
+
+      const expectedResult = 295;
+
+      expect(StringUtil.foldLeft(sourceString, initialValue, sumASCIIValues)).toEqual(expectedResult);
     });
 
   });
@@ -671,6 +837,58 @@ describe('StringUtil', () => {
       expect(StringUtil.leftPad(sourceString, sourceString.length + 2, 'z')).toEqual('zz' + sourceString);
       expect(StringUtil.leftPad(sourceString, sourceString.length + 3, 'zzzz')).toEqual('zzz' + sourceString);
       expect(StringUtil.leftPad(sourceString, sourceString.length + 4, 'zzzz')).toEqual('zzzz' + sourceString);
+    });
+
+  });
+
+
+
+  describe('map', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      const emptyString = '';
+
+      // @ts-ignore
+      expect(StringUtil.map(null, null)).toEqual(emptyString);
+      // @ts-ignore
+      expect(StringUtil.map(undefined, undefined)).toEqual(emptyString);
+      // @ts-ignore
+      expect(StringUtil.map(emptyString, null)).toEqual(emptyString);
+      // @ts-ignore
+      expect(StringUtil.map(emptyString, undefined)).toEqual(emptyString);
+    });
+
+
+    it('when given sourceString is null, undefined or empty and mapFunction is provided then empty array is returned', () => {
+      const emptyString = '';
+
+      const ifVowelEmptyElseCurrent: FUnaryOperator<string> =
+          (s: string) => -1 != 'aeiouAEIOU'.indexOf(s) ? '' : s;
+
+      expect(StringUtil.map(null, ifVowelEmptyElseCurrent)).toEqual(emptyString);
+      expect(StringUtil.map(undefined, ifVowelEmptyElseCurrent)).toEqual(emptyString);
+      expect(StringUtil.map(emptyString, ifVowelEmptyElseCurrent)).toEqual(emptyString);
+    });
+
+
+    it('when given sourceString is not empty but mapFunction is null or undefined then sourceString is returned', () => {
+      const sourceString = 'aEibc1U2';
+
+      // @ts-ignore
+      expect(StringUtil.map(sourceString, null)).toEqual(sourceString);
+      // @ts-ignore
+      expect(StringUtil.map(sourceString, undefined)).toEqual(sourceString);
+    });
+
+
+    it('when given sourceString has elements and mapFunction is valid then a new transformed string is returned', () => {
+      const sourceString = 'aEibc1U2';
+
+      const ifVowelEmptyElseCurrent = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s) ? '' : s;
+
+      const expectedResult = 'bc12';
+
+      expect(StringUtil.map(sourceString, ifVowelEmptyElseCurrent)).toEqual(expectedResult);
     });
 
   });
@@ -1002,6 +1220,42 @@ describe('StringUtil', () => {
       expect(StringUtil.substringBeforeLast('abc', 'c')).toEqual('ab');
       expect(StringUtil.substringBeforeLast('abcb', 'b')).toEqual('abc');
       expect(StringUtil.substringBeforeLast('aaaa', 'aa')).toEqual('aa');
+    });
+
+  });
+
+
+
+  describe('takeWhile', () => {
+
+    it('when given sourceString is null, undefined or empty then empty string is returned', () => {
+      const emptyString = '';
+
+      const isVowel: FPredicate1<string> =
+          (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      expect(StringUtil.takeWhile(null, isVowel)).toEqual(emptyString);
+      expect(StringUtil.takeWhile(undefined, isVowel)).toEqual(emptyString);
+      expect(StringUtil.takeWhile(emptyString, isVowel)).toEqual(emptyString);
+    });
+
+
+    it('when given sourceString is not empty but filterPredicate is null or undefined then sourceString is returned', () => {
+      const sourceString = 'aEibc12';
+
+      expect(StringUtil.takeWhile(sourceString, null)).toEqual(sourceString);
+      expect(StringUtil.takeWhile(sourceString, undefined)).toEqual(sourceString);
+    });
+
+
+    it('when given sourceString is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
+      const sourceString = 'aEibc12';
+
+      const isVowel = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      const expectedResult = 'aEi';
+
+      expect(StringUtil.takeWhile(sourceString, isVowel)).toEqual(expectedResult);
     });
 
   });

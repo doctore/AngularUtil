@@ -187,7 +187,7 @@ describe('MapUtil', () => {
   describe('collect', () => {
 
     it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
-      let emptyMap = new Map<number, string>();
+      const emptyMap = new Map<number, string>();
       const keyAndValueLengthForOdd: PartialFunction<[number, string], [number, number]> =
         PartialFunction.of(
           ([k, v]: [number, string]) => 1 == k % 2,
@@ -201,7 +201,7 @@ describe('MapUtil', () => {
 
 
     it('when given sourceMap has no elements and mapFunction and filterPredicate are provided then empty Map is returned', () => {
-      let emptyMap = new Map<number, string>();
+      const emptyMap = new Map<number, string>();
       const isKeyEven = (k: number, v: string) => 1 == k % 2;
       const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
 
@@ -480,11 +480,11 @@ describe('MapUtil', () => {
       sourceMap.set(3, 'c');
 
       verifyMaps(
-        MapUtil.dropWhile(sourceMap, undefined),
+        MapUtil.dropWhile(sourceMap, null),
         sourceMap
       );
       verifyMaps(
-        MapUtil.dropWhile(sourceMap, null),
+        MapUtil.dropWhile(sourceMap, undefined),
         sourceMap
       );
     });
@@ -2431,11 +2431,11 @@ describe('MapUtil', () => {
       sourceMap.set(3, 'c');
 
       verifyMaps(
-        MapUtil.takeWhile(sourceMap, undefined),
+        MapUtil.takeWhile(sourceMap, null),
         sourceMap
       );
       verifyMaps(
-        MapUtil.takeWhile(sourceMap, null),
+        MapUtil.takeWhile(sourceMap, undefined),
         sourceMap
       );
     });

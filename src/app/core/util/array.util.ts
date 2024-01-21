@@ -303,18 +303,18 @@ export class ArrayUtil {
       return this.copy(sourceArray);
     }
     const finalFilterPredicate = Predicate1.of(filterPredicate!);
-    const result: T[] = [];
     let wasFoundFirstElementDoesMatchPredicate = false;
-    for (let item of sourceArray!) {
-      if (!finalFilterPredicate.apply(item) &&
+    for (let i = 0; i < sourceArray!.length; i++) {
+      const currentElement = sourceArray![i];
+      if (!finalFilterPredicate.apply(currentElement) &&
           !wasFoundFirstElementDoesMatchPredicate) {
         wasFoundFirstElementDoesMatchPredicate = true;
       }
       if (wasFoundFirstElementDoesMatchPredicate) {
-        result.push(item);
+        return sourceArray!.slice(i);
       }
     }
-    return result;
+    return [];
   }
 
 

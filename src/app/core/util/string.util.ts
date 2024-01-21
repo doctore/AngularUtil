@@ -1,9 +1,18 @@
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
-import { FFunction1, Function1, TFunction1 } from '@app-core/types/function';
+import {
+  FFunction1,
+  FFunction2,
+  Function1,
+  Function2,
+  PartialFunction,
+  TFunction1,
+  TFunction2
+} from '@app-core/types/function';
 import { Optional } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
+import { TUnaryOperator } from '@app-core/types/function/operator';
 
 /**
  * Helper functions to manage strings.
@@ -169,11 +178,109 @@ export class StringUtil {
 
 
   /**
-   * Verifies if the given `sourceString` contains `stringToSearch` ignoring case.
+   * Returns a {@link String} after applying to `sourceString`:
+   * <p>
+   *  - Filter its characters using {@link PartialFunction#isDefinedAt} of `partialFunction`
+   *  - Transform its filtered characters using {@link PartialFunction#apply} of `partialFunction`
+   *
+   * @apiNote
+   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned.
    *
    * <pre>
-   *    containsIgnoreCase(null, *)       = false
-   *    containsIgnoreCase(undefined, *)  = false
+   *    collect(                                                     Result:
+   *      'abcDEfgIoU12',                                             'a2E2I2o2U2'
+   *      PartialFunction.of(
+   *        (s: string) => -1 != 'aeiouAEIOU'.indexOf(s),
+   *        (s: string) => s + '2'
+   *      )
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} with the characters to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter and transform characters of `sourceString`
+   *
+   * @return new {@link String} from applying the given {@link PartialFunction} to each character of `sourceString`
+   *         on which it is defined and collecting the results
+   *
+   * @throws IllegalArgumentException if `partialFunction` is `null` or `undefined` with a not empty `sourceString`
+   */
+  static collect(sourceString: NullableOrUndefined<string>,
+                 partialFunction: PartialFunction<string, string>): string;
+
+
+  /**
+   * Returns a {@link String} after applying to `sourceString`:
+   * <p>
+   *  - Filter its characters using the {@link TPredicate1} `filterPredicate`
+   *  - Transform its filtered characters using the {@link TFunction1} `mapFunction`
+   *
+   * @apiNote
+   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `filterPredicate`
+   * is `null` or `undefined` then all characters will be transformed.
+   *
+   * <pre>
+   *    collect(                                                     Result:
+   *      'abcDEfgIoU12',                                             'a2E2I2o2U2'
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s),
+   *      (s: string) => s + '2'
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} with the characters to filter and transform
+   * @param mapFunction
+   *    {@link TUnaryOperator} to transform filtered characters of the source `sourceString`
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter characters from `sourceString`
+   *
+   * @return new {@link String} from applying the given {@link TUnaryOperator} to each character of `sourceString`
+   *         on which {@link TPredicate1} returns `true` and collecting the results
+   *
+   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceString`
+   */
+  static collect(sourceString: NullableOrUndefined<string>,
+                 mapFunction: TUnaryOperator<string>,
+                 filterPredicate: TPredicate1<string>): string;
+
+
+  static collect(sourceString: NullableOrUndefined<string>,
+                 partialFunctionOrMapFunction: PartialFunction<string, string> | TUnaryOperator<string>,
+                 filterPredicate?: TPredicate1<string>): string {
+    let result: string = '';
+    if (!this.isEmpty(sourceString)) {
+      AssertUtil.notNullOrUndefined(
+          partialFunctionOrMapFunction,
+          'partialFunctionOrMapFunction must be not null and not undefined'
+      );
+      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrMapFunction)
+          ? <PartialFunction<string, string>>partialFunctionOrMapFunction
+          : PartialFunction.of(
+              filterPredicate,
+              <TFunction1<string, string>>partialFunctionOrMapFunction
+            );
+      for (let i = 0; i < sourceString!.length; i++) {
+        const currentChar = sourceString![i];
+        if (finalPartialFunction.isDefinedAt(currentChar)) {
+          result += finalPartialFunction.apply(currentChar);
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Verifies if the given `sourceString` contains `stringToSearch` ignoring case.
+   *
+   * @apiNote
+   *    If `sourceString` or `stringToSearch` are `null` or `undefined` then `false` is returned.
+   * <p>
+   * Examples:
+   * <pre>
+   *    containsIgnoreCase(null, *)       = false   // Same result with undefined
+   *    containsIgnoreCase(*, null)       = false   // Same result with undefined
    *    containsIgnoreCase('', 'a')       = false
    *    containsIgnoreCase('abc', 'ac')   = false
    *    containsIgnoreCase('', '')        = true
@@ -205,14 +312,14 @@ export class StringUtil {
    * Counts how many times `stringToSearch` appears in the given `sourceString`.
    *
    * @apiNote
-   *    Only counts non-overlapping matches.
+   *    If `sourceString` or `stringToSearch` are `null`, `undefined` or empty then 0 is returned. Only counts
+   * non-overlapping matches.
    * <p>
    * Examples:
    * <pre>
-   *    count(null, *)        = 0
+   *    count(null, *)        = 0   // Same result with undefined
+   *    count(*, null)        = 0   // Same result with undefined
    *    count('', *)          = 0
-   *    count(*, null)        = 0
-   *    count('', null)       = 0
    *    count('abcab', 'ab')  = 2
    *    count('abcab', 'xx')  = 0
    *    count('aaaaa', 'aa')  = 2
@@ -242,15 +349,61 @@ export class StringUtil {
 
 
   /**
+   *    Returns a {@link String} removing the longest prefix of characters included in `sourceString` that satisfy the
+   * {@link TPredicate1} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `filterPredicate`
+   * is `null` or `undefined` then `sourceString` is returned.
+   *
+   * <pre>
+   *    dropWhile(                                                   Result:
+   *      'aEibc12',                                                  'bc12'
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s)
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} with the characters to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter characters from `sourceString`
+   *
+   * @return the longest suffix of provided `sourceString` whose first character does not satisfy `filterPredicate`
+   */
+  static dropWhile = (sourceString: NullableOrUndefined<string>,
+                      filterPredicate: NullableOrUndefined<TPredicate1<string>>): string => {
+    if (this.isEmpty(sourceString)) {
+      return StringUtil.EMPTY_STRING;
+    }
+    if (ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return sourceString!;
+    }
+    const finalFilterPredicate = Predicate1.of(filterPredicate!);
+    let wasFoundFirstElementDoesMatchPredicate = false;
+    for (let i = 0; i < sourceString!.length; i++) {
+      const currentChar = sourceString![i];
+      if (!finalFilterPredicate.apply(currentChar) &&
+          !wasFoundFirstElementDoesMatchPredicate) {
+        wasFoundFirstElementDoesMatchPredicate = true;
+      }
+      if (wasFoundFirstElementDoesMatchPredicate) {
+        return sourceString!.slice(i);
+      }
+    }
+    return '';
+  }
+
+
+  /**
    * Selects all characters of `sourceString` which satisfy the {@link TPredicate1} `filterPredicate`.
    *
    * @apiNote
    *    If `filterPredicate` is `null` or `undefined` then `sourceString` will be returned.
    *
    * <pre>
-   *    filter(                                         Result:
-   *      'abcDEfgIoU12',                                'aEIoU'
-   *      c => -1 != 'aeiouAEIOU'.indexOf(c)
+   *    filter(                                                      Result:
+   *      'abcDEfgIoU12',                                             'aEIoU'
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s)
    *    )
    * </pre>
    *
@@ -288,9 +441,9 @@ export class StringUtil {
    *    If `filterPredicate` is `null` or `undefined` then `sourceString` will be returned.
    *
    * <pre>
-   *    filterNot(                                      Result:
-   *      'abcDEfgIoU12',                                'bcDfg12'
-   *      c => -1 != 'aeiouAEIOU'.indexOf(c)
+   *    filterNot(                                         Result:
+   *      'abcDEfgIoU12',                                   'bcDfg12'
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s)
    *    )
    * </pre>
    *
@@ -311,6 +464,60 @@ export class StringUtil {
       sourceString,
       finalFilterPredicate
     );
+  }
+
+
+  /**
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all
+   * characters of `sourceString`, going left to right.
+   *
+   * @apiNote
+   *    If `sourceString` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
+   *
+   * <pre>
+   *    foldLeft(                                                    Result:
+   *      'ab12',                                                     295
+   *      1,
+   *      (r: number, s: string) => r + s.charCodeAt(0)
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} with characters to combine
+   * @param initialValue
+   *    The initial value to start with
+   * @param accumulator
+   *    A {@link TFunction2} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive characters of `sourceString`, going
+   *         left to right with the start value `initialValue` on the left.
+   */
+  static foldLeft<R>(sourceString: NullableOrUndefined<string>,
+                     initialValue: R,
+                     accumulator: NullableOrUndefined<TFunction2<R, string, R>>): R;
+
+
+  static foldLeft<R>(sourceString: NullableOrUndefined<string>,
+                     initialValue: R,
+                     accumulator: NullableOrUndefined<FFunction2<R, string, R>>): R;
+
+
+  static foldLeft<R>(sourceString: NullableOrUndefined<string>,
+                     initialValue: R,
+                     accumulator: NullableOrUndefined<TFunction2<R, string, R>>): R {
+    if (this.isEmpty(sourceString) ||
+        ObjectUtil.isNullOrUndefined(accumulator)) {
+      return initialValue
+    }
+    const finalAccumulator = Function2.of(accumulator);
+    let result: R = initialValue;
+    for (let i = 0; i < sourceString!.length; i++) {
+      result = finalAccumulator.apply(
+          result,
+          sourceString![i]
+      );
+    }
+    return result;
   }
 
 
@@ -619,6 +826,46 @@ export class StringUtil {
 
 
   /**
+   * Builds a new {@link String} by applying a {@link UnaryOperator} to all characters of provided `sourceString`.
+   *
+   * @apiNote
+   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `mapFunction`
+   * is `null` or `undefined` then `sourceString` is returned.
+   *
+   * <pre>
+   *    map(                                                                   Result:
+   *      'aEibc1U2'                                                            'bc12'
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s) ? '' : s
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} to used as source of the returned {@link String}
+   * @param mapFunction
+   *    {@link UnaryOperator} to apply to each character
+   *
+   * @return new {@link String} from applying the given {@link UnaryOperator} to each character of `sourceString`
+   */
+  static map = (sourceString: NullableOrUndefined<string>,
+                mapFunction: TUnaryOperator<string>): string => {
+    if (this.isEmpty(sourceString)) {
+      return StringUtil.EMPTY_STRING;
+    }
+    if (ObjectUtil.isNullOrUndefined(mapFunction)) {
+      return sourceString!;
+    }
+    const finalMapFunction = Function1.of(mapFunction);
+    let result = '';
+    for (let i = 0; i < sourceString!.length; i++) {
+      result += finalMapFunction.apply(
+          sourceString![i]
+      );
+    }
+    return result;
+  }
+
+
+  /**
    * Right pad the {@link String} `sourceString` with `padString` up to the provided `size`.
    *
    * @apiNote
@@ -821,14 +1068,16 @@ export class StringUtil {
    * <p>
    * Examples:
    * <pre>
-   *    substringAfterLast(null, *)       = ''
-   *    substringAfterLast('', *)         = ''
-   *    substringAfterLast(*, null)       = ''
-   *    substringAfterLast(*, '')         = ''
-   *    substringAfterLast('abc', 'z')    = ''
-   *    substringAfterLast('abc', 'a')    = 'bd'
-   *    substringAfterLast('abc', 'c')    = ''
-   *    substringAfterLast('abcba', 'b')  = 'a'
+   *    substringAfterLast(null, *)        = ''
+   *    substringAfterLast(undefined, *)   = ''
+   *    substringAfterLast('', *)          = ''
+   *    substringAfterLast(*, null)        = ''
+   *    substringAfterLast(*, undefined)   = ''
+   *    substringAfterLast(*, '')          = ''
+   *    substringAfterLast('abc', 'z')     = ''
+   *    substringAfterLast('abc', 'a')     = 'bd'
+   *    substringAfterLast('abc', 'c')     = ''
+   *    substringAfterLast('abcba', 'b')   = 'a'
    * </pre>
    *
    * @param sourceString
@@ -946,5 +1195,49 @@ export class StringUtil {
           : source.substring(0, pos);
       })
       .getOrElse(StringUtil.EMPTY_STRING);
+
+
+  /**
+   *    Returns a {@link String} with the longest prefix of characters included in `sourceString` that  satisfy the
+   * {@link TPredicate1} `filterPredicate`.
+   *
+   * @apiNote
+   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `filterPredicate`
+   * is `null` or `undefined` then `sourceString` is returned.
+   *
+   * <pre>
+   *    takeWhile(                                                   Result:
+   *      'aEibc12',                                                  'aEi'
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s)
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} with the characters to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter characters from `sourceString`
+   *
+   * @return the longest prefix of provided `sourceString` whose characters all satisfy `filterPredicate`
+   */
+  static takeWhile = (sourceString: NullableOrUndefined<string>,
+                      filterPredicate: NullableOrUndefined<TPredicate1<string>>): string => {
+    if (this.isEmpty(sourceString)) {
+      return StringUtil.EMPTY_STRING;
+    }
+    if (ObjectUtil.isNullOrUndefined(filterPredicate)) {
+      return sourceString!;
+    }
+    const finalFilterPredicate = Predicate1.of(filterPredicate!);
+    let result: string = '';
+    for (let i = 0; i < sourceString!.length; i++) {
+      const currentChar = sourceString![i];
+      if (finalFilterPredicate.apply(currentChar)) {
+        result += currentChar;
+      } else {
+        return result;
+      }
+    }
+    return result;
+  }
 
 }
