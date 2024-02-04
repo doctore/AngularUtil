@@ -1,4 +1,4 @@
-import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
+import {ArrayUtil, AssertUtil, MapUtil, ObjectUtil} from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
 import {
   FFunction1,
@@ -561,6 +561,76 @@ export class StringUtil {
       Optional.ofNullable<string>(sourceString)
         .filter(s => !this.isEmpty(s))
         .getOrElse(defaultValue);
+
+
+  /**
+   * Partitions given `sourceString` into a {@link Map} of {@link String} according to `discriminatorKey`.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
+   *
+   * <pre>
+   *    groupBy(                                                  Result:
+   *      'essae',                                                 [('e', 'ee')
+   *      Function1.identity()                                      ('s', 'ss')
+   *    )                                                           ('a', 'a')]
+   *
+   *    groupBy(                                                  Result:
+   *      'essae',                                                 [('e', 'ee')
+   *      Function1.identity(),                                     ('a', 'a')]
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s)
+   *    )
+   *    groupBy(                                                  Result:
+   *      'essae',                                                 [(1, 'a')
+   *      (s: string) => StringUtil.count('essae', s),              (2, 'ee')]
+   *      (s: string) => -1 != 'aeiouAEIOU'.indexOf(s)
+   *    )
+   * </pre>
+   *
+   * @param sourceString
+   *    {@link String} with the elements to filter and group
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter characters of `sourceString`
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` to each character of `sourceString`
+   *
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceString`
+   */
+  static groupBy = <K>(sourceString: NullableOrUndefined<string>,
+                       discriminatorKey: TFunction1<string, K>,
+                       filterPredicate: NullableOrUndefined<TPredicate1<string>> = Predicate1.alwaysTrue<string>()): Map<K, string> => {
+    const result = new Map<K, string>;
+    if (!this.isEmpty(sourceString)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
+      const finalDiscriminatorKey = Function1.of(discriminatorKey);
+      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+        ? Predicate1.alwaysTrue<string>()
+        : Predicate1.of(filterPredicate);
+
+      for (let i = 0; i < sourceString!.length; i++) {
+        const currentChar = sourceString![i];
+        const discriminatorKeyResult = finalDiscriminatorKey.apply(currentChar);
+        if (finalFilterPredicate.apply(currentChar)) {
+          MapUtil.putIfAbsent(
+            result,
+            discriminatorKeyResult,
+            ''
+          );
+          const currentValue = result.get(discriminatorKeyResult);
+          result.set(
+              discriminatorKeyResult,
+              currentValue + currentChar
+          );
+        }
+      }
+    }
+    return result;
+  }
 
 
   /**

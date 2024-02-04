@@ -597,6 +597,90 @@ describe('StringUtil', () => {
 
 
 
+  describe('groupBy', () => {
+
+    it('when given sourceString is null, undefined or empty and discriminatorKey is provided then empty Map is returned', () => {
+      const emptyString = '';
+
+      const identity: FUnaryOperator<string> =
+        (s: string) => s;
+
+      const expectedResult: Map<string, string> = new Map<string, string>;
+
+      expect(StringUtil.groupBy(null, identity)).toEqual(expectedResult);
+      expect(StringUtil.groupBy(undefined, identity)).toEqual(expectedResult);
+      expect(StringUtil.groupBy(emptyString, identity)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceString is null, undefined or empty and discriminatorKey and filterPredicate are provided then empty string is returned', () => {
+      const emptyString = '';
+
+      const identity: FUnaryOperator<string> =
+        (s: string) => s;
+
+      const isVowel: FPredicate1<string> =
+        (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+
+      const expectedResult: Map<string, string> = new Map<string, string>;
+
+      expect(StringUtil.groupBy(null, identity, isVowel)).toEqual(expectedResult);
+      expect(StringUtil.groupBy(undefined, identity, isVowel)).toEqual(expectedResult);
+      expect(StringUtil.groupBy(emptyString, identity, isVowel)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceString is not empty but discriminatorKey is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => StringUtil.groupBy('abc', null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => StringUtil.groupBy('abc', undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceString has elements and discriminatorKey is valid but filterPredicate is null or undefined then all elements will be grouped', () => {
+      const sourceString = 'essae';
+
+      const identity: FUnaryOperator<string> =
+        (s: string) => s;
+
+      const expectedResult: Map<string, string> = new Map<string, string>;
+      expectedResult.set('e', 'ee');
+      expectedResult.set('s', 'ss');
+      expectedResult.set('a', 'a');
+
+      verifyMaps(
+        StringUtil.groupBy(sourceString, identity, null),
+        expectedResult
+      );
+      verifyMaps(
+        StringUtil.groupBy(sourceString, identity, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceString has elements and mapFunction and filterPredicate are valid then a new filtered and transformed string is returned', () => {
+      const sourceString = 'essae';
+
+      const isVowel = (s: string) => -1 != 'aeiouAEIOU'.indexOf(s);
+      const countCharacters = (s: string) => StringUtil.count(sourceString, s);
+
+      const expectedResult: Map<number, string> = new Map<number, string>;
+      expectedResult.set(1, 'a');
+      expectedResult.set(2, 'ee');
+
+      verifyMaps(
+        StringUtil.groupBy(sourceString, countCharacters, isVowel),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('hideMiddle', () => {
 
     it('when given sourceString is null, undefined or empty then empty string is returned', () => {
@@ -1259,5 +1343,17 @@ describe('StringUtil', () => {
     });
 
   });
+
+
+  function verifyMaps(actualMap: Map<any, any>,
+                      expectedMap: Map<any, any>) {
+    expect(actualMap.size).toEqual(expectedMap.size);
+    if (0 < expectedMap.size) {
+      for (let [key, value] of actualMap!) {
+        expect(expectedMap.has(key)).toBeTrue();
+        expect(expectedMap.get(key)).toEqual(value);
+      }
+    }
+  }
 
 });
