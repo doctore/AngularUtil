@@ -590,6 +590,133 @@ export class ArrayUtil {
 
 
   /**
+   *    Partitions given `sourceArray` into a {@link Map}, applying `discriminatorKey` if the current element verifies
+   * `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * @apiNote
+   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
+   *
+   * <pre>
+   *    groupBy(                                           Result:
+   *      [1, 2, 3, 6],                                     [(2, [1])
+   *      (n: number) => 1 + n,                              (4, [3])
+   *      (n: number) => 1 == n % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter, transform and group
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceArray` that verifies
+   *        `filterPredicate`
+   *
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static groupBy = <T, K>(sourceArray: NullableOrUndefined<T[]>,
+                          discriminatorKey: TFunction1<T, K>,
+                          filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
+    const result: Map<K, T[]> = new Map<K, T[]>();
+    if (!this.isEmpty(sourceArray)) {
+      const finalDiscriminatorKey = Function1.of(discriminatorKey);
+      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+        ? Predicate1.alwaysTrue<T>()
+        : Predicate1.of(filterPredicate);
+
+      for (let item of sourceArray!) {
+        if (finalFilterPredicate.apply(item)) {
+          const discriminatorKeyResult = finalDiscriminatorKey.apply(item);
+          MapUtil.putIfAbsent(
+            result,
+            discriminatorKeyResult,
+            []
+          );
+          result.get(discriminatorKeyResult)!
+            .push(item);
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Partitions given `sourceArray` into a {@link Map}, applying `discriminatorKey` if the current element verifies
+   * `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * @apiNote
+   *    This method is similar to {@link ArrayUtil#groupBy} but `discriminatorKey` returns an array of related key values.
+   * If `filterPredicate` is `null` or `undefined` then all elements will be used.
+   *
+   * <pre>
+   *    groupByMultiKey(                                  Result:
+   *      [1, 2, 3, 6, 11, 12],                            [('even',  [2, 6])
+   *      (n: number) => {                                  ('odd',   [1, 3])
+   *        const keys: string[] = [];                      ('smaller5', [1, 2, 3])
+   *        if (0 == n % 2) {                               ('greaterEqual5', [6])]
+   *          keys.push('even');
+   *        } else {
+   *          keys.push('odd');
+   *        }
+   *        if (5 > n) {
+   *          keys.push('smaller5');
+   *        } else {
+   *          keys.push('greaterEqual5');
+   *        }
+   *        return keys;
+   *      },
+   *      (n: number) => 10 > n
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter, transform and group
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceArray` that
+   *         verifies `filterPredicate`, to generate the keys of the returned one
+   *
+   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static groupByMultiKey = <T, K>(sourceArray: NullableOrUndefined<T[]>,
+                                  discriminatorKey: TFunction1<T, K[]>,
+                                  filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
+    const result: Map<K, T[]> = new Map<K, T[]>();
+    if (!this.isEmpty(sourceArray)) {
+      const finalDiscriminatorKey = Function1.of(discriminatorKey);
+      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+        ? Predicate1.alwaysTrue<T>()
+        : Predicate1.of(filterPredicate);
+
+      for (let item of sourceArray!) {
+        if (finalFilterPredicate.apply(item)) {
+          const discriminatorKeyResult = ObjectUtil.getOrElse(
+            finalDiscriminatorKey.apply(item),
+            []
+          );
+          for (let key of discriminatorKeyResult!) {
+            MapUtil.putIfAbsent(
+              result,
+              key,
+              []
+            );
+            result.get(key)!
+              .push(item);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
    *    Partitions given `sourceArray` into a {@link Map}, applying {@link PartialFunction#apply} and adding values with
    * the same `key` in an array of values.
    *
@@ -604,7 +731,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceArray
-   *    Array with the elements to filter and transform
+   *    Array with the elements to filter, transform and group
    * @param partialFunction
    *    {@link PartialFunction} to filter and transform elements of `sourceArray`
    *
@@ -634,7 +761,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceArray
-   *    Array with the elements to filter and transform
+   *    Array with the elements to filter, transform and group
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param valueMapper
@@ -694,6 +821,7 @@ export class ArrayUtil {
    *
    * @apiNote
    *    This method is similar to {@link ArrayUtil#groupMap} but `discriminatorKey` returns an array of related key values.
+   * If `filterPredicate` is `null` or `undefined` then all elements will be used.
    *
    * <pre>
    *    groupMapMultiKey(                                  Result:
@@ -718,7 +846,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceArray
-   *    Array with the elements to filter and transform
+   *    Array with the elements to filter, transform and group
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param valueMapper
@@ -727,7 +855,7 @@ export class ArrayUtil {
    *    {@link TPredicate1} to filter elements of `sourceArray`
    *
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
-   *         that verifies `filterPredicate`
+   *         that verifies `filterPredicate`, to generate the keys of the returned one
    *
    * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` are `null` or `undefined` with a not empty `sourceArray`
    */
@@ -783,7 +911,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceArray
-   *    Array with the elements to filter, transform and reduce
+   *    Array with the elements to filter, transform, group and reduce
    * @param reduceValues
    *    {@link TBinaryOperator} used to reduce the values related with same key
    * @param partialFunction
@@ -820,7 +948,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceArray
-   *    Array with the elements to filter, transform and reduce
+   *    Array with the elements to filter, transform, group and reduce
    * @param reduceValues
    *    {@link TBinaryOperator} used to reduce the values related with same key
    * @param discriminatorKey

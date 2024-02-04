@@ -749,7 +749,7 @@ export class MapUtil {
    * </pre>
    *
    * @param sourceMap
-   *    {@link Map} to filter
+   *    {@link Map} to filter and group
    * @param discriminator
    *    {@link TFunction2} used to split the elements of `sourceMap`
    * @param filterPredicate
@@ -763,15 +763,37 @@ export class MapUtil {
   static groupBy = <K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                              discriminator: TFunction2<K, V, R>,
                              filterPredicate?: TPredicate2<K, V>): Map<R, Map<K, V>> => {
-    return this.groupByMultiKey(
-      sourceMap,
-      Function2.of(
-        (k: K, v: V) => [
-          Function2.of(discriminator).apply(k, v)
-        ]
-      ),
-      filterPredicate
-    );
+    const result = new Map<R, Map<K, V>>();
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        discriminator,
+        'discriminator must be not null and not undefined'
+      );
+      const finalDiscriminator = Function2.of(discriminator);
+      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+        ? Predicate2.alwaysTrue<K, V>()
+        : Predicate2.of(filterPredicate);
+
+      for (let [key, value] of sourceMap!) {
+        if (finalFilterPredicate.apply(key, value)) {
+          const discriminatorResult = finalDiscriminator.apply(
+            key,
+            value
+          );
+          MapUtil.putIfAbsent(
+            result,
+            discriminatorResult,
+            new Map<K, V>()
+          );
+          result.get(discriminatorResult)!
+            .set(
+              key,
+              value
+            );
+        }
+      }
+    }
+    return result;
   }
 
 
@@ -803,7 +825,7 @@ export class MapUtil {
    * </pre>
    *
    * @param sourceMap
-   *    {@link Map} to filter
+   *    {@link Map} to filter and group
    * @param discriminator
    *    {@link TFunction2} used to split the elements of `sourceMap`
    * @param filterPredicate
@@ -871,7 +893,7 @@ export class MapUtil {
    * </pre>
    *
    * @param sourceMap
-   *    {@link Map} with the elements to filter and transform
+   *    {@link Map} with the elements to filter, transform and group
    * @param partialFunction
    *    {@link PartialFunction} to filter and transform elements of `sourceMap`
    *
@@ -972,7 +994,7 @@ export class MapUtil {
    * </pre>
    *
    * @param sourceMap
-   *    {@link Map} with the elements to filter, transform and reduce
+   *    {@link Map} with the elements to filter, transform, group and reduce
    * @param reduceValues
    *    {@link BinaryOperator} used to reduce the values related with same key
    * @param partialFunction
@@ -1009,7 +1031,7 @@ export class MapUtil {
    * </pre>
    *
    * @param sourceMap
-   *    {@link Map} with the elements to filter, transform and reduce
+   *    {@link Map} with the elements to filter, transform, group and reduce
    * @param reduceValues
    *    {@link BinaryOperator} used to reduce the values related with same key
    * @param discriminatorKey

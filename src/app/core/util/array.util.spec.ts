@@ -820,6 +820,189 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('groupBy', () => {
+
+    it('when given sourceArray has no elements and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+      const emptyArray: number[] = [];
+
+      const isOdd = (n: number) => 1 == n % 2;
+      const plus1 = (n: number) => 1 + n;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(ArrayUtil.groupBy(null, plus1, isOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.groupBy(undefined, plus1, isOdd)).toEqual(expectedResult);
+      expect(ArrayUtil.groupBy(emptyArray, plus1, isOdd)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but discriminatorKey is null or undefined then an error is thrown', () => {
+      const isOdd = (n: number) => 1 == n % 2;
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupBy([1], null, isOdd)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupBy([1], undefined, isOdd)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey is valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
+
+      const plus1: FFunction1<number, number> =
+        (n: number) => 1 + n;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(2, [1]);
+      expectedResult.set(3, [2]);
+      expectedResult.set(4, [3, 3]);
+      expectedResult.set(7, [6]);
+
+      verifyMaps(
+        // @ts-ignore
+        ArrayUtil.groupBy(sourceArray, plus1, null),
+        expectedResult
+      );
+
+      verifyMaps(
+        ArrayUtil.groupBy(sourceArray, plus1, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
+      const sourceArray: number[] = [1, 2, 3, 6, 3];
+
+      const isOdd = (n: number) => 1 == n % 2;
+      const plus1 = (n: number) => 1 + n;
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(2, [1]);
+      expectedResult.set(4, [3, 3]);
+
+      verifyMaps(
+        ArrayUtil.groupBy(sourceArray, plus1, isOdd),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('groupByMultiKey', () => {
+
+    it('when given sourceArray has no elements and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+      const emptyArray: number[] = [];
+
+      const lessThan10 = (n: number) => 10 > n;
+      const oddEvenAndCompareWith5 = (n: number) => {
+        const keys: string[] = [];
+        if (0 == n % 2) {
+          keys.push("even");
+        } else {
+          keys.push("odd");
+        }
+        if (5 > n) {
+          keys.push("smaller5");
+        } else {
+          keys.push("greaterEqual5");
+        }
+        return keys;
+      };
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(ArrayUtil.groupByMultiKey(null, oddEvenAndCompareWith5, lessThan10)).toEqual(expectedResult);
+      expect(ArrayUtil.groupByMultiKey(undefined, oddEvenAndCompareWith5, lessThan10)).toEqual(expectedResult);
+      expect(ArrayUtil.groupByMultiKey(emptyArray, oddEvenAndCompareWith5, lessThan10)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but discriminatorKeyis null or undefined then an error is thrown', () => {
+      const lessThan10 = (n: number) => 10 > n;
+
+      // @ts-ignore
+      expect(() => ArrayUtil.groupByMultiKey([1], null, lessThan10)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.groupByMultiKey([1], undefined, lessThan10)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey is valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+
+      const oddEvenAndCompareWith5: FFunction1<number, string[]> =
+        (n: number) => {
+          const keys: string[] = [];
+          if (0 == n % 2) {
+            keys.push("even");
+          } else {
+            keys.push("odd");
+          }
+          if (5 > n) {
+            keys.push("smaller5");
+          } else {
+            keys.push("greaterEqual5");
+          }
+          return keys;
+        };
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [2, 6, 12]);
+      expectedResult.set("odd", [1, 3, 11]);
+      expectedResult.set("smaller5", [1, 2, 3]);
+      expectedResult.set("greaterEqual5", [6, 11, 12]);
+
+      verifyMaps(
+        // @ts-ignore
+        ArrayUtil.groupByMultiKey(sourceArray, oddEvenAndCompareWith5, null),
+        expectedResult
+      );
+
+      verifyMaps(
+        ArrayUtil.groupByMultiKey(sourceArray, oddEvenAndCompareWith5, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceArray has elements and discriminatorKey and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
+      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+
+      const lessThan10 = (n: number) => 10 > n;
+      const oddEvenAndCompareWith5 = (n: number) => {
+        const keys: string[] = [];
+        if (0 == n % 2) {
+          keys.push("even");
+        } else {
+          keys.push("odd");
+        }
+        if (5 > n) {
+          keys.push("smaller5");
+        } else {
+          keys.push("greaterEqual5");
+        }
+        return keys;
+      };
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [2, 6]);
+      expectedResult.set("odd", [1, 3]);
+      expectedResult.set("smaller5", [1, 2, 3]);
+      expectedResult.set("greaterEqual5", [6]);
+
+      verifyMaps(
+        ArrayUtil.groupByMultiKey(sourceArray, oddEvenAndCompareWith5, lessThan10),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('groupMap', () => {
 
     it('when given sourceArray has no elements and partialFunction is provided then empty Map is returned', () => {
