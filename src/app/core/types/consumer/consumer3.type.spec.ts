@@ -25,7 +25,7 @@ describe('isFConsumer3', () => {
 
 
   it('when a function that matches is provided then true is returned', () => {
-    expect(isFConsumer3((t1: number, t2: number, t3: number) => {})).toBeTrue();
+    expect(isFConsumer3((t1: string, t2: string, t3: string) => {})).toBeTrue();
     expect(isFConsumer3((t1: number, t2: number, t3: number) => t1 + t2 + t3)).toBeTrue();
   });
 
@@ -83,8 +83,8 @@ describe('Consumer3', () => {
       let externalBoolean = true;
 
       const plusNAndAddSAndChangeB = (n: number, s: string, b: boolean) => {
-          externalInt += n!;
-          externalString += s!;
+          externalInt += n;
+          externalString += s;
           externalBoolean = b;
         };
 
@@ -213,8 +213,8 @@ describe('Consumer3', () => {
           });
 
       const multiplyNAddSAndChangeB = (n: number, s: string, b: boolean) => {
-        externalInt *= n!;
-        externalString += s!;
+        externalInt *= n;
+        externalString += s;
         externalBoolean = b;
       };
 
@@ -273,8 +273,8 @@ describe('Consumer3', () => {
 
       const multiplyNAddS: Consumer3<number, string, boolean> =
         Consumer3.of((n: number, s: string, b: boolean) => {
-          externalInt *= n!;
-          externalString += s!;
+          externalInt *= n;
+          externalString += s;
           externalBoolean = b;
         });
 
@@ -293,7 +293,7 @@ describe('Consumer3', () => {
 
   describe('apply', () => {
 
-    it('when a Consumer3 is provided then a new instance of internal type is returned', () => {
+    it('when a Consumer3 is provided then the defined operation is performed based on provided arguments', () => {
       let externalInt = 10;
       let externalString = 'abc';
       let externalBoolean = true;

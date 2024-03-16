@@ -206,7 +206,7 @@ describe('Consumer0', () => {
 
   describe('apply', () => {
 
-    it('when a Consumer0 is provided then a new instance of internal type is returned', () => {
+    it('when a Consumer0 is provided then the defined operation is performed based on provided arguments', () => {
       let externalString = 'abc';
 
       const externalStringPlusV2: Consumer0 =

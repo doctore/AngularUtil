@@ -121,7 +121,8 @@ export class Consumer0 {
       : new Consumer0(
           () => {
             this.apply();
-            Consumer0.of(after).apply();
+            Consumer0.of(after)
+              .apply();
           }
         );
 

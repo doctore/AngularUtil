@@ -25,7 +25,7 @@ describe('isFConsumer1', () => {
 
 
   it('when a function that matches is provided then true is returned', () => {
-    expect(isFConsumer1((t1: number) => {} )).toBeTrue();
+    expect(isFConsumer1((t1: string) => {} )).toBeTrue();
     expect(isFConsumer1((t1: number) => { t1 += 1; } )).toBeTrue();
   });
 
@@ -207,7 +207,7 @@ describe('Consumer1', () => {
 
   describe('apply', () => {
 
-    it('when a Consumer1 is provided then a new instance of internal type is returned', () => {
+    it('when a Consumer1 is provided then the defined operation is performed based on provided arguments', () => {
       let externalString = 'abc';
 
       const stringAddS: Consumer1<string> =
