@@ -89,10 +89,7 @@ export class Predicate2<T1, T2> {
           (previousBoolean, currentRawPred) =>
             previousBoolean &&
               Predicate2.of(currentRawPred!)
-                .apply(
-                  t1,
-                  t2
-                )
+                .apply(t1, t2)
         )
     );
   }
@@ -104,7 +101,9 @@ export class Predicate2<T1, T2> {
    * @return {@link Predicate2}
    */
   static alwaysFalse = <T1, T2>(): Predicate2<T1, T2> =>
-    new Predicate2<T1, T2>((t1: T1, t2: T2) => false);
+    new Predicate2<T1, T2>(
+      (t1: T1, t2: T2) => false
+    );
 
 
   /**
@@ -113,7 +112,9 @@ export class Predicate2<T1, T2> {
    * @return {@link Predicate2}
    */
   static alwaysTrue = <T1, T2>(): Predicate2<T1, T2> =>
-    new Predicate2<T1, T2>((t1: T1, t2: T2) => true);
+    new Predicate2<T1, T2>(
+      (t1: T1, t2: T2) => true
+    );
 
 
   /**
@@ -257,7 +258,8 @@ export class Predicate2<T1, T2> {
           (t1: T1,
            t2: T2) =>
             this.apply(t1, t2) &&
-              Predicate2.of(predicate).apply(t1, t2)
+              Predicate2.of(predicate)
+                .apply(t1, t2)
         );
 
 
@@ -315,7 +317,8 @@ export class Predicate2<T1, T2> {
           (t1: T1,
            t2: T2) =>
             this.apply(t1, t2) ||
-              Predicate2.of(predicate).apply(t1, t2)
+              Predicate2.of(predicate)
+                .apply(t1, t2)
         );
 
 }

@@ -22,6 +22,7 @@ describe('isFPredicate5', () => {
     expect(isFPredicate5((t1: string) => null !== t1)).toBeFalse();
     expect(isFPredicate5((t1: string, t2: string) => null !== t1 && null !== t2)).toBeFalse();
     expect(isFPredicate5((t1: string, t2: string, t3: string) => null !== t1 && null !== t2 && null !== t3)).toBeFalse();
+    expect(isFPredicate5((t1: string, t2: string, t3: string, t4: string) => null !== t1 && null !== t2 && null !== t3 && null !== t4)).toBeFalse();
     expect(isFPredicate5((t1: string, t2: string, t3: string, t4: string, t5: string, t6: string) => null !== t1 && null !== t2 && null != t3 && null != t4 && null != t5 && null !== t6)).toBeFalse();
   });
 
@@ -165,7 +166,7 @@ describe('Predicate5', () => {
       expect(predicate.apply(12, '', undefined, true, false)).toBeFalse();
       expect(predicate.apply(12, '', false, null, 45)).toBeFalse();
       expect(predicate.apply(12, '', true, undefined, 66)).toBeFalse();
-      expect(predicate.apply('abc', 19, false, '', null )).toBeFalse();
+      expect(predicate.apply('abc', 19, false, '', null)).toBeFalse();
       expect(predicate.apply('abc', 21, true, 'x', undefined)).toBeFalse();
     });
 
@@ -213,7 +214,7 @@ describe('Predicate5', () => {
       expect(predicate.apply(12, '', undefined, true, false)).toBeFalse();
       expect(predicate.apply(12, '', false, null, 45)).toBeFalse();
       expect(predicate.apply(12, '', true, undefined, 66)).toBeFalse();
-      expect(predicate.apply('abc', 19, false, '', null )).toBeFalse();
+      expect(predicate.apply('abc', 19, false, '', null)).toBeFalse();
       expect(predicate.apply('abc', 21, true, 'x', undefined)).toBeFalse();
     });
 

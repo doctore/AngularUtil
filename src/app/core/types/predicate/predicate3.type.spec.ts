@@ -161,7 +161,7 @@ describe('Predicate3', () => {
 
       const nonNullVariable = true;
 
-      expect(predicate.apply(12, '', nonNullVariable)).toBeFalse();
+      expect(predicate.apply(nonNullVariable, 12, '')).toBeFalse();
       expect(predicate.apply('', nonNullVariable, 12)).toBeFalse();
       expect(predicate.apply('', true, nonNullVariable)).toBeFalse();
     });

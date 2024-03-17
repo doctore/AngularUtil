@@ -104,11 +104,7 @@ export class Predicate3<T1, T2, T3> {
           (previousBoolean, currentRawPred) =>
             previousBoolean &&
               Predicate3.of(currentRawPred!)
-                .apply(
-                  t1,
-                  t2,
-                  t3
-                )
+                .apply(t1, t2, t3)
         )
     );
   }
@@ -120,7 +116,9 @@ export class Predicate3<T1, T2, T3> {
    * @return {@link Predicate3}
    */
   static alwaysFalse = <T1, T2, T3>(): Predicate3<T1, T2, T3> =>
-    new Predicate3<T1, T2, T3>((t1: T1, t2: T2, t3: T3) => false);
+    new Predicate3<T1, T2, T3>(
+      (t1: T1, t2: T2, t3: T3) => false
+    );
 
 
   /**
@@ -129,7 +127,9 @@ export class Predicate3<T1, T2, T3> {
    * @return {@link Predicate3}
    */
   static alwaysTrue = <T1, T2, T3>(): Predicate3<T1, T2, T3> =>
-    new Predicate3<T1, T2, T3>((t1: T1, t2: T2, t3: T3) => true);
+    new Predicate3<T1, T2, T3>(
+      (t1: T1, t2: T2, t3: T3) => true
+    );
 
 
   /**
@@ -289,7 +289,8 @@ export class Predicate3<T1, T2, T3> {
            t2: T2,
            t3: T3) =>
             this.apply(t1, t2, t3) &&
-              Predicate3.of(predicate).apply(t1, t2, t3)
+              Predicate3.of(predicate)
+                .apply(t1, t2, t3)
         );
 
 
@@ -353,7 +354,8 @@ export class Predicate3<T1, T2, T3> {
            t2: T2,
            t3: T3) =>
             this.apply(t1, t2, t3) ||
-              Predicate3.of(predicate).apply(t1, t2, t3)
+              Predicate3.of(predicate)
+                .apply(t1, t2, t3)
         );
 
 }

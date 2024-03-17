@@ -117,13 +117,7 @@ export class Predicate5<T1, T2, T3, T4, T5> {
           (previousBoolean, currentRawPred) =>
             previousBoolean &&
               Predicate5.of(currentRawPred!)
-                .apply(
-                  t1,
-                  t2,
-                  t3,
-                  t4,
-                  t5
-                )
+                .apply(t1, t2, t3, t4, t5)
         )
     );
   }
@@ -135,7 +129,9 @@ export class Predicate5<T1, T2, T3, T4, T5> {
    * @return {@link Predicate5}
    */
   static alwaysFalse = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
-    new Predicate5<T1, T2, T3, T4, T5>((t1: T1, t2: T2, t3: T3, t4: T4, t5: T5) => false);
+    new Predicate5<T1, T2, T3, T4, T5>(
+      (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5) => false
+    );
 
 
   /**
@@ -144,7 +140,9 @@ export class Predicate5<T1, T2, T3, T4, T5> {
    * @return {@link Predicate5}
    */
   static alwaysTrue = <T1, T2, T3, T4, T5>(): Predicate5<T1, T2, T3, T4, T5> =>
-    new Predicate5<T1, T2, T3, T4, T5>((t1: T1, t2: T2, t3: T3, t4: T4, t5: T5) => true);
+    new Predicate5<T1, T2, T3, T4, T5>(
+      (t1: T1, t2: T2, t3: T3, t4: T4, t5: T5) => true
+    );
 
 
   /**
@@ -320,7 +318,8 @@ export class Predicate5<T1, T2, T3, T4, T5> {
            t4: T4,
            t5: T5) =>
             this.apply(t1, t2, t3, t4, t5) &&
-              Predicate5.of(predicate).apply(t1, t2, t3, t4, t5)
+              Predicate5.of(predicate)
+                .apply(t1, t2, t3, t4, t5)
         );
 
 
@@ -396,7 +395,8 @@ export class Predicate5<T1, T2, T3, T4, T5> {
            t4: T4,
            t5: T5) =>
             this.apply(t1, t2, t3, t4, t5) ||
-              Predicate5.of(predicate).apply(t1, t2, t3, t4, t5)
+              Predicate5.of(predicate)
+                .apply(t1, t2, t3, t4, t5)
         );
 
 }
