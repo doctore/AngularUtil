@@ -60,22 +60,16 @@ describe('PartialFunction', () => {
   describe('of', () => {
 
     it('when null or undefined mapper is given then an error is thrown', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
       // @ts-ignore
-      expect(() => PartialFunction.of(isEven, null)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of(isEvenFPredicate, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of(isEven, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of(isEvenFPredicate, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when null or undefined verifier is given then alwaysTrue Predicate1 will be used', () => {
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const undefinedVerifierPF = PartialFunction.of(undefined, multiply2);
-      const nullVerifierPF = PartialFunction.of(null, multiply2);
+      const undefinedVerifierPF = PartialFunction.of(undefined, multiply2FFunction);
+      const nullVerifierPF = PartialFunction.of(null, multiply2FFunction);
 
       expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
       expect(undefinedVerifierPF.isDefinedAt(3)).toBeTrue();
@@ -88,10 +82,7 @@ describe('PartialFunction', () => {
 
 
     it('when verifier and mapper lambdas are provided then a valid PartialFunction is returned', () => {
-      const isEven = (n: NullableOrUndefined<number>) => 0 == n! % 2;
-      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenRaw, multiply2Raw);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt(2)).toBeTrue();
@@ -102,13 +93,7 @@ describe('PartialFunction', () => {
 
 
     it('when instances of FFunction1 and FPredicate1 are provided then a valid PartialFunction is returned', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenFPredicate, multiply2FFunction);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt(2)).toBeTrue();
@@ -119,13 +104,7 @@ describe('PartialFunction', () => {
 
 
     it('when instances of Function1 and Predicate1 are provided then a valid PartialFunction is returned', () => {
-      const isEven: Predicate1<NullableOrUndefined<number>> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
-
-      const multiply2: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicateNullable, multiply2FunctionNullable);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt(2)).toBeTrue();
@@ -141,36 +120,24 @@ describe('PartialFunction', () => {
   describe('ofKeyValueMapper', () => {
 
     it('when null or undefined keyMapper or valueMapper are given then an error is thrown', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
       // @ts-ignore
-      expect(() => PartialFunction.ofKeyValueMapper(isEven, null, null)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.ofKeyValueMapper(isEvenFPredicate, null, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.ofKeyValueMapper(isEven, undefined, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.ofKeyValueMapper(isEvenFPredicate, undefined, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.ofKeyValueMapper(isEven, multiply2, null)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.ofKeyValueMapper(isEvenFPredicate, multiply2FFunction, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.ofKeyValueMapper(isEven, multiply2, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.ofKeyValueMapper(isEvenFPredicate, multiply2FFunction, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.ofKeyValueMapper(isEven, null, multiply2)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.ofKeyValueMapper(isEvenFPredicate, null, multiply2FFunction)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.ofKeyValueMapper(isEven, undefined, multiply2)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.ofKeyValueMapper(isEvenFPredicate, undefined, multiply2FFunction)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when null or undefined verifier is given then alwaysTrue Predicate2 will be used', () => {
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const toString: Function1<number, string> =
-        Function1.of((n: number) => '' + n);
-
-      const undefinedVerifierPF = PartialFunction.ofKeyValueMapper(undefined, multiply2, toString);
-      const nullVerifierPF = PartialFunction.ofKeyValueMapper(null, multiply2, toString);
+      const undefinedVerifierPF = PartialFunction.ofKeyValueMapper(undefined, multiply2FFunction, toStringFunction);
+      const nullVerifierPF = PartialFunction.ofKeyValueMapper(null, multiply2FFunction, toStringFunction);
 
       expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
       expect(undefinedVerifierPF.isDefinedAt(3)).toBeTrue();
@@ -183,11 +150,7 @@ describe('PartialFunction', () => {
 
 
     it('when verifier and mapper lambdas are provided then a valid PartialFunction is returned', () => {
-      const isEven = (n: NullableOrUndefined<number>) => 0 == n! % 2;
-      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
-      const toString = (n: number) => '' + n;
-
-      const partialFunction = PartialFunction.ofKeyValueMapper(isEven, multiply2, toString);
+      const partialFunction = PartialFunction.ofKeyValueMapper(isEvenRaw, multiply2Raw, toStringRaw);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt(2)).toBeTrue();
@@ -198,16 +161,7 @@ describe('PartialFunction', () => {
 
 
     it('when instances of FFunction1 and FPredicate1 are provided then a valid PartialFunction is returned', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const toString: FFunction1<number, string> =
-        (n: number) => '' + n;
-
-      const partialFunction = PartialFunction.ofKeyValueMapper(isEven, multiply2, toString);
+      const partialFunction = PartialFunction.ofKeyValueMapper(isEvenFPredicate, multiply2FFunction, toStringFFunction);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt(2)).toBeTrue();
@@ -218,16 +172,7 @@ describe('PartialFunction', () => {
 
 
     it('when instances of Function1 and Predicate1 are provided then a valid PartialFunction is returned', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const toString: Function1<number, string> =
-        Function1.of((n: number) => '' + n);
-
-      const partialFunction = PartialFunction.ofKeyValueMapper(isEven, multiply2, toString);
+      const partialFunction = PartialFunction.ofKeyValueMapper(isEvenPredicate, multiply2Function, toStringFunction);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt(2)).toBeTrue();
@@ -243,22 +188,16 @@ describe('PartialFunction', () => {
   describe('of2', () => {
 
     it('when null or undefined mapper is given then an error is thrown', () => {
-      const isAllEven: FPredicate2<number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-
       // @ts-ignore
-      expect(() => PartialFunction.of2(isAllEven, null)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2(isAllEvenFPredicate, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of2(isAllEven, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2(isAllEvenFPredicate, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when null or undefined verifier is given then alwaysTrue Predicate2 will be used', () => {
-      const multiply: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
-      const undefinedVerifierPF = PartialFunction.of2(undefined, multiply);
-      const nullVerifierPF = PartialFunction.of2(null, multiply);
+      const undefinedVerifierPF = PartialFunction.of2(undefined, multiplyFFunction);
+      const nullVerifierPF = PartialFunction.of2(null, multiplyFFunction);
 
       expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
       expect(undefinedVerifierPF.isDefinedAt([2, 3])).toBeTrue();
@@ -271,10 +210,7 @@ describe('PartialFunction', () => {
 
 
     it('when verifier and mapper lambdas are provided then a valid PartialFunction is returned', () => {
-      const isAllEven = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-      const multiply = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
-      const partialFunction = PartialFunction.of2(isAllEven, multiply);
+      const partialFunction = PartialFunction.of2(isAllEvenRaw, multiplyRaw);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -285,13 +221,7 @@ describe('PartialFunction', () => {
 
 
     it('when instances of FFunction2 and FPredicate2 are provided then a valid PartialFunction is returned', () => {
-      const isAllEven: FPredicate2<number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-
-      const multiply: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
-      const partialFunction = PartialFunction.of2(isAllEven, multiply);
+      const partialFunction = PartialFunction.of2(isAllEvenFPredicate, multiplyFFunction);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -302,13 +232,7 @@ describe('PartialFunction', () => {
 
 
     it('when instances of Function2 and Predicate2 are provided then a valid PartialFunction is returned', () => {
-      const isAllEven: Predicate2<number, number> =
-        Predicate2.of((n1: number, n2: number) => 0 == n1 % 2 && 0 == n2 % 2);
-
-      const multiply: Function2<number, number, number> =
-        Function2.of((n1: number, n2: number) => n1 * n2);
-
-      const partialFunction = PartialFunction.of2(isAllEven, multiply);
+      const partialFunction = PartialFunction.of2(isAllEvenPredicate, multiplyFunction);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -324,13 +248,10 @@ describe('PartialFunction', () => {
   describe('of2ToTuple', () => {
 
     it('when null or undefined mapper is given then an error is thrown', () => {
-      const isAllEven =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-
       // @ts-ignore
-      expect(() => PartialFunction.of2ToTuple(isAllEven, null)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2ToTuple(isAllEvenRaw, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of2ToTuple(isAllEven, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2ToTuple(isAllEvenRaw, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -352,10 +273,9 @@ describe('PartialFunction', () => {
 
 
     it('when verifier and mapper lambdas are provided then a valid PartialFunction is returned', () => {
-      const isAllEven = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
       const multiply2 = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>): [number, number] => [2 * n1!, 2 * n2!];
 
-      const partialFunction = PartialFunction.of2ToTuple(isAllEven, multiply2);
+      const partialFunction = PartialFunction.of2ToTuple(isAllEvenRaw, multiply2);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -366,13 +286,10 @@ describe('PartialFunction', () => {
 
 
     it('when instances of FFunction2 and FPredicate2 are provided then a valid PartialFunction is returned', () => {
-      const isAllEven: FPredicate2<number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-
       const multiply2: FFunction2<number, number, [number, number]> =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => [2 * n1!, 2 * n2!];
 
-      const partialFunction = PartialFunction.of2ToTuple(isAllEven, multiply2);
+      const partialFunction = PartialFunction.of2ToTuple(isAllEvenFPredicate, multiply2);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -383,13 +300,10 @@ describe('PartialFunction', () => {
 
 
     it('when instances of Function2 and Predicate2 are provided then a valid PartialFunction is returned', () => {
-      const isAllEven: Predicate2<NullableOrUndefined<number>, NullableOrUndefined<number>> =
-        Predicate2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2);
-
       const multiply2: Function2<NullableOrUndefined<number>, NullableOrUndefined<number>, [number, number]> =
         Function2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => [2 * n1!, 2 * n2!]);
 
-      const partialFunction = PartialFunction.of2ToTuple(isAllEven, multiply2);
+      const partialFunction = PartialFunction.of2ToTuple(isAllEvenPredicateNullable, multiply2);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -405,36 +319,27 @@ describe('PartialFunction', () => {
   describe('of2KeyValueMapper', () => {
 
     it('when null or undefined keyMapper or valueMapper are given then an error is thrown', () => {
-      const isAllEven: FPredicate2<number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-
-      const multiply: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
       // @ts-ignore
-      expect(() => PartialFunction.of2KeyValueMapper(isAllEven, null, null)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2KeyValueMapper(isAllEvenFPredicate, null, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of2KeyValueMapper(isAllEven, undefined, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2KeyValueMapper(isAllEvenFPredicate, undefined, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of2KeyValueMapper(isAllEven, multiply, null)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2KeyValueMapper(isAllEvenFPredicate, multiplyFFunction, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of2KeyValueMapper(isAllEven, multiply, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2KeyValueMapper(isAllEvenFPredicate, multiplyFFunction, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of2KeyValueMapper(isAllEven, null, multiply)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2KeyValueMapper(isAllEvenFPredicate, null, multiplyFFunction)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => PartialFunction.of2KeyValueMapper(isAllEven, undefined, multiply)).toThrowError(IllegalArgumentError);
+      expect(() => PartialFunction.of2KeyValueMapper(isAllEvenFPredicate, undefined, multiplyFFunction)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when null or undefined verifier is given then alwaysTrue Predicate2 will be used', () => {
-      const multiply: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
       const toString: Function2<number, number, string> =
         Function2.of((n1: number, n2: number) => '' + n1 + n2);
 
-      const undefinedVerifierPF = PartialFunction.of2KeyValueMapper(undefined, multiply, toString);
-      const nullVerifierPF = PartialFunction.of2KeyValueMapper(null, multiply, toString);
+      const undefinedVerifierPF = PartialFunction.of2KeyValueMapper(undefined, multiplyFFunction, toString);
+      const nullVerifierPF = PartialFunction.of2KeyValueMapper(null, multiplyFFunction, toString);
 
       expect(PartialFunction.isPartialFunction(undefinedVerifierPF)).toBeTrue();
       expect(undefinedVerifierPF.isDefinedAt([2, 3])).toBeTrue();
@@ -447,11 +352,9 @@ describe('PartialFunction', () => {
 
 
     it('when verifier, keyMapper and valueMapper are lambdas then a valid PartialFunction is returned', () => {
-      const isAllEven = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-      const multiply = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
       const toString = (n1: number, n2: number) => '' + n1 + n2;
 
-      const partialFunction = PartialFunction.of2KeyValueMapper(isAllEven, multiply, toString);
+      const partialFunction = PartialFunction.of2KeyValueMapper(isAllEvenRaw, multiplyRaw, toString);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -462,16 +365,10 @@ describe('PartialFunction', () => {
 
 
     it('when instances of FFunction2 and FPredicate2 are provided then a valid PartialFunction is returned', () => {
-      const isAllEven: FPredicate2<number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => 0 == n1! % 2 && 0 == n2! % 2;
-
-      const multiply: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
       const toString: FFunction2<number, number, string> =
         (n1: number, n2: number) => '' + n1 + n2;
 
-      const partialFunction = PartialFunction.of2KeyValueMapper(isAllEven, multiply, toString);
+      const partialFunction = PartialFunction.of2KeyValueMapper(isAllEvenFPredicate, multiplyFFunction, toString);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -482,16 +379,10 @@ describe('PartialFunction', () => {
 
 
     it('when instances of Function2 and Predicate2 are provided then a valid PartialFunction is returned', () => {
-      const isAllEven: Predicate2<number, number> =
-        Predicate2.of((n1: number, n2: number) => 0 == n1 % 2 && 0 == n2 % 2);
-
-      const multiply: Function2<number, number, number> =
-        Function2.of((n1: number, n2: number) => n1 * n2);
-
       const toString: Function2<number, number, string> =
         Function2.of((n1: number, n2: number) => '' + n1 + n2);
 
-      const partialFunction = PartialFunction.of2KeyValueMapper(isAllEven, multiply, toString);
+      const partialFunction = PartialFunction.of2KeyValueMapper(isAllEvenPredicate, multiplyFunction, toString);
 
       expect(PartialFunction.isPartialFunction(partialFunction)).toBeTrue();
       expect(partialFunction.isDefinedAt([2, 4])).toBeTrue();
@@ -507,13 +398,7 @@ describe('PartialFunction', () => {
   describe('getMapper', () => {
 
     it('then return internal mapper', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
 
       const mapper: Function1<number, number> = partialFunction.getMapper();
 
@@ -528,13 +413,7 @@ describe('PartialFunction', () => {
   describe('getVerifier', () => {
 
     it('then return internal verifier', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
 
       const verifier: Predicate1<number> = partialFunction.getVerifier();
 
@@ -549,13 +428,7 @@ describe('PartialFunction', () => {
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
-      const longerThan3: Predicate1<string> =
-        Predicate1.of((s: string) => 3 < s.length);
-
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3Predicate, stringLengthFunction);
 
       // @ts-ignore
       expect(() => stringLengthIfLongerThan3.andThen(null)).toThrowError(IllegalArgumentError);
@@ -565,17 +438,8 @@ describe('PartialFunction', () => {
 
 
     it('when a FFunction1 is provided then it will be applied after current PartialFunction', () => {
-      const longerThan3: Predicate1<string> =
-        Predicate1.of((s: string) => 3 < s.length);
-
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
-      const multiply2: FFunction1<number, number> =
-        (n: number) => 2 * n;
-
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
-      const stringLengthIfLongerThan3AndThenMultiply2 = stringLengthIfLongerThan3.andThen(multiply2);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3Predicate, stringLengthFunction);
+      const stringLengthIfLongerThan3AndThenMultiply2 = stringLengthIfLongerThan3.andThen(multiply2FFunction);
 
       expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('0')).toBeFalse();
       expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('abcd')).toBeTrue();
@@ -586,17 +450,8 @@ describe('PartialFunction', () => {
 
 
     it('when a Function1 is provided then it will be applied after current PartialFunction', () => {
-      const longerThan3: Predicate1<NullableOrUndefined<string>> =
-        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
-
-      const stringLength: Function1<NullableOrUndefined<string>, NullableOrUndefined<number>> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
-      const multiply2: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
-      const stringLengthIfLongerThan3AndThenMultiply2 = stringLengthIfLongerThan3.andThen(multiply2);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3PredicateNullable, stringLengthFunctionNullable);
+      const stringLengthIfLongerThan3AndThenMultiply2 = stringLengthIfLongerThan3.andThen(multiply2FunctionNullable);
 
       expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('0')).toBeFalse();
       expect(stringLengthIfLongerThan3AndThenMultiply2.isDefinedAt('abcd')).toBeTrue();
@@ -607,20 +462,8 @@ describe('PartialFunction', () => {
 
 
     it('when a PartialFunction is provided then it will be applied after current one', () => {
-      const longerThan3: Predicate1<string> =
-        Predicate1.of((s: string) => 3 < s.length);
-
-      const lowerThan10: Predicate1<number> =
-        Predicate1.of((n: number) => 10 > n);
-
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
-      const multiply2IfLowerThan10 = PartialFunction.of(lowerThan10, multiply2);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3Predicate, stringLengthFunction);
+      const multiply2IfLowerThan10 = PartialFunction.of(lowerThan10Predicate, multiply2Function);
 
       const stringLengthIfLongerThan3AndThenMultiply2IfLowerThan10 = stringLengthIfLongerThan3.andThen(multiply2IfLowerThan10);
 
@@ -640,13 +483,7 @@ describe('PartialFunction', () => {
   describe('apply', () => {
 
     it('when a PartialFunction is provided then the received input will be transformed', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
 
       expect(partialFunction.apply(5)).toEqual(10);
       expect(partialFunction.apply(8)).toEqual(16);
@@ -659,13 +496,7 @@ describe('PartialFunction', () => {
   describe('applyOrElse', () => {
 
     it('when input does not belong to domain of PartialFunction and defaultFunction null or undefined then an error is thrown', () => {
-      const longerThan3: Predicate1<string> =
-        Predicate1.of((s: string) => 3 < s.length);
-
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3Predicate, stringLengthFunction);
 
       // @ts-ignore
       expect(() => stringLengthIfLongerThan3.applyOrElse('a', null)).toThrowError(IllegalArgumentError);
@@ -675,53 +506,26 @@ describe('PartialFunction', () => {
 
 
     it('when input belongs to domain of PartialFunction then the received it will be transformed', () => {
-      const isEven: Predicate1<NullableOrUndefined<number>> =
-        Predicate1.of((n: NullableOrUndefined<number>) => 0 == n! % 2);
+      const partialFunction = PartialFunction.of(isEvenPredicateNullable, multiply2FunctionNullable);
 
-      const multiply2: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const plus10: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
-        Function1.of((n: NullableOrUndefined<number>) => 10 + n!);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
-
-      expect(partialFunction.applyOrElse(2, plus10)).toEqual(4);
-      expect(partialFunction.applyOrElse(8, plus10)).toEqual(16);
+      expect(partialFunction.applyOrElse(2, plus10FunctionNullable)).toEqual(4);
+      expect(partialFunction.applyOrElse(8, plus10FunctionNullable)).toEqual(16);
     });
 
 
     it('when input does not belong to domain of PartialFunction and defaultFunction is a FFunction1 then defaultFunction will be applied', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
 
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const plus10: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 10 + n!;
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
-
-      expect(partialFunction.applyOrElse(1, plus10)).toEqual(11);
-      expect(partialFunction.applyOrElse(9, plus10)).toEqual(19);
+      expect(partialFunction.applyOrElse(1, plus10FFunction)).toEqual(11);
+      expect(partialFunction.applyOrElse(9, plus10FFunction)).toEqual(19);
     });
 
 
     it('when input does not belong to domain of PartialFunction and defaultFunction is a Function1 then defaultFunction will be applied', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
 
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const plus10: Function1<number, number> =
-        Function1.of((n: number) => 10 + n);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
-
-      expect(partialFunction.applyOrElse(3, plus10)).toEqual(13);
-      expect(partialFunction.applyOrElse(7, plus10)).toEqual(17);
+      expect(partialFunction.applyOrElse(3, plus10Function)).toEqual(13);
+      expect(partialFunction.applyOrElse(7, plus10Function)).toEqual(17);
     });
 
   });
@@ -731,13 +535,7 @@ describe('PartialFunction', () => {
   describe('compose', () => {
 
     it('when null or undefined before is given then an error is thrown', () => {
-      const longerThan3: Predicate1<string> =
-        Predicate1.of((s: string) => 3 < s.length);
-
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3Predicate, stringLengthFunction);
 
       // @ts-ignore
       expect(() => stringLengthIfLongerThan3.compose(null)).toThrowError(IllegalArgumentError);
@@ -747,16 +545,10 @@ describe('PartialFunction', () => {
 
 
     it('when a FFunction1 is provided then it will be applied before current PartialFunction', () => {
-      const longerThan3: Predicate1<NullableOrUndefined<string>> =
-        Predicate1.of((s: NullableOrUndefined<string>) => 3 < s!.length);
-
-      const stringLength: Function1<NullableOrUndefined<string>, NullableOrUndefined<number>> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
       const addV2AsSuffix: FFunction1<string, string> =
         (s: NullableOrUndefined<string>) => 'v2' + s!;
 
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3PredicateNullable, stringLengthFunctionNullable);
       const addV2AsSuffixComposeStringLengthIfLongerThan3 = stringLengthIfLongerThan3.compose(addV2AsSuffix);
 
       expect(addV2AsSuffixComposeStringLengthIfLongerThan3.isDefinedAt('0')).toBeFalse();
@@ -768,16 +560,10 @@ describe('PartialFunction', () => {
 
 
     it('when a Function1 is provided then it will be applied before current PartialFunction', () => {
-      const longerThan3: Predicate1<string> =
-        Predicate1.of((s: string) => 3 < s.length);
-
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
       const addV2AsSuffix: Function1<string, string> =
         Function1.of((s: string) => 'v2' + s);
 
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3Predicate, stringLengthFunction);
       const addV2AsSuffixComposeStringLengthIfLongerThan3 = stringLengthIfLongerThan3.compose(addV2AsSuffix);
 
       expect(addV2AsSuffixComposeStringLengthIfLongerThan3.isDefinedAt('0')).toBeFalse();
@@ -789,18 +575,8 @@ describe('PartialFunction', () => {
 
 
     it('when a PartialFunction is provided then it will be applied before current one', () => {
-      const longerThan3 = (s: string) => 3 < s.length;
-
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const stringLength = (s: string) => s.length;
-
-      const toString: Function1<number, string> =
-        Function1.of((n: number) => '' + n);
-
-      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3, stringLength);
-      const toStringIfIsEven = PartialFunction.of(isEven, toString);
+      const stringLengthIfLongerThan3 = PartialFunction.of(longerThan3Raw, stringLengthRaw);
+      const toStringIfIsEven = PartialFunction.of(isEvenPredicate, toStringFunction);
 
       const toStringIfIsEvenComposeStringLengthIfLongerThan3 = stringLengthIfLongerThan3.compose(toStringIfIsEven);
 
@@ -820,13 +596,7 @@ describe('PartialFunction', () => {
   describe('isDefinedAt', () => {
 
     it('when input does not belong to domain of PartialFunction then false is returned', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
 
       expect(partialFunction.isDefinedAt(1)).toBeFalse();
       expect(partialFunction.isDefinedAt(5)).toBeFalse();
@@ -834,13 +604,7 @@ describe('PartialFunction', () => {
 
 
     it('when input belongs to domain of PartialFunction then true is returned', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
 
       expect(partialFunction.isDefinedAt(10)).toBeTrue();
       expect(partialFunction.isDefinedAt(12)).toBeTrue();
@@ -853,13 +617,7 @@ describe('PartialFunction', () => {
   describe('lift', () => {
 
     it('when input does not belong to domain of PartialFunction then Function1 returns an empty Optional', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
       const function1: Function1<number, Optional<number>> = partialFunction.lift();
 
       expect(function1.apply(1).isPresent()).toBeFalse();
@@ -868,13 +626,7 @@ describe('PartialFunction', () => {
 
 
     it('when input belongs to domain of PartialFunction then Function1 returns a not empty Optional', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n! % 2);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n!);
-
-      const partialFunction = PartialFunction.of(isEven, multiply2);
+      const partialFunction = PartialFunction.of(isEvenPredicate, multiply2Function);
       const function1: Function1<number, Optional<number>> = partialFunction.lift();
 
       expect(function1.apply(10).isPresent()).toBeTrue();
@@ -888,20 +640,8 @@ describe('PartialFunction', () => {
   describe('orElse', () => {
 
     it('when input belongs to domain of current PartialFunction then current will applied', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const isLowerThan20: Predicate1<number> =
-        Predicate1.of((n: number) => 20 > n);
-
-      const toString: Function1<number, string> =
-        Function1.of((n: number) => '' + n);
-
-      const addV2AndToString: Function1<number, string> =
-        Function1.of((n: number) => 'v2' + n);
-
-      const partialFunction = PartialFunction.of(isEven, toString);
-      const defaultPartialFunction = PartialFunction.of(isLowerThan20, addV2AndToString);
+      const partialFunction = PartialFunction.of(isEvenPredicate, toStringFunction);
+      const defaultPartialFunction = PartialFunction.of(isLowerThan20Predicate, addV2AndToStringFunction);
 
       const orElsePartialFunction = partialFunction.orElse(defaultPartialFunction);
 
@@ -924,20 +664,8 @@ describe('PartialFunction', () => {
 
 
     it('when input belongs to domain of defaultPartialFunction then defaultPartialFunction will applied', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n % 2);
-
-      const isLowerThan20: Predicate1<number> =
-        Predicate1.of((n: number) => 20 > n);
-
-      const toString: Function1<number, string> =
-        Function1.of((n: number) => '' + n);
-
-      const addV2AndToString: Function1<number, string> =
-        Function1.of((n: number) => 'v2' + n);
-
-      const partialFunction = PartialFunction.of(isEven, toString);
-      const defaultPartialFunction = PartialFunction.of(isLowerThan20, addV2AndToString);
+      const partialFunction = PartialFunction.of(isEvenPredicate, toStringFunction);
+      const defaultPartialFunction = PartialFunction.of(isLowerThan20Predicate, addV2AndToStringFunction);
 
       const orElsePartialFunction = partialFunction.orElse(defaultPartialFunction);
 
@@ -961,3 +689,197 @@ describe('PartialFunction', () => {
   });
 
 });
+
+
+
+const isEvenRaw =
+  (n: NullableOrUndefined<number>) =>
+    0 == n! % 2;
+
+
+const isEvenFPredicate: FPredicate1<number> =
+  (n: NullableOrUndefined<number>) =>
+    0 == n! % 2;
+
+
+const isEvenPredicate: Predicate1<number> =
+  Predicate1.of(
+    (n: number) =>
+      0 == n % 2
+  );
+
+
+const isEvenPredicateNullable: Predicate1<NullableOrUndefined<number>> =
+  Predicate1.of(
+    (n: NullableOrUndefined<number>) =>
+      0 == n! % 2
+  );
+
+
+const multiply2Raw =
+  (n: NullableOrUndefined<number>) =>
+    2 * n!;
+
+
+const multiply2FFunction: FFunction1<number, number> =
+  (n: NullableOrUndefined<number>) =>
+    2 * n!;
+
+
+const multiply2Function: Function1<number, number> =
+  Function1.of(
+    (n: number) =>
+      2 * n
+  );
+
+
+const multiply2FunctionNullable: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
+  Function1.of(
+    (n: NullableOrUndefined<number>) =>
+      2 * n!
+  );
+
+
+const isAllEvenRaw =
+  (n1: NullableOrUndefined<number>,
+   n2: NullableOrUndefined<number>) =>
+    0 == n1! % 2 &&
+    0 == n2! % 2;
+
+
+const isAllEvenFPredicate: FPredicate2<number, number> =
+  (n1: NullableOrUndefined<number>,
+   n2: NullableOrUndefined<number>) =>
+    0 == n1! % 2 && 0 == n2! % 2;
+
+
+const isAllEvenPredicate: Predicate2<number, number> =
+  Predicate2.of(
+    (n1: number,
+     n2: number) =>
+      0 == n1 % 2 &&
+      0 == n2 % 2
+  );
+
+
+const isAllEvenPredicateNullable: Predicate2<NullableOrUndefined<number>, NullableOrUndefined<number>> =
+  Predicate2.of(
+    (n1: NullableOrUndefined<number>,
+     n2: NullableOrUndefined<number>) =>
+      0 == n1! % 2 &&
+      0 == n2! % 2
+  );
+
+
+const multiplyRaw =
+  (n1: NullableOrUndefined<number>,
+   n2: NullableOrUndefined<number>) =>
+    n1! * n2!;
+
+
+const multiplyFFunction: FFunction2<number, number, number> =
+  (n1: NullableOrUndefined<number>,
+   n2: NullableOrUndefined<number>) =>
+    n1! * n2!;
+
+
+const multiplyFunction: Function2<number, number, number> =
+  Function2.of(
+    (n1: number,
+     n2: number) =>
+      n1 * n2
+  );
+
+
+const toStringRaw =
+  (n: number) =>
+    '' + n;
+
+
+const toStringFFunction: FFunction1<number, string> =
+  (n: number) =>
+    '' + n;
+
+
+const toStringFunction: Function1<number, string> =
+  Function1.of(
+    (n: number) =>
+      '' + n
+  );
+
+
+const longerThan3Raw =
+  (s: string) =>
+    3 < s.length;
+
+
+const longerThan3Predicate: Predicate1<string> =
+  Predicate1.of(
+    (s: string) =>
+      3 < s.length
+  );
+
+
+const longerThan3PredicateNullable: Predicate1<NullableOrUndefined<string>> =
+  Predicate1.of(
+    (s: NullableOrUndefined<string>) =>
+      3 < s!.length
+  );
+
+
+const lowerThan10Predicate: Predicate1<number> =
+  Predicate1.of(
+    (n: number) =>
+      10 > n
+  );
+
+
+const stringLengthRaw =
+  (s: string) =>
+    s.length;
+
+
+const stringLengthFunction: Function1<string, number> =
+  Function1.of(
+    (s: string) =>
+      s.length
+  );
+
+
+const stringLengthFunctionNullable: Function1<NullableOrUndefined<string>, NullableOrUndefined<number>> =
+  Function1.of(
+    (s: NullableOrUndefined<string>) =>
+      s!.length
+  );
+
+
+const plus10FFunction: FFunction1<number, number> =
+  (n: NullableOrUndefined<number>) =>
+    10 + n!;
+
+
+const plus10Function: Function1<number, number> =
+  Function1.of(
+    (n: number) => 10 + n
+  );
+
+
+const plus10FunctionNullable: Function1<NullableOrUndefined<number>, NullableOrUndefined<number>> =
+  Function1.of(
+    (n: NullableOrUndefined<number>) =>
+      10 + n!
+  );
+
+
+const isLowerThan20Predicate: Predicate1<number> =
+  Predicate1.of(
+    (n: number) =>
+      20 > n
+  );
+
+
+const addV2AndToStringFunction: Function1<number, string> =
+  Function1.of(
+    (n: number) =>
+      'v2' + n
+  );

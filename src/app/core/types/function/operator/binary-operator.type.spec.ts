@@ -96,10 +96,7 @@ describe('BinaryOperator', () => {
 
 
     it('when a BinaryOperator is provided then true is returned', () => {
-      const joinStrings: BinaryOperator<string> =
-        BinaryOperator.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
-
-      expect(BinaryOperator.isBinaryOperator(joinStrings)).toBeTrue();
+      expect(BinaryOperator.isBinaryOperator(joinStringsBinaryOperator)).toBeTrue();
 
       expect(BinaryOperator.isBinaryOperator(BinaryOperator.returnFirst())).toBeTrue();
       expect(BinaryOperator.isBinaryOperator(BinaryOperator.returnSecond())).toBeTrue();
@@ -120,9 +117,7 @@ describe('BinaryOperator', () => {
 
 
     it('when a raw function equivalent to FBinaryOperator is provided then a valid BinaryOperator is returned', () => {
-      const joinStrings = (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!;
-
-      const func = BinaryOperator.of(joinStrings);
+      const func = BinaryOperator.of(joinStringsRaw);
 
       expect(BinaryOperator.isBinaryOperator(func)).toBeTrue();
       expect(func.apply('abc', 'zf')).toEqual('abczf');
@@ -130,10 +125,7 @@ describe('BinaryOperator', () => {
 
 
     it('when an instance of FBinaryOperator is provided then a valid BinaryOperator is returned', () => {
-      const plusNumbers: FBinaryOperator<number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! + n2!;
-
-      const func = BinaryOperator.of(plusNumbers);
+      const func = BinaryOperator.of(plusNumbersFBinaryOperator);
 
       expect(BinaryOperator.isBinaryOperator(func)).toBeTrue();
       expect(func.apply(9, 1)).toEqual(10);
@@ -157,10 +149,7 @@ describe('BinaryOperator', () => {
   describe('getMapper', () => {
 
     it('then return internal mapper', () => {
-      const joinStrings: BinaryOperator<string> =
-        BinaryOperator.of((s1: string, s2: string) => s1 + s2);
-
-      const mapper: FBinaryOperator<string> = joinStrings.getMapper();
+      const mapper: FBinaryOperator<string> = joinStringsBinaryOperator.getMapper();
 
       expect(mapper('abc', 'v2')).toEqual('abcv2');
     });
@@ -172,23 +161,17 @@ describe('BinaryOperator', () => {
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
-      const joinStrings: BinaryOperator<string> =
-        BinaryOperator.of((s1: string, s2: string) => s1 + s2);
-
       // @ts-ignore
-      expect(() => joinStrings.andThen(null)).toThrowError(IllegalArgumentError);
+      expect(() => joinStringsBinaryOperator.andThen(null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => joinStrings.andThen(undefined)).toThrowError(IllegalArgumentError);
+      expect(() => joinStringsBinaryOperator.andThen(undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when a raw function equivalent to FBinaryOperator is provided then it will be applied after current one', () => {
-      const plusNumbers: BinaryOperator<number> =
-        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! + n2!);
-
       const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
 
-      const plusNumbersAndThenMultiply2 = plusNumbers.andThen(multiply2);
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
 
       expect(plusNumbersAndThenMultiply2.apply(0, 1)).toEqual(2);
       expect(plusNumbersAndThenMultiply2.apply(3, 7)).toEqual(20);
@@ -196,13 +179,10 @@ describe('BinaryOperator', () => {
 
 
     it('when a FUnaryOperator is provided then it will be applied after current one', () => {
-      const plusNumbers: BinaryOperator<number> =
-        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! + n2!);
-
       const multiply2: FUnaryOperator<number> =
         (n: NullableOrUndefined<number>) => 2 * n!;
 
-      const plusNumbersAndThenMultiply2 = plusNumbers.andThen(multiply2);
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
 
       expect(plusNumbersAndThenMultiply2.apply(0, 2)).toEqual(4);
       expect(plusNumbersAndThenMultiply2.apply(3, 4)).toEqual(14);
@@ -210,13 +190,10 @@ describe('BinaryOperator', () => {
 
 
     it('when a FFunction1 is provided then it will be applied after current one', () => {
-      const plusNumbers: BinaryOperator<number> =
-        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! + n2!);
-
       const toString: FFunction1<number, string> =
         (n: NullableOrUndefined<number>) => '' + n!;
 
-      const plusNumbersAndThenToString = plusNumbers.andThen(toString);
+      const plusNumbersAndThenToString = plusNumbersBinaryOperator.andThen(toString);
 
       expect(plusNumbersAndThenToString.apply(0, 5)).toEqual('5');
       expect(plusNumbersAndThenToString.apply(3, 9)).toEqual('12');
@@ -224,13 +201,10 @@ describe('BinaryOperator', () => {
 
 
     it('when a UnaryOperator is provided then it will be applied after current one', () => {
-      const plusNumbers: BinaryOperator<number> =
-        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! + n2!);
-
       const multiply2: UnaryOperator<number> =
         UnaryOperator.of((n: number) => 2 * n);
 
-      const plusNumbersAndThenMultiply2 = plusNumbers.andThen(multiply2);
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
 
       expect(plusNumbersAndThenMultiply2.apply(1, 2)).toEqual(6);
       expect(plusNumbersAndThenMultiply2.apply(2, 3)).toEqual(10);
@@ -238,13 +212,10 @@ describe('BinaryOperator', () => {
 
 
     it('when a Function1 is provided then it will be applied after current one', () => {
-      const plusNumbers: BinaryOperator<number> =
-        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! + n2!);
-
       const multiply2: Function1<number, number> =
         Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const plusNumbersAndThenMultiply2 = plusNumbers.andThen(multiply2);
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
 
       expect(plusNumbersAndThenMultiply2.apply(2, 4)).toEqual(12);
       expect(plusNumbersAndThenMultiply2.apply(6, 8)).toEqual(28);
@@ -270,3 +241,32 @@ describe('BinaryOperator', () => {
   });
 
 });
+
+
+
+const joinStringsRaw =
+  (s1: NullableOrUndefined<string>,
+   s2: NullableOrUndefined<string>) =>
+    s1! + s2!;
+
+
+const joinStringsBinaryOperator: BinaryOperator<string> =
+  BinaryOperator.of(
+    (s1: string,
+     s2: string) =>
+      s1 + s2
+  );
+
+
+const plusNumbersFBinaryOperator: FBinaryOperator<number> =
+  (n1: NullableOrUndefined<number>,
+   n2: NullableOrUndefined<number>) =>
+    n1! + n2!;
+
+
+const plusNumbersBinaryOperator: BinaryOperator<number> =
+  BinaryOperator.of(
+    (n1: NullableOrUndefined<number>,
+     n2: NullableOrUndefined<number>) =>
+      n1! + n2!
+  );

@@ -17,13 +17,7 @@ describe('Optional', () => {
   describe('collect', () => {
 
     it('when the Optional is empty then an empty Optional is returned', () => {
-      const isOdd: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 1 == n! % 2;
-
-      const multiply5: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 5 * n!;
-
-      const partialFunction = PartialFunction.of(isOdd, multiply5);
+      const partialFunction = PartialFunction.of(isOddFPredicate, multiply5FFunction);
 
       const optional = Optional.empty<number>().collect(partialFunction);
 
@@ -32,13 +26,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty but does not belong to the domain of PartialFunction then an empty Optional is returned', () => {
-      const isOdd: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 1 == n! % 2;
-
-      const multiply5: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 5 * n!;
-
-      const partialFunction = PartialFunction.of(isOdd, multiply5);
+      const partialFunction = PartialFunction.of(isOddFPredicate, multiply5FFunction);
 
       expect(Optional.of(2).collect(partialFunction).isPresent()).toBeFalse();
       expect(Optional.of(16).collect(partialFunction).isPresent()).toBeFalse();
@@ -47,13 +35,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty and belongs to the domain of PartialFunction then new non empty Optional is returned', () => {
-      const isOdd: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 1 == n! % 2;
-
-      const multiply5: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 5 * n!;
-
-      const partialFunction = PartialFunction.of(isOdd, multiply5);
+      const partialFunction = PartialFunction.of(isOddFPredicate, multiply5FFunction);
 
       const optional1 = Optional.of(5).collect(partialFunction);
       const optional2 = Optional.of(9).collect(partialFunction);
@@ -213,10 +195,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then predicate is not invoked and an empty Optional is returned', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
-      const isEvenSpy = jasmine.createSpy('isEven', isEven);
+      const isEvenSpy = jasmine.createSpy('isEven', isEvenFPredicate);
 
       // @ts-ignore
       expect(Optional.empty().filter(isEvenSpy).isPresent()).toBeFalse();
@@ -226,10 +205,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty then predicate is invoked', () => {
-      const isEven: FPredicate1<number> =
-        (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
-      const isEvenSpy = jasmine.createSpy('isEven', isEven);
+      const isEvenSpy = jasmine.createSpy('isEven', isEvenFPredicate);
 
       // @ts-ignore
       expect(Optional.of(1).filter(isEvenSpy).isPresent()).toBeFalse();
@@ -239,19 +215,14 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty and predicate does not match then an empty Optional is returned', () => {
-      const isEven: Predicate1<number> =
-        Predicate1.of((n: number) => 0 == n! % 2);
-
-      expect(Optional.of(1).filter(isEven).isPresent()).toBeFalse();
-      expect(Optional.of(9).filter(isEven).isPresent()).toBeFalse();
+      expect(Optional.of(1).filter(isEvenPredicate).isPresent()).toBeFalse();
+      expect(Optional.of(9).filter(isEvenPredicate).isPresent()).toBeFalse();
     });
 
 
     it('when the Optional is not empty and predicate matches then same Optional is returned', () => {
-      const isEven = (n: NullableOrUndefined<number>) => 0 == n! % 2;
-
-      const optional1 = Optional.of(2).filter(isEven);
-      const optional2 = Optional.of(18).filter(isEven);
+      const optional1 = Optional.of(2).filter(isEvenRaw);
+      const optional2 = Optional.of(18).filter(isEvenRaw);
 
       expect(optional1.isPresent()).toBeTrue();
       expect(optional1.get()).toEqual(2);
@@ -278,10 +249,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then mapper is not invoked', () => {
-      const fromNumToString: FFunction1<number, Optional<string>> =
-        (n: NullableOrUndefined<number>) => Optional.ofNullable('' + n);
-
-      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToOptionalStringFFunction);
 
       Optional.empty<number>().flatMap(fromNumToStringSpy);
 
@@ -290,10 +258,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty then mapper is invoked', () => {
-      const fromNumToString: FFunction1<number, Optional<string>> =
-        (n: NullableOrUndefined<number>) => Optional.ofNullable('' + n);
-
-      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToOptionalStringFFunction);
 
       Optional.of(1).flatMap(fromNumToStringSpy);
 
@@ -302,10 +267,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then empty Optional is returned', () => {
-      const fromNumToString: FFunction1<number, Optional<string>> =
-        (n: NullableOrUndefined<number>) => Optional.ofNullable('' + n);
-
-      const optional = Optional.empty<number>().flatMap(fromNumToString);
+      const optional = Optional.empty<number>().flatMap(fromNumToOptionalStringFFunction);
 
       expect(optional.isPresent()).toBeFalse();
     });
@@ -328,14 +290,8 @@ describe('Optional', () => {
   describe('fold', () => {
 
     it('when the Optional is empty then ifEmpty is invoked and ifNonEmpty is not', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: number) => '' + n;
-
-      const returnEmptyString: FFunction0<string> =
-        () => '';
-
-      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
-      const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyString);
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToStringFFunction);
+      const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyStringFFunction);
 
       Optional.empty<number>().fold(returnEmptyStringSpy, fromNumToStringSpy);
 
@@ -345,14 +301,8 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty then ifNonEmpty is invoked and ifEmpty is not', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: number) => '' + n;
-
-      const returnEmptyString: FFunction0<string> =
-        () => '';
-
-      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
-      const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyString);
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToStringFFunction);
+      const returnEmptyStringSpy = jasmine.createSpy('returnEmptyString', returnEmptyStringFFunction);
 
       Optional.of(12).fold(returnEmptyStringSpy, fromNumToStringSpy);
 
@@ -362,21 +312,12 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then ifEmpty result is returned', () => {
-      const fromNumToString: Function1<number, string> =
-        Function1.of((n: number) => '' + n);
-
-      const returnEmptyString: FFunction0<string> =
-        () => '';
-
-      expect(Optional.empty<number>().fold(returnEmptyString, fromNumToString)).toEqual('');
+      expect(Optional.empty<number>().fold(returnEmptyStringFFunction, fromNumToStringFunction)).toEqual('');
     });
 
 
     it('when the Optional is not empty then ifNonEmpty result is returned', () => {
-      const fromNumToString = (n: number) => '' + n;
-      const returnEmptyString = () => '';
-
-      expect(Optional.of(11).fold(returnEmptyString, fromNumToString)).toEqual('11');
+      expect(Optional.of(11).fold(returnEmptyStringRaw, fromNumToStringRaw)).toEqual('11');
     });
 
   });
@@ -514,10 +455,7 @@ describe('Optional', () => {
   describe('map', () => {
 
     it('when the Optional is empty then mapper is not invoked', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: NullableOrUndefined<number>) => '' + n!;
-
-      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToStringFFunction);
 
       Optional.empty<number>().map(fromNumToStringSpy);
 
@@ -526,10 +464,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is not empty then mapper is invoked', () => {
-      const fromNumToString: FFunction1<number, string> =
-        (n: NullableOrUndefined<number>) => '' + n!;
-
-      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToString);
+      const fromNumToStringSpy = jasmine.createSpy('fromNumToString', fromNumToStringFFunction);
 
       Optional.of(1).map(fromNumToStringSpy);
 
@@ -538,19 +473,14 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then empty Optional is returned', () => {
-      const fromNumToString: Function1<number, string> =
-        Function1.of((n: NullableOrUndefined<number>) => '' + n!);
-
-      const optional = Optional.empty<number>().map(fromNumToString);
+      const optional = Optional.empty<number>().map(fromNumToStringFunction);
 
       expect(optional.isPresent()).toBeFalse();
     });
 
 
     it('when the Optional is not empty then new mapped Optional is returned', () => {
-      const fromNumToString = (n: NullableOrUndefined<number>) => '' + n!;
-
-      const optional = Optional.of(12).map(fromNumToString);
+      const optional = Optional.of(12).map(fromNumToStringRaw);
 
       expect(optional.isPresent()).toBeTrue();
       expect(optional.get()).toEqual('12');
@@ -687,10 +617,7 @@ describe('Optional', () => {
   describe('toLeft', () => {
 
     it('when the Optional is not empty then right function is not invoked', () => {
-      const helloGenerator: FFunction0<string> =
-        () => 'Hello';
-
-      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGeneratorFFunction);
 
       expect(Optional.of(11).toLeft(helloGeneratorSpy).isRight()).toBeFalse();
 
@@ -701,9 +628,6 @@ describe('Optional', () => {
     it('when the Optional is not empty then a Left instance is returned', () => {
       const o1 = Optional.of(11);
       const o2 = Optional.of('abd');
-
-      const helloGenerator: FFunction0<string> =
-        () => 'Hello';
 
       // @ts-ignore
       expect(o1.toLeft(null).isRight()).toBeFalse();
@@ -716,8 +640,8 @@ describe('Optional', () => {
       // @ts-ignore
       expect(o2.toLeft(undefined).getLeft()).toEqual(o2.get());
 
-      expect(o2.toLeft(helloGenerator).isRight()).toBeFalse();
-      expect(o2.toLeft(helloGenerator).getLeft()).toEqual(o2.get());
+      expect(o2.toLeft(helloGeneratorFFunction).isRight()).toBeFalse();
+      expect(o2.toLeft(helloGeneratorFFunction).getLeft()).toEqual(o2.get());
     });
 
 
@@ -730,10 +654,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then right function is invoked', () => {
-      const helloGenerator: FFunction0<string> =
-        () => 'Hello';
-
-      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGeneratorFFunction);
 
       expect(Optional.ofNullable(null).toLeft(helloGeneratorSpy).isRight()).toBeTrue();
 
@@ -742,13 +663,11 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then right function result is used to return a Right instance', () => {
-      const helloGenerator = () => 'Hello';
+      expect(Optional.ofNullable(null).toLeft(helloGeneratorRaw).isRight()).toBeTrue();
+      expect(Optional.ofNullable(null).toLeft(helloGeneratorRaw).get()).toEqual('Hello');
 
-      expect(Optional.ofNullable(null).toLeft(helloGenerator).isRight()).toBeTrue();
-      expect(Optional.ofNullable(null).toLeft(helloGenerator).get()).toEqual('Hello');
-
-      expect(Optional.ofNullable(undefined).toLeft(helloGenerator).isRight()).toBeTrue();
-      expect(Optional.ofNullable(undefined).toLeft(helloGenerator).get()).toEqual('Hello');
+      expect(Optional.ofNullable(undefined).toLeft(helloGeneratorRaw).isRight()).toBeTrue();
+      expect(Optional.ofNullable(undefined).toLeft(helloGeneratorRaw).get()).toEqual('Hello');
     });
 
   });
@@ -758,10 +677,7 @@ describe('Optional', () => {
   describe('toRight', () => {
 
     it('when the Optional is not empty then left function is not invoked', () => {
-      const helloGenerator: FFunction0<string> =
-        () => 'Hello';
-
-      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGeneratorFFunction);
 
       expect(Optional.of(11).toRight(helloGeneratorSpy).isRight()).toBeTrue();
 
@@ -772,9 +688,6 @@ describe('Optional', () => {
     it('when the Optional is not empty then a Right instance is returned', () => {
       const o1 = Optional.of(11);
       const o2 = Optional.of('abd');
-
-      const helloGenerator: FFunction0<string> =
-        () => 'Hello';
 
       // @ts-ignore
       expect(o1.toRight(null).isRight()).toBeTrue();
@@ -787,8 +700,8 @@ describe('Optional', () => {
       // @ts-ignore
       expect(o2.toRight(undefined).get()).toEqual(o2.get());
 
-      expect(o2.toRight(helloGenerator).isRight()).toBeTrue();
-      expect(o2.toRight(helloGenerator).get()).toEqual(o2.get());
+      expect(o2.toRight(helloGeneratorFFunction).isRight()).toBeTrue();
+      expect(o2.toRight(helloGeneratorFFunction).get()).toEqual(o2.get());
     });
 
 
@@ -801,10 +714,7 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then left function is invoked', () => {
-      const helloGenerator: FFunction0<string> =
-        () => 'Hello';
-
-      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGenerator);
+      const helloGeneratorSpy = jasmine.createSpy('helloGenerator', helloGeneratorFFunction);
 
       expect(Optional.ofNullable(null).toRight(helloGeneratorSpy).isRight()).toBeFalse();
 
@@ -813,54 +723,119 @@ describe('Optional', () => {
 
 
     it('when the Optional is empty then left function result is used to return a Left instance', () => {
-      const helloGenerator = () => 'Hello';
+      expect(Optional.ofNullable(null).toRight(helloGeneratorRaw).isRight()).toBeFalse();
+      expect(Optional.ofNullable(null).toRight(helloGeneratorRaw).getLeft()).toEqual('Hello');
 
-      expect(Optional.ofNullable(null).toRight(helloGenerator).isRight()).toBeFalse();
-      expect(Optional.ofNullable(null).toRight(helloGenerator).getLeft()).toEqual('Hello');
-
-      expect(Optional.ofNullable(undefined).toRight(helloGenerator).isRight()).toBeFalse();
-      expect(Optional.ofNullable(undefined).toRight(helloGenerator).getLeft()).toEqual('Hello');
+      expect(Optional.ofNullable(undefined).toRight(helloGeneratorRaw).isRight()).toBeFalse();
+      expect(Optional.ofNullable(undefined).toRight(helloGeneratorRaw).getLeft()).toEqual('Hello');
     });
 
   });
 
-
-
-
-  // Used only for testing purpose
-  class User {
-    private _id: number;
-    private _name: string;
-
-    constructor(id: number, name: string) {
-      this._id = id;
-      this._name = name;
-    }
-
-    get id(): number {
-      return this._id;
-    }
-    set id(id: number) {
-      this._id = id;
-    }
-
-    get name(): string {
-      return this._name;
-    }
-    set name(name: string) {
-      this._name = name;
-    }
-
-    equals = (other?: User | null): boolean =>
-      ObjectUtil.isNullOrUndefined(other)
-        ? false
-        : this.id === other.id;
-  }
-
-
-  interface Role {
-    id: number;
-    name: string;
-  }
-
 });
+
+
+
+// Used only for testing purpose
+class User {
+  private _id: number;
+  private _name: string;
+
+  constructor(id: number, name: string) {
+    this._id = id;
+    this._name = name;
+  }
+
+  get id(): number {
+    return this._id;
+  }
+  set id(id: number) {
+    this._id = id;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+  set name(name: string) {
+    this._name = name;
+  }
+
+  equals = (other?: User | null): boolean =>
+    ObjectUtil.isNullOrUndefined(other)
+      ? false
+      : this.id === other.id;
+}
+
+
+interface Role {
+  id: number;
+  name: string;
+}
+
+
+const isOddFPredicate: FPredicate1<number> =
+  (n: NullableOrUndefined<number>) =>
+    1 == n! % 2;
+
+const multiply5FFunction: FFunction1<number, number> =
+  (n: NullableOrUndefined<number>) =>
+    5 * n!;
+
+
+const isEvenRaw =
+  (n: NullableOrUndefined<number>) =>
+    0 == n! % 2;
+
+
+const isEvenPredicate: Predicate1<number> =
+  Predicate1.of(
+    (n: number) =>
+      0 == n! % 2
+  );
+
+
+const isEvenFPredicate: FPredicate1<number> =
+  (n: NullableOrUndefined<number>) =>
+    0 == n! % 2;
+
+
+const fromNumToStringRaw =
+  (n: NullableOrUndefined<number>) =>
+    '' + n!;
+
+
+const fromNumToStringFFunction: FFunction1<number, string> =
+  (n: NullableOrUndefined<number>) =>
+    '' + n!;
+
+
+const fromNumToStringFunction: Function1<number, string> =
+    Function1.of(
+      (n: NullableOrUndefined<number>) =>
+        '' + n!
+    );
+
+
+const fromNumToOptionalStringFFunction: FFunction1<number, Optional<string>> =
+  (n: NullableOrUndefined<number>) =>
+    Optional.ofNullable('' + n);
+
+
+const returnEmptyStringRaw =
+  () =>
+    '';
+
+
+const returnEmptyStringFFunction: FFunction0<string> =
+  () =>
+    '';
+
+
+const helloGeneratorRaw =
+  () =>
+    'Hello';
+
+
+const helloGeneratorFFunction: FFunction0<string> =
+  () =>
+    'Hello';

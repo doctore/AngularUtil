@@ -114,7 +114,8 @@ export class AssertUtil {
       return true;
     }
     if (Function0.isFunction(errorSupplierOrMessage) || isFFunction0(errorSupplierOrMessage)) {
-      throw Function0.of(errorSupplierOrMessage).apply();
+      throw Function0.of(errorSupplierOrMessage)
+        .apply();
     }
     throw new IllegalArgumentError(
       errorSupplierOrMessage

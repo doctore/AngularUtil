@@ -1,5 +1,13 @@
-import { FFunction1, FFunction5, Function1, Function4, Function5, isFFunction5 } from '@app-core/types/function';
+import {
+  FFunction1,
+  FFunction5,
+  Function1,
+  Function4,
+  Function5,
+  isFFunction5
+} from '@app-core/types/function';
 import { IllegalArgumentError } from '@app-core/errors';
+import {NullableOrUndefined} from "@app-core/types";
 
 /**
  * To invoke only this test:
@@ -58,11 +66,7 @@ describe('Function5', () => {
 
 
     it('when a Function5 is provided then true is returned', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
-
-      expect(Function5.isFunction(stringLengthPlusNumbers)).toBeTrue();
+      expect(Function5.isFunction(stringLengthPlusNumbersFunction)).toBeTrue();
     });
 
   });
@@ -80,9 +84,7 @@ describe('Function5', () => {
 
 
     it('when a raw function equivalent to FFunction5 is provided then a valid Function5 is returned', () => {
-      const stringLengthPlusNumbers = (s: string, n1: number, n2: number, n3: number, n4: number) => s.length + n1 + n2 + n3 + n4;
-
-      const func = Function5.of(stringLengthPlusNumbers);
+      const func = Function5.of(stringLengthPlusNumbersRaw);
 
       expect(Function5.isFunction(func)).toBeTrue();
       expect(func.apply('abc', 10, 8, -1, 0)).toEqual(20);
@@ -90,11 +92,7 @@ describe('Function5', () => {
 
 
     it('when an instance of FFunction5 is provided then a valid Function5 is returned', () => {
-      const stringLengthPlusNumbers: FFunction5<string, number, number, number, number, number> =
-        (s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4;
-
-      const func = Function5.of(stringLengthPlusNumbers);
+      const func = Function5.of(stringLengthPlusNumbersFFunction);
 
       expect(Function5.isFunction(func)).toBeTrue();
       expect(func.apply('abc', 10, 8, -1, 0)).toEqual(20);
@@ -102,11 +100,7 @@ describe('Function5', () => {
 
 
     it('when an instance of Function5 is provided then the same one is returned', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
-
-      const func = Function5.of(stringLengthPlusNumbers);
+      const func = Function5.of(stringLengthPlusNumbersFunction);
 
       expect(Function5.isFunction(func)).toBeTrue();
       expect(func.apply('abc', 10, 8, -1, 0)).toEqual(20);
@@ -119,11 +113,7 @@ describe('Function5', () => {
   describe('getMapper', () => {
 
     it('then return internal mapper', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
-
-      const mapper: FFunction5<string, number, number, number, number, number> = stringLengthPlusNumbers.getMapper();
+      const mapper: FFunction5<string, number, number, number, number, number> = stringLengthPlusNumbersFunction.getMapper();
 
       expect(mapper('', 2, 7, -1, 0)).toEqual(8);
       expect(mapper('abc', 5, 11, -1, 0)).toEqual(18);
@@ -136,25 +126,17 @@ describe('Function5', () => {
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
-
       // @ts-ignore
-      expect(() => stringLengthPlusNumbers.andThen(null)).toThrowError(IllegalArgumentError);
+      expect(() => stringLengthPlusNumbersFunction.andThen(null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => stringLengthPlusNumbers.andThen(undefined)).toThrowError(IllegalArgumentError);
+      expect(() => stringLengthPlusNumbersFunction.andThen(undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when a raw function equivalent to FFunction1 is provided then it will be applied after current one', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
-
       const multiply2 = (n: number) => 2 * n;
 
-      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbersFunction.andThen(multiply2);
 
       expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1, 0)).toEqual(14);
       expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1, 0)).toEqual(16);
@@ -162,14 +144,10 @@ describe('Function5', () => {
 
 
     it('when a FFunction1 is provided then it will be applied after current one', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
-
       const multiply2: FFunction1<number, number> =
-        (n: number) => 2 * n;
+        (n: NullableOrUndefined<number>) => 2 * n!;
 
-      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbersFunction.andThen(multiply2);
 
       expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1, 0)).toEqual(14);
       expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1, 0)).toEqual(16);
@@ -177,14 +155,10 @@ describe('Function5', () => {
 
 
     it('when a Function1 is provided then it will be applied after current one', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
+      const multiply2: Function1<NullableOrUndefined<number>, number> =
+        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
 
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbers.andThen(multiply2);
+      const stringLengthPlusNumbersAndThenMultiply2 = stringLengthPlusNumbersFunction.andThen(multiply2);
 
       expect(stringLengthPlusNumbersAndThenMultiply2.apply('0', 2, 5, -1, 0)).toEqual(14);
       expect(stringLengthPlusNumbersAndThenMultiply2.apply('abc', 4, 2, -1, 0)).toEqual(16);
@@ -197,14 +171,40 @@ describe('Function5', () => {
   describe('apply', () => {
 
     it('when a Function5 is provided then the received input will be transformed', () => {
-      const stringLengthPlusNumbers: Function5<string, number, number, number, number, number> =
-        Function5.of((s: string, n1: number, n2: number, n3: number, n4: number) =>
-          s.length + n1 + n2 + n3 + n4);
-
-      expect(stringLengthPlusNumbers.apply('', 2, 7, -1, 0)).toEqual(8);
-      expect(stringLengthPlusNumbers.apply('abc', 5, 11, -1, 0)).toEqual(18);
+      expect(stringLengthPlusNumbersFunction.apply('', 2, 7, -1, 0)).toEqual(8);
+      expect(stringLengthPlusNumbersFunction.apply('abc', 5, 11, -1, 0)).toEqual(18);
     });
 
   });
 
 });
+
+
+
+const stringLengthPlusNumbersRaw =
+  (s: string,
+   n1: number,
+   n2: number,
+   n3: number,
+   n4: number) =>
+    s.length + n1 + n2 + n3 + n4;
+
+
+const stringLengthPlusNumbersFFunction: FFunction5<string, number, number, number, number, number> =
+  (s: string,
+   n1: number,
+   n2: number,
+   n3: number,
+   n4: number) =>
+    s.length + n1 + n2 + n3 + n4;
+
+
+const stringLengthPlusNumbersFunction: Function5<string, number, number, number, number, number> =
+  Function5.of(
+    (s: string,
+     n1: number,
+     n2: number,
+     n3: number,
+     n4: number) =>
+      s.length + n1 + n2 + n3 + n4
+  );

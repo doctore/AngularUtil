@@ -49,24 +49,16 @@ describe('Predicate4', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      const areNumbersLowerThan20AndStringsLongerThan5 =
-        (n1: NullableOrUndefined<number>, s1: NullableOrUndefined<string>, s2: string, n2: number) =>
-          20 > n1! && 5 < s1!.length && 5 < s2.length && 20 > n2;
-
-      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(11, 'abcdef', 'HelloWorld', 10)).toBeFalse();
 
-      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(12, 'abcd', 'HelloWorld', 13)).toBeFalse();
 
-      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(30, 'abcdef', 'Hello', 8)).toBeFalse();
 
-      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.allOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(10, 'abcdef', 'HelloWorld', 12)).toBeTrue();
     });
 
@@ -112,24 +104,16 @@ describe('Predicate4', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      const areNumbersLowerThan20AndStringsLongerThan5 =
-        (n1: NullableOrUndefined<number>, s1: NullableOrUndefined<string>, s2: string, n2: number) =>
-          20 > n1! && 5 < s1!.length && 5 < s2.length && 20 > n2;
-
-      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(10, 'abcdef', 'HelloWorld', 11)).toBeTrue();
 
-      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(8, 'abc', 'Hello', 32)).toBeTrue();
 
-      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(17, 'abcdef', 'HelloWorld', 15)).toBeTrue();
 
-      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2, areNumbersLowerThan20AndStringsLongerThan5])
+      expect(Predicate4.anyOf([areNumbersEvenAndStringsLongerThan2Predicate, areNumbersLowerThan20AndStringsLongerThan5Raw])
         .apply(30, 'a', 'HelloWorld', 9)).toBeFalse();
     });
   });
@@ -253,11 +237,7 @@ describe('Predicate4', () => {
 
 
     it('when a Predicate4 is provided then true is returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      expect(Predicate4.isPredicate(areNumbersEvenAndStringsLongerThan2)).toBeTrue();
+      expect(Predicate4.isPredicate(areNumbersEvenAndStringsLongerThan2Predicate)).toBeTrue();
     });
 
   });
@@ -275,16 +255,7 @@ describe('Predicate4', () => {
 
 
     it('when a raw function equivalent to FPredicate4 is provided then a valid Predicate4 is returned', () => {
-      const areNumbersEvenAndStringNotNull =
-        (n1: NullableOrUndefined<number>, s1: NullableOrUndefined<string>, n2: number, s2: string) =>
-          0 == n1! % 2 &&
-          undefined !== s1 &&
-          null !== s1 &&
-          0 == n2 % 2 &&
-          undefined !== s2 &&
-          null !== s2;
-
-      const predicate = Predicate4.of(areNumbersEvenAndStringNotNull);
+      const predicate = Predicate4.of(areNumbersEvenAndStringNotNullRaw);
 
       expect(Predicate4.isPredicate(predicate)).toBeTrue();
       expect(predicate.apply(1, null, 2, 'abc')).toBeFalse();
@@ -294,16 +265,7 @@ describe('Predicate4', () => {
 
 
     it('when an instance of FPredicate4 is provided then a valid Predicate4 is returned', () => {
-      const areNumbersEvenAndStringNotNull: FPredicate4<number, string, number, string> =
-        (n1: NullableOrUndefined<number>, s1: NullableOrUndefined<string>, n2: number, s2: string) =>
-          0 == n1! % 2 &&
-          undefined !== s1 &&
-          null !== s1 &&
-          0 == n2 % 2 &&
-          undefined !== s2 &&
-          null !== s2;
-
-      const predicate = Predicate4.of(areNumbersEvenAndStringNotNull);
+      const predicate = Predicate4.of(areNumbersEvenAndStringNotNullFPredicate);
 
       expect(Predicate4.isPredicate(predicate)).toBeTrue();
       // @ts-ignore
@@ -314,17 +276,7 @@ describe('Predicate4', () => {
 
 
     it('when an instance of Predicate4 is provided then the same one is returned', () => {
-      const areNumbersEvenAndStringNotNull: Predicate4<NullableOrUndefined<number>, NullableOrUndefined<string>, number, string> =
-        Predicate4.of((n1: NullableOrUndefined<number>, s1: NullableOrUndefined<string>, n2: number, s2: string) =>
-          0 == n1! % 2 &&
-          undefined !== s1 &&
-          null !== s1 &&
-          0 == n2 % 2 &&
-          undefined !== s2 &&
-          null !== s2
-        );
-
-      const predicate = Predicate4.of(areNumbersEvenAndStringNotNull);
+      const predicate = Predicate4.of(areNumbersEvenAndStringNotNullPredicate);
 
       expect(Predicate4.isPredicate(predicate)).toBeTrue();
       expect(predicate.apply(1, null, 2, 'abc')).toBeFalse();
@@ -339,17 +291,7 @@ describe('Predicate4', () => {
   describe('getVerifier', () => {
 
     it('then return internal verifier', () => {
-      const areNumbersEvenAndStringNotNull: Predicate4<number, string, number, string> =
-        Predicate4.of((n1: number, s1: string, n2: number, s2: string) =>
-          0 == n1 % 2 &&
-          undefined !== s1 &&
-          null !== s1 &&
-          0 == n2 % 2 &&
-          undefined !== s2 &&
-          null !== s2
-        );
-
-      const verifier: FPredicate4<number, string, number, string> = areNumbersEvenAndStringNotNull.getVerifier();
+      const verifier: FPredicate4<number, string, number, string> = areNumbersEvenAndStringNotNullPredicate.getVerifier();
 
       // @ts-ignore
       expect(verifier(11, 'abcd', null, 10)).toBeFalse();
@@ -364,18 +306,8 @@ describe('Predicate4', () => {
   describe('and', () => {
 
     it('when given Predicate is null or undefined then only this will be evaluated', () => {
-      const areNumbersEvenAndStringNotNull: Predicate4<number, string, number, string> =
-        Predicate4.of((n1: number, s1: string, n2: number, s2: string) =>
-          0 == n1 % 2 &&
-          undefined !== s1 &&
-          null !== s1 &&
-          0 == n2 % 2 &&
-          undefined !== s2 &&
-          null !== s2
-        );
-
       // @ts-ignore
-      const andPredicates = areNumbersEvenAndStringNotNull.and(null);
+      const andPredicates = areNumbersEvenAndStringNotNullPredicate.and(null);
 
       // @ts-ignore
       expect(andPredicates.apply(11, 'abcd', null, 10)).toBeFalse();
@@ -386,16 +318,8 @@ describe('Predicate4', () => {
 
 
     it('when one of the Predicates to evaluate returns false then false is returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      const areNumbersLowerThan20AndStringsLongerThan5: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          20 > n1! && 5 < s1!.length && 5 < s2.length && 20 > n2);
-
-      const andPredicates1 = areNumbersEvenAndStringsLongerThan2.and(areNumbersLowerThan20AndStringsLongerThan5);
-      const andPredicates2 = areNumbersLowerThan20AndStringsLongerThan5.and(areNumbersEvenAndStringsLongerThan2);
+      const andPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.and(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const andPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.and(areNumbersEvenAndStringsLongerThan2Predicate);
 
       expect(andPredicates1.apply(11, 'abcd', 'ab', 12)).toBeFalse();
       expect(andPredicates1.apply(8, 'abcd', 'a', 6)).toBeFalse();
@@ -410,16 +334,8 @@ describe('Predicate4', () => {
 
 
     it('when both Predicates return true then true is returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      const areNumbersLowerThan20AndStringsLongerThan5: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          20 > n1! && 5 < s1!.length && 5 < s2.length && 20 > n2);
-
-      const andPredicates1 = areNumbersEvenAndStringsLongerThan2.and(areNumbersLowerThan20AndStringsLongerThan5);
-      const andPredicates2 = areNumbersLowerThan20AndStringsLongerThan5.and(areNumbersEvenAndStringsLongerThan2);
+      const andPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.and(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const andPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.and(areNumbersEvenAndStringsLongerThan2Predicate);
 
       expect(andPredicates1.apply(18, 'abcddf', 'HelloWorld', 12)).toBeTrue();
       expect(andPredicates1.apply(4, 'HolaMundo', 'abcddf', 16)).toBeTrue();
@@ -435,13 +351,9 @@ describe('Predicate4', () => {
   describe('apply', () => {
 
     it('when a Predicate4 is provided then the received input will be evaluated', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      expect(areNumbersEvenAndStringsLongerThan2.apply(12, 'abcd', 'ab', 10)).toBeFalse();
-      expect(areNumbersEvenAndStringsLongerThan2.apply(8, 'abc', 'Hello', 9)).toBeFalse();
-      expect(areNumbersEvenAndStringsLongerThan2.apply(12, 'abcd', 'Hello', 14)).toBeTrue();
+      expect(areNumbersEvenAndStringsLongerThan2Predicate.apply(12, 'abcd', 'ab', 10)).toBeFalse();
+      expect(areNumbersEvenAndStringsLongerThan2Predicate.apply(8, 'abc', 'Hello', 9)).toBeFalse();
+      expect(areNumbersEvenAndStringsLongerThan2Predicate.apply(12, 'abcd', 'Hello', 14)).toBeTrue();
     });
 
   });
@@ -451,11 +363,7 @@ describe('Predicate4', () => {
   describe('not', () => {
 
     it('when a Predicate4 is provided then logical negation will be returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      const notAreNumbersEvenAndStringsLongerThan2 = areNumbersEvenAndStringsLongerThan2.not();
+      const notAreNumbersEvenAndStringsLongerThan2 = areNumbersEvenAndStringsLongerThan2Predicate.not();
 
       expect(notAreNumbersEvenAndStringsLongerThan2.apply(12, 'abcd', 'ab', 10)).toBeTrue();
       expect(notAreNumbersEvenAndStringsLongerThan2.apply(8, 'abc', 'Hello', 9)).toBeTrue();
@@ -469,12 +377,8 @@ describe('Predicate4', () => {
   describe('or', () => {
 
     it('when given Predicate is null or undefined then only this will be evaluated', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
       // @ts-ignore
-      const orPredicates = areNumbersEvenAndStringsLongerThan2.or(undefined);
+      const orPredicates = areNumbersEvenAndStringsLongerThan2Predicate.or(undefined);
 
       expect(orPredicates.apply(12, 'abcd', 'ab', 10)).toBeFalse();
       expect(orPredicates.apply(8, 'abc', 'Hello', 9)).toBeFalse();
@@ -484,16 +388,8 @@ describe('Predicate4', () => {
 
 
     it('when one of the Predicates to evaluate returns true then true is returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      const areNumbersLowerThan20AndStringsLongerThan5: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          20 > n1! && 5 < s1!.length && 5 < s2.length && 20 > n2);
-
-      const orPredicates1 = areNumbersEvenAndStringsLongerThan2.or(areNumbersLowerThan20AndStringsLongerThan5);
-      const orPredicates2 = areNumbersLowerThan20AndStringsLongerThan5.or(areNumbersEvenAndStringsLongerThan2);
+      const orPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.or(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const orPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.or(areNumbersEvenAndStringsLongerThan2Predicate);
 
       expect(orPredicates1.apply(22, 'abcd', 'Hello', 12)).toBeTrue();
       expect(orPredicates1.apply(2, 'Hola', 'abc', 30)).toBeTrue();
@@ -504,16 +400,8 @@ describe('Predicate4', () => {
 
 
     it('when both Predicates return false then false is returned', () => {
-      const areNumbersEvenAndStringsLongerThan2: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2);
-
-      const areNumbersLowerThan20AndStringsLongerThan5: Predicate4<number, string, string, number> =
-        Predicate4.of((n1: number, s1: string, s2: string, n2: number) =>
-          20 > n1! && 5 < s1!.length && 5 < s2.length && 20 > n2);
-
-      const orPredicates1 = areNumbersEvenAndStringsLongerThan2.or(areNumbersLowerThan20AndStringsLongerThan5);
-      const orPredicates2 = areNumbersLowerThan20AndStringsLongerThan5.or(areNumbersEvenAndStringsLongerThan2);
+      const orPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.or(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const orPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.or(areNumbersEvenAndStringsLongerThan2Predicate);
 
       expect(orPredicates1.apply(21, 'ab', '', 10)).toBeFalse();
       expect(orPredicates1.apply(22, 'abc', 'a', 30)).toBeFalse();
@@ -527,3 +415,82 @@ describe('Predicate4', () => {
   });
 
 });
+
+
+
+const areNumbersEvenAndStringsLongerThan2Predicate: Predicate4<number, string, string, number> =
+  Predicate4.of(
+    (n1: number,
+     s1: string,
+     s2: string,
+     n2: number) =>
+      0 == n1 % 2 &&
+      2 < s1.length &&
+      2 < s2.length &&
+      0 == n2 % 2
+  );
+
+
+const areNumbersLowerThan20AndStringsLongerThan5Raw =
+  (n1: NullableOrUndefined<number>,
+   s1: NullableOrUndefined<string>,
+   s2: string,
+   n2: number) =>
+    20 > n1! &&
+    5 < s1!.length &&
+    5 < s2.length &&
+    20 > n2;
+
+
+const areNumbersLowerThan20AndStringsLongerThan5Predicate: Predicate4<number, string, string, number> =
+  Predicate4.of(
+    (n1: number,
+     s1: string,
+     s2: string,
+     n2: number) =>
+      20 > n1! &&
+      5 < s1!.length &&
+      5 < s2.length &&
+      20 > n2
+  );
+
+
+const areNumbersEvenAndStringNotNullRaw =
+  (n1: NullableOrUndefined<number>,
+   s1: NullableOrUndefined<string>,
+   n2: number,
+   s2: string) =>
+    0 == n1! % 2 &&
+    undefined !== s1 &&
+    null !== s1 &&
+    0 == n2 % 2 &&
+    undefined !== s2 &&
+    null !== s2;
+
+
+const areNumbersEvenAndStringNotNullFPredicate: FPredicate4<number, string, number, string> =
+  (n1: NullableOrUndefined<number>,
+   s1: NullableOrUndefined<string>,
+   n2: number,
+   s2: string) =>
+    0 == n1! % 2 &&
+    undefined !== s1 &&
+    null !== s1 &&
+    0 == n2 % 2 &&
+    undefined !== s2 &&
+    null !== s2;
+
+
+const areNumbersEvenAndStringNotNullPredicate: Predicate4<NullableOrUndefined<number>, NullableOrUndefined<string>, number, string> =
+  Predicate4.of(
+    (n1: NullableOrUndefined<number>,
+     s1: NullableOrUndefined<string>,
+     n2: number,
+     s2: string) =>
+      0 == n1! % 2 &&
+      undefined !== s1 &&
+      null !== s1 &&
+      0 == n2 % 2 &&
+      undefined !== s2 &&
+      null !== s2
+  );

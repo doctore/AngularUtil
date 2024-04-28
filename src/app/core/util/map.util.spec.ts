@@ -14,7 +14,6 @@ import { FPredicate2, Predicate2 } from '@app-core/types/predicate';
 import { NullableOrUndefined } from '@app-core/types';
 import { IllegalArgumentError } from '@app-core/errors';
 
-
 /**
  * To invoke only this test:
  *
@@ -37,28 +36,19 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
       const emptyMap = new Map<string, number>();
-      const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
-        PartialFunction.of(
-          ([k, v]: [string, number]) => 1 == v % 2,
-          ([k, v]: [string, number]) => [k, 1 + v]
-        );
-      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
 
-      expect(MapUtil.applyOrElse(null, keyAndValuePlus1ForOdd, keyValueMultiply2)).toEqual(emptyMap);
-      expect(MapUtil.applyOrElse(undefined, keyAndValuePlus1ForOdd, keyValueMultiply2)).toEqual(emptyMap);
-      expect(MapUtil.applyOrElse(emptyMap, keyAndValuePlus1ForOdd, keyValueMultiply2)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(null, keyAndValuePlus1ForOddPP, keyValueMultiply2Raw)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(undefined, keyAndValuePlus1ForOddPP, keyValueMultiply2Raw)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(emptyMap, keyAndValuePlus1ForOddPP, keyValueMultiply2Raw)).toEqual(emptyMap);
     });
 
 
     it('when given sourceMap has no elements and defaultMapper, orElseMapper and filterPredicate are provided then empty Map is returned', () => {
       let emptyMap = new Map<string, number>();
-      const isValueEven = (k: string, v: number) => 1 == v % 2;
-      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
-      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
 
-      expect(MapUtil.applyOrElse(null, keyValuePlus1, keyValueMultiply2, isValueEven)).toEqual(emptyMap);
-      expect(MapUtil.applyOrElse(undefined, keyValuePlus1, keyValueMultiply2, isValueEven)).toEqual(emptyMap);
-      expect(MapUtil.applyOrElse(emptyMap, keyValuePlus1, keyValueMultiply2, isValueEven)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(null, keyValuePlus1Raw, keyValueMultiply2Raw, isValueEvenRaw)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(undefined, keyValuePlus1Raw, keyValueMultiply2Raw, isValueEvenRaw)).toEqual(emptyMap);
+      expect(MapUtil.applyOrElse(emptyMap, keyValuePlus1Raw, keyValueMultiply2Raw, isValueEvenRaw)).toEqual(emptyMap);
     });
 
 
@@ -66,22 +56,15 @@ describe('MapUtil', () => {
       const sourceMap = new Map<string, number>();
       sourceMap.set('a', 1);
 
-      const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
-        PartialFunction.of(
-          ([k, v]: [string, number]) => 1 == v % 2,
-          ([k, v]: [string, number]) => [k, 1 + v]
-        );
-      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, null, keyValueMultiply2Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, undefined, keyValueMultiply2Raw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, null, keyValueMultiply2)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOddPP, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, undefined, keyValueMultiply2)).toThrowError(IllegalArgumentError);
-
-      // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOdd, null)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOdd, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOddPP, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -89,18 +72,15 @@ describe('MapUtil', () => {
       const sourceMap = new Map<string, number>();
       sourceMap.set('a', 1);
 
-      const isKeyEven = (k: number, v: string) => 1 == k % 2;
-      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, null, keyValuePlus1Raw,  isKeyEvenRaw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.applyOrElse(sourceMap, undefined, keyValuePlus1Raw, isKeyEvenRaw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, null, keyValuePlus1,  isKeyEven)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.applyOrElse(sourceMap, keyValuePlus1Raw, null, isKeyEvenRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, undefined, keyValuePlus1, isKeyEven)).toThrowError(IllegalArgumentError);
-
-      // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, keyValuePlus1, null, isKeyEven)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => MapUtil.applyOrElse(sourceMap, keyValuePlus1, undefined, isKeyEven)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.applyOrElse(sourceMap, keyValuePlus1Raw, undefined, isKeyEvenRaw)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -110,21 +90,13 @@ describe('MapUtil', () => {
       sourceMap.set('B', 2);
       sourceMap.set('D', 4);
 
-      const keyAndValuePlus1ForOdd: PartialFunction<[string, number], [string, number]> =
-        PartialFunction.of(
-          ([k, v]: [string, number]) => 1 == v % 2,
-          ([k, v]: [string, number]) => [k, 1 + v]
-        );
-      const keyValueMultiply2: Function2<string, number, [string, number]> =
-        Function2.of((k: string, v: number) => [k, 2 * v]);
-
       const expectedResult = new Map<string, number>();
       expectedResult.set('A', 2);
       expectedResult.set('B', 4);
       expectedResult.set('D', 8);
 
       verifyMaps(
-        MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOdd, keyValueMultiply2),
+        MapUtil.applyOrElse(sourceMap, keyAndValuePlus1ForOddPP, keyValueMultiply2Function),
         expectedResult
       );
     });
@@ -136,11 +108,6 @@ describe('MapUtil', () => {
       sourceMap.set('B', 2);
       sourceMap.set('D', 4);
 
-      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
-
-      const keyValueMultiply2: FFunction2<string, number, [string, number]> =
-        (k: string, v: number): [string, number] => [k, 2 * v];
-
       const expectedResult = new Map<string, number>();
       expectedResult.set('A', 2);
       expectedResult.set('B', 3);
@@ -148,12 +115,12 @@ describe('MapUtil', () => {
 
       verifyMaps(
         // @ts-ignore
-        MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, null),
+        MapUtil.applyOrElse(sourceMap, keyValuePlus1Raw, keyValueMultiply2FFunction, null),
         expectedResult
       );
       verifyMaps(
         // @ts-ignore
-        MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, undefined),
+        MapUtil.applyOrElse(sourceMap, keyValuePlus1Raw, keyValueMultiply2FFunction, undefined),
         expectedResult
       );
     });
@@ -165,17 +132,13 @@ describe('MapUtil', () => {
       sourceMap.set('B', 2);
       sourceMap.set('D', 4);
 
-      const isValueEven = (k: string, v: number) => 1 == v % 2;
-      const keyValuePlus1 = (k: string, v: number): [string, number] => [k, 1 + v];
-      const keyValueMultiply2 = (k: string, v: number): [string, number] => [k, 2 * v];
-
       const expectedResult = new Map<string, number>();
       expectedResult.set('A', 2);
       expectedResult.set('B', 4);
       expectedResult.set('D', 8);
 
       verifyMaps(
-        MapUtil.applyOrElse(sourceMap, keyValuePlus1, keyValueMultiply2, isValueEven),
+        MapUtil.applyOrElse(sourceMap, keyValuePlus1Raw, keyValueMultiply2Raw, isValueEvenRaw),
         expectedResult
       );
     });
@@ -202,12 +165,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements and mapFunction and filterPredicate are provided then empty Map is returned', () => {
       const emptyMap = new Map<number, string>();
-      const isKeyEven = (k: number, v: string) => 1 == k % 2;
-      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
 
-      expect(MapUtil.collect(null, keyAndValueLength, isKeyEven)).toEqual(emptyMap);
-      expect(MapUtil.collect(undefined, keyAndValueLength, isKeyEven)).toEqual(emptyMap);
-      expect(MapUtil.collect(emptyMap, keyAndValueLength, isKeyEven)).toEqual(emptyMap);
+      expect(MapUtil.collect(null, keyAndValueLengthRaw, isKeyEvenRaw)).toEqual(emptyMap);
+      expect(MapUtil.collect(undefined, keyAndValueLengthRaw, isKeyEvenRaw)).toEqual(emptyMap);
+      expect(MapUtil.collect(emptyMap, keyAndValueLengthRaw, isKeyEvenRaw)).toEqual(emptyMap);
     });
 
 
@@ -227,13 +188,11 @@ describe('MapUtil', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
-      const isKeyEven = (k: number, v: string) => 1 == k % 2;
+      // @ts-ignore
+      expect(() => MapUtil.collect(sourceMap, null, isKeyEvenRaw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => MapUtil.collect(sourceMap, null, isKeyEven)).toThrowError(IllegalArgumentError);
-
-      // @ts-ignore
-      expect(() => MapUtil.collect(sourceMap, undefined, isKeyEven)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.collect(sourceMap, undefined, isKeyEvenRaw)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -266,8 +225,6 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
 
-      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
-
       const expectedResult = new Map<number, number>();
       expectedResult.set(1, 2);
       expectedResult.set(2, 5);
@@ -275,12 +232,12 @@ describe('MapUtil', () => {
 
       verifyMaps(
         // @ts-ignore
-        MapUtil.collect(sourceMap, keyAndValueLength, null),
+        MapUtil.collect(sourceMap, keyAndValueLengthRaw, null),
         expectedResult
       );
       verifyMaps(
         // @ts-ignore
-        MapUtil.collect(sourceMap, keyAndValueLength, undefined),
+        MapUtil.collect(sourceMap, keyAndValueLengthRaw, undefined),
         expectedResult
       );
     });
@@ -292,15 +249,12 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
 
-      const isKeyEven = (k: number, v: string) => 1 == k % 2;
-      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
-
       const expectedResult = new Map<number, number>();
       expectedResult.set(1, 2);
       expectedResult.set(3, 4);
 
       verifyMaps(
-        MapUtil.collect(sourceMap, keyAndValueLength, isKeyEven),
+        MapUtil.collect(sourceMap, keyAndValueLengthRaw, isKeyEvenRaw),
         expectedResult
       );
     });
@@ -422,12 +376,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then 0 is returned', () => {
       const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.count(null, areKeyValueEven)).toEqual(0);
-      expect(MapUtil.count(undefined, areKeyValueEven)).toEqual(0);
-      expect(MapUtil.count(emptyMap, areKeyValueEven)).toEqual(0);
+      expect(MapUtil.count(null, areKeyValueEvenPredicate)).toEqual(0);
+      expect(MapUtil.count(undefined, areKeyValueEvenPredicate)).toEqual(0);
+      expect(MapUtil.count(emptyMap, areKeyValueEvenPredicate)).toEqual(0);
     });
 
 
@@ -447,12 +399,8 @@ describe('MapUtil', () => {
       sourceMap.set(11, 77);
       sourceMap.set(23, 55);
 
-      const areKeyValueEven = (k: number, v: number) => 0 == k % 2 && 0 == v % 2;
-      const isKeyOdd: FPredicate2<number, number> =
-        (k: number, v: number) => 1 == k % 2;
-
-      expect(MapUtil.count(sourceMap, areKeyValueEven)).toEqual(1);
-      expect(MapUtil.count(sourceMap, isKeyOdd)).toEqual(2);
+      expect(MapUtil.count(sourceMap, areKeyValueEvenRaw)).toEqual(1);
+      expect(MapUtil.count(sourceMap, isKeyOddFPredicate)).toEqual(2);
     });
 
   });
@@ -463,12 +411,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.dropWhile(null, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.dropWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.dropWhile(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.dropWhile(null, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.dropWhile(undefined, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.dropWhile(emptyMap, areKeyValueEvenPredicate)).toEqual(emptyMap);
     });
 
 
@@ -517,12 +463,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.filter(null, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.filter(undefined, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.filter(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.filter(null, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.filter(undefined, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.filter(emptyMap, areKeyValueEvenPredicate)).toEqual(emptyMap);
     });
 
 
@@ -566,11 +510,8 @@ describe('MapUtil', () => {
       expectedResult.set(r1.id, r1);
       expectedResult.set(r3.id, r3);
 
-      const isKeyAndRoleIdOdd: FPredicate2<number, Role> =
-        (k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2;
-
       verifyMaps(
-        MapUtil.filter(sourceMap, isKeyAndRoleIdOdd),
+        MapUtil.filter(sourceMap, isKeyAndRoleIdOddFPredicate),
         expectedResult
       );
     });
@@ -589,10 +530,8 @@ describe('MapUtil', () => {
       const expectedResult = new Map<number, User>();
       expectedResult.set(u2.id, u2);
 
-      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
-
       verifyMaps(
-        MapUtil.filter(sourceMap, isKeyAndUserIdEven),
+        MapUtil.filter(sourceMap, isKeyAndUserIdEvenRaw),
         expectedResult
       );
     });
@@ -605,12 +544,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.filterNot(null, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.filterNot(undefined, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.filterNot(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.filterNot(null, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.filterNot(undefined, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.filterNot(emptyMap, areKeyValueEvenPredicate)).toEqual(emptyMap);
     });
 
 
@@ -654,10 +591,8 @@ describe('MapUtil', () => {
       const expectedResult = new Map<number, Role>();
       expectedResult.set(r2.id, r2);
 
-      const isKeyAndRoleIdOdd: Predicate2<number, Role> = Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
-
       verifyMaps(
-        MapUtil.filterNot(sourceMap, isKeyAndRoleIdOdd),
+        MapUtil.filterNot(sourceMap, isKeyAndRoleIdOddPredicate),
         expectedResult
       );
     });
@@ -677,10 +612,8 @@ describe('MapUtil', () => {
       expectedResult.set(u1.id, u1);
       expectedResult.set(u3.id, u3);
 
-      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
-
       verifyMaps(
-        MapUtil.filterNot(sourceMap, isKeyAndUserIdEven),
+        MapUtil.filterNot(sourceMap, isKeyAndUserIdEvenRaw),
         expectedResult
       );
     });
@@ -693,12 +626,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap is undefined, null or is an empty Map then undefined is returned', () => {
       const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.find(null, areKeyValueEven)).toBeUndefined();
-      expect(MapUtil.find(undefined, areKeyValueEven)).toBeUndefined();
-      expect(MapUtil.find(emptyMap, areKeyValueEven)).toBeUndefined();
+      expect(MapUtil.find(null, areKeyValueEvenPredicate)).toBeUndefined();
+      expect(MapUtil.find(undefined, areKeyValueEvenPredicate)).toBeUndefined();
+      expect(MapUtil.find(emptyMap, areKeyValueEvenPredicate)).toBeUndefined();
     });
 
 
@@ -756,12 +687,9 @@ describe('MapUtil', () => {
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
 
-      const isKeyAndRoleIdOdd: Predicate2<number, Role> =
-        Predicate2.of((k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2);
-
       const expectedResult: [number, Role] = [r1.id, r1];
 
-      const result = MapUtil.find(sourceMap, isKeyAndRoleIdOdd);
+      const result = MapUtil.find(sourceMap, isKeyAndRoleIdOddPredicate);
 
       expect(result).toBeDefined();
       expect(result![0]).toEqual(expectedResult[0]);
@@ -781,11 +709,9 @@ describe('MapUtil', () => {
       sourceMap.set(u3.id, u3);
       sourceMap.set(u4.id, u4);
 
-      const isKeyAndUserIdEven = (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
-
       const expectedResult: [number, User] = [u2.id, u2];
 
-      const result = MapUtil.find(sourceMap, isKeyAndUserIdEven);
+      const result = MapUtil.find(sourceMap, isKeyAndUserIdEvenRaw);
 
       expect(result).toBeDefined();
       expect(result![0]).toEqual(expectedResult[0]);
@@ -800,12 +726,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap is undefined, null or is an empty Map then empty Optional is returned', () => {
       const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.findOptional(null, areKeyValueEven).isPresent()).toBeFalse();
-      expect(MapUtil.findOptional(undefined, areKeyValueEven).isPresent()).toBeFalse();
-      expect(MapUtil.findOptional(emptyMap, areKeyValueEven).isPresent()).toBeFalse();
+      expect(MapUtil.findOptional(null, areKeyValueEvenPredicate).isPresent()).toBeFalse();
+      expect(MapUtil.findOptional(undefined, areKeyValueEvenPredicate).isPresent()).toBeFalse();
+      expect(MapUtil.findOptional(emptyMap, areKeyValueEvenPredicate).isPresent()).toBeFalse();
     });
 
 
@@ -865,11 +789,9 @@ describe('MapUtil', () => {
       sourceMap.set(r2.id, r2);
       sourceMap.set(r3.id, r3);
 
-      const isKeyAndRoleIdOdd = (k: number, role: Role) => 1 == k % 2 && 1 == role.id % 2;
-
       const expectedResult: Optional<[number, Role]> = Optional.of([r1.id, r1]);
 
-      const result = MapUtil.findOptional(sourceMap, isKeyAndRoleIdOdd);
+      const result = MapUtil.findOptional(sourceMap, isKeyAndRoleIdOddRaw);
 
       expect(result.isPresent()).toBeTrue();
       expect(result!.get()[0]).toEqual(expectedResult.get()[0]);
@@ -889,12 +811,9 @@ describe('MapUtil', () => {
       sourceMap.set(u3.id, u3);
       sourceMap.set(u4.id, u4);
 
-      const isKeyAndUserIdEven: FPredicate2<number, User> =
-        (k: number, user: User) => 0 == k % 2 && 0 == user.id % 2;
-
       const expectedResult: Optional<[number, User]> = Optional.of([u2.id, u2]);
 
-      const result = MapUtil.findOptional(sourceMap, isKeyAndUserIdEven);
+      const result = MapUtil.findOptional(sourceMap, isKeyAndUserIdEvenFPredicate);
 
       expect(result.isPresent()).toBeTrue();
       expect(result!.get()[0]).toEqual(expectedResult.get()[0]);
@@ -1163,14 +1082,13 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'Ok');
 
       const keyMod2 = (k: number, v: string) => k % 2;
-      const keyLowerThan10 = (k: number, v: string) => 10 > k;
 
       const expectedResult: Map<number, Map<number, string>> = new Map<number, Map<number, string>>();
       expectedResult.set(0, MapUtil.of([[2, 'Hello']]));
       expectedResult.set(1, MapUtil.of([[1, 'Hi'], [7, 'World']]));
 
       verifyMaps(
-        MapUtil.groupBy(sourceMap, keyMod2, keyLowerThan10),
+        MapUtil.groupBy(sourceMap, keyMod2, keyLowerThan10Raw),
         expectedResult
       );
     });
@@ -1296,7 +1214,6 @@ describe('MapUtil', () => {
           }
           return keys;
       };
-      const keyLowerThan10 = (k: number, v: string) => 10 > k;
 
       const expectedResult: Map<string, Map<number, string>> = new Map<string, Map<number, string>>();
       expectedResult.set('evenKey', MapUtil.of([[2, 'Hello']]));
@@ -1305,7 +1222,7 @@ describe('MapUtil', () => {
       expectedResult.set('greaterEqual5Key', MapUtil.of([[7, 'World']]));
 
       verifyMaps(
-        MapUtil.groupByMultiKey(sourceMap, oddEvenSmallerOrGreaterEqualThan5Key, keyLowerThan10),
+        MapUtil.groupByMultiKey(sourceMap, oddEvenSmallerOrGreaterEqualThan5Key, keyLowerThan10Raw),
         expectedResult
       );
     });
@@ -1319,32 +1236,28 @@ describe('MapUtil', () => {
     it('when given sourceMap has no elements and partialFunction is provided then empty Map is returned', () => {
       const emptyMap: Map<number, string> = new Map<number, string>();
 
-      const keyMod3AndValueLengthForOddKeyOrGreaterThan6: PartialFunction<[number, string], [number, number]> =
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      const keyMod3AndValueLengthForOddKey: PartialFunction<[number, string], [number, number]> =
         PartialFunction.of(
           ([k, v]: [number, string]) => 1 == k % 2,
           ([k, v]: [number, string]) => [k % 3, v.length]
         );
 
-      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
-
-      expect(MapUtil.groupMap(null, keyMod3AndValueLengthForOddKeyOrGreaterThan6)).toEqual(expectedResult);
-      expect(MapUtil.groupMap(undefined, keyMod3AndValueLengthForOddKeyOrGreaterThan6)).toEqual(expectedResult);
-      expect(MapUtil.groupMap(emptyMap, keyMod3AndValueLengthForOddKeyOrGreaterThan6)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(null, keyMod3AndValueLengthForOddKey)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(undefined, keyMod3AndValueLengthForOddKey)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(emptyMap, keyMod3AndValueLengthForOddKey)).toEqual(expectedResult);
     });
 
 
     it('when given sourceMap has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
       const emptyMap: Map<number, string> = new Map<number, string>();
 
-      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
-      const sameKey = (k: number, v: string) => k;
-      const valueLength = (k: number, v: string) => v.length;
-
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
 
-      expect(MapUtil.groupMap(null, sameKey, valueLength, isKeyOdd)).toEqual(expectedResult);
-      expect(MapUtil.groupMap(undefined, sameKey, valueLength, isKeyOdd)).toEqual(expectedResult);
-      expect(MapUtil.groupMap(emptyMap, sameKey, valueLength, isKeyOdd)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(null, sameKeyRaw, valueLengthRaw, isKeyOddRaw)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(undefined, sameKeyRaw, valueLengthRaw, isKeyOddRaw)).toEqual(expectedResult);
+      expect(MapUtil.groupMap(emptyMap, sameKeyRaw, valueLengthRaw, isKeyOddRaw)).toEqual(expectedResult);
     });
 
 
@@ -1363,19 +1276,15 @@ describe('MapUtil', () => {
       const sourceMap: Map<number, string> = new Map<number, string>();
       sourceMap.set(1, 'a');
 
-      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
-      const sameKey = (k: number, v: string) => k;
-      const valueLength = (k: number, v: string) => v.length;
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, null, valueLengthRaw,  isKeyOddRaw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMap(sourceMap, undefined, valueLengthRaw, isKeyOddRaw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => MapUtil.groupMap(sourceMap, null, valueLength,  isKeyOdd)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMap(sourceMap, sameKeyRaw, null, isKeyOddRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => MapUtil.groupMap(sourceMap, undefined, valueLength, isKeyOdd)).toThrowError(IllegalArgumentError);
-
-      // @ts-ignore
-      expect(() => MapUtil.groupMap(sourceMap, sameKey, null, isKeyOdd)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => MapUtil.groupMap(sourceMap, sameKey, undefined, isKeyOdd)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMap(sourceMap, sameKeyRaw, undefined, isKeyOddRaw)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1386,15 +1295,15 @@ describe('MapUtil', () => {
       sourceMap.set(7, 'World');
       sourceMap.set(8, 'Ok');
 
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(1, [2, 5]);
+      expectedResult.set(2, [2]);
+
       const keyMod3AndValueLengthForOddKeyOrGreaterThan6: PartialFunction<[number, string], [number, number]> =
         PartialFunction.of(
           ([k, v]: [number, string]) => 1 == k % 2 || 6 < k,
           ([k, v]: [number, string]) => [k % 3, v.length]
         );
-
-      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
-      expectedResult.set(1, [2, 5]);
-      expectedResult.set(2, [2]);
 
       verifyMaps(
         MapUtil.groupMap(sourceMap, keyMod3AndValueLengthForOddKeyOrGreaterThan6),
@@ -1410,21 +1319,18 @@ describe('MapUtil', () => {
       sourceMap.set(7, 'World');
       sourceMap.set(8, 'Ok');
 
-      const keyMod3 = (k: number, v: string) => k % 3;
-      const valueLength = (k: number, v: string) => v.length;
-
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(1, [2, 5]);
       expectedResult.set(2, [5, 2]);
 
       verifyMaps(
         // @ts-ignore
-        MapUtil.groupMap(sourceMap, keyMod3, valueLength, null),
+        MapUtil.groupMap(sourceMap, keyMod3Raw, valueLengthRaw, null),
         expectedResult
       );
 
       verifyMaps(
-        MapUtil.groupMap(sourceMap, keyMod3, valueLength, undefined),
+        MapUtil.groupMap(sourceMap, keyMod3Raw, valueLengthRaw, undefined),
         expectedResult
       );
     });
@@ -1438,15 +1344,13 @@ describe('MapUtil', () => {
       sourceMap.set(8, 'Ok');
 
       const isKeyOddOrGreaterThan6 = (k: number, v: string) => 1 == k % 2 || 6 < k;
-      const keyMod3 = (k: number, v: string) => k % 3;
-      const valueLength = (k: number, v: string) => v.length;
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(1, [2, 5]);
       expectedResult.set(2, [2]);
 
       verifyMaps(
-        MapUtil.groupMap(sourceMap, keyMod3, valueLength, isKeyOddOrGreaterThan6),
+        MapUtil.groupMap(sourceMap, keyMod3Raw, valueLengthRaw, isKeyOddOrGreaterThan6),
         expectedResult
       );
     });
@@ -1460,38 +1364,22 @@ describe('MapUtil', () => {
     it('when given sourceMap has no elements and reduceValues, partialFunction are provided then empty Map is returned', () => {
       let emptyMap = new Map<number, string>();
 
-      const sumValues = (n1: number, n2: number) => n1 + n2;
-      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<[number, string], [number, number]> =
-        PartialFunction.of(
-          ([k, v]: [number, string]) => 10 > k,
-          ([k, v]: [number, string]) => [k % 3, v.length + 1]
-        );
-
       const expectedResult: Map<number, number> = new Map<number, number>;
 
-      expect(MapUtil.groupMapReduce(null, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
-      expect(MapUtil.groupMapReduce(undefined, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
-      expect(MapUtil.groupMapReduce(emptyMap, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(null, sumValuesRaw, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(undefined, sumValuesRaw, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(emptyMap, sumValuesRaw, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toEqual(expectedResult);
     });
 
 
     it('when given sourceMap has no elements and reduceValues, discriminatorKey and valueMapper are provided then empty Map is returned', () => {
       let emptyMap = new Map<number, string>();
 
-      const sumValues: FBinaryOperator<number> =
-        (n1: number, n2: number) => n1 + n2;
-
-      const keyMod3: FFunction2<number, string, number> =
-        (k: number, v: string) => k % 3;
-
-      const valueLengthPlus1: FFunction2<number, string, number> =
-        (k: number, v: string) => v.length + 1;
-
       const expectedResult: Map<number, number> = new Map<number, number>;
 
-      expect(MapUtil.groupMapReduce(null, sumValues, keyMod3, valueLengthPlus1)).toEqual(expectedResult);
-      expect(MapUtil.groupMapReduce(undefined, sumValues, keyMod3, valueLengthPlus1)).toEqual(expectedResult);
-      expect(MapUtil.groupMapReduce(emptyMap, sumValues, keyMod3, valueLengthPlus1)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(null, sumValuesFBinaryOperator, keyMod3FFunction, valueLengthPlus1FFunction)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(undefined, sumValuesFBinaryOperator, keyMod3FFunction, valueLengthPlus1FFunction)).toEqual(expectedResult);
+      expect(MapUtil.groupMapReduce(emptyMap, sumValuesFBinaryOperator, keyMod3FFunction, valueLengthPlus1FFunction)).toEqual(expectedResult);
     });
 
 
@@ -1499,22 +1387,15 @@ describe('MapUtil', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
-      const sumValues = (n1: number, n2: number) => n1 + n2;
-      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<[number, string], [number, number]> =
-        PartialFunction.of(
-          ([k, v]: [number, string]) => 10 > k,
-          ([k, v]: [number, string]) => [k % 3, v.length + 1]
-        );
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, null, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, undefined, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, null, mod3AsKeyAndPlus1AsValueForLowerThan10)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValuesRaw, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, undefined, mod3AsKeyAndPlus1AsValueForLowerThan10)).toThrowError(IllegalArgumentError);
-
-      // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, null)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValuesRaw, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1522,29 +1403,20 @@ describe('MapUtil', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
 
-      const sumValues: FBinaryOperator<number> =
-        (n1: number, n2: number) => n1 + n2;
-
-      const keyMod3: FFunction2<number, string, number> =
-        (k: number, v: string) => k % 3;
-
-      const valueLengthPlus1: FFunction2<number, string, number> =
-        (k: number, v: string) => v.length + 1;
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, null, keyMod3FFunction,  valueLengthPlus1FFunction)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.groupMapReduce(sourceMap, undefined, keyMod3FFunction, valueLengthPlus1FFunction)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, null, keyMod3,  valueLengthPlus1)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValuesFBinaryOperator, null,  valueLengthPlus1FFunction)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, undefined, keyMod3, valueLengthPlus1)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValuesFBinaryOperator, undefined, valueLengthPlus1FFunction)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, null,  valueLengthPlus1)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValuesFBinaryOperator, keyMod3FFunction,  null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, undefined, valueLengthPlus1)).toThrowError(IllegalArgumentError);
-
-      // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, keyMod3,  null)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => MapUtil.groupMapReduce(sourceMap, sumValues, keyMod3, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.groupMapReduce(sourceMap, sumValuesFBinaryOperator, keyMod3FFunction, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1557,20 +1429,13 @@ describe('MapUtil', () => {
       sourceMap.set(6, '!');
       sourceMap.set(11, 'ABC');
 
-      const sumValues = (n1: number, n2: number) => n1 + n2;
-      const mod3AsKeyAndPlus1AsValueForLowerThan10: PartialFunction<[number, string], [number, number]> =
-        PartialFunction.of(
-          ([k, v]: [number, string]) => 10 > k,
-          ([k, v]: [number, string]) => [k % 3, v.length + 1]
-        );
-
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(0, 2);
       expectedResult.set(1, 4);
       expectedResult.set(2, 11);
 
       verifyMaps(
-        MapUtil.groupMapReduce(sourceMap, sumValues, mod3AsKeyAndPlus1AsValueForLowerThan10),
+        MapUtil.groupMapReduce(sourceMap, sumValuesRaw, mod3AsKeyAndPlus1AsValueForLowerThan10PP),
         expectedResult
       );
     });
@@ -1585,17 +1450,13 @@ describe('MapUtil', () => {
       sourceMap.set(6, '!');
       sourceMap.set(11, 'ABC');
 
-      const sumValues = (n1: number, n2: number) => n1 + n2;
-      const keyMod3 = (k: number, v: string) => k % 3;
-      const valueLengthPlus1 = (k: number, v: string) => v.length + 1;
-
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(0, 2);
       expectedResult.set(1, 4);
       expectedResult.set(2, 15);
 
       verifyMaps(
-        MapUtil.groupMapReduce(sourceMap, sumValues, keyMod3, valueLengthPlus1),
+        MapUtil.groupMapReduce(sourceMap, sumValuesRaw, keyMod3Raw, valueLengthPlus1Raw),
         expectedResult
       );
     });
@@ -1622,6 +1483,7 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements and mapFunction is provided then empty Map is returned', () => {
       let emptyMap = new Map<number, string>();
+
       const keyAndValueLength: FFunction2<number, string, [number, number]> =
         (k: number, v: string) => [k, v.length];
 
@@ -1649,7 +1511,6 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
 
-      const keyAndValueLength = (k: number, v: string): [number, number] => [k, v.length];
       const keyPlus1AndValueV2 = (k: number, v: string): [number, string] => [k+1, v + 'v2'];
 
       const expectedKeyAndValueLengthResult = new Map<number, number>();
@@ -1663,7 +1524,7 @@ describe('MapUtil', () => {
       expectedLeyPlus1AndValueV2Result.set(4, 'Holav2');
 
       verifyMaps(
-        MapUtil.map(sourceMap, keyAndValueLength),
+        MapUtil.map(sourceMap, keyAndValueLengthRaw),
         expectedKeyAndValueLengthResult
       );
       verifyMaps(
@@ -2414,12 +2275,10 @@ describe('MapUtil', () => {
 
     it('when given sourceMap has no elements then empty Map is returned', () => {
       const emptyMap = new Map<number, number>();
-      const areKeyValueEven: Predicate2<number, number> =
-        Predicate2.of((k: number, v: number) => 0 == k % 2 && 0 == v % 2);
 
-      expect(MapUtil.takeWhile(null, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.takeWhile(undefined, areKeyValueEven)).toEqual(emptyMap);
-      expect(MapUtil.takeWhile(emptyMap, areKeyValueEven)).toEqual(emptyMap);
+      expect(MapUtil.takeWhile(null, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.takeWhile(undefined, areKeyValueEvenPredicate)).toEqual(emptyMap);
+      expect(MapUtil.takeWhile(emptyMap, areKeyValueEvenPredicate)).toEqual(emptyMap);
     });
 
 
@@ -2448,8 +2307,6 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'World');
       sourceMap.set(12, 'Hola');
 
-      const isKeyOddAndValueLongerThan1 = (k: number, v: string) => 1 == k % 2 && 1 < v.length;
-
       const expectedResult = new Map<number, string>();
       sourceMap.set(2, 'Hi');
       sourceMap.set(4, 'Hello');
@@ -2469,44 +2326,32 @@ describe('MapUtil', () => {
     it('when given sourceMap has no elements and partialFunction is provided then empty array is returned', () => {
       const emptyMap = new Map<number, string>();
 
-      const keyAndValueAsStringForOddKeys: PartialFunction<[number, string], string> =
-        PartialFunction.of(
-          ([k, v]: [number, string]) => 1 == k % 2,
-          ([k, v]: [number, string]) => k + '-' + v
-        );
-
       const expectedResult: string[] = [];
 
-      expect(MapUtil.toArray(null, keyAndValueAsStringForOddKeys)).toEqual(expectedResult);
-      expect(MapUtil.toArray(undefined, keyAndValueAsStringForOddKeys)).toEqual(expectedResult);
-      expect(MapUtil.toArray(emptyMap, keyAndValueAsStringForOddKeys)).toEqual(expectedResult);
+      expect(MapUtil.toArray(null, keyAndValueAsStringForOddKeysPP)).toEqual(expectedResult);
+      expect(MapUtil.toArray(undefined, keyAndValueAsStringForOddKeysPP)).toEqual(expectedResult);
+      expect(MapUtil.toArray(emptyMap, keyAndValueAsStringForOddKeysPP)).toEqual(expectedResult);
     });
 
 
     it('when given sourceMap has no elements and keyValueMapper is provided then empty array is returned', () => {
       const emptyMap = new Map<number, string>();
 
-      const keyAndValueAsString = (k: number, v: string) => k + '-' + v;
-
       const expectedResult: string[] = [];
 
-      expect(MapUtil.toArray(null, keyAndValueAsString)).toEqual(expectedResult);
-      expect(MapUtil.toArray(undefined, keyAndValueAsString)).toEqual(expectedResult);
-      expect(MapUtil.toArray(emptyMap, keyAndValueAsString)).toEqual(expectedResult);
+      expect(MapUtil.toArray(null, keyAndValueAsStringRaw)).toEqual(expectedResult);
+      expect(MapUtil.toArray(undefined, keyAndValueAsStringRaw)).toEqual(expectedResult);
+      expect(MapUtil.toArray(emptyMap, keyAndValueAsStringRaw)).toEqual(expectedResult);
     });
 
 
     it('when given sourceMap has no elements and keyValueMapper and filterPredicate are provided then empty array is returned', () => {
       const emptyMap = new Map<number, string>();
-
-      const keyAndValueAsString = (k: number, v: string) => k + '-' + v;
-      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
-
       const expectedResult: string[] = [];
 
-      expect(MapUtil.toArray(null, keyAndValueAsString, isKeyOdd)).toEqual(expectedResult);
-      expect(MapUtil.toArray(undefined, keyAndValueAsString, isKeyOdd)).toEqual(expectedResult);
-      expect(MapUtil.toArray(emptyMap, keyAndValueAsString, isKeyOdd)).toEqual(expectedResult);
+      expect(MapUtil.toArray(null, keyAndValueAsStringRaw, isKeyOddRaw)).toEqual(expectedResult);
+      expect(MapUtil.toArray(undefined, keyAndValueAsStringRaw, isKeyOddRaw)).toEqual(expectedResult);
+      expect(MapUtil.toArray(emptyMap, keyAndValueAsStringRaw, isKeyOddRaw)).toEqual(expectedResult);
     });
 
 
@@ -2525,12 +2370,10 @@ describe('MapUtil', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
 
-      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
-
       // @ts-ignore
-      expect(() => MapUtil.toArray(sourceMap, null, isKeyOdd)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.toArray(sourceMap, null, isKeyOddRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => MapUtil.toArray(sourceMap, undefined, isKeyOdd)).toThrowError(IllegalArgumentError);
+      expect(() => MapUtil.toArray(sourceMap, undefined, isKeyOddRaw)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -2540,16 +2383,10 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'World');
 
-      const keyAndValueAsStringForOddKeys: PartialFunction<[number, string], string> =
-        PartialFunction.of(
-          ([k, v]: [number, string]) => 1 == k % 2,
-          ([k, v]: [number, string]) => k + '-' + v
-        );
-
       const expectedResult: string[] = ['1-Hi', '3-World'];
 
       verifyArrays(
-        MapUtil.toArray(sourceMap, keyAndValueAsStringForOddKeys),
+        MapUtil.toArray(sourceMap, keyAndValueAsStringForOddKeysPP),
         expectedResult
       );
     });
@@ -2561,13 +2398,10 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'World');
 
-      const keyAndValueAsString: Function2<number, string, string> =
-        Function2.of((k: number, v: string) => k + '-' + v);
-
       const expectedResult: string[] = ['1-Hi', '2-Hello', '3-World'];
 
       verifyArrays(
-        MapUtil.toArray(sourceMap, keyAndValueAsString),
+        MapUtil.toArray(sourceMap, keyAndValueAsStringFunction),
         expectedResult
       );
     });
@@ -2579,19 +2413,16 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'World');
 
-      const keyAndValueAsString: FFunction2<number, string, string> =
-        (k: number, v: string) => k + '-' + v;
-
       const expectedResult: string[] = ['1-Hi', '2-Hello', '3-World'];
 
       verifyArrays(
         // @ts-ignore
-        MapUtil.toArray(sourceMap, keyAndValueAsString, null),
+        MapUtil.toArray(sourceMap, keyAndValueAsStringFFunction, null),
         expectedResult
       );
 
       verifyArrays(
-        MapUtil.toArray(sourceMap, keyAndValueAsString, undefined),
+        MapUtil.toArray(sourceMap, keyAndValueAsStringFFunction, undefined),
         expectedResult
       );
     });
@@ -2603,80 +2434,281 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'World');
 
-      const isKeyOdd = (k: number, v: string) => 1 == k % 2;
-      const keyAndValueAsString = (k: number, v: string) => k + '-' + v;
-
       const expectedResult: string[] = ['1-Hi', '3-World'];
 
       verifyArrays(
-        MapUtil.toArray(sourceMap, keyAndValueAsString, isKeyOdd),
+        MapUtil.toArray(sourceMap, keyAndValueAsStringRaw, isKeyOddRaw),
         expectedResult
       );
     });
 
   });
 
-
-
-
-  function verifyArrays(actualArray: any[],
-                        expectedArray: any[]) {
-    expect(expectedArray.length).toEqual(actualArray.length);
-    if (0 < expectedArray.length) {
-      for (let i = 0; i < expectedArray.length; i++) {
-        expect(expectedArray[i]).toEqual(actualArray[i]);
-      }
-    }
-  }
-
-
-  function verifyMaps(actualMap: Map<any, any>,
-                      expectedMap: Map<any, any>) {
-    expect(actualMap.size).toEqual(expectedMap.size);
-    if (0 < expectedMap.size) {
-      for (let [key, value] of actualMap!) {
-        expect(expectedMap.has(key)).toBeTrue();
-        expect(expectedMap.get(key)).toEqual(value);
-      }
-    }
-  }
-
-
-
-  // Used only for testing purpose
-  class User {
-    private _id: number;
-    private _name: string;
-
-    constructor(id: number, name: string) {
-      this._id = id;
-      this._name = name;
-    }
-
-    get id(): number {
-      return this._id;
-    }
-    set id(id: number) {
-      this._id = id;
-    }
-
-    get name(): string {
-      return this._name;
-    }
-    set name(name: string) {
-      this._name = name;
-    }
-
-    equals = (other?: User | null): boolean =>
-      ObjectUtil.isNullOrUndefined(other)
-        ? false
-        : this.id === other.id;
-  }
-
-
-  interface Role {
-    id: number;
-    name: string;
-  }
-
 });
+
+
+
+// Used only for testing purpose
+class User {
+  private _id: number;
+  private _name: string;
+
+  constructor(id: number, name: string) {
+    this._id = id;
+    this._name = name;
+  }
+
+  get id(): number {
+    return this._id;
+  }
+  set id(id: number) {
+    this._id = id;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+  set name(name: string) {
+    this._name = name;
+  }
+
+  equals = (other?: User | null): boolean =>
+    ObjectUtil.isNullOrUndefined(other)
+      ? false
+      : this.id === other.id;
+}
+
+
+interface Role {
+  id: number;
+  name: string;
+}
+
+
+function verifyArrays(actualArray: any[],
+                      expectedArray: any[]) {
+  expect(expectedArray.length).toEqual(actualArray.length);
+  if (0 < expectedArray.length) {
+    for (let i = 0; i < expectedArray.length; i++) {
+      expect(expectedArray[i]).toEqual(actualArray[i]);
+    }
+  }
+}
+
+
+function verifyMaps(actualMap: Map<any, any>,
+                    expectedMap: Map<any, any>) {
+  expect(actualMap.size).toEqual(expectedMap.size);
+  if (0 < expectedMap.size) {
+    for (let [key, value] of actualMap!) {
+      expect(expectedMap.has(key)).toBeTrue();
+      expect(expectedMap.get(key)).toEqual(value);
+    }
+  }
+}
+
+
+const areKeyValueEvenRaw =
+  (k: number,
+   v: number) =>
+    0 == k % 2 &&
+    0 == v % 2;
+
+
+const areKeyValueEvenPredicate: Predicate2<number, number> =
+  Predicate2.of(
+    (k: number,
+     v: number) =>
+      0 == k % 2 &&
+      0 == v % 2
+  );
+
+
+const isKeyEvenRaw =
+  (k: number,
+   v: string) =>
+    1 == k % 2;
+
+
+const isKeyOddRaw =
+  (k: number, v: string) =>
+    1 == k % 2;
+
+
+const isKeyOddFPredicate: FPredicate2<number, number> =
+  (k: number,
+   v: number) =>
+    1 == k % 2;
+
+
+const sameKeyRaw =
+  (k: number,
+   v: string) =>
+    k;
+
+
+const keyMod3Raw =
+  (k: number,
+   v: string) =>
+    k % 3;
+
+
+const keyMod3FFunction: FFunction2<number, string, number> =
+  (k: number,
+   v: string) =>
+    k % 3;
+
+
+const keyLowerThan10Raw =
+  (k: number,
+   v: string) =>
+    10 > k;
+
+
+const isValueEvenRaw =
+  (k: string, v: number) =>
+    1 == v % 2;
+
+
+const valueLengthRaw =
+  (k: number,
+   v: string) =>
+    v.length;
+
+
+const sumValuesRaw =
+  (n1: number,
+   n2: number) =>
+    n1 + n2;
+
+
+const sumValuesFBinaryOperator: FBinaryOperator<number> =
+  (n1: number,
+   n2: number) =>
+    n1 + n2;
+
+
+const valueLengthPlus1Raw =
+  (k: number,
+   v: string) =>
+    v.length + 1;
+
+
+const valueLengthPlus1FFunction: FFunction2<number, string, number> =
+  (k: number,
+   v: string) =>
+    v.length + 1;
+
+
+const isKeyOddAndValueLongerThan1 =
+  (k: number, v: string) =>
+    1 == k % 2 &&
+    1 < v.length;
+
+
+const keyAndValueAsStringRaw =
+  (k: number, v: string) =>
+    k + '-' + v;
+
+
+const keyAndValueAsStringFFunction: FFunction2<number, string, string> =
+  (k: number,
+   v: string) =>
+    k + '-' + v;
+
+
+const keyAndValueAsStringFunction: Function2<number, string, string> =
+  Function2.of(
+    (k: number,
+     v: string) =>
+      k + '-' + v
+  );
+
+
+const keyValuePlus1Raw =
+  (k: string,
+   v: number): [string, number] =>
+    [k, 1 + v];
+
+
+const keyValueMultiply2Raw =
+  (k: string,
+   v: number): [string, number] =>
+    [k, 2 * v];
+
+
+const keyValueMultiply2FFunction: FFunction2<string, number, [string, number]> =
+  (k: string,
+   v: number): [string, number] =>
+    [k, 2 * v];
+
+
+const keyValueMultiply2Function: Function2<string, number, [string, number]> =
+  Function2.of(
+    (k: string,
+     v: number) =>
+      [k, 2 * v]);
+
+
+const keyAndValuePlus1ForOddPP: PartialFunction<[string, number], [string, number]> =
+  PartialFunction.of(
+    ([k, v]: [string, number]) => 1 == v % 2,
+    ([k, v]: [string, number]) => [k, 1 + v]
+  );
+
+
+const keyAndValueLengthRaw =
+  (k: number,
+   v: string): [number, number] =>
+    [k, v.length];
+
+
+const isKeyAndRoleIdOddRaw =
+  (k: number,
+   role: Role) =>
+    1 == k % 2 &&
+    1 == role.id % 2;
+
+
+const isKeyAndRoleIdOddFPredicate: FPredicate2<number, Role> =
+  (k: number,
+   role: Role) =>
+    1 == k % 2 &&
+    1 == role.id % 2;
+
+
+const isKeyAndRoleIdOddPredicate: Predicate2<number, Role> =
+  Predicate2.of(
+    (k: number,
+     role: Role) =>
+      1 == k % 2 &&
+      1 == role.id % 2
+  );
+
+
+const isKeyAndUserIdEvenRaw =
+  (k: number,
+   user: User) =>
+    0 == k % 2 &&
+    0 == user.id % 2;
+
+
+const isKeyAndUserIdEvenFPredicate: FPredicate2<number, User> =
+  (k: number,
+   user: User) =>
+    0 == k % 2 &&
+    0 == user.id % 2;
+
+
+const mod3AsKeyAndPlus1AsValueForLowerThan10PP: PartialFunction<[number, string], [number, number]> =
+  PartialFunction.of(
+    ([k, v]: [number, string]) => 10 > k,
+    ([k, v]: [number, string]) => [k % 3, v.length + 1]
+  );
+
+
+const keyAndValueAsStringForOddKeysPP: PartialFunction<[number, string], string> =
+  PartialFunction.of(
+    ([k, v]: [number, string]) => 1 == k % 2,
+    ([k, v]: [number, string]) => k + '-' + v
+  );

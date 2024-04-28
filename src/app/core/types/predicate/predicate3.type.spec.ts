@@ -47,22 +47,16 @@ describe('Predicate3', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const isNumberEvenAndStringLongerThan2AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) => 0 == n % 2 && 2 < s.length && !b);
-
-      const isNumberLowerThan20AndStringLongerThan5AndBooleanFalse =
-        (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>, b: boolean) => 20 > n! && 5 < s!.length && !b;
-
-      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(11, 'abcdef', false)).toBeFalse();
 
-      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(12, 'abcd', false)).toBeFalse();
 
-      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(30, 'a', false)).toBeFalse();
 
-      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.allOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(10, 'abcdef', false)).toBeTrue();
     });
 
@@ -108,22 +102,16 @@ describe('Predicate3', () => {
 
 
     it('when given predicates are not null or empty then result after applying all is always returned', () => {
-      const isNumberEvenAndStringLongerThan2AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) => 0 == n % 2 && 2 < s.length && !b);
-
-      const isNumberLowerThan20AndStringLongerThan5AndBooleanFalse =
-        (n: NullableOrUndefined<number>, s: NullableOrUndefined<string>, b: boolean) => 20 > n! && 5 < s!.length && !b;
-
-      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(10, 'abcdef', false)).toBeTrue();
 
-      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(11, 'abcdef', false)).toBeTrue();
 
-      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(22, 'abc', false)).toBeTrue();
 
-      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalse, isNumberLowerThan20AndStringLongerThan5AndBooleanFalse])
+      expect(Predicate3.anyOf([isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate, isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw])
         .apply(30, 'a', false)).toBeFalse();
     });
   });
@@ -323,13 +311,7 @@ describe('Predicate3', () => {
   describe('getVerifier', () => {
 
     it('then return internal verifier', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n % 2 &&
-          3 < s.length &&
-          !b);
-
-      const verifier: FPredicate3<number, string, boolean> = isNumberEvenAndStringLongerThan3AndBooleanFalse.getVerifier();
+      const verifier: FPredicate3<number, string, boolean> = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.getVerifier();
 
       expect(verifier(11, 'abcd', false)).toBeFalse();
       expect(verifier(2, 'ab', true)).toBeFalse();
@@ -343,14 +325,8 @@ describe('Predicate3', () => {
   describe('and', () => {
 
     it('when given Predicate is null or undefined then only this will be evaluated', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n % 2 &&
-          3 < s.length &&
-          !b);
-
       // @ts-ignore
-      const andPredicates = isNumberEvenAndStringLongerThan3AndBooleanFalse.and(null);
+      const andPredicates = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.and(null);
 
       expect(andPredicates.apply(11, 'abcd', true)).toBeFalse();
       expect(andPredicates.apply(10, 'ab', false)).toBeFalse();
@@ -360,20 +336,8 @@ describe('Predicate3', () => {
 
 
     it('when one of the Predicates to evaluate returns false then false is returned', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n % 2 &&
-          3 < s.length &&
-          !b);
-
-      const isNumberLowerThan20AndStringSmallerThan5AndBooleanTrue: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          20 > n &&
-          5 > s.length &&
-          b);
-
-      const andPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalse.and(isNumberLowerThan20AndStringSmallerThan5AndBooleanTrue);
-      const andPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanTrue.and(isNumberEvenAndStringLongerThan3AndBooleanFalse);
+      const andPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.and(isNumberLowerThan20AndStringSmallerThan5AndBooleanTruePredicate);
+      const andPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanTruePredicate.and(isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate);
 
       expect(andPredicates1.apply(11, 'abcd', false)).toBeFalse();
       expect(andPredicates1.apply(10, 'ab', true)).toBeFalse();
@@ -388,20 +352,8 @@ describe('Predicate3', () => {
 
 
     it('when both Predicates return true then true is returned', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n % 2 &&
-          3 < s.length &&
-          !b);
-
-      const isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          20 > n &&
-          5 > s.length &&
-          !b);
-
-      const andPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalse.and(isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse);
-      const andPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse.and(isNumberEvenAndStringLongerThan3AndBooleanFalse);
+      const andPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.and(isNumberLowerThan20AndStringSmallerThan5AndBooleanFalsePredicate);
+      const andPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanFalsePredicate.and(isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate);
 
       expect(andPredicates1.apply(12, 'abcd', false)).toBeTrue();
       expect(andPredicates1.apply(18, '1234', false)).toBeTrue();
@@ -417,15 +369,9 @@ describe('Predicate3', () => {
   describe('apply', () => {
 
     it('when a Predicate3 is provided then the received input will be evaluated', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n % 2 &&
-          3 < s.length &&
-          !b);
-
-      expect(isNumberEvenAndStringLongerThan3AndBooleanFalse.apply(11, 'abcd', false)).toBeFalse();
-      expect(isNumberEvenAndStringLongerThan3AndBooleanFalse.apply(2, 'ab', true)).toBeFalse();
-      expect(isNumberEvenAndStringLongerThan3AndBooleanFalse.apply(12, 'abcd', false)).toBeTrue();
+      expect(isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.apply(11, 'abcd', false)).toBeFalse();
+      expect(isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.apply(2, 'ab', true)).toBeFalse();
+      expect(isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.apply(12, 'abcd', false)).toBeTrue();
     });
 
   });
@@ -435,13 +381,7 @@ describe('Predicate3', () => {
   describe('not', () => {
 
     it('when a Predicate3 is provided then logical negation will be returned', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<NullableOrUndefined<number>, NullableOrUndefined<string>, boolean> =
-        Predicate3.of((n: NullableOrUndefined<number>, s: NullableOrUndefined<string>, b: boolean) =>
-          0 == n! % 2 &&
-          3 < s!.length &&
-          !b);
-
-      const notIsNumberEvenAndStringLongerThan3AndBooleanFalse = isNumberEvenAndStringLongerThan3AndBooleanFalse.not();
+      const notIsNumberEvenAndStringLongerThan3AndBooleanFalse = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicateNullable.not();
 
       expect(notIsNumberEvenAndStringLongerThan3AndBooleanFalse.apply(11, 'abcd', true)).toBeTrue();
       expect(notIsNumberEvenAndStringLongerThan3AndBooleanFalse.apply(2, 'ab', true)).toBeTrue();
@@ -455,14 +395,8 @@ describe('Predicate3', () => {
   describe('or', () => {
 
     it('when given Predicate is null or undefined then only this will be evaluated', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n! % 2 &&
-          3 < s!.length &&
-          !b);
-
       // @ts-ignore
-      const orPredicates = isNumberEvenAndStringLongerThan3AndBooleanFalse.or(undefined);
+      const orPredicates = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.or(undefined);
 
       expect(orPredicates.apply(11, 'abcd', true)).toBeFalse();
       expect(orPredicates.apply(10, 'ab', false)).toBeFalse();
@@ -472,20 +406,8 @@ describe('Predicate3', () => {
 
 
     it('when one of the Predicates to evaluate returns true then true is returned', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n % 2 &&
-          3 < s.length &&
-          !b);
-
-      const isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          20 > n &&
-          5 > s.length &&
-          !b);
-
-      const orPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalse.or(isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse);
-      const orPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse.or(isNumberEvenAndStringLongerThan3AndBooleanFalse);
+      const orPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.or(isNumberLowerThan20AndStringSmallerThan5AndBooleanFalsePredicate);
+      const orPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanFalsePredicate.or(isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate);
 
       expect(orPredicates1.apply(22, 'abcd', false)).toBeTrue();
       expect(orPredicates1.apply(11, 'abcd', false)).toBeTrue();
@@ -496,20 +418,8 @@ describe('Predicate3', () => {
 
 
     it('when both Predicates return false then false is returned', () => {
-      const isNumberEvenAndStringLongerThan3AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          0 == n % 2 &&
-          3 < s.length &&
-          !b);
-
-      const isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse: Predicate3<number, string, boolean> =
-        Predicate3.of((n: number, s: string, b: boolean) =>
-          20 > n &&
-          5 > s.length &&
-          !b);
-
-      const orPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalse.or(isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse);
-      const orPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanFalse.or(isNumberEvenAndStringLongerThan3AndBooleanFalse);
+      const orPredicates1 = isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate.or(isNumberLowerThan20AndStringSmallerThan5AndBooleanFalsePredicate);
+      const orPredicates2 = isNumberLowerThan20AndStringSmallerThan5AndBooleanFalsePredicate.or(isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate);
 
       expect(orPredicates1.apply(21, 'ab', true)).toBeFalse();
       expect(orPredicates1.apply(22, 'abc', false)).toBeFalse();
@@ -523,3 +433,68 @@ describe('Predicate3', () => {
   });
 
 });
+
+
+
+const isNumberEvenAndStringLongerThan2AndBooleanFalsePredicate: Predicate3<number, string, boolean> =
+  Predicate3.of(
+    (n: number,
+     s: string,
+     b: boolean) =>
+      0 == n % 2 &&
+      2 < s.length &&
+      !b
+  );
+
+
+const isNumberLowerThan20AndStringLongerThan5AndBooleanFalseRaw =
+  (n: NullableOrUndefined<number>,
+   s: NullableOrUndefined<string>,
+   b: boolean) =>
+    20 > n! &&
+    5 < s!.length &&
+    !b;
+
+
+const isNumberEvenAndStringLongerThan3AndBooleanFalsePredicate: Predicate3<number, string, boolean> =
+  Predicate3.of(
+    (n: number,
+     s: string,
+     b: boolean) =>
+      0 == n % 2 &&
+      3 < s.length &&
+      !b
+  );
+
+
+const isNumberEvenAndStringLongerThan3AndBooleanFalsePredicateNullable: Predicate3<NullableOrUndefined<number>, NullableOrUndefined<string>, boolean> =
+  Predicate3.of(
+    (n: NullableOrUndefined<number>,
+     s: NullableOrUndefined<string>,
+     b: boolean) =>
+      0 == n! % 2 &&
+      3 < s!.length &&
+      !b
+  );
+
+
+const isNumberLowerThan20AndStringSmallerThan5AndBooleanFalsePredicate: Predicate3<number, string, boolean> =
+  Predicate3.of(
+    (n: number,
+     s: string,
+     b: boolean) =>
+      20 > n &&
+      5 > s.length &&
+      !b
+  );
+
+
+const isNumberLowerThan20AndStringSmallerThan5AndBooleanTruePredicate: Predicate3<number, string, boolean> =
+  Predicate3.of(
+    (n: number,
+     s: string,
+     b: boolean) =>
+      20 > n &&
+      5 > s.length &&
+      b
+  );

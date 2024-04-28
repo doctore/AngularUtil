@@ -76,10 +76,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a UnaryOperator is provided then true is returned', () => {
-      const stringV2: UnaryOperator<string> =
-        UnaryOperator.of((s: NullableOrUndefined<string>) => s + 'V2');
-
-      expect(UnaryOperator.isUnaryOperator(stringV2)).toBeTrue();
+      expect(UnaryOperator.isUnaryOperator(stringV2UnaryOperator)).toBeTrue();
     });
 
   });
@@ -97,9 +94,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a raw function equivalent to FUnaryOperator is provided then a valid UnaryOperator is returned', () => {
-      const stringV2 = (s: NullableOrUndefined<string>) => s! + 'v2';
-
-      const func = UnaryOperator.of(stringV2);
+      const func = UnaryOperator.of(stringV2Raw);
 
       expect(UnaryOperator.isUnaryOperator(func)).toBeTrue();
       expect(func.apply('abc')).toEqual('abcv2');
@@ -107,10 +102,7 @@ describe('UnaryOperator', () => {
 
 
     it('when an instance of FUnaryOperator is provided then a valid UnaryOperator is returned', () => {
-      const plus5: FUnaryOperator<number> =
-        (n: NullableOrUndefined<number>) => 5 + n!;
-
-      const func = UnaryOperator.of(plus5);
+      const func = UnaryOperator.of(plus5FUnaryOperator);
 
       expect(UnaryOperator.isUnaryOperator(func)).toBeTrue();
       expect(func.apply(9)).toEqual(14);
@@ -118,10 +110,7 @@ describe('UnaryOperator', () => {
 
 
     it('when an instance of UnaryOperator is provided then the same one is returned', () => {
-      const multiply2: UnaryOperator<number> =
-        UnaryOperator.of((n: number) => 2 * n);
-
-      const func = UnaryOperator.of(multiply2);
+      const func = UnaryOperator.of(multiply2UnaryOperator);
 
       expect(UnaryOperator.isUnaryOperator(func)).toBeTrue();
       expect(func.apply(11)).toEqual(22);
@@ -134,10 +123,7 @@ describe('UnaryOperator', () => {
   describe('getMapper', () => {
 
     it('then return internal mapper', () => {
-      const stringV2: UnaryOperator<string> =
-        UnaryOperator.of((s: string) => s + 'v2');
-
-      const mapper: FUnaryOperator<string> = stringV2.getMapper();
+      const mapper: FUnaryOperator<string> = stringV2UnaryOperator.getMapper();
 
       expect(mapper('abc')).toEqual('abcv2');
     });
@@ -149,23 +135,15 @@ describe('UnaryOperator', () => {
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
-      const stringV2: UnaryOperator<string> =
-        UnaryOperator.of((s: string) => s + 'v2');
-
       // @ts-ignore
-      expect(() => stringV2.andThen(null)).toThrowError(IllegalArgumentError);
+      expect(() => stringV2UnaryOperator.andThen(null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => stringV2.andThen(undefined)).toThrowError(IllegalArgumentError);
+      expect(() => stringV2UnaryOperator.andThen(undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when a raw function equivalent to FUnaryOperator is provided then it will be applied after current one', () => {
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const plus5AndThenMultiply2 = plus5.andThen(multiply2);
+      const plus5AndThenMultiply2 = plus5UnaryOperator.andThen(multiply2Raw);
 
       expect(plus5AndThenMultiply2.apply(0)).toEqual(10);
       expect(plus5AndThenMultiply2.apply(3)).toEqual(16);
@@ -173,13 +151,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a FUnaryOperator is provided then it will be applied after current one', () => {
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      const multiply2: FUnaryOperator<number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const plus5AndThenMultiply2 = plus5.andThen(multiply2);
+      const plus5AndThenMultiply2 = plus5UnaryOperator.andThen(multiply2FUnaryOperator);
 
       expect(plus5AndThenMultiply2.apply(0)).toEqual(10);
       expect(plus5AndThenMultiply2.apply(3)).toEqual(16);
@@ -187,13 +159,10 @@ describe('UnaryOperator', () => {
 
 
     it('when a FFunction1 is provided then it will be applied after current one', () => {
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
       const toString: FFunction1<number, string> =
         (n: NullableOrUndefined<number>) => '' + n!;
 
-      const plus5AndThenToString = plus5.andThen(toString);
+      const plus5AndThenToString = plus5UnaryOperator.andThen(toString);
 
       expect(plus5AndThenToString.apply(0)).toEqual('5');
       expect(plus5AndThenToString.apply(3)).toEqual('8');
@@ -201,13 +170,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a UnaryOperator is provided then it will be applied after current one', () => {
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      const multiply2: UnaryOperator<number> =
-        UnaryOperator.of((n: number) => 2 * n);
-
-      const plus5AndThenMultiply2 = plus5.andThen(multiply2);
+      const plus5AndThenMultiply2 = plus5UnaryOperator.andThen(multiply2UnaryOperator);
 
       expect(plus5AndThenMultiply2.apply(0)).toEqual(10);
       expect(plus5AndThenMultiply2.apply(3)).toEqual(16);
@@ -215,13 +178,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a Function1 is provided then it will be applied after current one', () => {
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const plus5AndThenMultiply2 = plus5.andThen(multiply2);
+      const plus5AndThenMultiply2 = plus5UnaryOperator.andThen(multiply2Function);
 
       expect(plus5AndThenMultiply2.apply(0)).toEqual(10);
       expect(plus5AndThenMultiply2.apply(3)).toEqual(16);
@@ -234,14 +191,8 @@ describe('UnaryOperator', () => {
   describe('apply', () => {
 
     it('when a UnaryOperator is provided then the received input will be transformed', () => {
-      const stringV2: UnaryOperator<string> =
-        UnaryOperator.of((s: string) => s + 'v2');
-
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      expect(stringV2.apply('abc')).toEqual('abcv2');
-      expect(plus5.apply(11)).toEqual(16);
+      expect(stringV2UnaryOperator.apply('abc')).toEqual('abcv2');
+      expect(plus5UnaryOperator.apply(11)).toEqual(16);
     });
 
   });
@@ -251,23 +202,15 @@ describe('UnaryOperator', () => {
   describe('compose', () => {
 
     it('when null or undefined before is given then an error is thrown', () => {
-      const stringV2: UnaryOperator<string> =
-        UnaryOperator.of((s: string) => s + 'v2');
-
       // @ts-ignore
-      expect(() => stringV2.compose(null)).toThrowError(IllegalArgumentError);
+      expect(() => stringV2UnaryOperator.compose(null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => stringV2.compose(undefined)).toThrowError(IllegalArgumentError);
+      expect(() => stringV2UnaryOperator.compose(undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when a raw function equivalent to FUnaryOperator is provided then it will be applied before current one', () => {
-      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      const plus5ComposeMultiply2 = plus5.compose(multiply2);
+      const plus5ComposeMultiply2 = plus5UnaryOperator.compose(multiply2Raw);
 
       expect(plus5ComposeMultiply2.apply(0)).toEqual(5);
       expect(plus5ComposeMultiply2.apply(9)).toEqual(23);
@@ -275,13 +218,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a FUnaryOperator is provided then it will be applied before current one', () => {
-      const multiply2: FUnaryOperator<number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      const plus5ComposeMultiply2 = plus5.compose(multiply2);
+      const plus5ComposeMultiply2 = plus5UnaryOperator.compose(multiply2FUnaryOperator);
 
       expect(plus5ComposeMultiply2.apply(0)).toEqual(5);
       expect(plus5ComposeMultiply2.apply(3)).toEqual(11);
@@ -289,13 +226,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a FFunction1 is provided then it will be applied before current one', () => {
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: NullableOrUndefined<number>) => 5 + n!);
-
-      const plus5ComposeMultiply2 = plus5.compose(multiply2);
+      const plus5ComposeMultiply2 = plus5UnaryOperator.compose(multiply2FFunction);
 
       expect(plus5ComposeMultiply2.apply(0)).toEqual(5);
       expect(plus5ComposeMultiply2.apply(3)).toEqual(11);
@@ -303,13 +234,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a UnaryOperator is provided then it will be applied before current one', () => {
-      const multiply2: UnaryOperator<number> =
-        UnaryOperator.of((n: number) => 2 * n);
-
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: number) => 5 + n);
-
-      const plus5ComposeMultiply2 = plus5.compose(multiply2);
+      const plus5ComposeMultiply2 = plus5UnaryOperator.compose(multiply2UnaryOperator);
 
       expect(plus5ComposeMultiply2.apply(0)).toEqual(5);
       expect(plus5ComposeMultiply2.apply(3)).toEqual(11);
@@ -317,13 +242,7 @@ describe('UnaryOperator', () => {
 
 
     it('when a Function1 is provided then it will be applied before current one', () => {
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      const plus5: UnaryOperator<number> =
-        UnaryOperator.of((n: number) => 5 + n);
-
-      const plus5ComposeMultiply2 = plus5.compose(multiply2);
+      const plus5ComposeMultiply2 = plus5UnaryOperator.compose(multiply2Function);
 
       expect(plus5ComposeMultiply2.apply(0)).toEqual(5);
       expect(plus5ComposeMultiply2.apply(3)).toEqual(11);
@@ -332,3 +251,57 @@ describe('UnaryOperator', () => {
   });
 
 });
+
+
+
+const plus5FUnaryOperator: FUnaryOperator<number> =
+  (n: NullableOrUndefined<number>) =>
+    5 + n!;
+
+
+const plus5UnaryOperator: UnaryOperator<number> =
+  UnaryOperator.of(
+    (n: NullableOrUndefined<number>) =>
+      5 + n!
+  );
+
+
+const multiply2Raw =
+  (n: NullableOrUndefined<number>) =>
+    2 * n!;
+
+
+const multiply2FFunction: FFunction1<number, number> =
+  (n: NullableOrUndefined<number>) =>
+    2 * n!;
+
+
+const multiply2Function: Function1<number, number> =
+  Function1.of(
+    (n: number) =>
+      2 * n
+  );
+
+
+const multiply2FUnaryOperator: FUnaryOperator<number> =
+  (n: NullableOrUndefined<number>) =>
+    2 * n!;
+
+
+const multiply2UnaryOperator: UnaryOperator<number> =
+  UnaryOperator.of(
+    (n: number) =>
+      2 * n
+  );
+
+
+const stringV2Raw =
+  (s: NullableOrUndefined<string>) =>
+    s! + 'v2';
+
+
+const stringV2UnaryOperator: UnaryOperator<string> =
+  UnaryOperator.of(
+    (s: string) =>
+      s + 'v2'
+  );

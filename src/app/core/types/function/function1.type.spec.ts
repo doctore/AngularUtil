@@ -70,10 +70,7 @@ describe('Function1', () => {
 
 
     it('when a Function1 is provided then true is returned', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
-      expect(Function1.isFunction(stringLength)).toBeTrue();
+      expect(Function1.isFunction(stringLengthFunction)).toBeTrue();
     });
 
   });
@@ -91,9 +88,7 @@ describe('Function1', () => {
 
 
     it('when a raw function equivalent to FFunction1 is provided then a valid Function1 is returned', () => {
-      const stringLength = (s: NullableOrUndefined<string>) => s!.length;
-
-      const func = Function1.of(stringLength);
+      const func = Function1.of(stringLengthRaw);
 
       expect(Function1.isFunction(func)).toBeTrue();
       expect(func.apply('abc')).toEqual(3);
@@ -101,10 +96,7 @@ describe('Function1', () => {
 
 
     it('when an instance of FFunction1 is provided then a valid Function1 is returned', () => {
-      const stringLength: FFunction1<string, number> =
-        (s: NullableOrUndefined<string>) => s!.length;
-
-      const func = Function1.of(stringLength);
+      const func = Function1.of(stringLengthFFunction);
 
       expect(Function1.isFunction(func)).toBeTrue();
       expect(func.apply('abc')).toEqual(3);
@@ -112,10 +104,7 @@ describe('Function1', () => {
 
 
     it('when an instance of Function1 is provided then the same one is returned', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
-      const func = Function1.of(stringLength);
+      const func = Function1.of(stringLengthFunction);
 
       expect(Function1.isFunction(func)).toBeTrue();
       expect(func.apply('abc')).toEqual(3);
@@ -128,10 +117,7 @@ describe('Function1', () => {
   describe('getMapper', () => {
 
     it('then return internal mapper', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
-      const mapper: FFunction1<string, number> = stringLength.getMapper();
+      const mapper: FFunction1<string, number> = stringLengthFunction.getMapper();
 
       expect(mapper('abc')).toEqual(3);
     });
@@ -143,23 +129,15 @@ describe('Function1', () => {
   describe('andThen', () => {
 
     it('when null or undefined after is given then an error is thrown', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
       // @ts-ignore
-      expect(() => stringLength.andThen(null)).toThrowError(IllegalArgumentError);
+      expect(() => stringLengthFunction.andThen(null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => stringLength.andThen(undefined)).toThrowError(IllegalArgumentError);
+      expect(() => stringLengthFunction.andThen(undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when a raw function equivalent to FFunction1 is provided then it will be applied after current one', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
-      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const stringLengthAndThenMultiply2 = stringLength.andThen(multiply2);
+      const stringLengthAndThenMultiply2 = stringLengthFunction.andThen(multiply2Raw);
 
       expect(stringLengthAndThenMultiply2.apply('0')).toEqual(2);
       expect(stringLengthAndThenMultiply2.apply('abc')).toEqual(6);
@@ -167,13 +145,7 @@ describe('Function1', () => {
 
 
     it('when a FFunction1 is provided then it will be applied after current one', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
-      const multiply2: FFunction1<number, number> =
-        (n: NullableOrUndefined<number>) => 2 * n!;
-
-      const stringLengthAndThenMultiply2 = stringLength.andThen(multiply2);
+      const stringLengthAndThenMultiply2 = stringLengthFunction.andThen(multiply2FFunction);
 
       expect(stringLengthAndThenMultiply2.apply('0')).toEqual(2);
       expect(stringLengthAndThenMultiply2.apply('abc')).toEqual(6);
@@ -181,13 +153,7 @@ describe('Function1', () => {
 
 
     it('when a Function1 is provided then it will be applied after current one', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const stringLengthAndThenMultiply2 = stringLength.andThen(multiply2);
+      const stringLengthAndThenMultiply2 = stringLengthFunction.andThen(multiply2Function);
 
       expect(stringLengthAndThenMultiply2.apply('0')).toEqual(2);
       expect(stringLengthAndThenMultiply2.apply('abc')).toEqual(6);
@@ -200,14 +166,8 @@ describe('Function1', () => {
   describe('apply', () => {
 
     it('when a Function1 is provided then the received input will be transformed', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: string) => s.length);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: number) => 2 * n);
-
-      expect(stringLength.apply('abc')).toEqual(3);
-      expect(multiply2.apply(11)).toEqual(22);
+      expect(stringLengthFunction.apply('abc')).toEqual(3);
+      expect(multiply2Function.apply(11)).toEqual(22);
     });
 
   });
@@ -216,23 +176,15 @@ describe('Function1', () => {
   describe('compose', () => {
 
     it('when null or undefined before is given then an error is thrown', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
       // @ts-ignore
-      expect(() => stringLength.compose(null)).toThrowError(IllegalArgumentError);
+      expect(() => stringLengthFunction.compose(null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => stringLength.compose(undefined)).toThrowError(IllegalArgumentError);
+      expect(() => stringLengthFunction.compose(undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when a raw function equivalent to FFunction1 is provided then it will be applied before current one', () => {
-      const stringLength = (s: NullableOrUndefined<string>) => s!.length;
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const multiply2ComposeStringLength = multiply2.compose(stringLength);
+      const multiply2ComposeStringLength = multiply2Function.compose(stringLengthRaw);
 
       expect(multiply2ComposeStringLength.apply('ab')).toEqual(4);
       expect(multiply2ComposeStringLength.apply('12345')).toEqual(10);
@@ -240,13 +192,7 @@ describe('Function1', () => {
 
 
     it('when a FFunction1 is provided then it will be applied before current one', () => {
-      const stringLength: FFunction1<string, number> =
-        (s: NullableOrUndefined<string>) => s!.length;
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const multiply2ComposeStringLength = multiply2.compose(stringLength);
+      const multiply2ComposeStringLength = multiply2Function.compose(stringLengthFFunction);
 
       expect(multiply2ComposeStringLength.apply('ab')).toEqual(4);
       expect(multiply2ComposeStringLength.apply('12345')).toEqual(10);
@@ -254,13 +200,7 @@ describe('Function1', () => {
 
 
     it('when a Function1 is provided then it will be applied before current one', () => {
-      const stringLength: Function1<string, number> =
-        Function1.of((s: NullableOrUndefined<string>) => s!.length);
-
-      const multiply2: Function1<number, number> =
-        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
-
-      const multiply2ComposeStringLength = multiply2.compose(stringLength);
+      const multiply2ComposeStringLength = multiply2Function.compose(stringLengthFunction);
 
       expect(multiply2ComposeStringLength.apply('ab')).toEqual(4);
       expect(multiply2ComposeStringLength.apply('12345')).toEqual(10);
@@ -269,3 +209,38 @@ describe('Function1', () => {
   });
 
 });
+
+
+
+const stringLengthRaw =
+  (s: NullableOrUndefined<string>) =>
+    s!.length;
+
+
+const stringLengthFFunction: FFunction1<string, number> =
+  (s: NullableOrUndefined<string>) =>
+    s!.length;
+
+
+const stringLengthFunction: Function1<string, number> =
+  Function1.of(
+    (s: NullableOrUndefined<string>) =>
+      s!.length
+  );
+
+
+const multiply2Raw =
+  (n: number) =>
+    2 * n;
+
+
+const multiply2FFunction: FFunction1<number, number> =
+  (n: number) =>
+    2 * n;
+
+
+const multiply2Function: Function1<number, number> =
+  Function1.of(
+    (n: number) =>
+      2 * n
+  );
