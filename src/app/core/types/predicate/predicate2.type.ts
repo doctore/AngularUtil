@@ -321,4 +321,38 @@ export class Predicate2<T1, T2> {
                 .apply(t1, t2)
         );
 
+
+  /**
+   *   Returns a composed {@link Predicate2} that represents a short-circuiting logical XOR of this {@link Predicate2}
+   * and another. When evaluating the composed {@link Predicate2}, if this {@link Predicate2} is `true`, then
+   * the other {@link Predicate2} is not evaluated.
+   *
+   * @apiNote
+   *    If `predicate` is `null` or `undefined` then only this {@link Predicate2} will be applied.
+   *
+   * @param predicate
+   *    {@link TPredicate2} that will be logically-XORed with this {@link Predicate2}
+   *
+   * @return a composed {@link Predicate2} that represents the short-circuiting logical XOR of this {@link Predicate2}
+   *         and `predicate`
+   */
+  xor = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> => {
+    if (ObjectUtil.isNullOrUndefined(predicate)) {
+      return new Predicate2(
+        (t1: T1,
+         t2: T2) =>
+          this.apply(t1, t2)
+      );
+    }
+    const givenPredicate = Predicate2.of(predicate);
+    return new Predicate2<T1, T2>(
+      (t1: T1,
+       t2: T2) => {
+        const currentApply = this.apply(t1, t2);
+        const givenApply = givenPredicate.apply(t1, t2);
+        return (currentApply || givenApply) &&
+          !(currentApply && givenApply);
+      });
+  };
+
 }

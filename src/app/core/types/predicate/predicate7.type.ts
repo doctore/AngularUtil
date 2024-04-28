@@ -437,4 +437,48 @@ export class Predicate7<T1, T2, T3, T4, T5, T6, T7> {
                 .apply(t1, t2, t3, t4, t5, t6, t7)
         );
 
+
+  /**
+   *   Returns a composed {@link Predicate7} that represents a short-circuiting logical XOR of this {@link Predicate7}
+   * and another. When evaluating the composed {@link Predicate7}, if this {@link Predicate7} is `true`, then
+   * the other {@link Predicate7} is not evaluated.
+   *
+   * @apiNote
+   *    If `predicate` is `null` or `undefined` then only this {@link Predicate7} will be applied.
+   *
+   * @param predicate
+   *    {@link TPredicate7} that will be logically-XORed with this {@link Predicate7}
+   *
+   * @return a composed {@link Predicate7} that represents the short-circuiting logical XOR of this {@link Predicate7}
+   *         and `predicate`
+   */
+  xor = (predicate: TPredicate7<T1, T2, T3, T4, T5, T6, T7>): Predicate7<T1, T2, T3, T4, T5, T6, T7> => {
+    if (ObjectUtil.isNullOrUndefined(predicate)) {
+      return new Predicate7(
+        (t1: T1,
+         t2: T2,
+         t3: T3,
+         t4: T4,
+         t5: T5,
+         t6: T6,
+         t7: T7) =>
+          this.apply(t1, t2, t3, t4, t5, t6, t7)
+      );
+    }
+    const givenPredicate = Predicate7.of(predicate);
+    return new Predicate7(
+      (t1: T1,
+       t2: T2,
+       t3: T3,
+       t4: T4,
+       t5: T5,
+       t6: T6,
+       t7: T7) => {
+        const currentApply = this.apply(t1, t2, t3, t4, t5, t6, t7);
+        const givenApply = givenPredicate.apply(t1, t2, t3, t4, t5, t6, t7);
+        return (currentApply || givenApply) &&
+          !(currentApply && givenApply);
+      });
+  };
+
 }

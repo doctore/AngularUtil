@@ -412,6 +412,72 @@ describe('Predicate4', () => {
       expect(orPredicates2.apply(10, 'ab', 'Hello', 19)).toBeFalse();
     });
 
+
+    it('when both Predicates return true then true is returned', () => {
+      const orPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.or(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const orPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.or(areNumbersEvenAndStringsLongerThan2Predicate);
+
+      expect(orPredicates1.apply(12, 'abcb', 'abc', 10)).toBeTrue();
+      expect(orPredicates1.apply(16, '1234', '123', 8)).toBeTrue();
+
+      expect(orPredicates2.apply(12, 'abcd', 'abc', 10)).toBeTrue();
+      expect(orPredicates2.apply(16, '1234', '123', 8)).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('xor', () => {
+
+    it('when given Predicate is null or undefined then only this will be evaluated', () => {
+      // @ts-ignore
+      const xorPredicates = areNumbersEvenAndStringsLongerThan2Predicate.xor(undefined);
+
+      expect(xorPredicates.apply(12, 'abcd', 'ab', 10)).toBeFalse();
+      expect(xorPredicates.apply(8, 'abc', 'Hello', 9)).toBeFalse();
+      expect(xorPredicates.apply(12, 'abcd', 'Hello', 14)).toBeTrue();
+      expect(xorPredicates.apply(4, 'abc', 'Hola', 6)).toBeTrue();
+    });
+
+
+    it('when one of the Predicates to evaluate returns true then true is returned', () => {
+      const xorPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.xor(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const xorPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.xor(areNumbersEvenAndStringsLongerThan2Predicate);
+
+      expect(xorPredicates1.apply(22, 'abcd', 'Hello', 12)).toBeTrue();
+      expect(xorPredicates1.apply(2, 'Hola', 'abc', 30)).toBeTrue();
+
+      expect(xorPredicates2.apply(19, 'abcdef', 'HelloWorld', 13)).toBeTrue();
+      expect(xorPredicates2.apply(11, 'abcdef', 'HolaMundo', 15)).toBeTrue();
+    });
+
+
+    it('when both Predicates return false then false is returned', () => {
+      const xorPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.xor(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const xorPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.xor(areNumbersEvenAndStringsLongerThan2Predicate);
+
+      expect(xorPredicates1.apply(21, 'ab', '', 10)).toBeFalse();
+      expect(xorPredicates1.apply(22, 'abc', 'a', 30)).toBeFalse();
+      expect(xorPredicates1.apply(10, 'ab', 'Hello', 19)).toBeFalse();
+
+      expect(xorPredicates2.apply(21, 'ab', '', 10)).toBeFalse();
+      expect(xorPredicates2.apply(22, 'abc', 'a', 30)).toBeFalse();
+      expect(xorPredicates2.apply(10, 'ab', 'Hello', 19)).toBeFalse();
+    });
+
+
+    it('when both Predicates return true then false is returned', () => {
+      const xorPredicates1 = areNumbersEvenAndStringsLongerThan2Predicate.xor(areNumbersLowerThan20AndStringsLongerThan5Predicate);
+      const xorPredicates2 = areNumbersLowerThan20AndStringsLongerThan5Predicate.xor(areNumbersEvenAndStringsLongerThan2Predicate);
+
+      expect(xorPredicates1.apply(12, 'abcdef', 'abcdefg', 10)).toBeFalse();
+      expect(xorPredicates1.apply(16, '123456', '123567', 8)).toBeFalse();
+
+      expect(xorPredicates2.apply(12, 'abcdef', 'abcdefg', 10)).toBeFalse();
+      expect(xorPredicates2.apply(16, '123456', '123567', 8)).toBeFalse();
+    });
+
   });
 
 });

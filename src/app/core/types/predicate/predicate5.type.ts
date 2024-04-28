@@ -399,4 +399,44 @@ export class Predicate5<T1, T2, T3, T4, T5> {
                 .apply(t1, t2, t3, t4, t5)
         );
 
+
+  /**
+   *   Returns a composed {@link Predicate5} that represents a short-circuiting logical OR of this {@link Predicate5}
+   * and another. When evaluating the composed {@link Predicate5}, if this {@link Predicate5} is `true`, then
+   * the other {@link Predicate5} is not evaluated.
+   *
+   * @apiNote
+   *    If `predicate` is `null` or `undefined` then only this {@link Predicate5} will be applied.
+   *
+   * @param predicate
+   *    {@link TPredicate5} that will be logically-ORed with this {@link Predicate5}
+   *
+   * @return a composed {@link Predicate5} that represents the short-circuiting logical OR of this {@link Predicate5}
+   *         and `predicate`
+   */
+  xor = (predicate: TPredicate5<T1, T2, T3, T4, T5>): Predicate5<T1, T2, T3, T4, T5> => {
+    if (ObjectUtil.isNullOrUndefined(predicate)) {
+      return new Predicate5(
+        (t1: T1,
+         t2: T2,
+         t3: T3,
+         t4: T4,
+         t5: T5) =>
+          this.apply(t1, t2, t3, t4, t5)
+      );
+    }
+    const givenPredicate = Predicate5.of(predicate);
+    return new Predicate5(
+      (t1: T1,
+       t2: T2,
+       t3: T3,
+       t4: T4,
+       t5: T5) => {
+        const currentApply = this.apply(t1, t2, t3, t4, t5);
+        const givenApply = givenPredicate.apply(t1, t2, t3, t4, t5);
+        return (currentApply || givenApply) &&
+          !(currentApply && givenApply);
+      });
+  };
+
 }

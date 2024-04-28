@@ -350,6 +350,68 @@ describe('Predicate1', () => {
       expect(orPredicates2.apply(23)).toBeFalse();
     });
 
+
+    it('when both Predicates return true then true is returned', () => {
+      const orPredicates1 = isEvenPredicateNullable.or(isLowerThan20PredicateNullable);
+      const orPredicates2 = isLowerThan20PredicateNullable.or(isEvenPredicateNullable);
+
+      expect(orPredicates1.apply(12)).toBeTrue();
+      expect(orPredicates1.apply(18)).toBeTrue();
+
+      expect(orPredicates2.apply(12)).toBeTrue();
+      expect(orPredicates2.apply(18)).toBeTrue();
+    });
+
+  });
+
+
+
+  describe('xor', () => {
+
+    it('when given Predicate is null or undefined then only this will be evaluated', () => {
+      // @ts-ignore
+      const xorPredicates = isEvenPredicate.xor(undefined);
+
+      expect(xorPredicates.apply(22)).toBeTrue();
+      expect(xorPredicates.apply(11)).toBeFalse();
+    });
+
+
+    it('when one of the Predicates to evaluate returns true but not the other then true is returned', () => {
+      const xorPredicates1 = isEvenPredicate.xor(isLowerThan20Predicate);
+      const xorPredicates2 = isLowerThan20Predicate.xor(isEvenPredicate);
+
+      expect(xorPredicates1.apply(22)).toBeTrue();
+      expect(xorPredicates1.apply(11)).toBeTrue();
+
+      expect(xorPredicates2.apply(22)).toBeTrue();
+      expect(xorPredicates2.apply(11)).toBeTrue();
+    });
+
+
+    it('when both Predicates return false then false is returned', () => {
+      const xorPredicates1 = isEvenPredicateNullable.xor(isLowerThan20PredicateNullable);
+      const xorPredicates2 = isLowerThan20PredicateNullable.xor(isEvenPredicateNullable);
+
+      expect(xorPredicates1.apply(21)).toBeFalse();
+      expect(xorPredicates1.apply(23)).toBeFalse();
+
+      expect(xorPredicates2.apply(21)).toBeFalse();
+      expect(xorPredicates2.apply(23)).toBeFalse();
+    });
+
+
+    it('when both Predicates return true then false is returned', () => {
+      const xorPredicates1 = isEvenPredicateNullable.xor(isLowerThan20PredicateNullable);
+      const xorPredicates2 = isLowerThan20PredicateNullable.xor(isEvenPredicateNullable);
+
+      expect(xorPredicates1.apply(12)).toBeFalse();
+      expect(xorPredicates1.apply(18)).toBeFalse();
+
+      expect(xorPredicates2.apply(12)).toBeFalse();
+      expect(xorPredicates2.apply(18)).toBeFalse();
+    });
+
   });
 
 });
