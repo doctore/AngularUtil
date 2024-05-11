@@ -119,7 +119,7 @@ export abstract class Validation<E, T> {
    * @return {@link Valid} if no one provided {@link TFunction0} returns {@link Invalid},
    *         first one {@link Invalid} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `validations` is not empty but contains `null` or `undefined`
+   * @throws {IllegalArgumentError} if `validations` is not empty but contains `null` or `undefined`
    */
   static combineGetFirstInvalid = <E, T>(validations: NullableOrUndefined<TFunction0<Validation<E, T>>[]>): Validation<E, T> => {
     // @ts-ignore
@@ -321,7 +321,7 @@ export abstract class Validation<E, T> {
    *    {@link TFunction1} that turns a {@link Valid} value into a {@link Invalid} one if this is {@link Valid}
    *    but its value does not match given {@link TPredicate1}
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`, this is a {@link Valid} but does not match
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined`, this is a {@link Valid} but does not match
    *                                      given {@link TPredicate1}
    *
    * @return {@link Valid} if `this` is {@link Valid} and `predicate` matches,
@@ -357,7 +357,7 @@ export abstract class Validation<E, T> {
    *
    * @return new {@link Valid} applying `mapper` if `this` is {@link Valid}, {@link Invalid} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Valid} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Valid} one
    */
   flatMap = <U>(mapper: TFunction1<T, Validation<E, U>>): Validation<E, U> => {
     if (this.isValid()) {
@@ -405,7 +405,7 @@ export abstract class Validation<E, T> {
    *
    * @return the result of applying the right {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if `mapperValid` is `null` or `undefined` and the current instance is a {@link Valid} one
+   * @throws {IllegalArgumentError} if `mapperValid` is `null` or `undefined` and the current instance is a {@link Valid} one
    *                                      or `mapperInvalid` is `null` or `undefined` and the current instance is a {@link Invalid} one
    */
   fold = <U>(mapperInvalid: TFunction1<E[], U>,
@@ -490,7 +490,7 @@ export abstract class Validation<E, T> {
    *
    * @return new {@link Valid} applying `mapper` if `this` is {@link Valid}, current {@link Invalid} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Valid} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Valid} one
    */
   map = <U>(mapper: TFunction1<T, U>): Validation<E, U> => {
     if (this.isValid()) {
@@ -520,7 +520,7 @@ export abstract class Validation<E, T> {
    *
    * @return new {@link Invalid} applying `mapper` if `this` is {@link Invalid}, current {@link Valid} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Invalid} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Invalid} one
    */
   mapInvalid = <U>(mapper: TFunction1<E[], U[]>): Validation<U, T> => {
     if (!this.isValid()) {
@@ -614,7 +614,7 @@ export abstract class Validation<E, T> {
    *
    * @return {@link Success} if `this` is {@link Valid}, {@link Failure} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapperInvalid` is `null` or `undefined` and the current instance is an {@link Invalid} one
+   * @throws {IllegalArgumentError} if `mapperInvalid` is `null` or `undefined` and the current instance is an {@link Invalid} one
    */
   toTry = (mapperInvalid: TFunction1<E[], Error>): Try<T> => {
     if (!this.isValid()) {

@@ -45,7 +45,7 @@ export class Optional<T> {
    *
    * @return an {@link Optional} with the value present
    *
-   * @throws {@link IllegalArgumentError} if `value` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `value` is `null` or `undefined`
    */
   static of = <T>(value: T): Optional<T> => {
     AssertUtil.notNullOrUndefined(value);
@@ -127,7 +127,7 @@ export class Optional<T> {
    * @return an {@link Optional} describing the value of this {@link Optional}, if it is present and matches the
    *         given {@link TPredicate1}, {@link Optional#empty} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `this` is non-empty but `predicate` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `this` is non-empty but `predicate` is `null` or `undefined`
    */
   filter = (predicate: TPredicate1<T>): Optional<T> =>
     this.isPresent() && Predicate1.of(predicate).apply(this.value!)
@@ -149,7 +149,7 @@ export class Optional<T> {
    * @return the result of applying an {@link Optional}-bearing mapping {@link TFunction1} to this {@link Optional}'s
    *         value, if a value is present, otherwise an empty {@link Optional}
    *
-   * @throws {@link IllegalArgumentError} if `this` is non-empty but `mapper` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `this` is non-empty but `mapper` is `null` or `undefined`
    */
   flatMap = <U>(mapper: TFunction1<T, Optional<U>>): Optional<U> =>
     this.isPresent()
@@ -169,7 +169,7 @@ export class Optional<T> {
    *
    * @return the result of applying the right function
    *
-   * @throws {@link IllegalArgumentError} if `ifEmpty` is `null` or `undefined` and this {@link Optional} is empty
+   * @throws {IllegalArgumentError} if `ifEmpty` is `null` or `undefined` and this {@link Optional} is empty
    *                                      or `ifNonEmpty` is `null` or `undefined` and this {@link Optional} is non-empty
    */
   fold = <U>(ifEmpty: TFunction0<U>,
@@ -182,14 +182,14 @@ export class Optional<T> {
 
 
   /**
-   * If the {@link Optional} is non-empty, returns the value, {@link IllegalArgumentError} otherwise.
+   * If the {@link Optional} is non-empty, returns the value, {IllegalArgumentError} otherwise.
    *
    * @apiNote
    *    The preferred alternative to this method is {@link Optional#getOrElse}.
    *
    * @return the non-`null` value described by this {@link Optional}
    *
-   * @throws {@link IllegalArgumentError} if {@link Optional}'s value is `null`
+   * @throws {IllegalArgumentError} if {@link Optional}'s value is `null`
    */
   get = (): T => {
     AssertUtil.notNullOrUndefined(this.value);
@@ -300,7 +300,7 @@ export class Optional<T> {
    * @return the {@link Optional}'s value if non-`null`,
    *         otherwise {@link Error} using provided {@link TFunction0}
    *
-   * @throws {@link IllegalArgumentError} if `errorSupplier` is `null` or `undefined` and this {@link Optional} is empty
+   * @throws {IllegalArgumentError} if `errorSupplier` is `null` or `undefined` and this {@link Optional} is empty
    */
   orElseThrow = <X extends Error>(errorSupplier: TFunction0<X>): T => {
     if (this.isPresent()) {
@@ -320,7 +320,7 @@ export class Optional<T> {
    *
    * @return {@link Right} if `this` is an empty {@link Optional}, {@link Left} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `right` is `null` or `undefined` and this {@link Optional} is empty
+   * @throws {IllegalArgumentError} if `right` is `null` or `undefined` and this {@link Optional} is empty
    */
   toLeft = <R>(right: TFunction0<R>): Either<T, R> =>
     this.isPresent()
@@ -342,7 +342,7 @@ export class Optional<T> {
    *
    * @return {@link Left} if `this` is an empty {@link Optional}, {@link Right} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `left` is `null` or `undefined` and this {@link Optional} is empty
+   * @throws {IllegalArgumentError} if `left` is `null` or `undefined` and this {@link Optional} is empty
    */
   toRight = <L>(left: TFunction0<L>): Either<L, T> =>
     this.isPresent()

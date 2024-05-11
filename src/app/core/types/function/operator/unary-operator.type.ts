@@ -92,7 +92,7 @@ export class UnaryOperator<T> extends Function1<T, T> {
    *
    * @return {@link UnaryOperator} based on provided {@link TUnaryOperator}
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static override of<T>(func: TUnaryOperator<T>): UnaryOperator<T> {
     AssertUtil.notNullOrUndefined(

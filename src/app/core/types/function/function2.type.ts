@@ -90,7 +90,7 @@ export class Function2<T1, T2, R> {
    *
    * @return an {@link Function2} as wrapper of `mapper`
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T1, T2, R>(func: TFunction2<T1, T2, R>): Function2<T1, T2, R> {
     AssertUtil.notNullOrUndefined(
@@ -122,7 +122,7 @@ export class Function2<T1, T2, R> {
    * @return composed {@link Function2} that first applies this {@link Function2} and then applies the
    *         `after` {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen = <V>(after: TFunction1<R, V>): Function2<T1, T2, V> => {
     AssertUtil.notNullOrUndefined(

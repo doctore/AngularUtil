@@ -105,7 +105,7 @@ export class PartialFunction<T, R> {
    *
    * @return {@link PartialFunction} to convert values of type `T` to `R` one
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
   static of<T, R>(verifier: NullableOrUndefined<TPredicate1<T>>,
                   mapper: TFunction1<T, R>): PartialFunction<T, R> {
@@ -145,7 +145,7 @@ export class PartialFunction<T, R> {
    *
    * @return {@link PartialFunction} to convert values of type `T` to the tuple `[K, V]`
    *
-   * @throws {@link IllegalArgumentError} if `keyMapper` or `valueMapper` are `null` or `undefined`
+   * @throws {IllegalArgumentError} if `keyMapper` or `valueMapper` are `null` or `undefined`
    */
   static ofKeyValueMapper<T, K, V>(verifier: NullableOrUndefined<TPredicate1<T>>,
                                    keyMapper: TFunction1<T, K>,
@@ -191,7 +191,7 @@ export class PartialFunction<T, R> {
    *
    * @return {@link PartialFunction} to convert values of tuples `[T1, T2]` to `R`
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
   static of2<T1, T2, R>(verifier: NullableOrUndefined<TPredicate2<T1, T2>>,
                         mapper: TFunction2<T1, T2, R>): PartialFunction<[T1, T2], R> {
@@ -235,7 +235,7 @@ export class PartialFunction<T, R> {
    *
    * @return {@link PartialFunction} to convert tuples of type `[T1, R1]` to `[T2, R2]`
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined`
    */
   static of2ToTuple<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
                                     mapper: TFunction2<T1, R1, [T2, R2]>): PartialFunction<[T1, R1], [T2, R2]> {
@@ -279,7 +279,7 @@ export class PartialFunction<T, R> {
    *
    * @return {@link PartialFunction} to convert values of tuples `[T1, R1]` to `[T2, R2]`
    *
-   * @throws {@link IllegalArgumentError} if `keyMapper` or `valueMapper` are `null` or `undefined`
+   * @throws {IllegalArgumentError} if `keyMapper` or `valueMapper` are `null` or `undefined`
    */
   static of2KeyValueMapper<T1, T2, R1, R2>(verifier: NullableOrUndefined<TPredicate2<T1, R1>>,
                                            keyMapper: TFunction2<T1, R1, T2>,
@@ -338,7 +338,7 @@ export class PartialFunction<T, R> {
    * @return composed {@link PartialFunction} that first applies this {@link PartialFunction} and then applies the
    *         `after` {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen<V>(after: TFunction1<R, V>): PartialFunction<T, V>;
 
@@ -353,7 +353,7 @@ export class PartialFunction<T, R> {
    * @return composed {@link PartialFunction} that first applies this {@link PartialFunction} and then applies the
    *         `after` {@link PartialFunction}
    *
-   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen<V>(after: PartialFunction<R, V>): PartialFunction<T, V>;
 
@@ -406,7 +406,7 @@ export class PartialFunction<T, R> {
    * @return the result of this {@link PartialFunction} if `t` belongs to the {@link PartialFunction}'s domain,
    *         `defaultFunction` application otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `defaultFunction` is `null` or `undefined` and `t` is not
+   * @throws {IllegalArgumentError} if `defaultFunction` is `null` or `undefined` and `t` is not
    *         contained in the {@link PartialFunction}'s domain
    */
   applyOrElse = (t: T,
@@ -434,7 +434,7 @@ export class PartialFunction<T, R> {
    *
    * @return composed {@link PartialFunction} that first applies `before` and then applies this {@link PartialFunction}
    *
-   * @throws {@link IllegalArgumentError} if `before` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `before` is `null` or `undefined`
    */
   compose<V>(before: TFunction1<V, T> | PartialFunction<V, T>): PartialFunction<V, R> {
     AssertUtil.notNullOrUndefined(

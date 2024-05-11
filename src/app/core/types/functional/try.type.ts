@@ -64,7 +64,7 @@ export abstract class Try<T> {
    *
    * @return the {@link Success} value
    *
-   * @throws {@link Failure#error} if this is an {@link Failure}
+   * @throws {Failure#error} if this is an {@link Failure}
    */
   abstract get(): T;
 
@@ -75,7 +75,7 @@ export abstract class Try<T> {
    *
    * @return the {@link Failure} error
    *
-   * @throws {@link ReferenceError} if this is an {@link Success}
+   * @throws {ReferenceError} if this is an {@link Success}
    */
   abstract getError(): Error;
 
@@ -118,7 +118,7 @@ export abstract class Try<T> {
    *
    * @return {@link Try} merging provided `tries`
    *
-   * @throws {@link IllegalArgumentError} if `mapperFailure` or `mapperSuccess` is `null` or `undefined` but `tries` is not empty
+   * @throws {IllegalArgumentError} if `mapperFailure` or `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
   static combine<T>(mapperFailure: TBinaryOperator<Error>,
                     mapperSuccess: TBinaryOperator<T>,
@@ -174,7 +174,7 @@ export abstract class Try<T> {
    * @return {@link Success} if no one provided {@link TFunction0} returns {@link Failure},
    *         first one {@link Failure} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` but `tries` is not empty
+   * @throws {IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` but `tries` is not empty
    */
   static combineGetFirstFailure<T>(mapperSuccess: TBinaryOperator<T>,
                                    tries: NullableOrUndefined<TFunction0<Try<T>>[]>): Try<T> {
@@ -703,7 +703,7 @@ export abstract class Try<T> {
    *
    * @return {@link Failure} with the provided `error`
    *
-   * @throws {@link IllegalArgumentError} if `error` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `error` is `null` or `undefined`
    */
   static failure = <T>(error: Error): Try<T> =>
     Failure.of<T>(error);
@@ -798,7 +798,7 @@ export abstract class Try<T> {
    *
    * @return the result of applying the right {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` and this {@link Try} is {@link Success}
+   * @throws {IllegalArgumentError} if `mapperSuccess` is `null` or `undefined` and this {@link Try} is {@link Success}
    *                                      or `mapperFailure` is `null` or `undefined` and this {@link Try} is {@link Failure}
    */
   fold = <U>(mapperFailure: TFunction1<Error, U>,
@@ -891,7 +891,7 @@ export abstract class Try<T> {
    *
    * @return new {@link Success} applying `mapper`, current {@link Failure} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Success} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Success} one
    */
   map = <U>(mapper: TFunction1<T, U>): Try<U> => {
     if (this.isSuccess()) {
@@ -918,7 +918,7 @@ export abstract class Try<T> {
    *
    * @return new {@link Failure} applying `mapper`, current {@link Success} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
    */
   mapFailure = (mapper: TFunction1<Error, Error>): Try<T> => {
     if (!this.isSuccess()) {
@@ -984,7 +984,7 @@ export abstract class Try<T> {
    *
    * @return {@link Try}
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
    */
   recover = (mapper: TFunction1<Error, T>): Try<T> => {
     if (!this.isSuccess()) {
@@ -1015,7 +1015,7 @@ export abstract class Try<T> {
    *
    * @return {@link Try}
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Failure} one
    */
   recoverWith = (mapper: TFunction1<Error, Try<T>>): Try<T> => {
     if (!this.isSuccess()) {
@@ -1110,7 +1110,7 @@ export abstract class Try<T> {
    *
    * @return {@link Try}
    *
-   * @throws {@link IllegalArgumentError} if `mapperFailure` is `null` or `undefined` and the current instance is a {@link Success} one
+   * @throws {IllegalArgumentError} if `mapperFailure` is `null` or `undefined` and the current instance is a {@link Success} one
    *                                      or `mapperSuccess` is `null` or `undefined` and the current instance is a {@link Failure} one
    */
   transform = <U>(mapperFailure: TFunction1<Error, U>,
@@ -1378,7 +1378,7 @@ export class Failure<T> extends Try<T> {
    *
    * @return {@link Failure}
    *
-   * @throws {@link IllegalArgumentError} if `error` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `error` is `null` or `undefined`
    */
   static of = <T>(error: Error): Failure<T> => {
     AssertUtil.notNullOrUndefined(error);

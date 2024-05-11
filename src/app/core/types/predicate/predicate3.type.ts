@@ -240,7 +240,7 @@ export class Predicate3<T1, T2, T3> {
    *
    * @return {@link Predicate3} based on provided {@link TPredicate3}
    *
-   * @throws {@link IllegalArgumentError} if `predicate` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `predicate` is `null` or `undefined`
    */
   static of<T1, T2, T3>(predicate: TPredicate3<T1, T2, T3>): Predicate3<T1, T2, T3> {
     AssertUtil.notNullOrUndefined(

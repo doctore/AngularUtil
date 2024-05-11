@@ -112,7 +112,7 @@ export abstract class Either<L, R> {
    *
    * @return {@link Either} merging provided `eithers`
    *
-   * @throws {@link IllegalArgumentError} if `mapperLeft` or `mapperRight` is `null` or `undefined` but `eithers` is not empty
+   * @throws {IllegalArgumentError} if `mapperLeft` or `mapperRight` is `null` or `undefined` but `eithers` is not empty
    */
   static combine<L, R>(mapperLeft: TBinaryOperator<L>,
                        mapperRight: TBinaryOperator<R>,
@@ -168,7 +168,7 @@ export abstract class Either<L, R> {
    * @return {@link Right} if no one provided {@link TFunction0} returns {@link Left},
    *         first one {@link Left} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapperRight` is `null` or `undefined` but `eithers` is not empty
+   * @throws {IllegalArgumentError} if `mapperRight` is `null` or `undefined` but `eithers` is not empty
    */
   static combineGetFirstLeft<L, R>(mapperRight: TBinaryOperator<R>,
                                    eithers: NullableOrUndefined<TFunction0<Either<L, R>>[]>): Either<L, R> {
@@ -212,7 +212,7 @@ export abstract class Either<L, R> {
    *
    * @return {@link Either} merging `either` with this {@link Either}
    *
-   * @throws {@link IllegalArgumentError} if `mapperLeft` is `null` or `undefined` and the current instance and `either` are {@link Left}
+   * @throws {IllegalArgumentError} if `mapperLeft` is `null` or `undefined` and the current instance and `either` are {@link Left}
    *                                      or `mapperRight` is `null` or `undefined` and the current instance and `either` are {@link Right}
    */
   ap = (either: Either<L, R>,
@@ -345,7 +345,7 @@ export abstract class Either<L, R> {
    *    {@link TFunction0} that turns a {@link Right} value into a {@link Left} one if this is {@link Right} but its
    *    value does not match given {@link TPredicate1}
    *
-   * @throws {@link IllegalArgumentError} if `zero` is `null` or `undefined`, this is a {@link Right} but does not match
+   * @throws {IllegalArgumentError} if `zero` is `null` or `undefined`, this is a {@link Right} but does not match
    *                                      with the given {@link TPredicate1}
    *
    * @return {@link Right} if `this` is {@link Right} and `predicate` matches,
@@ -377,7 +377,7 @@ export abstract class Either<L, R> {
    *
    * @return new {@link Right} applying `mapper` if `this` is {@link Right}, {@link Left} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Right} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Right} one
    */
   flatMap = <U>(mapper: TFunction1<R, Either<L, U>>): Either<L, U> => {
     if (this.isRight()) {
@@ -425,7 +425,7 @@ export abstract class Either<L, R> {
    *
    * @return the result of applying the suitable {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if `mapperRight` is `null` or `undefined` and the current instance is a {@link Right} one
+   * @throws {IllegalArgumentError} if `mapperRight` is `null` or `undefined` and the current instance is a {@link Right} one
    *                                      or `mapperLeft` is `null` or `undefined` and the current instance is a {@link Left} one
    */
   fold = <U>(mapperLeft: TFunction1<L, U>,
@@ -510,7 +510,7 @@ export abstract class Either<L, R> {
    *
    * @return new {@link Right} applying `mapper` if `this` is {@link Right}, current {@link Left} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Right} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Right} one
    */
   map = <U>(mapper: TFunction1<R, U>): Either<L, U> => {
     if (this.isRight()) {
@@ -540,7 +540,7 @@ export abstract class Either<L, R> {
    *
    * @return new {@link Left} applying `mapper` if `this` is {@link Left}, current {@link Right} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Left} one
+   * @throws {IllegalArgumentError} if `mapper` is `null` or `undefined` and the current instance is a {@link Left} one
    */
   mapLeft = <U>(mapper: TFunction1<L, U>): Either<U, R> => {
     if (!this.isRight()) {
@@ -635,7 +635,7 @@ export abstract class Either<L, R> {
    *
    * @return {@link Success} if `this` is {@link Right}, {@link Failure} otherwise.
    *
-   * @throws {@link IllegalArgumentError} if `mapperLeft` is `null` or `undefined` and the current instance is a {@link Left} one
+   * @throws {IllegalArgumentError} if `mapperLeft` is `null` or `undefined` and the current instance is a {@link Left} one
    */
   toTry = (mapperLeft: TFunction1<L, Error>): Try<R> =>
     this.mapLeft(mapperLeft)

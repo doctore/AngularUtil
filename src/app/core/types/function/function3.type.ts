@@ -95,7 +95,7 @@ export class Function3<T1, T2, T3, R> {
    *
    * @return {@link Function3} based on provided {@link TFunction3}
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T1, T2, T3, R>(func: TFunction3<T1, T2, T3, R>): Function3<T1, T2, T3, R> {
     AssertUtil.notNullOrUndefined(
@@ -127,7 +127,7 @@ export class Function3<T1, T2, T3, R> {
    * @return composed {@link Function3} that first applies this {@link Function3} and then applies the
    *         `after` {@link TFunction1}
    *
-   * @throws {@link IllegalArgumentError} if `after` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `after` is `null` or `undefined`
    */
   andThen = <V>(after: TFunction1<R, V>): Function3<T1, T2, T3, V> => {
     AssertUtil.notNullOrUndefined(

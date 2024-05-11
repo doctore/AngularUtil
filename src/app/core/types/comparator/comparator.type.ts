@@ -64,7 +64,7 @@ export class Comparator<T> {
   /**
    * Returns a null-undefined-friendly {@link Comparator} that considers `null` and `undefined` to be less than `non-null`.
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static nullOrUndefinedFirst = <T>(func: TComparator<T>): Comparator<T> =>
     new Comparator<T>((a: T, b: T) => {
@@ -86,7 +86,7 @@ export class Comparator<T> {
   /**
    * Returns a null-undefined-friendly {@link Comparator} that considers `null` and `undefined` to be greater than `non-null`.
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static nullOrUndefinedLast = <T>(func: TComparator<T>): Comparator<T> =>
     new Comparator<T>((a: T, b: T) => {
@@ -132,7 +132,7 @@ export class Comparator<T> {
    *
    * @return {@link Comparator} based on provided {@link TComparator}
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<T>(func: TComparator<T>): Comparator<T> {
     AssertUtil.notNullOrUndefined(

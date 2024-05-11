@@ -77,7 +77,7 @@ export class Consumer0 {
    *
    * @return {@link Consumer0} based on provided {@link TConsumer0}
    *
-   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
   static of(consumer: TConsumer0): Consumer0 {
     AssertUtil.notNullOrUndefined(

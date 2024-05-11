@@ -22,9 +22,9 @@ export class AssertUtil {
    *    Custom message to include more information about the error
    *
    * @return `true` if `value` is `true`,
-   *         {@link IllegalArgumentError} if `value` is `undefined`, `null` or `false`
+   *         {IllegalArgumentError} if `value` is `undefined`, `null` or `false`
    *
-   * @throws {@link IllegalArgumentError} if `value` is `undefined`, `null` or `false`
+   * @throws {IllegalArgumentError} if `value` is `undefined`, `null` or `false`
    */
   static isTrue(value: NullableOrUndefined<boolean>,
                 message?: Nullable<string>): boolean;
@@ -39,12 +39,12 @@ export class AssertUtil {
    *    {@link TFunction0} used to provide the returned {@link Error}
    *
    * @return `true` if `value` is `true`,
-   *         {@link IllegalArgumentError} if `value` is `null` or `undefined`
+   *         {IllegalArgumentError} if `value` is `null` or `undefined`
    *         if `value` is `false`:
    *            Custom {@link Error} if `errorSupplier` is defined,
-   *            {@link IllegalArgumentError} otherwise
+   *            {IllegalArgumentError} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `value` is `undefined`, `null` or `false`
+   * @throws {IllegalArgumentError} if `value` is `undefined`, `null` or `false`
    */
   static isTrue(value: NullableOrUndefined<boolean>,
                 errorSupplier?: Nullable<TFunction0<Error>>): boolean;
@@ -80,9 +80,9 @@ export class AssertUtil {
    *    Custom message to include more information about the error
    *
    * @return `true` if it is neither `undefined` nor `null`,
-   *         {@link IllegalArgumentError} otherwise
+   *         {IllegalArgumentError} otherwise
    *
-   * @throws {@link IllegalArgumentError} if `value` is `undefined` or `null`
+   * @throws {IllegalArgumentError} if `value` is `undefined` or `null`
    */
   static notNullOrUndefined(value: NullableOrUndefined<any>,
                             message?: Nullable<string>): boolean;
@@ -99,10 +99,10 @@ export class AssertUtil {
    * @return `true` if it is neither `undefined` nor `null`,
    *         if `value` is `undefined` or `null`:
    *            Custom {@link Error} if `errorSupplier` is defined,
-   *            {@link IllegalArgumentError} otherwise
+   *            {IllegalArgumentError} otherwise
    *
    * @throws if `value` is `undefined` or `null`: custom {@link Error} if `errorSupplier` is defined,
-   *         {@link IllegalArgumentError} otherwise
+   *         {IllegalArgumentError} otherwise
    */
   static notNullOrUndefined(value: NullableOrUndefined<any>,
                             errorSupplier?: Nullable<TFunction0<Error>>): boolean;

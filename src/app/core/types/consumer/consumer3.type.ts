@@ -93,7 +93,7 @@ export class Consumer3<T1, T2, T3> {
    *
    * @return {@link Consumer3} based on provided {@link TConsumer3}
    *
-   * @throws {@link IllegalArgumentError} if `consumer` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `consumer` is `null` or `undefined`
    */
   static of<T1, T2, T3>(consumer: TConsumer3<T1, T2, T3>): Consumer3<T1, T2, T3> {
     AssertUtil.notNullOrUndefined(

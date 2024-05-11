@@ -43,7 +43,7 @@ export class StringUtil {
    *    </ul>
    * <p>
    *    If `sourceString` is less than the first character of `sourceString` and `abbreviationString`'s length,
-   * then an {@link IllegalArgumentError} will be thrown.
+   * then an {IllegalArgumentError} will be thrown.
    *
    * @apiNote
    *    If `abbreviationString` is `null` or `undefined` then {@link StringUtil#DEFAULT_ABBREVIATION_STRING} will be used.
@@ -72,7 +72,7 @@ export class StringUtil {
    * @return the abbreviated {@link String} if `maxLength` is greater than `sourceString`'s length,
    *         `sourceString` otherwise
    *
-   * @throws {@link IllegalArgumentError} if `maxLength` is less than the first character of `sourceString`
+   * @throws {IllegalArgumentError} if `maxLength` is less than the first character of `sourceString`
    *                                      and `abbreviationString`'s length
    */
   static abbreviate = (sourceString: NullableOrUndefined<string>,
@@ -113,7 +113,7 @@ export class StringUtil {
    *    </ul>
    * <p>
    *    If `maxLength` is less than the first and last characters of `sourceString` and `abbreviationString`'s length,
-   * then an {@link IllegalArgumentError} will be thrown.
+   * then an {IllegalArgumentError} will be thrown.
    *
    * @apiNote
    *    If `abbreviationString` is `null` or `undefined` then {@link StringUtil#DEFAULT_ABBREVIATION_STRING} will be used.
@@ -142,7 +142,7 @@ export class StringUtil {
    * @return the abbreviated {@link String} if `maxLength` is greater than `sourceString`'s length,
    *         `sourceString` otherwise
    *
-   * @throws {@link IllegalArgumentError} if `maxLength` is less than the first and last characters of `sourceString` and
+   * @throws {IllegalArgumentError} if `maxLength` is less than the first and last characters of `sourceString` and
    *                                      `abbreviationString`'s length
    */
   static abbreviateMiddle = (sourceString: NullableOrUndefined<string>,
@@ -238,7 +238,7 @@ export class StringUtil {
    * @return new {@link String} from applying the given {@link TUnaryOperator} to each character of `sourceString`
    *         on which {@link TPredicate1} returns `true` and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceString`
+   * @throws {IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceString`
    */
   static collect(sourceString: NullableOrUndefined<string>,
                  mapFunction: TUnaryOperator<string>,
@@ -596,7 +596,7 @@ export class StringUtil {
    *
    * @return new {@link Map} from applying the given `discriminatorKey` to each character of `sourceString`
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceString`
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceString`
    */
   static groupBy = <K>(sourceString: NullableOrUndefined<string>,
                        discriminatorKey: TFunction1<string, K>,
@@ -644,7 +644,7 @@ export class StringUtil {
    *    </ul>
    * <p>
    *    If `maxLength` is less than the first and last characters of `sourceString` and `abbreviationString`'s length,
-   * then an {@link IllegalArgumentError} will be thrown.
+   * then an {IllegalArgumentError} will be thrown.
    * <p>
    *    {@link StringUtil#abbreviateMiddle} returns `sourceString` when `maxLength` is greater than or equals to
    * `sourceString`'s length however, the current function always tries to hide middle characters if it is possible:
@@ -686,7 +686,7 @@ export class StringUtil {
    * @return the abbreviated {@link String} if `maxLength` is greater than 2,
    *         `sourceString` otherwise
    *
-   * @throws {@link IllegalArgumentError} if `maxLength` is less than the first and last characters of `sourceString` and
+   * @throws {IllegalArgumentError} if `maxLength` is less than the first and last characters of `sourceString` and
    *                                      `abbreviationString`'s length
    */
   static hideMiddle = (sourceString: NullableOrUndefined<string>,
@@ -800,7 +800,7 @@ export class StringUtil {
    *
    * @return the joined {@link String}, empty one if `sourceArray` is `null`, `undefined` or has no elements
    *
-   * @throws {@link IllegalArgumentError} if `toString` is `null` or `undefined` and `sourceArray` is not empty
+   * @throws {IllegalArgumentError} if `toString` is `null` or `undefined` and `sourceArray` is not empty
    */
   static join<T>(sourceArray: NullableOrUndefined<T[]>,
                  toString: TFunction1<T, string>,

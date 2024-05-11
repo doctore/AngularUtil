@@ -50,7 +50,7 @@ export class NumberUtil {
    *         -1: if (`one` < `two`) || (`one` is `null` or `undefined`  &&  `two` does not)
    *          1: if (`one` > `two`) || (`one` is not `null` or `undefined`  &&  `two` does)
    *
-   * @throws {@link IllegalArgumentError} if `one` and `two` has a value but not a valid float one
+   * @throws {IllegalArgumentError} if `one` and `two` has a value but not a valid float one
    */
   static compare = (one: NullableOrUndefinedStringNumber,
                     two: NullableOrUndefinedStringNumber,

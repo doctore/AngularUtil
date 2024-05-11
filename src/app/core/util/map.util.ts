@@ -49,7 +49,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
    *         on which it is defined and collecting the results, `orElseMapper` otherwise
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
    */
   static applyOrElse<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                      partialFunction: PartialFunction<[K1, V1], [K2, V2]>,
@@ -84,7 +84,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given `defaultMapper` to each element of `sourceMap` that verifies `filterPredicate`
    *         and collecting the results, `orElseMapper` otherwise
    *
-   * @throws {@link IllegalArgumentError} if `defaultMapper` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `defaultMapper` or `orElseMapper` is `null` or `undefined` with a not empty `sourceMap`
    */
   static applyOrElse<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                      defaultMapper: TFunction2<K1, V1, [K2, V2]>,
@@ -153,7 +153,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
    *         on which it is defined and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
    */
   static collect<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                  partialFunction: PartialFunction<[K1, V1], [K2, V2]>): Map<K2, V2>;
@@ -186,7 +186,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap`
    *         on which {@link TPredicate2} returns `true` and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceMap`
    */
   static collect<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                  mapFunction: TFunction2<K1, V1, [K2, V2]>,
@@ -758,7 +758,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap` to generate
    *         the keys of the returned one
    *
-   * @throws {@link IllegalArgumentError} if `discriminator` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `discriminator` is `null` or `undefined` with a not empty `sourceMap`
    */
   static groupBy = <K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                              discriminator: TFunction2<K, V, R>,
@@ -834,7 +834,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap` to generate
    *         the keys of the returned one
    *
-   * @throws {@link IllegalArgumentError} if `discriminator` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `discriminator` is `null` or `undefined` with a not empty `sourceMap`
    */
   static groupByMultiKey = <K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                                      discriminator: TFunction2<K, V, R[]>,
@@ -900,7 +900,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
    *         on which it is defined and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
    */
   static groupMap<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                   partialFunction: PartialFunction<[K1, V1], [K2, V2]>): Map<K2, V2[]>;
@@ -934,7 +934,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceMap`
    *         that verifies `filterPredicate`
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `discriminatorKey` or `valueMapper` is `null` or `undefined` with a not empty `sourceMap`
    */
   static groupMap<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                   discriminatorKey: TFunction2<K1, V1, K2>,
@@ -1003,7 +1003,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceMap`
    *         on which it is defined, collecting the results and reduce them using provided `reduceValues`
    *
-   * @throws {@link IllegalArgumentError} if `reduceValues` or `partialFunction` are `null` or `undefined` with a not
+   * @throws {IllegalArgumentError} if `reduceValues` or `partialFunction` are `null` or `undefined` with a not
    *                                      empty `sourceMap`
    */
   static groupMapReduce<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
@@ -1042,7 +1042,7 @@ export class MapUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceMap`,
    *         collecting the results and reduce them using provided `reduceValues`
    *
-   * @throws {@link IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
+   * @throws {IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
    *                                      with a not empty `sourceMap`
    */
   static groupMapReduce<K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
@@ -1114,7 +1114,7 @@ export class MapUtil {
    *
    * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap`
    *
-   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceMap`
    */
   static map = <K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
                                 mapFunction: TFunction2<K1, V1, [K2, V2]>): Map<K2, V2> => {
@@ -1154,7 +1154,7 @@ export class MapUtil {
    *
    * @return largest element using given {@link TComparator}, `undefined` if `sourceMap` has no elements
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
    */
   static max = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                       comparator: TComparator<[K, V]>): OrUndefined<[K, V]> => {
@@ -1203,7 +1203,7 @@ export class MapUtil {
    * @return {@link Optional} with largest element using given {@link TComparator},
    *         {@link Optional#empty} if `sourceMap` has no elements
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
    */
   static maxOptional = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                               comparator: TComparator<[K, V]>): Optional<[K, V]> =>
@@ -1232,7 +1232,7 @@ export class MapUtil {
    *
    * @return smallest element using given {@link TComparator}, `undefined` if `sourceMap` has no elements
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
    */
   static min = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                       comparator: TComparator<[K, V]>): OrUndefined<[K, V]> => {
@@ -1281,7 +1281,7 @@ export class MapUtil {
    * @return {@link Optional} with smallest element using given {@link TComparator},
    *         {@link Optional#empty} if `sourceMap` has no elements
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceMap`
    */
   static minOptional = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                               comparator: TComparator<[K, V]>): Optional<[K, V]> =>
@@ -1328,7 +1328,7 @@ export class MapUtil {
    *
    * @return the current `value` associated with the specified `key`, or `undefined` if there was no mapping for the `key`.
    *
-   * @throws {@link IllegalArgumentError} if `sourceMap` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `sourceMap` is `null` or `undefined`
    */
   static putIfAbsent = <K, V>(sourceMap: Map<K, V>,
                               key: K,
@@ -1371,7 +1371,7 @@ export class MapUtil {
    *
    * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going left to right
    *
-   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
+   * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
    */
   static reduce<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                       accumulator: TBinaryOperator<[K, V]>): OrUndefined<[K, V]>;
@@ -1677,7 +1677,7 @@ export class MapUtil {
    *
    * @return array applying `keyValueMapper` to each element of `sourceMap`
    *
-   * @throws {@link IllegalArgumentError} if `keyValueMapper` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `keyValueMapper` is `null` or `undefined` with a not empty `sourceMap`
    */
   static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                           keyValueMapper: TFunction2<K, V, R>): R[];
@@ -1707,7 +1707,7 @@ export class MapUtil {
    *
    * @return array applying the given `keyValueMapper` to each element of `sourceMap` that verifies `filterPredicate`
    *
-   * @throws {@link IllegalArgumentError} if `keyValueMapper` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `keyValueMapper` is `null` or `undefined` with a not empty `sourceMap`
    */
   static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                           keyValueMapper: TFunction2<K, V, R>,
@@ -1734,7 +1734,7 @@ export class MapUtil {
    *
    * @return array applying `partialFunction` to each element of `sourceMap`
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
    */
   static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                           partialFunction: PartialFunction<[K, V], R>): R[];

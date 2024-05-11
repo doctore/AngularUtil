@@ -129,7 +129,7 @@ export class JsonUtil {
    *
    * @return an instance of type `T` if the `json` could be converted.
    *
-   * @throws {@link SyntaxError} if provided `json` is not a valid JSON-formatted string
+   * @throws {SyntaxError} if provided `json` is not a valid JSON-formatted string
    */
   static fromJSON = <T>(json?: Nullable<string>): T => {
     const finalJson = json || JsonUtil.EMPTY;

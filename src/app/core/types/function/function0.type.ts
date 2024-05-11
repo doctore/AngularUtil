@@ -79,7 +79,7 @@ export class Function0<R> {
    *
    * @return {@link Function0} based on provided {@link TFunction0}
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static of<R>(func: TFunction0<R>): Function0<R> {
     AssertUtil.notNullOrUndefined(

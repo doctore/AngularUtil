@@ -99,7 +99,7 @@ export class BinaryOperator<T> extends Function2<T, T, T> {
    *
    * @return {@link BinaryOperator} based on provided {@link TBinaryOperator}
    *
-   * @throws {@link IllegalArgumentError} if `func` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static override of<T>(func: TBinaryOperator<T>): BinaryOperator<T> {
     AssertUtil.notNullOrUndefined(
