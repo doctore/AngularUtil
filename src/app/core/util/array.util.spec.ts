@@ -1893,6 +1893,138 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('sliding', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+
+      const expectedResult: number[][] = [];
+
+      expect(ArrayUtil.sliding(null, 1)).toEqual(expectedResult);
+      expect(ArrayUtil.sliding(undefined, 2)).toEqual(expectedResult);
+      expect(ArrayUtil.sliding(emptyArray, 3)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but size is less than 0 then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.sliding([1], -2)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.sliding([1], -1)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements but size is equals to 0 then empty array is returned', () => {
+      const expectedResult: number[][] = [];
+
+      expect(ArrayUtil.sliding([1], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.sliding([1, 2], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.sliding([1, 2, 3], 0)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty and size is greater than 0 then the matrix with containing the right chunks is returned', () => {
+      const sourceArray1: number[] = [1, 3, 10, 21];
+      const sourceArray2: string[] = ['a', 'b', 'c', 'd', 'e'];
+
+      verifyMatrix(
+        ArrayUtil.sliding(sourceArray1, 2),
+        [[1, 3], [3, 10], [10, 21]]
+      );
+
+      verifyMatrix(
+        ArrayUtil.sliding(sourceArray1, 3),
+        [[1, 3, 10], [3, 10, 21]]
+      );
+      verifyMatrix(
+        ArrayUtil.sliding(sourceArray1, 5),
+        [[1, 3, 10, 21]]
+      );
+
+      verifyMatrix(
+        ArrayUtil.sliding(sourceArray2, 1),
+        [['a'], ['b'], ['c'], ['d'], ['e']]
+      );
+      verifyMatrix(
+        ArrayUtil.sliding(sourceArray2, 3),
+        [['a', 'b', 'c'], ['b', 'c', 'd'], ['c', 'd', 'e']]
+      );
+      verifyMatrix(
+        ArrayUtil.sliding(sourceArray2, 7),
+        [['a', 'b', 'c', 'd', 'e']]
+      );
+    });
+
+  });
+
+
+
+  describe('split', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+
+      const expectedResult: number[][] = [];
+
+      expect(ArrayUtil.split(null, 1)).toEqual(expectedResult);
+      expect(ArrayUtil.split(undefined, 2)).toEqual(expectedResult);
+      expect(ArrayUtil.split(emptyArray, 3)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but size is less than 0 then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.split([1], -2)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => ArrayUtil.split([1], -1)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements but size is equals to 0 then empty array is returned', () => {
+      const expectedResult: number[][] = [];
+
+      expect(ArrayUtil.split([1], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.split([1, 2], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.split([1, 2, 3], 0)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty and size is greater than 0 then the matrix with containing the right chunks is returned', () => {
+      const sourceArray1: number[] = [1, 3, 10, 21];
+      const sourceArray2: string[] = ['a', 'b', 'c', 'd', 'e'];
+
+      verifyMatrix(
+        ArrayUtil.split(sourceArray1, 2),
+        [[1, 3], [10, 21]]
+      );
+
+      verifyMatrix(
+        ArrayUtil.split(sourceArray1, 3),
+        [[1, 3, 10], [21]]
+      );
+      verifyMatrix(
+        ArrayUtil.split(sourceArray1, 5),
+        [[1, 3, 10, 21]]
+      );
+
+      verifyMatrix(
+        ArrayUtil.split(sourceArray2, 1),
+        [['a'], ['b'], ['c'], ['d'], ['e']]
+      );
+      verifyMatrix(
+        ArrayUtil.split(sourceArray2, 3),
+        [['a', 'b', 'c'], ['d', 'e']]
+      );
+      verifyMatrix(
+        ArrayUtil.split(sourceArray2, 7),
+        [['a', 'b', 'c', 'd', 'e']]
+      );
+    });
+
+  });
+
+
+
   describe('takeWhile', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
@@ -2130,6 +2262,25 @@ function verifyArrays(actualArray: any[],
   if (0 < expectedArray.length) {
     for (let i = 0; i < expectedArray.length; i++) {
       expect(expectedArray[i]).toEqual(actualArray[i]);
+    }
+  }
+}
+
+
+function verifyMatrix(actualMatrix: any[][],
+                      expectedMatrix: any[][]) {
+  expect(expectedMatrix.length).toEqual(actualMatrix.length);
+  if (0 < expectedMatrix.length) {
+    for (let i = 0; i < expectedMatrix.length; i++) {
+      const currentActualArray = actualMatrix[i],
+            currentExpectedArray = expectedMatrix[i];
+
+      expect(currentExpectedArray.length).toEqual(currentActualArray.length);
+      if (0 < currentExpectedArray.length) {
+        for (let j = 0; j < currentExpectedArray.length; j++) {
+          expect(currentExpectedArray[j]).toEqual(currentActualArray[j]);
+        }
+      }
     }
   }
 }

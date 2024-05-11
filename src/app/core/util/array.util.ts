@@ -50,7 +50,7 @@ export class ArrayUtil {
    * @return new array from applying the given {@link PartialFunction} to each element of `sourceArray`
    *         on which it is defined and collecting the results, `orElseMapper` otherwise
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `partialFunction` or `orElseMapper` is `null` or `undefined` with a not empty `sourceArray`
    */
   static applyOrElse<T, U>(sourceArray: NullableOrUndefined<T[]>,
                            partialFunction: PartialFunction<T, U>,
@@ -89,7 +89,7 @@ export class ArrayUtil {
    * @return new array from applying the given `defaultMapper` to each element of `sourceArray` that verifies `filterPredicate`
    *         and collecting the results or `orElseMapper` otherwise
    *
-   * @throws {@link IllegalArgumentError} if `defaultMapper` or `orElseMapper` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `defaultMapper` or `orElseMapper` is `null` or `undefined` with a not empty `sourceArray`
    */
   static applyOrElse<T, U>(sourceArray: NullableOrUndefined<T[]>,
                            defaultMapper: TFunction1<T, U>,
@@ -151,7 +151,7 @@ export class ArrayUtil {
    * @return new array from applying the given {@link PartialFunction} to each element of `sourceArray`
    *         on which it is defined and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
    */
   static collect<T, U>(sourceArray: NullableOrUndefined<T[]>,
                        partialFunction: PartialFunction<T, U>): U[];
@@ -184,7 +184,7 @@ export class ArrayUtil {
    * @return new array from applying the given {@link TFunction1} to each element of `sourceArray`
    *         on which {@link TPredicate1} returns `true` and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceArray`
    */
   static collect<T, U>(sourceArray: NullableOrUndefined<T[]>,
                        mapFunction: TFunction1<T, U>,
@@ -614,7 +614,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceArray` that verifies
    *        `filterPredicate`
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
    */
   static groupBy = <T, K>(sourceArray: NullableOrUndefined<T[]>,
                           discriminatorKey: TFunction1<T, K>,
@@ -682,7 +682,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceArray` that
    *         verifies `filterPredicate`, to generate the keys of the returned one
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
    */
   static groupByMultiKey = <T, K>(sourceArray: NullableOrUndefined<T[]>,
                                   discriminatorKey: TFunction1<T, K[]>,
@@ -738,7 +738,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceArray`
    *         on which it is defined and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
    */
   static groupMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                            partialFunction: PartialFunction<T, [K, V]>): Map<K, V[]>;
@@ -772,7 +772,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
    *         that verifies `filterPredicate`
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` are `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `discriminatorKey` or `valueMapper` are `null` or `undefined` with a not empty `sourceArray`
    */
   static groupMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                            discriminatorKey: TFunction1<T, K>,
@@ -857,7 +857,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
    *         that verifies `filterPredicate`, to generate the keys of the returned one
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` or `valueMapper` are `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `discriminatorKey` or `valueMapper` are `null` or `undefined` with a not empty `sourceArray`
    */
   static groupMapMultiKey = <T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                                       discriminatorKey: TFunction1<T, K[]>,
@@ -920,7 +920,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceArray`
    *         on which it is defined, collecting the results and reduce them using provided `reduceValues`
    *
-   * @throws {@link IllegalArgumentError} if `reduceValues` or `partialFunction` are `null` or `undefined` with a not
+   * @throws {IllegalArgumentError} if `reduceValues` or `partialFunction` are `null` or `undefined` with a not
    *                                      empty `sourceArray`
    */
   static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
@@ -959,7 +959,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`,
    *         collecting the results and reduce them using provided `reduceValues`
    *
-   * @throws {@link IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
+   * @throws {IllegalArgumentError} if `reduceValues`, `discriminatorKey` or `valueMapper` are `null` or `undefined`
    *                                      with a not empty `sourceArray`
    */
   static groupMapReduce<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
@@ -1044,7 +1044,7 @@ export class ArrayUtil {
    *
    * @return new array from applying the given {@link TFunction1} to each element of `sourceArray`
    *
-   * @throws {@link IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `mapFunction` is `null` or `undefined` with a not empty `sourceArray`
    */
   static map = <T, R>(sourceArray: NullableOrUndefined<T[]>,
                       mapFunction: TFunction1<T, R>): R[] => {
@@ -1085,7 +1085,7 @@ export class ArrayUtil {
    * @return largest value (including `null` or `undefined`) using given {@link TComparator},
    *         `undefined` if `sourceArray` has no elements
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
    */
   static max = <T>(sourceArray: NullableOrUndefined<T[]>,
                    comparator: TComparator<T>): NullableOrUndefined<T> => {
@@ -1134,7 +1134,7 @@ export class ArrayUtil {
    * @return {@link Optional} with largest value using given {@link TComparator},
    *         {@link Optional#empty} if `sourceArray` has no elements or its largest value is `null` or `undefined`
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
    */
   static maxOptional = <T>(sourceArray: NullableOrUndefined<T[]>,
                            comparator: TComparator<T>): Optional<T> =>
@@ -1164,7 +1164,7 @@ export class ArrayUtil {
    * @return smallest value (including `null` or `undefined`) using given {@link TComparator},
    *         `undefined` if `sourceArray` has no elements
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
    */
   static min = <T>(sourceArray: NullableOrUndefined<T[]>,
                    comparator: TComparator<T>): NullableOrUndefined<T> => {
@@ -1213,7 +1213,7 @@ export class ArrayUtil {
    * @return {@link Optional} with smallest value using given {@link TComparator},
    *         {@link Optional#empty} if `sourceArray` has no elements or its smallest value is `null` or `undefined`
    *
-   * @throws {@link IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
    */
   static minOptional = <T>(sourceArray: NullableOrUndefined<T[]>,
                            comparator: TComparator<T>): Optional<T> =>
@@ -1247,7 +1247,7 @@ export class ArrayUtil {
    *
    * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going left to right
    *
-   * @throws {@link IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
+   * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
    */
   static reduce<T>(sourceArray: NullableOrUndefined<T[]>,
                    accumulator: TBinaryOperator<T>): OrUndefined<T>;
@@ -1428,6 +1428,108 @@ export class ArrayUtil {
 
 
   /**
+   * Loops through the provided `sourceArray` one position every time, returning groups the length of `size`.
+   *
+   * <pre>
+   *    sliding(                       Result:
+   *       [1, 2],                      [[1, 2]]
+   *       5
+   *    )
+   *    sliding(                       Result:
+   *       [7, 8, 9],                   [[7, 8], [8, 9]]
+   *       2
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to slide
+   * @param size
+   *    Length of each chunk
+   *
+   * @return the new array of chunks
+   *
+   * @throws IllegalArgumentException if `size` is less than 0 with a not empty `sourceArray`
+   */
+  static sliding = <T>(sourceArray: NullableOrUndefined<T[]>,
+                       size: number): T[][] => {
+    if (this.isEmpty(sourceArray) ||
+        0 == size) {
+      return [];
+    }
+    AssertUtil.isTrue(
+      0 <= size,
+      'size must be a positive value'
+    );
+    const result: T[][] = [];
+    if (size >= sourceArray!.length) {
+      result.push(
+        sourceArray!
+      );
+    } else {
+      for (let i = 0; i < sourceArray!.length - size + 1; i++) {
+        result.push(
+          sourceArray!.slice(
+            i,
+            i + size
+          )
+        );
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   * Using provided `sourceArray`, creates an array of elements split into groups the length of `size`.
+   *
+   * <pre>
+   *    split(                         Result:
+   *       [1, 2, 3, 4],                [[1, 2], [3, 4]]
+   *       2
+   *    )
+   *    split(                         Result:
+   *       [1, 2, 3, 4],                [[1, 2, 3], [4]]
+   *       3
+   *    )
+   *    split(                         Result:
+   *       [1, 2, 3, 4],                [[1, 2, 3, 4]]
+   *       5
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to split
+   * @param size
+   *    Length of each chunk
+   *
+   * @return the new array of chunks
+   *
+   * @throws IllegalArgumentException if `size` is less than 0 with a not empty `sourceArray`
+   */
+  static split = <T>(sourceArray: NullableOrUndefined<T[]>,
+                     size: number): T[][] => {
+    if (this.isEmpty(sourceArray) ||
+        0 == size) {
+      return [];
+    }
+    AssertUtil.isTrue(
+      0 <= size,
+      'size must be a positive value'
+    );
+    const result: T[][] = [];
+    for (let i = 0; i < sourceArray!.length; i += size) {
+      result.push(
+        sourceArray!.slice(
+          i,
+          i + size
+        )
+      );
+    }
+    return result;
+  }
+
+
+  /**
    * Sorts the given `sourceArray` using `comparator` if provided or default ordination otherwise.
    *
    * @apiNote
@@ -1559,7 +1661,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceArray`
    *         on which it is defined and collecting the results
    *
-   * @throws {@link IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
    */
   static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                         partialFunction: PartialFunction<T, [K, V]>): Map<K, V>;
@@ -1587,7 +1689,7 @@ export class ArrayUtil {
    * @return {@link Map} applying `discriminatorKey` to each element of `sourceArray` to get {@link Map}'s key,
    *         and current element as {@link Map}'s value
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
    */
   static toMap<T, K>(sourceArray: NullableOrUndefined<T[]>,
                      discriminatorKey: TFunction1<T, K>): Map<K, T>;
@@ -1623,7 +1725,7 @@ export class ArrayUtil {
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
    *         that verifies `filterPredicate`
    *
-   * @throws {@link IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
    */
   static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                         discriminatorKey: TFunction1<T, K>,
