@@ -14,7 +14,6 @@ import { Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/type
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
 import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import * as _ from 'lodash';
-import {flatten} from "lodash";
 
 /**
  * Helper functions to manage arrays.
@@ -508,7 +507,7 @@ export class ArrayUtil {
     let result: T[] = [];
     for (let item of sourceArray!) {
       if (Array.isArray(item)) {
-        const recursiveResult: T[] = flatten(item);
+        const recursiveResult: T[] = this.flatten(item);
         if (!this.isEmpty(recursiveResult)) {
           result = result.concat(
             recursiveResult
