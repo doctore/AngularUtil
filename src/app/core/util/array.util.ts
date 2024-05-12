@@ -14,6 +14,7 @@ import { Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/type
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
 import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import * as _ from 'lodash';
+import {flatten} from "lodash";
 
 /**
  * Helper functions to manage arrays.
@@ -484,6 +485,41 @@ export class ArrayUtil {
         filterPredicate
       )
     );
+
+
+  /**
+   * Recursively flattens `sourceArray`.
+   *
+   * <pre>
+   *    flatten(                       Result:
+   *       [5, [3, 2, [7]], 9]          [5, 3, 2, 7, 9]
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    The array to flatten
+   *
+   * @return the new flattened array.
+   */
+  static flatten = <T>(sourceArray: NullableOrUndefined<T[]>): T[] => {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    let result: T[] = [];
+    for (let item of sourceArray!) {
+      if (Array.isArray(item)) {
+        const recursiveResult: T[] = flatten(item);
+        if (!this.isEmpty(recursiveResult)) {
+          result = result.concat(
+            recursiveResult
+          );
+        }
+      } else {
+        result.push(item);
+      }
+    }
+    return result;
+  }
 
 
   /**

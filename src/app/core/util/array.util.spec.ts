@@ -680,6 +680,57 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('flatten', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+
+      const expectedResult: number[] = [];
+
+      expect(ArrayUtil.flatten(null)).toEqual(expectedResult);
+      expect(ArrayUtil.flatten(undefined)).toEqual(expectedResult);
+      expect(ArrayUtil.flatten(emptyArray)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty but only has one dimension then same array is returned', () => {
+      const sourceArray1: number[] = [1, 3, 10, 21];
+      const sourceArray2: string[] = ['a', 'b', 'c', 'd', 'e'];
+
+      verifyArrays(
+        ArrayUtil.flatten(sourceArray1),
+        sourceArray1
+      );
+
+      verifyArrays(
+        ArrayUtil.flatten(sourceArray2),
+        sourceArray2
+      );
+    });
+
+
+    it('when given sourceArray is not empty and has more than one dimension then flatten array is returned', () => {
+      const sourceArray1 = [1, 3, [10, 21], [], 5];
+      const sourceArray2 = ['a', ['b', ['c', 'd'], []], 'e', [[]]];
+
+      const expectedResultArray1: number[] =  [1, 3, 10, 21, 5];
+      const expectedResultArray2: string[] =  ['a', 'b', 'c', 'd', 'e'];
+
+      verifyArrays(
+        ArrayUtil.flatten(sourceArray1),
+        expectedResultArray1
+      );
+
+      verifyArrays(
+        ArrayUtil.flatten(sourceArray2),
+        expectedResultArray2
+      );
+    });
+
+  });
+
+
+
   describe('foldLeft', () => {
 
     it('when given sourceArray is null, undefined or empty then initialValue is returned', () => {
