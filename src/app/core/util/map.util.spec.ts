@@ -1833,59 +1833,102 @@ describe('MapUtil', () => {
 
 
 
-  describe('putIfAbsent', () => {
+  describe('partition', () => {
 
-    it('when given sourceMap is null or undefined then an error is thrown', () => {
-      // @ts-ignore
-      expect(() => MapUtil.putIfAbsent(undefined, 'A', 11)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => MapUtil.putIfAbsent(null, 'A', 11)).toThrowError(IllegalArgumentError);
+    it('when given sourceMap is null or undefined then a Map containing true/false key with empty Maps as values is returned', () => {
+      const expectedResult: Map<boolean, Map<number, string>> = new Map<boolean, Map<number, string>>();
+      expectedResult.set(true, new Map());
+      expectedResult.set(false, new Map());
+
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.partition(undefined, null),
+        expectedResult
+      );
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.partition(undefined, undefined),
+        expectedResult
+      );
+      verifyMaps(
+        MapUtil.partition(undefined, isKeyOddRaw),
+        expectedResult
+      );
+      verifyMaps(
+        MapUtil.partition(undefined, isKeyOddRaw),
+        expectedResult
+      );
     });
 
 
-    it('when given sourceMap is empty then key and value is always added', () => {
-      const key = 'A';
-      const value = 11;
+    it('when given sourceMap is empty then a Map containing true/false key with empty Maps as values is returned', () => {
+      const emptyMap = new Map<number, string>();
 
-      const emptyMap: Map<string, number> = new Map<string, number>();
+      const expectedResult: Map<boolean, Map<string, number>> = new Map<boolean, Map<string, number>>();
+      expectedResult.set(true, new Map());
+      expectedResult.set(false, new Map());
 
-      expect(MapUtil.putIfAbsent(emptyMap, key, value)).toBeUndefined();
-      expect(emptyMap.size).toEqual(1);
-      expect(emptyMap.has(key)).toBeTrue();
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.partition(emptyMap, null),
+        expectedResult
+      );
+      verifyMaps(
+        // @ts-ignore
+        MapUtil.partition(emptyMap, undefined),
+        expectedResult
+      );
+      verifyMaps(
+        MapUtil.partition(emptyMap, isKeyOddRaw),
+        expectedResult
+      );
     });
 
 
-    it('when given sourceMap contains the key then no new value is added and existing one keeps and is returned', () => {
-      const key = 'A';
-      const value = 11;
+    it('when given sourceMap is not empty but discriminator is null or undefined then an error is thrown', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
 
-      const mapWithNullValue: Map<string, number> = new Map<string, number>();
       // @ts-ignore
-      mapWithNullValue.set(key, null);
-
-      const mapWithOtherValue: Map<string, number> = new Map<string, number>();
-      mapWithOtherValue.set(key, value + 1);
-
-      expect(MapUtil.putIfAbsent(mapWithNullValue, key, value)).toBeNull();
-      expect(mapWithNullValue.has(key)).toBeTrue();
-      expect(mapWithNullValue.get(key)).toBeNull();
-
-      expect(MapUtil.putIfAbsent(mapWithOtherValue, key, value)).toEqual(value + 1);
-      expect(mapWithOtherValue.has(key)).toBeTrue();
-      expect(mapWithOtherValue.get(key)).toEqual(value + 1);
+      expect(() => MapUtil.partition(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.partition(sourceMap, null)).toThrowError(IllegalArgumentError);
     });
 
 
-    it('when given sourceMap does not contain the key then new value is added and undefined is returned', () => {
-      const key = 'A';
-      const value = 11;
+    it('when given sourceMap is not empty and discriminator is valid then the partitioned Map is returned', () => {
+      const sourceMap1 = new Map<number, string>();
+      sourceMap1.set(1, 'Hi');
+      sourceMap1.set(2, 'Hello');
 
-      const map: Map<string, number> = new Map<string, number>();
-      map.set('B', 12);
+      const sourceMap2 = new Map<number, number>();
+      sourceMap2.set(1, 10);
+      sourceMap2.set(2, 22);
+      sourceMap2.set(3, 16);
+      sourceMap2.set(4, 34);
 
-      expect(MapUtil.putIfAbsent(map, key, value)).toBeUndefined();
-      expect(map.has(key)).toBeTrue();
-      expect(map.get(key)).toEqual(value);
+      const expectedResult1: Map<boolean, Map<number, string>> = new Map<boolean, Map<number, string>>();
+      expectedResult1.set(true, new Map());
+      expectedResult1.set(false, new Map());
+      expectedResult1.get(true)!.set(1, 'Hi');
+      expectedResult1.get(false)!.set(2, 'Hello');
+
+      const expectedResult2: Map<boolean, Map<number, number>> = new Map<boolean, Map<number, number>>();
+      expectedResult2.set(true, new Map());
+      expectedResult2.set(false, new Map());
+      expectedResult2.get(true)!.set(2, 22);
+      expectedResult2.get(true)!.set(4, 34);
+      expectedResult2.get(false)!.set(1, 10);
+      expectedResult2.get(false)!.set(3, 16);
+
+      verifyMaps(
+        MapUtil.partition(sourceMap1, isKeyOddRaw),
+        expectedResult1
+      );
+      verifyMaps(
+        MapUtil.partition(sourceMap2, areKeyValueEvenPredicate),
+        expectedResult2
+      );
     });
 
   });
@@ -2144,6 +2187,65 @@ describe('MapUtil', () => {
         MapUtil.retainAll(sourceMap, MapUtil.of([[1, u1]]), mapElementsComparison),
         MapUtil.of([[1, u1], [3, u3]])
       );
+    });
+
+  });
+
+
+
+  describe('setIfAbsent', () => {
+
+    it('when given sourceMap is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => MapUtil.setIfAbsent(undefined, 'A', 11)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => MapUtil.setIfAbsent(null, 'A', 11)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap is empty then key and value is always added', () => {
+      const key = 'A';
+      const value = 11;
+
+      const emptyMap: Map<string, number> = new Map<string, number>();
+
+      expect(MapUtil.setIfAbsent(emptyMap, key, value)).toBeUndefined();
+      expect(emptyMap.size).toEqual(1);
+      expect(emptyMap.has(key)).toBeTrue();
+    });
+
+
+    it('when given sourceMap contains the key then no new value is added and existing one keeps and is returned', () => {
+      const key = 'A';
+      const value = 11;
+
+      const mapWithNullValue: Map<string, number> = new Map<string, number>();
+      // @ts-ignore
+      mapWithNullValue.set(key, null);
+
+      const mapWithOtherValue: Map<string, number> = new Map<string, number>();
+      mapWithOtherValue.set(key, value + 1);
+
+      expect(MapUtil.setIfAbsent(mapWithNullValue, key, value)).toBeNull();
+      expect(mapWithNullValue.has(key)).toBeTrue();
+      expect(mapWithNullValue.get(key)).toBeNull();
+
+      expect(MapUtil.setIfAbsent(mapWithOtherValue, key, value)).toEqual(value + 1);
+      expect(mapWithOtherValue.has(key)).toBeTrue();
+      expect(mapWithOtherValue.get(key)).toEqual(value + 1);
+    });
+
+
+    it('when given sourceMap does not contain the key then new value is added and undefined is returned', () => {
+      const key = 'A';
+      const value = 11;
+
+      const map: Map<string, number> = new Map<string, number>();
+      map.set('B', 12);
+
+      expect(MapUtil.setIfAbsent(map, key, value)).toBeUndefined();
+      expect(map.has(key)).toBeTrue();
+      expect(map.get(key)).toEqual(value);
     });
 
   });

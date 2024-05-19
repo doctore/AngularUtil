@@ -616,7 +616,7 @@ export class StringUtil {
         const currentChar = sourceString![i];
         const discriminatorKeyResult = finalDiscriminatorKey.apply(currentChar);
         if (finalFilterPredicate.apply(currentChar)) {
-          MapUtil.putIfAbsent(
+          MapUtil.setIfAbsent(
             result,
             discriminatorKeyResult,
             ''

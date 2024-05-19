@@ -664,7 +664,7 @@ export class ArrayUtil {
       for (let item of sourceArray!) {
         if (finalFilterPredicate.apply(item)) {
           const discriminatorKeyResult = finalDiscriminatorKey.apply(item);
-          MapUtil.putIfAbsent(
+          MapUtil.setIfAbsent(
             result,
             discriminatorKeyResult,
             []
@@ -736,7 +736,7 @@ export class ArrayUtil {
             []
           );
           for (let key of discriminatorKeyResult!) {
-            MapUtil.putIfAbsent(
+            MapUtil.setIfAbsent(
               result,
               key,
               []
@@ -836,7 +836,7 @@ export class ArrayUtil {
       for (let item of sourceArray!) {
         if (finalPartialFunction.isDefinedAt(item)) {
           const pairKeyValue: [K, V] = <[K, V]>finalPartialFunction.apply(item);
-          MapUtil.putIfAbsent(
+          MapUtil.setIfAbsent(
             result,
             pairKeyValue[0],
             []
@@ -914,7 +914,7 @@ export class ArrayUtil {
              []
            );
           for (let key of discriminatorKeyResult!) {
-            MapUtil.putIfAbsent(
+            MapUtil.setIfAbsent(
               result,
               key,
               []

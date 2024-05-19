@@ -10,7 +10,7 @@ import {
 } from '@app-core/types/function';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Optional } from '@app-core/types/functional';
-import { Predicate2, TPredicate2 } from '@app-core/types/predicate';
+import { FPredicate2, Predicate2, TPredicate2 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 
@@ -780,7 +780,7 @@ export class MapUtil {
             key,
             value
           );
-          MapUtil.putIfAbsent(
+          MapUtil.setIfAbsent(
             result,
             discriminatorResult,
             new Map<K, V>()
@@ -860,7 +860,7 @@ export class MapUtil {
             []
           );
           for (let i = 0; i < discriminatorResult.length; i++) {
-            MapUtil.putIfAbsent(
+            MapUtil.setIfAbsent(
               result,
               discriminatorResult[i],
               new Map<K, V>()
@@ -963,7 +963,7 @@ export class MapUtil {
       for (let [key, value] of sourceMap!) {
         if (finalPartialFunction.isDefinedAt([key, value])) {
           const pairKeyValue: [K2, V2] = <[K2, V2]>finalPartialFunction.apply([key, value]);
-          MapUtil.putIfAbsent(
+          MapUtil.setIfAbsent(
             result,
             pairKeyValue[0],
             []
@@ -1316,35 +1316,57 @@ export class MapUtil {
 
 
   /**
-   *   If the specified `key` is not already associated with a value in provided {@link Map}, then associates it with the
-   * given `value` and returns `undefined`, else returns the previous stored `value`.
+   *    Returns a {@link Map} of {@link Boolean} as key, on which `true` contains all elements that satisfy given
+   * `discriminator` and `false`, all elements that do not.
+   *
+   * <pre>
+   *    partition(                                       Result:
+   *       [(1, 'Hi'), (2, 'Hello')],                     [(true,  [(2, 'Hello')])
+   *       (k: number, v: string) => 0 == k % 2            (false, [(1, 'Hi')])]
+   *    )
+   * </pre>
    *
    * @param sourceMap
-   *    {@link Map} to update if required
-   * @param key
-   *    Key with which the specified `value` is to be associated
-   * @param value
-   *    Value to be associated with the specified `key`
+   *    {@link Map} to filter
+   * @param discriminator
+   *    {@link TPredicate2} used to split the elements of `sourceMap`
    *
-   * @return the current `value` associated with the specified `key`, or `undefined` if there was no mapping for the `key`.
+   * @return new {@link Map} with two keys: `true`, `false` based on elements in `sourceMap` that  satisfy given `discriminator`
    *
-   * @throws {IllegalArgumentError} if `sourceMap` is `null` or `undefined`
+   * @throws {IllegalArgumentError} if `discriminator` is `null` or `undefined` and `sourceMap` is not empty
    */
-  static putIfAbsent = <K, V>(sourceMap: Map<K, V>,
-                              key: K,
-                              value: V): OrUndefined<V> => {
-    AssertUtil.notNullOrUndefined(
-      sourceMap,
-      'sourceMap must be not null and not undefined'
-    );
-    if (!sourceMap.has(key)) {
-      sourceMap.set(
-        key,
-        value
+  static partition<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         discriminator: TPredicate2<K, V>): Map<boolean, Map<K, V>>;
+
+
+  static partition<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         discriminator: FPredicate2<K, V>): Map<boolean, Map<K, V>>;
+
+
+  static partition<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
+                         discriminator: TPredicate2<K, V>): Map<boolean, Map<K, V>> {
+    const result: Map<boolean, Map<K, V>> = new Map<boolean, Map<K, V>>();
+    result.set(true, new Map<K, V>());
+    result.set(false, new Map<K, V>());
+    if (!this.isEmpty(sourceMap)) {
+      AssertUtil.notNullOrUndefined(
+        discriminator,
+        'discriminator must be not null and not undefined'
       );
-      return undefined;
+      const finalDiscriminator = Predicate2.of(discriminator!);
+      for (let [key, value] of sourceMap!) {
+        result.get(
+          finalDiscriminator.apply(
+            key,
+            value
+          )
+        )!.set(
+          key,
+          value
+        );
+      }
     }
-    return sourceMap.get(key);
+    return result;
   }
 
 
@@ -1568,6 +1590,39 @@ export class MapUtil {
       }
     }
     return result;
+  }
+
+
+  /**
+   *   If the specified `key` is not already associated with a value in provided {@link Map}, then associates it with the
+   * given `value` and returns `undefined`, else returns the previous stored `value`.
+   *
+   * @param sourceMap
+   *    {@link Map} to update if required
+   * @param key
+   *    Key with which the specified `value` is to be associated
+   * @param value
+   *    Value to be associated with the specified `key`
+   *
+   * @return the current `value` associated with the specified `key`, or `undefined` if there was no mapping for the `key`.
+   *
+   * @throws {IllegalArgumentError} if `sourceMap` is `null` or `undefined`
+   */
+  static setIfAbsent = <K, V>(sourceMap: Map<K, V>,
+                              key: K,
+                              value: V): OrUndefined<V> => {
+    AssertUtil.notNullOrUndefined(
+      sourceMap,
+      'sourceMap must be not null and not undefined'
+    );
+    if (!sourceMap.has(key)) {
+      sourceMap.set(
+        key,
+        value
+      );
+      return undefined;
+    }
+    return sourceMap.get(key);
   }
 
 
