@@ -1805,6 +1805,57 @@ export class ArrayUtil {
 
 
   /**
+   * Transposes the rows and columns of the given `sourceMatrix`.
+   *
+   * <pre>
+   *    transpose(                                            Result:
+   *       [[1, 2, 3], [4, 5, 6]]                              [[1, 4], [2, 5], [3, 6]]
+   *    )
+   *    transpose(                                            Result:
+   *       [['a1', 'a2'], ['b1', 'b2'], ['c1', 'c2']]          [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]
+   *    )
+   *    transpose(                                            Result:
+   *       [[1, 2], [0], [7, 8, 9]]                            [[1, 0, 7], [2, 8], [9]]
+   *    )
+   * </pre>
+   *
+   * @param sourceMatrix
+   *    Array of arrays to transpose
+   *
+   * @return Array of arrays
+   */
+  static transpose = <T>(sourceMatrix: NullableOrUndefined<T[][]>): T[][] => {
+    if (this.isEmpty(sourceMatrix)) {
+      return [];
+    }
+    let lengthOfLongestSubArray = -1;
+    let lengthsOfSubArrays: number[] = [];
+    for (let i = 0; i < sourceMatrix!.length; i++) {
+      const currentLength = this.isEmpty(sourceMatrix![i])
+        ? -1
+        : sourceMatrix![i].length;
+      lengthsOfSubArrays.push(currentLength);
+      if (lengthOfLongestSubArray < currentLength) {
+        lengthOfLongestSubArray = currentLength;
+      }
+    }
+    const result: T[][] = [];
+    for (let i = 0; i < lengthOfLongestSubArray; i++) {
+      const newRow: T[] = [];
+      for (let j = 0; j < lengthsOfSubArrays.length; j++) {
+        if (lengthsOfSubArrays[j] > i) {
+          newRow.push(
+            sourceMatrix![j][i]
+          );
+        }
+      }
+      result.push(newRow);
+    }
+    return result;
+  }
+
+
+  /**
    * Returns the final version of provided {@link TPredicate2} to know if two elements of type `T` are equals.
    *
    * @param areEqualsComparison

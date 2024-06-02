@@ -2266,6 +2266,80 @@ describe('ArrayUtil', () => {
 
   });
 
+
+
+  describe('transpose', () => {
+
+    it('when given sourceMatrix has no elements then empty array is returned', () => {
+      const emptyMatrix: number[][] = [];
+
+      const expectedResult: number[][] = [];
+
+      expect(ArrayUtil.transpose(null)).toEqual(expectedResult);
+      expect(ArrayUtil.transpose(undefined)).toEqual(expectedResult);
+      expect(ArrayUtil.transpose(emptyMatrix)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceMatrix has elements and all internal arrays have the same size then transposed matrix is returned', () => {
+      const sourceMatrix1: number[][] = [[1, 2, 3], [4, 5, 6]];
+      const sourceMatrix2: string[][] = [['a1', 'a2'], ['b1', 'b2'], ['c1', 'c2']];
+
+      const expectedResult1: number[][] = [[1, 4], [2, 5], [3, 6]];
+      const expectedResult2: string[][] = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']];
+
+      verifyMatrix(
+        ArrayUtil.transpose(sourceMatrix1),
+        expectedResult1
+      );
+      verifyMatrix(
+        ArrayUtil.transpose(sourceMatrix2),
+        expectedResult2
+      );
+    });
+
+
+    it('when given sourceMatrix has elements but not all internal arrays have the same size then transposed matrix is returned', () => {
+      const sourceMatrix1: number[][] = [[1, 2], [0], [7, 8, 9]];
+      const sourceMatrix2: string[][] = [['a1'], ['b1', 'b2', 'b3'], ['c1', 'c2']];
+
+      const expectedResult1: number[][] = [[1, 0, 7], [2, 8], [9]];
+      const expectedResult2: string[][] = [['a1', 'b1', 'c1'], ['b2', 'c2'], ['b3']];
+
+      verifyMatrix(
+        ArrayUtil.transpose(sourceMatrix1),
+        expectedResult1
+      );
+      verifyMatrix(
+        ArrayUtil.transpose(sourceMatrix2),
+        expectedResult2
+      );
+    });
+
+
+    it('when given sourceMatrix has elements and contains null or undefined elements then those ones will be included in the returned transposed matrix', () => {
+      // @ts-ignore
+      const sourceMatrix1: number[][] = [[1, null], null, [4, null]];
+      // @ts-ignore
+      const sourceMatrix2: string[][] = [['a1', undefined, 'a3'], ['b1', 'b2', 'b3'], ['c1', 'c2']];
+
+      // @ts-ignore
+      const expectedResult1: number[][] = [[1, 4], [null, null]];
+      // @ts-ignore
+      const expectedResult2: string[][] = [['a1', 'b1', 'c1'], [undefined, 'b2', 'c2'], ['a3', 'b3']];
+
+      verifyMatrix(
+        ArrayUtil.transpose(sourceMatrix1),
+        expectedResult1
+      );
+      verifyMatrix(
+        ArrayUtil.transpose(sourceMatrix2),
+        expectedResult2
+      );
+    });
+
+  });
+
 });
 
 
