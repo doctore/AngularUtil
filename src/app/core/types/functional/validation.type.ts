@@ -738,7 +738,9 @@ export class Invalid<E, T> extends Validation<E, T> {
  * @typeParam  <T>
  *    Type of the instance to validate
  *
- * @see {@link Valid}, {@link Invalid} and {@link ValidationError}
+ * @see Valid
+ * @see Invalid
+ * @see ValidationError
  */
 export interface Validate<T> {
 

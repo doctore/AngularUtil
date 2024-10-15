@@ -20,7 +20,7 @@ export class ObjectUtil {
    *
    * <pre>
    *    coalesce(                      Result:
-   *      null,                         0
+   *      null,                         12
    *      undefined,
    *      12,
    *      15
