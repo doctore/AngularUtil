@@ -57,12 +57,7 @@ describe('Validation', () => {
 
     it('when given validations are null, undefined or empty then a Valid with null value is returned', () => {
       expect(Validation.combine(null).isValid()).toBeTrue();
-      expect(Validation.combine(null).isValid()).toBeTrue();
-
       expect(Validation.combine(undefined).isValid()).toBeTrue();
-      expect(Validation.combine(undefined).isValid()).toBeTrue();
-
-      expect(Validation.combine([]).isValid()).toBeTrue();
       expect(Validation.combine([]).isValid()).toBeTrue();
     });
 
@@ -102,12 +97,7 @@ describe('Validation', () => {
 
     it('when given validations are null, undefined or empty then a Valid with null value is returned', () => {
       expect(Validation.combineGetFirstInvalid(null).isValid()).toBeTrue();
-      expect(Validation.combineGetFirstInvalid(null).isValid()).toBeTrue();
-
       expect(Validation.combineGetFirstInvalid(undefined).isValid()).toBeTrue();
-      expect(Validation.combineGetFirstInvalid(undefined).isValid()).toBeTrue();
-
-      expect(Validation.combineGetFirstInvalid([]).isValid()).toBeTrue();
       expect(Validation.combineGetFirstInvalid([]).isValid()).toBeTrue();
     });
 
@@ -146,6 +136,94 @@ describe('Validation', () => {
         Validation.combineGetFirstInvalid(validations).getErrors(),
         ['A']
       );
+    });
+
+  });
+
+
+
+  describe('combineAllAndGetFirstInvalid', () => {
+
+    it('when given verifyAll and verifyUpToFirstInvalid are null, undefined or empty then a Valid with null value is returned', () => {
+      expect(Validation.combineAllAndGetFirstInvalid(null, null).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid(null, undefined).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid(undefined, undefined).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid(undefined, null).isValid()).toBeTrue();
+
+      expect(Validation.combineAllAndGetFirstInvalid([], []).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid(null, []).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid([], null).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid(undefined, []).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid([], undefined).isValid()).toBeTrue();
+    });
+
+
+    it('when given verifyUpToFirstInvalid contains null or undefined elements then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => Validation.combineAllAndGetFirstInvalid(null, [() => Validation.valid(1), null])).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Validation.combineAllAndGetFirstInvalid(undefined, [undefined, () => Validation.valid(1)])).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => Validation.combineAllAndGetFirstInvalid([], [() => Validation.valid(1), null])).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when verifyAll contains Invalid then Invalid instance merging all is returned', () => {
+      const verifyAll: Validation<string, number>[] = [
+        Validation.valid(2),
+        Validation.invalid(['A']),
+        Validation.invalid(['B'])
+      ];
+      const verifyUpToFirstInvalid: TFunction0<Validation<string, number>>[] = [
+        () => Validation.valid(2),
+      ];
+
+      expect(Validation.combineAllAndGetFirstInvalid(verifyAll, verifyUpToFirstInvalid).isValid()).toBeFalse();
+
+      verifyArrays(
+        Validation.combineAllAndGetFirstInvalid(verifyAll, verifyUpToFirstInvalid).getErrors(),
+        ['A', 'B']
+      );
+    });
+
+
+    it('when verifyAll only contains Valid but verifyUpToFirstInvalid contains Invalid then first Invalid instance is returned', () => {
+      const verifyAll: Validation<string, number>[] = [
+        Validation.valid(12),
+        Validation.valid(11),
+        Validation.valid(10)
+      ];
+      const verifyUpToFirstInvalid: TFunction0<Validation<string, number>>[] = [
+        () => Validation.valid(2),
+        () => Validation.invalid(['A']),
+        () => Validation.invalid(['B'])
+      ];
+
+      expect(Validation.combineAllAndGetFirstInvalid(verifyAll, verifyUpToFirstInvalid).isValid()).toBeFalse();
+
+      verifyArrays(
+        Validation.combineAllAndGetFirstInvalid(verifyAll, verifyUpToFirstInvalid).getErrors(),
+        ['A']
+      );
+    });
+
+
+    it('when given verifyAll and verifyUpToFirstInvalid are Valid then last Valid instance is returned', () => {
+      const verifyAll: Validation<string, number>[] = [
+        Validation.valid(12),
+        Validation.valid(11),
+        Validation.valid(10)
+      ];
+      const verifyUpToFirstInvalid: TFunction0<Validation<string, number>>[] = [
+        () => Validation.valid(22),
+        () => Validation.valid(21),
+        () => Validation.valid(20)
+      ];
+
+      expect(Validation.combineAllAndGetFirstInvalid(verifyAll, verifyUpToFirstInvalid).isValid()).toBeTrue();
+      expect(Validation.combineAllAndGetFirstInvalid(verifyAll, verifyUpToFirstInvalid).get()).toEqual(20);
     });
 
   });
@@ -1366,6 +1444,63 @@ describe('Validate', () => {
 
 
 
+  describe('validateWithAllAndGetFirstInvalid', () => {
+
+    it('when provided instance does not verify rules then an Invalid instance with an array of ValidationError is returned', () => {
+      const invalidPizzaName = new Pizza('12#2', 11);
+      const invalidPizzaCost = new Pizza('Margherita', -5);
+      const invalidPizzaNameAndCost = new Pizza('M%1', -7);
+
+      const resultInvalidPizzaName = new PizzaValidatorAllAndGetFirstInvalid().validate(invalidPizzaName);
+      const resultInvalidPizzaCost = new PizzaValidatorAllAndGetFirstInvalid().validate(invalidPizzaCost);
+      const resultInvalidPizzaNameAndCost = new PizzaValidatorAllAndGetFirstInvalid().validate(invalidPizzaNameAndCost);
+
+      expect(resultInvalidPizzaName.isValid()).toBeFalse();
+      expect(resultInvalidPizzaName.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaName.getErrors()[0].equals(
+          ValidationError.of(
+            1,
+            'Name contains invalid characters: "' + invalidPizzaName.name + '"'
+          )
+        )
+      ).toBeTrue();
+
+      expect(resultInvalidPizzaCost.isValid()).toBeFalse();
+      expect(resultInvalidPizzaCost.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaCost.getErrors()[0].equals(
+          ValidationError.of(
+            2,
+            'Cost must be at least: 0'
+          )
+        )
+      ).toBeTrue();
+
+      expect(resultInvalidPizzaNameAndCost.isValid()).toBeFalse();
+      expect(resultInvalidPizzaNameAndCost.getErrors().length).toEqual(1);
+      expect(resultInvalidPizzaNameAndCost.getErrors()[0].equals(
+          ValidationError.of(
+            1,
+            'Name contains invalid characters: "' + invalidPizzaNameAndCost.name + '"'
+          )
+        )
+      ).toBeTrue();
+    });
+
+
+    it('when provided instance verifies rules then a Valid instance is returned', () => {
+      const validPizzaName = new Pizza('Carbonara', 15);
+
+      const resultValidPizzaName = new PizzaValidatorAllAndGetFirstInvalid().validate(validPizzaName);
+
+      expect(resultValidPizzaName.isValid()).toBeTrue();
+      expect(resultValidPizzaName.get().name).toEqual(validPizzaName.name);
+      expect(resultValidPizzaName.get().cost).toEqual(validPizzaName.cost);
+    });
+
+  });
+
+
+
   /**
    * Classes used for testing purpose
    */
@@ -1399,10 +1534,47 @@ describe('Validate', () => {
   }
 
 
-  class PizzaValidatorCombine implements Validate<Pizza> {
+  abstract class PizzaValidator implements Validate<Pizza> {
 
     private static VALID_NAME_CHARS = /[a-zA-Z ]/gi;
     private static MIN_COST = 0;
+
+
+    abstract validate(instanceToValidate: Pizza): Validation<ValidationError, Pizza>;
+
+    validateName = (p: Pizza): Validation<ValidationError, Pizza> => {
+      const onlyValidCharacters = p.name.replace(
+        PizzaValidator.VALID_NAME_CHARS,
+        ''
+      );
+      return StringUtil.isBlank(onlyValidCharacters)
+        ? Validation.valid(p)
+        : Validation.invalid(
+          [
+            ValidationError.of(
+              1,
+              'Name contains invalid characters: "' + p.name + '"'
+            )
+          ]
+        );
+    }
+
+    validateCost = (p: Pizza): Validation<ValidationError, Pizza> =>
+      p.cost >= PizzaValidator.MIN_COST
+        ? Validation.valid(p)
+        : Validation.invalid(
+          [
+            ValidationError.of(
+              2,
+              'Cost must be at least: ' + PizzaValidator.MIN_COST
+            )
+          ]
+        );
+
+  }
+
+
+  class PizzaValidatorCombine extends PizzaValidator {
 
     validate(instanceToValidate: Pizza): Validation<ValidationError, Pizza> {
       return Validation.combine(
@@ -1413,42 +1585,10 @@ describe('Validate', () => {
       );
     }
 
-    validateName = (p: Pizza): Validation<ValidationError, Pizza> => {
-      const onlyValidCharacters = p.name.replace(
-        PizzaValidatorCombine.VALID_NAME_CHARS,
-        ''
-      );
-      return StringUtil.isBlank(onlyValidCharacters)
-        ? Validation.valid(p)
-        : Validation.invalid(
-            [
-              ValidationError.of(
-                1,
-                'Name contains invalid characters: "' + p.name + '"'
-              )
-            ]
-          );
-    }
-
-    validateCost = (p: Pizza): Validation<ValidationError, Pizza> =>
-      p.cost >= PizzaValidatorCombine.MIN_COST
-        ? Validation.valid(p)
-        : Validation.invalid(
-            [
-              ValidationError.of(
-                2,
-                'Cost must be at least: ' + PizzaValidatorCombine.MIN_COST
-              )
-            ]
-          );
-
   }
 
 
-  class PizzaValidatorGetFirstInvalid implements Validate<Pizza> {
-
-    private static VALID_NAME_CHARS = /[a-zA-Z ]/gi;
-    private static MIN_COST = 0;
+  class PizzaValidatorGetFirstInvalid extends PizzaValidator {
 
     validate(instanceToValidate: Pizza): Validation<ValidationError, Pizza> {
       return Validation.combineGetFirstInvalid(
@@ -1458,35 +1598,19 @@ describe('Validate', () => {
         ]
       );
     }
+  }
 
-    validateName = (p: Pizza): Validation<ValidationError, Pizza> => {
-      const onlyValidCharacters = p.name.replace(
-        PizzaValidatorGetFirstInvalid.VALID_NAME_CHARS,
-        ''
+
+  class PizzaValidatorAllAndGetFirstInvalid extends PizzaValidator {
+
+    validate(instanceToValidate: Pizza): Validation<ValidationError, Pizza> {
+      return Validation.combineAllAndGetFirstInvalid(
+        [ this.validateName(instanceToValidate) ],
+        [
+          () => this.validateCost(instanceToValidate)
+        ]
       );
-      return StringUtil.isBlank(onlyValidCharacters)
-        ? Validation.valid(p)
-        : Validation.invalid(
-            [
-              ValidationError.of(
-                1,
-                'Name contains invalid characters: "' + p.name + '"'
-              )
-            ]
-          );
     }
-
-    validateCost = (p: Pizza): Validation<ValidationError, Pizza> =>
-      p.cost >= PizzaValidatorGetFirstInvalid.MIN_COST
-        ? Validation.valid(p)
-        : Validation.invalid(
-            [
-              ValidationError.of(
-                2,
-                'Cost must be at least: ' + PizzaValidatorGetFirstInvalid.MIN_COST
-              )
-            ]
-          );
   }
 
 });

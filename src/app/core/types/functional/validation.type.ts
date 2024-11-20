@@ -79,9 +79,9 @@ export abstract class Validation<E, T> {
    * <pre>
    * Examples:
    *
-   *   combine(Validation.valid(11), Validation.valid(7));                                        // Valid(7)
-   *   combine(Validation.valid(13), Validation.invalid(['A']));                                  // Invalid(['A'])
-   *   combine(Validation.valid(10), Validation.invalid(['A']), Validation.invalid(['B']));       // Invalid(['A', 'B'])
+   *   combine([Validation.valid(11), Validation.valid(7)]);                                        // Valid(7)
+   *   combine([Validation.valid(13), Validation.invalid(['A'])]);                                  // Invalid(['A'])
+   *   combine([Validation.valid(10), Validation.invalid(['A']), Validation.invalid(['B'])]);       // Invalid(['A', 'B'])
    * </pre>
    *
    * @param validations
@@ -108,9 +108,9 @@ export abstract class Validation<E, T> {
    * <pre>
    * Examples:
    *
-   *   combineGetFirstInvalid(() => Validation.valid(1), () => Validation.valid(7));                                            // Valid(7)
-   *   combineGetFirstInvalid(() => Validation.valid(3), () => Validation.invalid(['A']));                                      // Invalid(['A'])
-   *   combineGetFirstInvalid(() => Validation.valid(2), () => Validation.invalid(['A']), () => Validation.invalid(['B']));     // Invalid(['A'])
+   *   combineGetFirstInvalid([() => Validation.valid(1), () => Validation.valid(7)]);                                            // Valid(7)
+   *   combineGetFirstInvalid([() => Validation.valid(3), () => Validation.invalid(['A'])]);                                      // Invalid(['A'])
+   *   combineGetFirstInvalid([() => Validation.valid(2), () => Validation.invalid(['A']), () => Validation.invalid(['B'])]);     // Invalid(['A'])
    * </pre>
    *
    * @param validations
@@ -137,6 +137,43 @@ export abstract class Validation<E, T> {
       }
     }
     return result;
+  }
+
+
+  /**
+   * Checks the given `verifyAll` and `verifyUpToFirstInvalid` following the next rules:
+   * <p>
+   *   1. If `verifyAll` is not empty, then verifies all provided ones. {@link Valid} with `null` value will be returned otherwise.
+   * <p>
+   *   2. If {@link Valid} was the result after checking `verifyAll`, then verifies given `verifyUpToFirstInvalid` up to
+   *   receive the first {@link Invalid} one. If `verifyUpToFirstInvalid` is `null`, `undefined` or empty, the result of
+   *   point 1 will be returned.
+   *
+   * <pre>
+   *    combineAllAndGetFirstInvalid([Validation.valid(11)], [() => Validation.valid(7)]);               // Valid(7)
+   *    combineAllAndGetFirstInvalid([Validation.invalid(['A'])], [() => Validation.valid(7)]);          // Invalid(List("A"))
+   *    combineAllAndGetFirstInvalid([Validation.valid(11)], [() => Validation.invalid('B')]);           // Invalid(List("B"))
+   * </pre>
+   *
+   * @param verifyAll
+   *    Array of {@link Validation} instances to combine and check
+   * @param verifyUpToFirstInvalid
+   *    Array of {@link TFunction0} of {@link Validation} instances to verify
+   *
+   * @return {@link Validation}
+   *
+   * @throws {IllegalArgumentError} if `verifyUpToFirstInvalid` is not empty but contains `null` or `undefined`
+   */
+  static combineAllAndGetFirstInvalid = <E, T>(verifyAll: NullableOrUndefined<Validation<E, T>[]>,
+                                               verifyUpToFirstInvalid: NullableOrUndefined<TFunction0<Validation<E, T>>[]>): Validation<E, T> => {
+    let resultVerifyAll: Validation<E, T> = Validation.combine(verifyAll);
+    return resultVerifyAll
+      .flatMap(
+        v =>
+          ArrayUtil.isEmpty(verifyUpToFirstInvalid)
+            ? resultVerifyAll
+            : Validation.combineGetFirstInvalid(verifyUpToFirstInvalid)
+      );
   }
 
 
