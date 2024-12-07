@@ -82,9 +82,9 @@ describe('ObjectUtil', () => {
 
     it('when given sourceObject is null or undefined then undefined is returned', () => {
       // @ts-ignore
-      expect(ObjectUtil.copyProperties(null, 'id')).toBeUndefined();
+      expect(ObjectUtil.copyProperties(null, ['id'])).toBeUndefined();
       // @ts-ignore
-      expect(ObjectUtil.copyProperties(undefined, 'id')).toBeUndefined();
+      expect(ObjectUtil.copyProperties(undefined, ['id'])).toBeUndefined();
     });
 
 
@@ -94,7 +94,7 @@ describe('ObjectUtil', () => {
 
       expect(ObjectUtil.copyProperties(user, null)).toBeUndefined();
       expect(ObjectUtil.copyProperties(user, undefined)).toBeUndefined();
-      expect(ObjectUtil.copyProperties(user)).toBeUndefined();
+      expect(ObjectUtil.copyProperties(user, [])).toBeUndefined();
     });
 
 
@@ -112,8 +112,8 @@ describe('ObjectUtil', () => {
         roles: user.roles
       };
 
-      expect(ObjectUtil.copyProperties(user, 'id', 'name')).toEqual(expectedWithIdAndName);
-      expect(ObjectUtil.copyProperties(user, 'id', 'roles')).toEqual(expectedWithIdAndRoles);
+      expect(ObjectUtil.copyProperties(user, ['id', 'name'])).toEqual(expectedWithIdAndName);
+      expect(ObjectUtil.copyProperties(user, ['id', 'roles'])).toEqual(expectedWithIdAndRoles);
     });
 
   });
@@ -124,9 +124,9 @@ describe('ObjectUtil', () => {
 
     it('when given sourceObject is null or undefined then empty Optional is returned', () => {
       // @ts-ignore
-      expect(ObjectUtil.copyPropertiesOptional(null, 'id').isPresent()).toBeFalse();
+      expect(ObjectUtil.copyPropertiesOptional(null, ['id']).isPresent()).toBeFalse();
       // @ts-ignore
-      expect(ObjectUtil.copyPropertiesOptional(undefined, 'id').isPresent()).toBeFalse();
+      expect(ObjectUtil.copyPropertiesOptional(undefined, ['id']).isPresent()).toBeFalse();
     });
 
 
@@ -136,7 +136,7 @@ describe('ObjectUtil', () => {
 
       expect(ObjectUtil.copyPropertiesOptional(user, null).isPresent()).toBeFalse();
       expect(ObjectUtil.copyPropertiesOptional(user, undefined).isPresent()).toBeFalse();
-      expect(ObjectUtil.copyPropertiesOptional(user).isPresent()).toBeFalse();
+      expect(ObjectUtil.copyPropertiesOptional(user, []).isPresent()).toBeFalse();
     });
 
 
@@ -154,11 +154,11 @@ describe('ObjectUtil', () => {
         roles: user.roles
       };
 
-      const resultWithIdAndName = ObjectUtil.copyPropertiesOptional(user, 'id', 'name');
+      const resultWithIdAndName = ObjectUtil.copyPropertiesOptional(user, ['id', 'name']);
       expect(resultWithIdAndName.isPresent()).toBeTrue();
       expect(resultWithIdAndName.get()).toEqual(expectedWithIdAndName);
 
-      const resultWithIdAndRoles = ObjectUtil.copyPropertiesOptional(user, 'id', 'roles');
+      const resultWithIdAndRoles = ObjectUtil.copyPropertiesOptional(user, ['id', 'roles']);
       expect(resultWithIdAndRoles.isPresent()).toBeTrue();
       expect(resultWithIdAndRoles.get()).toEqual(expectedWithIdAndRoles);
     });
@@ -341,6 +341,54 @@ describe('ObjectUtil', () => {
       expect(ObjectUtil.nonNullOrUndefined(true)).toBeTrue();
       expect(ObjectUtil.nonNullOrUndefined(intValue)).toBeTrue();
       expect(ObjectUtil.nonNullOrUndefined(stringValue)).toBeTrue();
+    });
+
+  });
+
+
+  describe('sortObjectProperties', () => {
+
+    it('when given sourceObject is null or undefined then undefined is returned', () => {
+      expect(ObjectUtil.sortObjectProperties(null)).toBeUndefined();
+      expect(ObjectUtil.sortObjectProperties(undefined)).toBeUndefined();
+    });
+
+
+    it('when given sourceObject is not an object then it is returned', () => {
+      const intValue = 11;
+      const stringValue = 'abd';
+
+      expect(ObjectUtil.sortObjectProperties(intValue)).toEqual(intValue);
+      expect(ObjectUtil.sortObjectProperties(stringValue)).toEqual(stringValue);
+    });
+
+
+    it('when given sourceObject is an object then a copy with its properties sorted is returned', () => {
+      const rawObject1 = {
+        c: 1,
+        a: '2',
+        b: false
+      };
+      const rawObject2 = {
+        b: 1,
+        a: '2',
+        h: {
+          z: 11,
+          a: 'ea',
+          c: {
+            f: false,
+            d: '123'
+          }
+        }
+      };
+      const expectedJsonRawObject1 = '{"a":"2","b":false,"c":1}';
+      const expectedJsonRawObject2 = '{"a":"2","b":1,"h":{"a":"ea","c":{"d":"123","f":false},"z":11}}';
+
+      const resultTawObject1 = ObjectUtil.sortObjectProperties(rawObject1);
+      expect(JSON.stringify(resultTawObject1)).toEqual(expectedJsonRawObject1);
+
+      const resultTawObject2 = ObjectUtil.sortObjectProperties(rawObject2);
+      expect(JSON.stringify(resultTawObject2)).toEqual(expectedJsonRawObject2);
     });
 
   });

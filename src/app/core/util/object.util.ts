@@ -103,8 +103,7 @@ export class ObjectUtil {
    *   // Will return { id: 10, name: 'user1' }
    *   ObjectUtil.copyProperties(
    *      new User(10, 'user1', 31),
-   *      'id',
-   *      'name'
+   *      ['id', 'name']
    *   );
    * </pre>
    *
@@ -117,10 +116,9 @@ export class ObjectUtil {
    *         `undefined` if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements.
    */
   static copyProperties = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
-                                                 ...propertiesToCopy: NullableOrUndefined<K>[]): OrUndefined<Pick<T, K>> => {
+                                                 propertiesToCopy: NullableOrUndefined<K[]>): OrUndefined<Pick<T, K>> => {
     if (this.isNullOrUndefined(sourceObject) ||
-        ArrayUtil.isEmpty(propertiesToCopy) ||
-        (1 == propertiesToCopy.length) && (this.isNullOrUndefined(propertiesToCopy[0]))) {
+        ArrayUtil.isEmpty(propertiesToCopy)) {
       return undefined;
     }
     const result = {} as Pick<T, K>;
@@ -155,8 +153,7 @@ export class ObjectUtil {
    *   // Will return Optional({ id: 10, name: 'user1' })
    *   ObjectUtil.copyPropertiesOptional(
    *      new User(10, 'user1', 31),
-   *      'id',
-   *      'name'
+   *      ['id', 'name']
    *   );
    * </pre>
    *
@@ -169,10 +166,9 @@ export class ObjectUtil {
    *         {@link Optional#empty} if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements.
    */
   static copyPropertiesOptional = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
-                                                         ...propertiesToCopy: NullableOrUndefined<K>[]): Optional<Pick<T, K>> => {
+                                                         propertiesToCopy: NullableOrUndefined<K[]>): Optional<Pick<T, K>> => {
     if (this.isNullOrUndefined(sourceObject) ||
-        ArrayUtil.isEmpty(propertiesToCopy) ||
-        (1 == propertiesToCopy.length) && (this.isNullOrUndefined(propertiesToCopy[0]))) {
+        ArrayUtil.isEmpty(propertiesToCopy)) {
       return Optional.empty<Pick<T, K>>();
     }
     const result = {} as Pick<T, K>;
@@ -330,5 +326,46 @@ export class ObjectUtil {
    */
   static nonNullOrUndefined = <T>(valueToVerify: NullableOrUndefined<T>): valueToVerify is Exclude<typeof valueToVerify, null | undefined> =>
     !this.isNullOrUndefined(valueToVerify);
+
+
+  /**
+   * Returns a copy of provided `sourceObject` sorting its properties.
+   *
+   * @apiNote
+   *    If `sourceObject` is not an {@link Object} then it will be returned.
+   *
+   * <pre>
+   *    sortObjectProperties(                                 Result:
+   *       12                                                  12
+   *    )
+   *    sortObjectProperties(                                 Result:
+   *       { b: 1, a: '2', h: { z: 11, a: 'ea' }}              { a: '2', b: 1, h: { a: 'ea', z: 11 }}
+   *    )
+   * </pre>
+   *
+   * @param sourceObject
+   *    Instance with the properties to sort
+   *
+   * @return new object containing the same properties but sorted,
+   *         `undefined` if `sourceObject` is `null` or `undefined`.
+   */
+  static sortObjectProperties<T>(sourceObject: NullableOrUndefined<T>): OrUndefined<T> {
+    if (this.isNullOrUndefined(sourceObject)) {
+      return undefined;
+    }
+    if ('object' !== typeof sourceObject) {
+      return sourceObject;
+    }
+    return Object.keys(sourceObject!)
+      .sort()
+      .reduce(
+        (accumulator, currentKey) => {
+          // @ts-ignore
+          accumulator[currentKey] = ObjectUtil.sortObjectProperties(sourceObject![currentKey]);
+          return accumulator;
+        },
+        {} as T
+      );
+  }
 
 }
