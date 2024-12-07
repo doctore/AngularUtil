@@ -85,9 +85,11 @@ describe('NumberUtil', () => {
 
       expect(NumberUtil.compare(9, 10)).toEqual(expectedResult);
       expect(NumberUtil.compare('-8.13', '-8.12')).toEqual(expectedResult);
+      expect(NumberUtil.compare('-8.13', '8.13')).toEqual(expectedResult);
 
       expect(NumberUtil.compare(-11.144, -11.143, 0.0009)).toEqual(expectedResult);
       expect(NumberUtil.compare('19.5433', '19.5439', 0.00009)).toEqual(expectedResult);
+      expect(NumberUtil.compare('-19.543', '19.543', 0.00009)).toEqual(expectedResult);
     });
 
 
@@ -96,9 +98,11 @@ describe('NumberUtil', () => {
 
       expect(NumberUtil.compare(11, 10)).toEqual(expectedResult);
       expect(NumberUtil.compare('-7.50', '-7.55')).toEqual(expectedResult);
+      expect(NumberUtil.compare('7.50', '-7.55')).toEqual(expectedResult);
 
       expect(NumberUtil.compare(-11.143, -11.144, 0.0009)).toEqual(expectedResult);
       expect(NumberUtil.compare('19.5439', '19.5433', 0.00009)).toEqual(expectedResult);
+      expect(NumberUtil.compare('19.543', '-19.543', 0.00009)).toEqual(expectedResult);
     });
 
   });
