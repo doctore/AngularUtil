@@ -1807,6 +1807,9 @@ export class ArrayUtil {
   /**
    * Transposes the rows and columns of the given `sourceMatrix`.
    *
+   * @apiNote
+   *    If `sourceMatrix` is `null`, `undefined` or empty then an empty array is returned.
+   *
    * <pre>
    *    transpose(                                            Result:
    *       [[1, 2, 3], [4, 5, 6]]                              [[1, 4], [2, 5], [3, 6]]
@@ -1852,6 +1855,74 @@ export class ArrayUtil {
       result.push(newRow);
     }
     return result;
+  }
+
+
+  /**
+   * Using provided `sourceArray` returns an array of elements containing only unique ones based on given `propertiesToCompare`.
+   *
+   * @apiNote
+   *    If `sourceArray` is `null`, `undefined` or empty then an empty array is returned.
+   *    If `propertiesToCompare` is `null`, `undefined` or empty then `sourceArray` is returned.
+   *
+   * <pre>
+   *    uniqueByProperties(                                   Result:
+   *       [{ a: 1, b: 1 }, { a: 1, b: 2 }],                   [ { a: 1, b: 1 } ]
+   *       ['a'],
+   *       true
+   *    )
+   *    uniqueByProperties(                                   Result:
+   *       [{ a: 1, b: 1 }, { a: 1, b: 2 }],                   [ { a: 1, b: 2 } ]
+   *       ['a'],
+   *       false
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter
+   * @param propertiesToCompare
+   *    Array of properties used to compare the elements of `sourceArray`
+   * @param keepFirstFound
+   *    If `true` then the first unique instance found will be added in the returned array, the `last` otherwise
+   *
+   * @return an array of elements included in `sourceArray`, containing only unique ones based on given `propertiesToCompare`
+   */
+  static uniqueByProperties = <T, K extends keyof T>(sourceArray: NullableOrUndefined<T[]>,
+                                                     propertiesToCompare: NullableOrUndefined<K[]>,
+                                                     keepFirstFound: boolean = true): T[] => {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    if (this.isEmpty(propertiesToCompare)) {
+      return sourceArray!;
+    }
+    return Array.from(
+      sourceArray!.reduce(
+        (accumulator: Map<string, T>, currentElement: T) => {
+          let key = propertiesToCompare!.map(prop => {
+            // @ts-ignore
+            let value = prop.split(".").reduce((object, cur) => object?.[cur], currentElement);
+            return [
+              JSON.stringify(
+                ObjectUtil.sortObjectProperties(value)
+              ),
+              typeof value
+            ];
+          })
+          .flat()
+          .join('-');
+
+          if (keepFirstFound && accumulator.has(key)) {
+            return accumulator;
+          }
+          return accumulator.set(
+            key,
+            currentElement
+          );
+        },
+        new Map<string, T>()
+      ).values()
+    );
   }
 
 

@@ -2340,6 +2340,118 @@ describe('ArrayUtil', () => {
 
   });
 
+
+  describe('uniqueByProperties', () => {
+
+    it('when given sourceArray has no elements then empty array is returned', () => {
+      const emptyArray: number[] = [];
+
+      expect(ArrayUtil.uniqueByProperties(null, [])).toEqual(emptyArray);
+      expect(ArrayUtil.uniqueByProperties(undefined, [])).toEqual(emptyArray);
+      expect(ArrayUtil.uniqueByProperties(emptyArray, [])).toEqual(emptyArray);
+
+      expect(ArrayUtil.uniqueByProperties(null, [], false)).toEqual(emptyArray);
+      expect(ArrayUtil.uniqueByProperties(undefined, [], false)).toEqual(emptyArray);
+      expect(ArrayUtil.uniqueByProperties(emptyArray, [], false)).toEqual(emptyArray);
+
+      expect(ArrayUtil.uniqueByProperties(null, [], true)).toEqual(emptyArray);
+      expect(ArrayUtil.uniqueByProperties(undefined, [], true)).toEqual(emptyArray);
+      expect(ArrayUtil.uniqueByProperties(emptyArray, [], true)).toEqual(emptyArray);
+    });
+
+
+    it('when given propertiesToCompare has no elements then sourceArray is returned', () => {
+      const rawArray = [ { a: 1, b: 1 }, { a: 1, b: 2 } ];
+
+      expect(ArrayUtil.uniqueByProperties(rawArray, null)).toEqual(rawArray);
+      expect(ArrayUtil.uniqueByProperties(rawArray, undefined)).toEqual(rawArray);
+      expect(ArrayUtil.uniqueByProperties(rawArray, [])).toEqual(rawArray);
+
+      expect(ArrayUtil.uniqueByProperties(rawArray, null, false)).toEqual(rawArray);
+      expect(ArrayUtil.uniqueByProperties(rawArray, undefined, false)).toEqual(rawArray);
+      expect(ArrayUtil.uniqueByProperties(rawArray, [], false)).toEqual(rawArray);
+
+      expect(ArrayUtil.uniqueByProperties(rawArray, null, true)).toEqual(rawArray);
+      expect(ArrayUtil.uniqueByProperties(rawArray, undefined, true)).toEqual(rawArray);
+      expect(ArrayUtil.uniqueByProperties(rawArray, [], true)).toEqual(rawArray);
+    });
+
+
+    it('using raw objects, when given sourceArray and propertiesToCompare are not empty and then the unique array of elements is returned', () => {
+      const sourceArray = [
+        { a: 1, b: '2', c: 1, h: { x: 11, z: 'a', u: 12 } },
+        { a: 1, c: 2, b: '2', h: { x: 12, z: 'b', u: 34 } },
+        { a: 1, b: '3', c: 3, h: { x: 11, u: 12, z: 'a' } }
+      ];
+      const expectedJsonUniqueANotKeepFirst = '[{"a":1,"b":"3","c":3,"h":{"x":11,"u":12,"z":"a"}}]';
+      const expectedJsonUniqueAKeepFirst = '[{"a":1,"b":"2","c":1,"h":{"x":11,"z":"a","u":12}}]';
+
+      const expectedJsonUniqueAHNotKeepFirst = '[{"a":1,"b":"3","c":3,"h":{"x":11,"u":12,"z":"a"}},{"a":1,"c":2,"b":"2","h":{"x":12,"z":"b","u":34}}]';
+      const expectedJsonUniqueAHKeepFirst = '[{"a":1,"b":"2","c":1,"h":{"x":11,"z":"a","u":12}},{"a":1,"c":2,"b":"2","h":{"x":12,"z":"b","u":34}}]';
+
+      const resultUniqueANotKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a'], false);
+      expect(JSON.stringify(resultUniqueANotKeepFirst)).toEqual(expectedJsonUniqueANotKeepFirst);
+
+      const resultUniqueAKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a'], true);
+      expect(JSON.stringify(resultUniqueAKeepFirst)).toEqual(expectedJsonUniqueAKeepFirst);
+
+      const resultUniqueAHNotKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a', 'h'], false);
+      expect(JSON.stringify(resultUniqueAHNotKeepFirst)).toEqual(expectedJsonUniqueAHNotKeepFirst);
+
+      const resultUniqueAHKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a', 'h'], true);
+      expect(JSON.stringify(resultUniqueAHKeepFirst)).toEqual(expectedJsonUniqueAHKeepFirst);
+    });
+
+
+    it('using interfaces, when given sourceArray and propertiesToCompare are not empty and then the unique array of elements is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 1, name: 'role3' } as Role;
+
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], false),
+        [r3, r2]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], true),
+        [r1, r2]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], false),
+        [r1, r2, r3]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], true),
+        [r1, r2, r3]
+      );
+    });
+
+
+    it('using classes, when given sourceArray and propertiesToCompare are not empty and then the unique array of elements is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user1');
+
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], false),
+        [u3, u2]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], true),
+        [u1, u2]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], false),
+        [u1, u2, u3]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], true),
+        [u1, u2, u3]
+      );
+    });
+
+  });
+
 });
 
 
