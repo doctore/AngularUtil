@@ -2377,7 +2377,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using raw objects, when given sourceArray and propertiesToCompare are not empty and then the unique array of elements is returned', () => {
+    it('using raw objects, when given sourceArray and propertiesToCompare are not empty and keepFirstFound then the unique array of elements is returned', () => {
       const sourceArray = [
         { a: 1, b: '2', c: 1, h: { x: 11, z: 'a', u: 12 } },
         { a: 1, c: 2, b: '2', h: { x: 12, z: 'b', u: 34 } },
@@ -2389,11 +2389,17 @@ describe('ArrayUtil', () => {
       const expectedJsonUniqueAHNotKeepFirst = '[{"a":1,"b":"3","c":3,"h":{"x":11,"u":12,"z":"a"}},{"a":1,"c":2,"b":"2","h":{"x":12,"z":"b","u":34}}]';
       const expectedJsonUniqueAHKeepFirst = '[{"a":1,"b":"2","c":1,"h":{"x":11,"z":"a","u":12}},{"a":1,"c":2,"b":"2","h":{"x":12,"z":"b","u":34}}]';
 
+      const resultUniqueAUndefinedKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a']);
+      expect(JSON.stringify(resultUniqueAUndefinedKeepFirst)).toEqual(expectedJsonUniqueANotKeepFirst);
+
       const resultUniqueANotKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a'], false);
       expect(JSON.stringify(resultUniqueANotKeepFirst)).toEqual(expectedJsonUniqueANotKeepFirst);
 
       const resultUniqueAKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a'], true);
       expect(JSON.stringify(resultUniqueAKeepFirst)).toEqual(expectedJsonUniqueAKeepFirst);
+
+      const resultUniqueAHUndefinedKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a', 'h']);
+      expect(JSON.stringify(resultUniqueAHUndefinedKeepFirst)).toEqual(expectedJsonUniqueAHNotKeepFirst);
 
       const resultUniqueAHNotKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a', 'h'], false);
       expect(JSON.stringify(resultUniqueAHNotKeepFirst)).toEqual(expectedJsonUniqueAHNotKeepFirst);
@@ -2403,11 +2409,50 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using interfaces, when given sourceArray and propertiesToCompare are not empty and then the unique array of elements is returned', () => {
+    it('using raw objects, when given sourceArray and propertiesToCompare are not empty and mergeValueFunction then the unique array of elements is returned', () => {
+      const sourceArray = [
+        { a: 1, b: '2', c: 1, h: { x: 11, z: 'a', u: 12 } },
+        { a: 1, c: 2, b: '2', h: { x: 12, z: 'b', u: 34 } },
+        { a: 1, b: '3', c: 3, h: { x: 11, u: 12, z: 'a' } }
+      ];
+      const expectedJsonUniqueANotKeepFirst = '[{"a":1,"b":"3","c":3,"h":{"x":11,"u":12,"z":"a"}}]';
+      const expectedJsonUniqueAKeepFirst = '[{"a":1,"b":"2","c":1,"h":{"x":11,"z":"a","u":12}}]';
+
+      const expectedJsonUniqueAHNotKeepFirst = '[{"a":1,"b":"3","c":3,"h":{"x":11,"u":12,"z":"a"}},{"a":1,"c":2,"b":"2","h":{"x":12,"z":"b","u":34}}]';
+      const expectedJsonUniqueAHKeepFirst = '[{"a":1,"b":"2","c":1,"h":{"x":11,"z":"a","u":12}},{"a":1,"c":2,"b":"2","h":{"x":12,"z":"b","u":34}}]';
+
+      const getFirstElto = (oldElto: any, newElto: any) => oldElto;
+      const getLastElto: FBinaryOperator<any> = (oldElto: any, newElto: any) => newElto;
+
+      const resultUniqueAUndefinedKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a']);
+      expect(JSON.stringify(resultUniqueAUndefinedKeepFirst)).toEqual(expectedJsonUniqueANotKeepFirst);
+
+      const resultUniqueANotKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a'], getLastElto);
+      expect(JSON.stringify(resultUniqueANotKeepFirst)).toEqual(expectedJsonUniqueANotKeepFirst);
+
+      const resultUniqueAKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a'], getFirstElto);
+      expect(JSON.stringify(resultUniqueAKeepFirst)).toEqual(expectedJsonUniqueAKeepFirst);
+
+      const resultUniqueAHUndefinedKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a', 'h']);
+      expect(JSON.stringify(resultUniqueAHUndefinedKeepFirst)).toEqual(expectedJsonUniqueAHNotKeepFirst);
+
+      const resultUniqueAHNotKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a', 'h'], getLastElto);
+      expect(JSON.stringify(resultUniqueAHNotKeepFirst)).toEqual(expectedJsonUniqueAHNotKeepFirst);
+
+      const resultUniqueAHKeepFirst = ArrayUtil.uniqueByProperties(sourceArray, ['a', 'h'], getFirstElto);
+      expect(JSON.stringify(resultUniqueAHKeepFirst)).toEqual(expectedJsonUniqueAHKeepFirst);
+    });
+
+
+    it('using interfaces, when given sourceArray and propertiesToCompare are not empty and keepFirstFound then the unique array of elements is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 1, name: 'role3' } as Role;
 
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id']),
+        [r3, r2]
+      );
       verifyArrays(
         ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], false),
         [r3, r2]
@@ -2415,6 +2460,10 @@ describe('ArrayUtil', () => {
       verifyArrays(
         ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], true),
         [r1, r2]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name']),
+        [r1, r2, r3]
       );
       verifyArrays(
         ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], false),
@@ -2427,11 +2476,15 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using classes, when given sourceArray and propertiesToCompare are not empty and then the unique array of elements is returned', () => {
+    it('using classes, when given sourceArray and propertiesToCompare are not empty and keepFirstFound then the unique array of elements is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user1');
 
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name']),
+        [u3, u2]
+      );
       verifyArrays(
         ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], false),
         [u3, u2]
@@ -2439,6 +2492,10 @@ describe('ArrayUtil', () => {
       verifyArrays(
         ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], true),
         [u1, u2]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name']),
+        [u1, u2, u3]
       );
       verifyArrays(
         ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], false),

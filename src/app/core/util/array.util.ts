@@ -8,7 +8,7 @@ import {
   TFunction1,
   TFunction2
 } from '@app-core/types/function';
-import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
+import { BinaryOperator, FBinaryOperator, isFBinaryOperator, TBinaryOperator } from '@app-core/types/function/operator';
 import { Optional } from '@app-core/types/functional';
 import { Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/types/predicate';
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/types';
@@ -1166,7 +1166,7 @@ export class ArrayUtil {
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
-   * @return {@link Optional} with largest value using given {@link TComparator},
+   * @return {@link Optional} with the largest value using given {@link TComparator},
    *         {@link Optional#empty} if `sourceArray` has no elements or its largest value is `null` or `undefined`
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
@@ -1245,7 +1245,7 @@ export class ArrayUtil {
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
-   * @return {@link Optional} with smallest value using given {@link TComparator},
+   * @return {@link Optional} with the smallest value using given {@link TComparator},
    *         {@link Optional#empty} if `sourceArray` has no elements or its smallest value is `null` or `undefined`
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
@@ -1864,6 +1864,7 @@ export class ArrayUtil {
    * @apiNote
    *    If `sourceArray` is `null`, `undefined` or empty then an empty array is returned.
    *    If `propertiesToCompare` is `null`, `undefined` or empty then `sourceArray` is returned.
+   *    If `keepFirstFound` is `null` or `undefined` then the last unique instance found will be added in the returned array.
    *
    * <pre>
    *    uniqueByProperties(                                   Result:
@@ -1887,15 +1888,66 @@ export class ArrayUtil {
    *
    * @return an array of elements included in `sourceArray`, containing only unique ones based on given `propertiesToCompare`
    */
-  static uniqueByProperties = <T, K extends keyof T>(sourceArray: NullableOrUndefined<T[]>,
-                                                     propertiesToCompare: NullableOrUndefined<K[]>,
-                                                     keepFirstFound: boolean = true): T[] => {
+  static uniqueByProperties<T, K extends keyof T>(sourceArray: NullableOrUndefined<T[]>,
+                                                  propertiesToCompare: NullableOrUndefined<K[]>,
+                                                  keepFirstFound?: boolean): T[];
+
+
+  /**
+   * Using provided `sourceArray` returns an array of elements containing only unique ones based on given `propertiesToCompare`.
+   *
+   * @apiNote
+   *    If `sourceArray` is `null`, `undefined` or empty then an empty array is returned.
+   *    If `propertiesToCompare` is `null`, `undefined` or empty then `sourceArray` is returned.
+   *    If `mergeValueFunction` is `null` or `undefined` then the first unique instance found will be added in the returned array.
+   *
+   * <pre>
+   *    uniqueByProperties(                                   Result:
+   *       [{ a: 1, b: 1 }, { a: 1, b: 2 }],                   [ { a: 1, b: 1 } ]
+   *       ['a'],
+   *       (oldElto, newElto) => oldElto
+   *    )
+   *    uniqueByProperties(                                   Result:
+   *       [{ a: 1, b: 1 }, { a: 1, b: 2 }],                   [ { a: 1, b: 2 } ]
+   *       ['a'],
+   *       (oldElto, newElto) => newElto
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter
+   * @param propertiesToCompare
+   *    Array of properties used to compare the elements of `sourceArray`
+   * @param mergeValueFunction
+   *    {@link TBinaryOperator} used to know what should be the right elements in the returned array
+   *
+   * @return an array of elements included in `sourceArray`, containing only unique ones based on given `propertiesToCompare`
+   */
+  static uniqueByProperties<T, K extends keyof T>(sourceArray: NullableOrUndefined<T[]>,
+                                                  propertiesToCompare: NullableOrUndefined<K[]>,
+                                                  mergeValueFunction?: TBinaryOperator<T>): T[];
+
+
+  static uniqueByProperties<T, K extends keyof T>(sourceArray: NullableOrUndefined<T[]>,
+                                                  propertiesToCompare: NullableOrUndefined<K[]>,
+                                                  mergeValueFunction?: FBinaryOperator<T>): T[];
+
+
+  static uniqueByProperties<T, K extends keyof T>(sourceArray: NullableOrUndefined<T[]>,
+                                                  propertiesToCompare: NullableOrUndefined<K[]>,
+                                                  mergeValueFunctionOrKeepFirstFound?: TBinaryOperator<T> | boolean): T[] {
     if (this.isEmpty(sourceArray)) {
       return [];
     }
     if (this.isEmpty(propertiesToCompare)) {
       return sourceArray!;
     }
+    const finalMergeValueFunction = BinaryOperator.isBinaryOperator(mergeValueFunctionOrKeepFirstFound) || isFBinaryOperator(mergeValueFunctionOrKeepFirstFound)
+      ? BinaryOperator.of(mergeValueFunctionOrKeepFirstFound as TBinaryOperator<T>)
+      : true == mergeValueFunctionOrKeepFirstFound
+        ? BinaryOperator.returnFirst<T>()
+        : BinaryOperator.returnSecond<T>();
+
     return Array.from(
       sourceArray!.reduce(
         (accumulator: Map<string, T>, currentElement: T) => {
@@ -1912,12 +1964,18 @@ export class ArrayUtil {
           .flat()
           .join('-');
 
-          if (keepFirstFound && accumulator.has(key)) {
-            return accumulator;
+          if (!accumulator.has(key)) {
+            return accumulator.set(
+              key,
+              currentElement
+            );
           }
           return accumulator.set(
             key,
-            currentElement
+            finalMergeValueFunction.apply(
+              accumulator.get(key)!,
+              currentElement
+            )
           );
         },
         new Map<string, T>()
