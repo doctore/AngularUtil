@@ -2487,7 +2487,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using classes, when given sourceArray and propertiesToCompare are not empty and keepFirstFound then the unique array of elements is returned', () => {
+    it('using classes, when given sourceArray and propertiesToCompare are not empty then the unique array of elements is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user1');
