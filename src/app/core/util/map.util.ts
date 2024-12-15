@@ -256,11 +256,11 @@ export class MapUtil {
    *    )
    * </pre>
    *
+   * @param sourceMaps
+   *    {@link Map}s to concat
    * @param mergeValueFunction
    *    {@link BinaryOperator} used to resolve collisions between values associated with the same key. If no one is
    *    provided, by default last value will be used
-   * @param sourceMaps
-   *    {@link Map}s to concat
    *
    * @return {@link Map} with the elements of `sourceMaps`
    */
