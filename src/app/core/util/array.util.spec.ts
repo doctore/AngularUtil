@@ -2444,10 +2444,13 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using interfaces, when given sourceArray and propertiesToCompare are not empty and keepFirstFound then the unique array of elements is returned', () => {
+    it('using interfaces, when given sourceArray and propertiesToCompare are not empty then the unique array of elements is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 1, name: 'role3' } as Role;
+
+      const getFirstElto: BinaryOperator<Role> =
+        BinaryOperator.of((oldElto: Role, newElto: Role) => oldElto);
 
       verifyArrays(
         ArrayUtil.uniqueByProperties([r1, r2, r3], ['id']),
@@ -2462,6 +2465,10 @@ describe('ArrayUtil', () => {
         [r1, r2]
       );
       verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], getFirstElto),
+        [r1, r2]
+      );
+      verifyArrays(
         ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name']),
         [r1, r2, r3]
       );
@@ -2473,6 +2480,10 @@ describe('ArrayUtil', () => {
         ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], true),
         [r1, r2, r3]
       );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], getFirstElto),
+        [r1, r2, r3]
+      );
     });
 
 
@@ -2480,6 +2491,9 @@ describe('ArrayUtil', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user1');
+
+      const getLastElto: BinaryOperator<User> =
+        BinaryOperator.of((oldElto: User, newElto: User) => newElto);
 
       verifyArrays(
         ArrayUtil.uniqueByProperties([u1, u2, u3], ['name']),
@@ -2494,6 +2508,10 @@ describe('ArrayUtil', () => {
         [u1, u2]
       );
       verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], getLastElto),
+        [u3, u2]
+      );
+      verifyArrays(
         ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name']),
         [u1, u2, u3]
       );
@@ -2503,6 +2521,10 @@ describe('ArrayUtil', () => {
       );
       verifyArrays(
         ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], true),
+        [u1, u2, u3]
+      );
+      verifyArrays(
+        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], getLastElto),
         [u1, u2, u3]
       );
     });

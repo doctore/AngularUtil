@@ -4,7 +4,6 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@app-core/config": ["src/app/core/config/index.ts"],
       "@app-core/errors": ["src/app/core/errors/index.ts"],
       "@app-core/models": ["src/app/core/models/index.ts"],
       "@app-core/services": ["src/app/core/services/index.ts"],

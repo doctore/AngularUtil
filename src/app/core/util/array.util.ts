@@ -1899,7 +1899,7 @@ export class ArrayUtil {
    * @apiNote
    *    If `sourceArray` is `null`, `undefined` or empty then an empty array is returned.
    *    If `propertiesToCompare` is `null`, `undefined` or empty then `sourceArray` is returned.
-   *    If `mergeValueFunction` is `null` or `undefined` then the first unique instance found will be added in the returned array.
+   *    If `mergeValueFunction` is `null` or `undefined` then the last unique instance found will be added in the returned array.
    *
    * <pre>
    *    uniqueByProperties(                                   Result:
