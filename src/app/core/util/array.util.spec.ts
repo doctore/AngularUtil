@@ -5,6 +5,7 @@ import { FFunction1, FFunction2, Function1, Function2, PartialFunction } from '@
 import { BinaryOperator, FBinaryOperator } from '@app-core/types/function/operator';
 import { FPredicate1, Predicate1 } from '@app-core/types/predicate';
 import { IllegalArgumentError } from '@app-core/errors';
+import { Optional } from '@app-core/types/functional';
 
 /**
  * To invoke only this test:
@@ -205,6 +206,51 @@ describe('ArrayUtil', () => {
         ArrayUtil.collect(sourceArray, multiply2AndString, isEvenRaw),
         expectedResult
       );
+    });
+
+  });
+
+
+
+  describe('collectFirst', () => {
+
+    it('when given sourceArray has no elements and partialFunction is provided then empty Optional is returned', () => {
+      const emptyArray: number[] = [];
+
+      expect(ArrayUtil.collectFirst(null, multiply2AndStringForEvenPP).isPresent()).toBeFalse();
+      expect(ArrayUtil.collectFirst(undefined, multiply2AndStringForEvenPP).isPresent()).toBeFalse();
+      expect(ArrayUtil.collectFirst(emptyArray, multiply2AndStringForEvenPP).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => ArrayUtil.collectFirst([1], null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => ArrayUtil.collectFirst([1], undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceArray has elements and partialFunction is defined but no one element matches with its domain then an empty Optional is returned', () => {
+      const sourceArray: number[] = [1, 3, 5, 7];
+
+      expect(ArrayUtil.collectFirst(sourceArray, multiply2AndStringForEvenPP).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceArray has elements and partialFunction is defined and there are elements that match with its domain then a non empty Optional is returned', () => {
+      const sourceArray: number[] = [1, 3, 4, 8];
+
+      const expectedResult: Optional<string> = Optional.of('8');
+
+      const result = ArrayUtil.collectFirst(
+        sourceArray,
+        multiply2AndStringForEvenPP
+      );
+
+      expect(result.isPresent()).toBeTrue();
+      expect(result.get()).toEqual(expectedResult.get());
     });
 
   });

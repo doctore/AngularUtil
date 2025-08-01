@@ -221,6 +221,48 @@ export class ArrayUtil {
 
 
   /**
+   *    Finds the first element of the `sourceArray` for which the given `partialFunction` is defined, and applies that
+   * {@link PartialFunction} to it.
+   *
+   * <pre>
+   *    collectFirst(                                      Result:
+   *      [1, 2, 3, 6],                                     Optional('2')
+   *      PartialFunction.of(
+   *        (n: number) => 0 == n % 2,
+   *        (n: number) => '' + n
+   *      )
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with the elements to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter elements of `sourceArray` and transform the first one defined at function's domain
+   *
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
+   */
+  static collectFirst = <T, U>(sourceArray: NullableOrUndefined<T[]>,
+                               partialFunction: PartialFunction<T, U>): Optional<U> => {
+    if (this.isEmpty(sourceArray)) {
+      return Optional.empty<U>();
+    }
+    AssertUtil.notNullOrUndefined(
+      partialFunction,
+      'partialFunctionOrMapFunction must be not null and not undefined'
+    );
+    return Optional.ofNullable(
+      this.find(
+        sourceArray,
+        partialFunction.getVerifier()
+      )
+    )
+    .map(
+      partialFunction.getMapper()
+    );
+  }
+
+
+  /**
    * Returns a new array containing the elements of provided `sourceArray`.
    *
    * @param sourceArray

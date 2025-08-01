@@ -25,7 +25,7 @@ export class MapUtil {
 
 
   /**
-   *    Returns a new {@link Map} using the given `sourceMap`, applying {@link PartialFunction#apply} if the current element
+   *    Returns new {@link Map} using the given `sourceMap`, applying {@link PartialFunction#apply} if the current element
    * verifies {@link PartialFunction#isDefinedAt}, `orElseMapper` otherwise.
    *
    * <pre>
@@ -57,7 +57,7 @@ export class MapUtil {
 
 
   /**
-   *    Returns a new {@link Map} using the given `sourceMap`, applying `defaultMapper` if the current element verifies
+   *    Returns new {@link Map} using the given `sourceMap`, applying `defaultMapper` if the current element verifies
    * `filterPredicate`, `orElseMapper` otherwise.
    *
    * @apiNote
@@ -130,7 +130,7 @@ export class MapUtil {
 
 
   /**
-   * Returns a new {@link Map} after applying to `sourceMap`:
+   * Returns new {@link Map} after applying to `sourceMap`:
    * <p>
    *  - Filter its elements using {@link PartialFunction#isDefinedAt} of `partialFunction`
    *  - Transform its filtered elements using {@link PartialFunction#apply} of `partialFunction`
@@ -223,7 +223,53 @@ export class MapUtil {
 
 
   /**
-   *    Returns a new {@link Map} containing the elements of provided `sourceMaps`. By default, merging `sourceMaps`
+   *    Finds the first element of the `sourceMap` for which the given `partialFunction` is defined, and applies that
+   * {@link PartialFunction} to it.
+   *
+   * <pre>
+   *    collect(                                                     Result:
+   *      [(1, 'Hi'), (2, 'Hello')],                                  Optional([2, 4])
+   *      PartialFunction.of(
+   *        ([k, v]: [number, string]) => 0 == k % 2,
+   *        [k, v]: [number, string]) => [k, v.length]
+   *      )
+   *    )
+   * </pre>
+   *
+   * @param sourceMap
+   *    Source {@link Map} with the elements to filter and transform
+   * @param partialFunction
+   *    {@link PartialFunction} to filter elements of `sourceMap` and transform the first one defined at function's domain
+   *
+   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
+   */
+  static collectFirst = <K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
+                                         partialFunction: PartialFunction<[K1, V1], [K2, V2]>): Optional<[K2, V2]> => {
+    if (this.isEmpty(sourceMap)) {
+      return Optional.empty<[K2, V2]>();
+    }
+    AssertUtil.notNullOrUndefined(
+      partialFunction,
+      'partialFunctionOrMapFunction must be not null and not undefined'
+    );
+    const filterPredicate: TPredicate2<K1, V1> = (k: K1, v: V1) =>
+      partialFunction.isDefinedAt(
+        [k, v]
+      );
+    return Optional.ofNullable(
+      this.find(
+        sourceMap,
+        filterPredicate
+      )
+    )
+    .map(
+      partialFunction.getMapper()
+    );
+  }
+
+
+  /**
+   *    Returns new {@link Map} containing the elements of provided `sourceMaps`. By default, merging `sourceMaps`
    * if the key exists its value will be updated with the latest one.
    *
    * <pre>

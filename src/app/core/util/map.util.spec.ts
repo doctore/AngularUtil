@@ -263,6 +263,66 @@ describe('MapUtil', () => {
 
 
 
+  describe('collectFirst', () => {
+
+    it('when given sourceMap has no elements and partialFunction is provided then empty Optional is returned', () => {
+      const emptyMap = new Map<number, string>();
+      const keyAndValueLengthForOdd: PartialFunction<[number, string], [number, number]> =
+        PartialFunction.of(
+          ([k, v]: [number, string]) => 1 == k % 2,
+          ([k, v]: [number, string]) => [k, v.length]
+        );
+
+      expect(MapUtil.collectFirst(null, keyAndValueLengthForOdd).isPresent()).toBeFalse();
+      expect(MapUtil.collectFirst(undefined, keyAndValueLengthForOdd).isPresent()).toBeFalse();
+      expect(MapUtil.collectFirst(emptyMap, keyAndValueLengthForOdd).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceMap is not empty but partialFunction is null or undefined then an error is thrown', () => {
+      const sourceMap = new Map<number, string>();
+      sourceMap.set(1, 'a');
+
+      // @ts-ignore
+      expect(() => MapUtil.collectFirst(sourceMap, null)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => MapUtil.collectFirst(sourceMap, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceMap has elements and partialFunction is defined but no one element matches with its domain then an empty Optional is returned', () => {
+      const sourceMap = new Map<string, number>();
+      sourceMap.set('Hi', 2);
+      sourceMap.set('Hello', 4);
+      sourceMap.set( 'Hola', 6);
+
+      expect(MapUtil.collectFirst(sourceMap, keyAndValuePlus1ForOddPP).isPresent()).toBeFalse();
+    });
+
+
+    it('when given sourceMap has elements and partialFunction is defined and there are elements that match with its domain then a non empty Optional is returned', () => {
+      const sourceMap = new Map<string, number>();
+      sourceMap.set('Hi', 2);
+      sourceMap.set('Hello', 3);
+      sourceMap.set( 'Hola', 5);
+
+      const expectedResult: Optional<[string, number]> = Optional.of(['Hello', 4]);
+
+      const result = MapUtil.collectFirst(
+        sourceMap,
+        keyAndValuePlus1ForOddPP
+      );
+
+      expect(result.isPresent()).toBeTrue();
+      expect(result.get()[0]).toEqual(expectedResult.get()[0]);
+      expect(result.get()[1]).toEqual(expectedResult.get()[1]);
+    });
+
+  });
+
+
+
   describe('concat', () => {
 
     it('when given sourceMaps has no elements then empty Map is returned', () => {
