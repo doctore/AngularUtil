@@ -239,6 +239,9 @@ export class ArrayUtil {
    * @param partialFunction
    *    {@link PartialFunction} to filter elements of `sourceArray` and transform the first one defined at function's domain
    *
+   * @return {@link Optional} value containing `partialFunction` applied to the first value for which it is defined,
+   *         {@link Optional#empty()} if none exists or provided `sourceArray` is empty.
+   *
    * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
    */
   static collectFirst = <T, U>(sourceArray: NullableOrUndefined<T[]>,

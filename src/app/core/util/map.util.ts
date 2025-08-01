@@ -241,6 +241,9 @@ export class MapUtil {
    * @param partialFunction
    *    {@link PartialFunction} to filter elements of `sourceMap` and transform the first one defined at function's domain
    *
+   * @return {@link Optional} value containing `partialFunction` applied to the first value for which it is defined,
+   *         {@link Optional#empty()} if none exists or provided `sourceMap` is empty.
+   *
    * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
    */
   static collectFirst = <K1, K2, V1, V2>(sourceMap: NullableOrUndefined<Map<K1, V1>>,
