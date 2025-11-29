@@ -1,4 +1,4 @@
-import {ArrayUtil, AssertUtil, MapUtil, ObjectUtil} from '@app-core/util';
+import { ArrayUtil, AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/types';
 import {
   FFunction1,
@@ -11,7 +11,6 @@ import {
 } from '@app-core/types/function';
 import { Optional } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
-import { IllegalArgumentError } from '@app-core/errors';
 import { TUnaryOperator } from '@app-core/types/function/operator';
 
 /**
@@ -771,22 +770,17 @@ export class StringUtil {
    * if the current one verifies `filterPredicate`. Uses the given {@link TFunction1} `toString` to know how to convert
    * every element into an {@link String}.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be converted to their equivalent {@link String}
-   * representation and `null`/`undefined` elements will be managed as empty {@link String}. If {@code separator} is
-   * `null` or `undefined` then empty {@link String} will be used.
-   *
    * <pre>
    *    join(                                   Result:
-   *       [1, 4, 77],                            '14477'
-   *       (n: number) => '' + n
-   *     )
-   *     join(                                   Result:
-   *       [1, 12, 33],                           '1;33'
-   *       (n: number) => '' + n,
-   *       (n: number) => 1 == n % 2,
-   *       ';'
-   *     )
+   *      [1, 4, 77],                            '14477'
+   *      (n: number) => '' + n
+   *    )
+   *    join(                                   Result:
+   *      [1, 12, 33],                           '1;33'
+   *      (n: number) => '' + n,
+   *      (n: number) => 1 == n % 2,
+   *      ';'
+   *    )
    * </pre>
    *
    * @param sourceArray
@@ -794,9 +788,9 @@ export class StringUtil {
    * @param toString
    *    {@link TFunction1} to convert every element into its {@link String} representation
    * @param filterPredicate
-   *    {@link TPredicate1} to filter `sourceArray`
+   *    {@link TPredicate1} to filter `sourceArray`. If it is `null` or `undefined` then all elements will be converted
    * @param separator
-   *    The separator character to use, `null` or `undefined` treated as empty {@link String}
+   *    The separator character to use. If it is `null` or `undefined` then empty {@link String} will be used
    *
    * @return the joined {@link String}, empty one if `sourceArray` is `null`, `undefined` or has no elements
    *
@@ -837,7 +831,64 @@ export class StringUtil {
       }
     }
     if (!this.isEmpty(result)) {
-      return result.substring(0, result.length - finalSeparator.length);
+      return result.substring(
+        0,
+        result.length - finalSeparator.length
+      );
+    }
+    return result;
+  }
+
+
+  /**
+   *    Joins the {@link String}s of the provided `sourceArray` into a single {@link String} containing the provided
+   * elements if the current one verifies `filterPredicate`.
+   *
+   * <pre>
+   *    joinString(                             Result:
+   *      ['1', '4', '77']                       '14477'
+   *    )
+   *    joinString(                             Result:
+   *      ['1', '12', '33'],                     '1;12'
+   *      (s: string) => s.startsWith('1')
+   *      ';'
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array with {@link String}s to include in the returned one
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter `sourceArray`. If it is `null` or `undefined` then all elements will be converted
+   * @param separator
+   *    The separator character to use. If it is `null` or `undefined` then empty {@link String} will be used.
+   *
+   * @return the joined {@link String}, empty one if `sourceArray` is `null`, `undefined` or has no elements
+   */
+  static joinString = (sourceArray: NullableOrUndefined<NullableOrUndefined<string>[]>,
+                       filterPredicate?: TPredicate1<NullableOrUndefined<string>>,
+                       separator?: string): string => {
+    if (ArrayUtil.isEmpty(sourceArray)) {
+      return StringUtil.EMPTY_STRING;
+    }
+    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      ? Predicate1.alwaysTrue<NullableOrUndefined<string>>()
+      : Predicate1.of(filterPredicate);
+
+    const finalSeparator = ObjectUtil.isNullOrUndefined(separator)
+      ? StringUtil.EMPTY_STRING
+      : separator;
+
+    let result = '';
+    for (let item of sourceArray!) {
+      if (finalFilterPredicate.apply(item)) {
+        result += (item + finalSeparator);
+      }
+    }
+    if (!this.isEmpty(result)) {
+      return result.substring(
+        0,
+        result.length - finalSeparator.length
+      );
     }
     return result;
   }

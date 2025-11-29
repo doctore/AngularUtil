@@ -1,6 +1,6 @@
 import { ObjectUtil, StringUtil } from '@app-core/util';
 import { IllegalArgumentError } from '@app-core/errors';
-import { FFunction1, FFunction2, PartialFunction } from '@app-core/types/function';
+import { FFunction1, FFunction2, Function1, PartialFunction } from '@app-core/types/function';
 import { NullableOrUndefined } from '@app-core/types';
 import { FPredicate1 } from '@app-core/types/predicate';
 import { FUnaryOperator } from '@app-core/types/function/operator';
@@ -794,14 +794,17 @@ describe('StringUtil', () => {
 
 
     it('when given sourceArray has elements but neither separator nor filterPredicate is provided then the string of all elements is returned', () => {
-      const sourceArray: NullableOrUndefined<number>[] = [1, 2, 3, null, 6, undefined, 7];
+      const sourceIntegerArray = [1, 2, 3, null, 6, undefined, 7];
+      const sourceStringArray = ['1', '2', '3', '6', '7'];
 
-      expect(StringUtil.join(sourceArray, toStringFFunction)).toEqual('12367');
+      expect(StringUtil.join(sourceIntegerArray, toStringFFunction)).toEqual('12367');
+      // @ts-ignore
+      expect(StringUtil.join(sourceStringArray, Function1.identity())).toEqual('12367');
     });
 
 
     it('when given sourceArray has elements, a separator and filterPredicate are provided then the string of all elements is returned', () => {
-      const sourceArray: NullableOrUndefined<number>[] = [1, 2, null, 66, 5, undefined, 78, 99];
+      const sourceArray = [1, 2, null, 66, 5, undefined, 78, 99];
 
       const isNullOrUndefinedOrOdd = (n: NullableOrUndefined<number>) =>
           ObjectUtil.isNullOrUndefined(n) || 1 == n % 2;
@@ -809,6 +812,39 @@ describe('StringUtil', () => {
       const separator = ';';
 
       expect(StringUtil.join(sourceArray, toStringFFunction, isNullOrUndefinedOrOdd, separator)).toEqual('1;;5;;99');
+    });
+
+  });
+
+
+
+  describe('joinString', () => {
+
+    it('when given sourceArray is null, undefined or empty then empty string is returned', () => {
+      const expectedResult: string = '';
+
+      expect(StringUtil.joinString(undefined)).toEqual(expectedResult);
+      expect(StringUtil.joinString(null)).toEqual(expectedResult);
+      expect(StringUtil.joinString([])).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray has elements but neither separator nor filterPredicate is provided then the string of all elements is returned', () => {
+      const sourceArray = ['1', '2', '3', '6', '7'];
+
+      expect(StringUtil.joinString(sourceArray)).toEqual('12367');
+    });
+
+
+    it('when given sourceArray has elements, a separator and filterPredicate are provided then the string of all elements is returned', () => {
+      const sourceArray = ['1', '2', '13', '6', null, '17'];
+
+      const isNullOrStartsWith1 = (s: NullableOrUndefined<string>) =>
+        ObjectUtil.isNullOrUndefined(s) || s!.startsWith('1');
+
+      const separator = ';';
+
+      expect(StringUtil.joinString(sourceArray, isNullOrStartsWith1, separator)).toEqual('1;13;null;17');
     });
 
   });

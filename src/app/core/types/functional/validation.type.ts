@@ -474,7 +474,7 @@ export abstract class Validation<E, T> {
    * @param other
    *    Returned value if current instance is an {@link Invalid} one
    *
-   * @return {@code T} value stored in {@link Valid} instance, `other` otherwise
+   * @return `T` value stored in {@link Valid} instance, `other` otherwise
    */
   getOrElse(other: T): T;
 

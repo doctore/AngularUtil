@@ -843,7 +843,7 @@ export abstract class Try<T> {
   /**
    *    Returns the stored value if the underline instance is {@link Success}, otherwise returns the result after
    * invoking provided {@link TFunction0}. This will throw an {@link Error} if it is not a {@link Success} and
-   * {@code other} throws an {@link Error}.
+   * `other` throws an {@link Error}.
    *
    * @param other
    *    {@link TFunction0} that produces a value to be returned if current instance is an {@link Failure} one
