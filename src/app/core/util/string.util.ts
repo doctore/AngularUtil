@@ -18,10 +18,6 @@ import { TUnaryOperator } from '@app-core/types/function/operator';
  */
 export class StringUtil {
 
-  constructor() {
-    throw new SyntaxError('StringUtil is an utility class');
-  }
-
   static BLANK_SPACE: string = ' ';
 
   static DEFAULT_ABBREVIATION_STRING: string = '...';
@@ -29,6 +25,11 @@ export class StringUtil {
   static EMPTY_STRING: string = '';
 
   static INDEX_NOT_FOUND: number = -1;
+
+
+  constructor() {
+    throw new SyntaxError('StringUtil is an utility class');
+  }
 
 
   /**
