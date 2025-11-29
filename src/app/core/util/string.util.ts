@@ -44,10 +44,6 @@ export class StringUtil {
    * <p>
    *    If `sourceString` is less than the first character of `sourceString` and `abbreviationString`'s length,
    * then an {IllegalArgumentError} will be thrown.
-   *
-   * @apiNote
-   *    If `abbreviationString` is `null` or `undefined` then {@link StringUtil#DEFAULT_ABBREVIATION_STRING} will be used.
-   * If `maxLength` is less than 0 then 0 will be used.
    * <p>
    * Examples:
    * <pre>
@@ -114,10 +110,6 @@ export class StringUtil {
    * <p>
    *    If `maxLength` is less than the first and last characters of `sourceString` and `abbreviationString`'s length,
    * then an {IllegalArgumentError} will be thrown.
-   *
-   * @apiNote
-   *    If `abbreviationString` is `null` or `undefined` then {@link StringUtil#DEFAULT_ABBREVIATION_STRING} will be used.
-   * If `maxLength` is less than 0 then 0 will be used.
    * <p>
    * Examples:
    * <pre>
@@ -137,7 +129,8 @@ export class StringUtil {
    * @param maxLength
    *    Max size of the returned {@link String}. If it is less than 0 then 0 will be used
    * @param abbreviationString
-   *    {@link String} to replace the middle characters. Default value will be {@link StringUtil#DEFAULT_ABBREVIATION_STRING}
+   *    {@link String} to replace the middle characters. If it is `null` or `undefined` then {@link StringUtil#DEFAULT_ABBREVIATION_STRING}
+   *    will be used
    *
    * @return the abbreviated {@link String} if `maxLength` is greater than `sourceString`'s length,
    *         `sourceString` otherwise
@@ -180,11 +173,10 @@ export class StringUtil {
   /**
    * Returns a {@link String} after applying to `sourceString`:
    * <p>
-   *  - Filter its characters using {@link PartialFunction#isDefinedAt} of `partialFunction`
-   *  - Transform its filtered characters using {@link PartialFunction#apply} of `partialFunction`
-   *
-   * @apiNote
-   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned.
+   *   <ul>
+   *     <li>Filter its characters using {@link PartialFunction#isDefinedAt} of `partialFunction`</li>
+   *     <li>Transform its filtered characters using {@link PartialFunction#apply} of `partialFunction`</li>
+   *  </ul>
    *
    * <pre>
    *    collect(                                                     Result:
@@ -197,7 +189,8 @@ export class StringUtil {
    * </pre>
    *
    * @param sourceString
-   *    {@link String} with the characters to filter and transform
+   *    {@link String} with the characters to filter and transform. If it is `null`, `undefined` or empty then
+   *    {@link StringUtil#EMPTY_STRING} is returned
    * @param partialFunction
    *    {@link PartialFunction} to filter and transform characters of `sourceString`
    *
@@ -213,12 +206,10 @@ export class StringUtil {
   /**
    * Returns a {@link String} after applying to `sourceString`:
    * <p>
-   *  - Filter its characters using the {@link TPredicate1} `filterPredicate`
-   *  - Transform its filtered characters using the {@link TFunction1} `mapFunction`
-   *
-   * @apiNote
-   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `filterPredicate`
-   * is `null` or `undefined` then all characters will be transformed.
+   *   <ul>
+   *     <li>Filter its characters using the {@link TPredicate1} `filterPredicate`</li>
+   *     <li>Transform its filtered characters using the {@link TFunction1} `mapFunction`</li>
+   *  </ul>
    *
    * <pre>
    *    collect(                                                     Result:
@@ -229,11 +220,13 @@ export class StringUtil {
    * </pre>
    *
    * @param sourceString
-   *    {@link String} with the characters to filter and transform
+   *    {@link String} with the characters to filter and transform. If it is `null`, `undefined` or empty then
+   *    {@link StringUtil#EMPTY_STRING} is returned
    * @param mapFunction
    *    {@link TUnaryOperator} to transform filtered characters of the source `sourceString`
    * @param filterPredicate
-   *    {@link TPredicate1} to filter characters from `sourceString`
+   *    {@link TPredicate1} to filter characters from `sourceString`, If it is `null` or `undefined` then all characters
+   *    will be transformed
    *
    * @return new {@link String} from applying the given {@link TUnaryOperator} to each character of `sourceString`
    *         on which {@link TPredicate1} returns `true` and collecting the results
@@ -352,10 +345,6 @@ export class StringUtil {
    *    Returns a {@link String} removing the longest prefix of characters included in `sourceString` that satisfy the
    * {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `filterPredicate`
-   * is `null` or `undefined` then `sourceString` is returned.
-   *
    * <pre>
    *    dropWhile(                                                   Result:
    *      'aEibc12',                                                  'bc12'
@@ -364,9 +353,11 @@ export class StringUtil {
    * </pre>
    *
    * @param sourceString
-   *    {@link String} with the characters to filter
+   *    {@link String} with the characters to filter. If it is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING}
+   *    is returned
    * @param filterPredicate
-   *    {@link TPredicate1} to filter characters from `sourceString`
+   *    {@link TPredicate1} to filter characters from `sourceString`. If it is `null` or `undefined` then `sourceString`
+   *    is returned
    *
    * @return the longest suffix of provided `sourceString` whose first character does not satisfy `filterPredicate`
    */
@@ -397,9 +388,6 @@ export class StringUtil {
   /**
    * Selects all characters of `sourceString` which satisfy the {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then `sourceString` will be returned.
-   *
    * <pre>
    *    filter(                                                      Result:
    *      'abcDEfgIoU12',                                             'aEIoU'
@@ -410,7 +398,8 @@ export class StringUtil {
    * @param sourceString
    *    {@link String} to filter
    * @param filterPredicate
-   *    {@link TPredicate1} to filter characters from `sourceString`
+   *    {@link TPredicate1} to filter characters from `sourceString`. If it is `null` or `undefined` then `sourceString`
+   *    will be returned
    *
    * @return characters of `sourceString` which satisfy `filterPredicate`
    */
@@ -437,9 +426,6 @@ export class StringUtil {
   /**
    * Selects all characters of `sourceString` which do not satisfy the {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then `sourceString` will be returned.
-   *
    * <pre>
    *    filterNot(                                         Result:
    *      'abcDEfgIoU12',                                   'bcDfg12'
@@ -450,7 +436,8 @@ export class StringUtil {
    * @param sourceString
    *    {@link String} to filter
    * @param filterPredicate
-   *    {@link TPredicate1} to filter characters from `sourceString`
+   *    {@link TPredicate1} to filter characters from `sourceString`. If it is `null` or `undefined` then `sourceString`
+   *    will be returned
    *
    * @return characters of `sourceString` which do not satisfy `filterPredicate`
    */
@@ -566,9 +553,6 @@ export class StringUtil {
   /**
    * Partitions given `sourceString` into a {@link Map} of {@link String} according to `discriminatorKey`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
-   *
    * <pre>
    *    groupBy(                                                  Result:
    *      'essae',                                                 [('e', 'ee')
@@ -592,7 +576,8 @@ export class StringUtil {
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param filterPredicate
-   *    {@link TPredicate1} to filter characters of `sourceString`
+   *    {@link TPredicate1} to filter characters of `sourceString`. If it is `null` or `undefined` then all elements
+   *    will be used
    *
    * @return new {@link Map} from applying the given `discriminatorKey` to each character of `sourceString`
    *
@@ -657,11 +642,6 @@ export class StringUtil {
    *    abbreviateMiddle('abcdef', 10, '...') = 'abcdef'
    *    hideMiddle('abcdef', 10, '...')       = 'ab...f'
    * </pre>
-
-   *
-   * @apiNote
-   *    If `abbreviationString` is `null` or `undefined` then {@link StringUtil#DEFAULT_ABBREVIATION_STRING} will be used.
-   * If `maxLength` is less than 0 then 0 will be used.
    * <p>
    * Examples:
    * <pre>
@@ -845,9 +825,12 @@ export class StringUtil {
    *    Joins the {@link String}s of the provided `sourceArray` into a single {@link String} containing the provided
    * elements if the current one verifies `filterPredicate`.
    *
+   * @apiNote
+   *    Inside the given `sourceArray`, `null`/`undefined` elements will be managed as empty {@link String}
+   *
    * <pre>
    *    joinString(                             Result:
-   *      ['1', '4', '77']                       '14477'
+   *      ['1', '4', null, '77']                 '14477'
    *    )
    *    joinString(                             Result:
    *      ['1', '12', '33'],                     '1;12'
@@ -882,7 +865,9 @@ export class StringUtil {
     let result = '';
     for (let item of sourceArray!) {
       if (finalFilterPredicate.apply(item)) {
-        result += (item + finalSeparator);
+        result += ObjectUtil.isNullOrUndefined(item)
+          ? finalSeparator
+          : (item + finalSeparator);
       }
     }
     if (!this.isEmpty(result)) {
@@ -897,10 +882,6 @@ export class StringUtil {
 
   /**
    * Left pad the {@link String} `sourceString` with `padString` up to the provided `size`.
-   *
-   * @apiNote
-   *    If `size` is less than 0 then 0 will be used. If `padString` is `null`, `undefined` or empty then
-   * {@link StringUtil#BLANK_SPACE} will be used.
    * <p>
    * Examples:
    * <pre>
@@ -919,7 +900,7 @@ export class StringUtil {
    * @param sourceString
    *    {@link String} to pad out
    * @param size
-   *    The size to pad to
+   *    The size to pad to. If it is less than 0 then 0 will be used
    * @param padString
    *    {@link String} to pad with, `null`, `undefined` or empty treated as {@link StringUtil#BLANK_SPACE}
    *
@@ -950,10 +931,6 @@ export class StringUtil {
   /**
    * Builds a new {@link String} by applying a {@link UnaryOperator} to all characters of provided `sourceString`.
    *
-   * @apiNote
-   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `mapFunction`
-   * is `null` or `undefined` then `sourceString` is returned.
-   *
    * <pre>
    *    map(                                                                   Result:
    *      'aEibc1U2'                                                            'bc12'
@@ -962,9 +939,10 @@ export class StringUtil {
    * </pre>
    *
    * @param sourceString
-   *    {@link String} to used as source of the returned {@link String}
+   *    {@link String} to used as source of the returned {@link String}. If it is `null`, `undefined` or empty then
+   *    {@link StringUtil#EMPTY_STRING} is returned
    * @param mapFunction
-   *    {@link UnaryOperator} to apply to each character
+   *    {@link UnaryOperator} to apply to each character. If it is `null` or `undefined` then `sourceString` is returned
    *
    * @return new {@link String} from applying the given {@link UnaryOperator} to each character of `sourceString`
    */
@@ -989,10 +967,6 @@ export class StringUtil {
 
   /**
    * Right pad the {@link String} `sourceString` with `padString` up to the provided `size`.
-   *
-   * @apiNote
-   *    If `size` is less than 0 then 0 will be used. If `padString` is `null`, `undefined` or empty then
-   * {@link StringUtil#BLANK_SPACE} will be used.
    * <p>
    * Examples:
    * <pre>
@@ -1011,7 +985,7 @@ export class StringUtil {
    * @param sourceString
    *    {@link String} to pad out
    * @param size
-   *    The size to pad to
+   *    The size to pad to. If it is less than 0 then 0 will be used
    * @param padString
    *    {@link String} to pad with, `null`, `undefined` or empty treated as {@link StringUtil#BLANK_SPACE}
    *
@@ -1323,10 +1297,6 @@ export class StringUtil {
    *    Returns a {@link String} with the longest prefix of characters included in `sourceString` that  satisfy the
    * {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `sourceString` is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING} is returned. If `filterPredicate`
-   * is `null` or `undefined` then `sourceString` is returned.
-   *
    * <pre>
    *    takeWhile(                                                   Result:
    *      'aEibc12',                                                  'aEi'
@@ -1335,9 +1305,11 @@ export class StringUtil {
    * </pre>
    *
    * @param sourceString
-   *    {@link String} with the characters to filter
+   *    {@link String} with the characters to filter. If it is `null`, `undefined` or empty then {@link StringUtil#EMPTY_STRING}
+   *    is returned
    * @param filterPredicate
-   *    {@link TPredicate1} to filter characters from `sourceString`
+   *    {@link TPredicate1} to filter characters from `sourceString`. If it is `null` or `undefined` then `sourceString`
+   *    is returned
    *
    * @return the longest prefix of provided `sourceString` whose characters all satisfy `filterPredicate`
    */

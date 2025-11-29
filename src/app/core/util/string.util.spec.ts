@@ -844,7 +844,7 @@ describe('StringUtil', () => {
 
       const separator = ';';
 
-      expect(StringUtil.joinString(sourceArray, isNullOrStartsWith1, separator)).toEqual('1;13;null;17');
+      expect(StringUtil.joinString(sourceArray, isNullOrStartsWith1, separator)).toEqual('1;13;;17');
     });
 
   });

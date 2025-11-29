@@ -162,11 +162,10 @@ export class MapUtil {
   /**
    * Returns a new {@link Map} after applying to `sourceMap`:
    * <p>
-   * - Filter its elements using the {@link TPredicate2} `filterPredicate`
-   *  - Transform its filtered elements using the {@link TFunction2} `mapFunction`
-   *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be transformed.
+   *   <ul>
+   *     <li>Filter its elements using the {@link TPredicate2} `filterPredicate`</li>
+   *     <li>Transform its filtered elements using the {@link TFunction2} `mapFunction`</li>
+   *  </ul>
    *
    * <pre>
    *    collect(                                                     Result:
@@ -181,7 +180,8 @@ export class MapUtil {
    * @param mapFunction
    *    {@link TFunction2} to transform filtered elements of `sourceMap`
    * @param filterPredicate
-   *    {@link TPredicate2} to filter elements from `sourceMap`
+   *    {@link TPredicate2} to filter elements from `sourceMap`. If it is `null` or `undefined` then all elements
+   *    will be transformed
    *
    * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap`
    *         on which {@link TPredicate2} returns `true` and collecting the results
@@ -638,8 +638,7 @@ export class MapUtil {
    * elements of `sourceMap`, going left to right.
    *
    * @apiNote
-   *    If `sourceMap` or `accumulator` are `null` or `undefined` then `initialValue` is returned. If `filterPredicate`
-   *  is `null` or `undefined` then all elements will be used to calculate the final value.
+   *    If `sourceMap` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
    *
    * <pre>
    *    foldLeft(                                                              Result:
@@ -657,7 +656,8 @@ export class MapUtil {
    * @param accumulator
    *    A {@link TFunction3} which combines elements
    * @param filterPredicate
-   *    {@link TPredicate2} used to find given elements to filter
+   *    {@link TPredicate2} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    will be used to calculate the final value
    *
    * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going
    *         left to right with the start value `initialValue` on the left.
@@ -786,9 +786,6 @@ export class MapUtil {
   /**
    * Partitions `sourceMap` into a {@link Map} of maps according to given `discriminator` {@link TFunction2}.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
-   *
    * <pre>
    *    groupBy(                                                               Result:
    *      [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (11, 'Ok')],                  [(0, [(2, 'Hello')])
@@ -802,7 +799,7 @@ export class MapUtil {
    * @param discriminator
    *    {@link TFunction2} used to split the elements of `sourceMap`
    * @param filterPredicate
-   *    {@link TPredicate2} to filter elements of `sourceMap`
+   *    {@link TPredicate2} to filter elements of `sourceMap`. If it is `null` or `undefined` then all elements will be used
    *
    * @return new {@link Map} from applying the given {@link TFunction2} to each element of `sourceMap` to generate
    *         the keys of the returned one
@@ -959,9 +956,6 @@ export class MapUtil {
    *   Partitions given `sourceMap` into a {@link Map}, applying `discriminatorKey` and `valueMapper` if the current
    * element verifies `filterPredicate`. All values with the same `key` will be added in an array.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
-   *
    * <pre>
    *    groupMap(                                                              Result:
    *      [(1, 'Hi'), (2, 'Hello'), (7, 'World'), (8, 'Ok')],                   [(1, [2, 5])
@@ -978,7 +972,7 @@ export class MapUtil {
    * @param valueMapper
    *    {@link TFunction2} to transform elements of `sourceMap`
    * @param filterPredicate
-   *    {@link TPredicate2} to filter elements of `sourceMap`
+   *    {@link TPredicate2} to filter elements of `sourceMap`. If it is `null` or `undefined` then all elements will be used
    *
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceMap`
    *         that verifies `filterPredicate`

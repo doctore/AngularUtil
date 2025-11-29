@@ -160,11 +160,10 @@ export class ArrayUtil {
   /**
    * Returns a new array after applying to `sourceArray`:
    * <p>
-   *  - Filter its elements using the {@link TPredicate1} `filterPredicate`
-   *  - Transform its filtered elements using the {@link TFunction1} `mapFunction`
-   *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be transformed.
+   *   <ul>
+   *     <li>Filter its elements using the {@link TPredicate1} `filterPredicate`</li>
+   *     <li>Transform its filtered elements using the {@link TFunction1} `mapFunction`</li>
+   *  </ul>
    *
    * <pre>
    *    collect(                                           Result:
@@ -179,7 +178,8 @@ export class ArrayUtil {
    * @param mapFunction
    *    {@link TFunction1} to transform filtered elements of the source `sourceArray`
    * @param filterPredicate
-   *    {@link TPredicate1} to filter elements from `sourceArray`
+   *    {@link TPredicate1} to filter elements from `sourceArray`. If it is `null` or `undefined` then all elements
+   *    will be transformed
    *
    * @return new array from applying the given {@link TFunction1} to each element of `sourceArray`
    *         on which {@link TPredicate1} returns `true` and collecting the results
@@ -284,9 +284,6 @@ export class ArrayUtil {
   /**
    * Counts the number of elements in `sourceArray` which satisfy the `filterPredicate`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then the length of `sourceArray` will be returned.
-   *
    * <pre>
    *    count(                                   Result:
    *      [1, 2, 3, 6],                           2
@@ -297,7 +294,8 @@ export class ArrayUtil {
    * @param sourceArray
    *    Array with the elements to filter
    * @param filterPredicate
-   *   {@link TPredicate1} to filter elements from `sourceArray`
+   *   {@link TPredicate1} to filter elements from `sourceArray`. If it is `null` or `undefined` then the length
+   *   of `sourceArray` will be returned
    *
    * @return the number of elements satisfying the {@link TPredicate1} `filterPredicate`
    */
@@ -324,9 +322,6 @@ export class ArrayUtil {
    *    Returns an array removing the longest prefix of elements included in `sourceArray` that satisfy the
    * {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
-   *
    * <pre>
    *    dropWhile(                               Result:
    *      [1, 3, 4, 5, 6],                        [4, 5, 6]
@@ -337,7 +332,8 @@ export class ArrayUtil {
    * @param sourceArray
    *    Array to filter
    * @param filterPredicate
-   *    {@link TPredicate1} used to find given elements to filter
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    of `sourceArray` will be returned
    *
    * @return the longest suffix of provided `sourceArray` whose elements all satisfy `filterPredicate`
    */
@@ -367,9 +363,6 @@ export class ArrayUtil {
    *    Returns a new array using `sourceArray` as source, adding from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
-   *
    * <pre>
    *    filter(                                                                               Result:
    *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
@@ -380,7 +373,8 @@ export class ArrayUtil {
    * @param sourceArray
    *    Array to filter
    * @param filterPredicate
-   *    {@link TPredicate1} used to find given elements to filter
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    of `sourceArray` will be returned
    *
    * @return empty array if `sourceArray` has no elements or no one verifies provided `filterPredicate`,
    *         otherwise a new array with the elements of `sourceArray` which verify `filterPredicate`
@@ -403,9 +397,6 @@ export class ArrayUtil {
    *    Returns a new array using `sourceArray` as source, removing from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
-   *
    * <pre>
    *    filterNot(                                                                            Result:
    *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            [{id: 2, name: 'user2'}]
@@ -416,7 +407,8 @@ export class ArrayUtil {
    * @param sourceArray
    *    Array to filter
    * @param filterPredicate
-   *    {@link TPredicate1} used to find given elements to filter
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    of `sourceArray` will be returned
    *
    * @return empty array if `sourceArray` has no elements,
    *         otherwise a new array with the elements of `sourceArray` which do not verify `filterPredicate`
@@ -606,8 +598,7 @@ export class ArrayUtil {
    * of `sourceArray` that verify `filterPredicate`, going left to right.
    *
    * @apiNote
-   *    If `sourceArray` or `accumulator` are `null` or `undefined` then `initialValue` is returned. If `filterPredicate`
-   * is `null` or `undefined` then all elements will be used to calculate the final value.
+   *    If `sourceArray` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
    *
    * <pre>
    *    foldLeft(                                          Result:
@@ -625,7 +616,8 @@ export class ArrayUtil {
    * @param accumulator
    *    A {@link TFunction2} which combines elements
    * @param filterPredicate
-   *    {@link TPredicate1} used to find given elements to filter
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    will be used to calculate the final value
    *
    * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
    *         left to right with the start value `initialValue` on the left.
@@ -673,9 +665,6 @@ export class ArrayUtil {
    *    Partitions given `sourceArray` into a {@link Map}, applying `discriminatorKey` if the current element verifies
    * `filterPredicate`. All values with the same `key` will be added in an array.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
-   *
    * <pre>
    *    groupBy(                                           Result:
    *      [1, 2, 3, 6],                                     [(2, [1])
@@ -689,7 +678,7 @@ export class ArrayUtil {
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param filterPredicate
-   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *    {@link TPredicate1} to filter elements of `sourceArray`. If it is `null` or `undefined` then all elements will be used
    *
    * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceArray` that verifies
    *        `filterPredicate`
@@ -729,7 +718,6 @@ export class ArrayUtil {
    *
    * @apiNote
    *    This method is similar to {@link ArrayUtil#groupBy} but `discriminatorKey` returns an array of related key values.
-   * If `filterPredicate` is `null` or `undefined` then all elements will be used.
    *
    * <pre>
    *    groupByMultiKey(                                  Result:
@@ -757,7 +745,7 @@ export class ArrayUtil {
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param filterPredicate
-   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *    {@link TPredicate1} to filter elements of `sourceArray`. If it is `null` or `undefined` then all elements will be used
    *
    * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceArray` that
    *         verifies `filterPredicate`, to generate the keys of the returned one
@@ -828,9 +816,6 @@ export class ArrayUtil {
    *    Partitions given `sourceArray` into a {@link Map}, applying `discriminatorKey` and `valueMapper` if the current
    * element verifies `filterPredicate`. All values with the same `key` will be added in an array.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements will be used.
-   *
    * <pre>
    *    groupMap(                                          Result:
    *      [1, 2, 3, 6],                                     [(2, [2])
@@ -847,7 +832,7 @@ export class ArrayUtil {
    * @param valueMapper
    *    {@link TFunction1} to transform elements of `sourceArray`
    * @param filterPredicate
-   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *    {@link TPredicate1} to filter elements of `sourceArray`. If it is `null` or `undefined` then all elements will be used
    *
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
    *         that verifies `filterPredicate`
@@ -901,7 +886,6 @@ export class ArrayUtil {
    *
    * @apiNote
    *    This method is similar to {@link ArrayUtil#groupMap} but `discriminatorKey` returns an array of related key values.
-   * If `filterPredicate` is `null` or `undefined` then all elements will be used.
    *
    * <pre>
    *    groupMapMultiKey(                                  Result:
@@ -932,7 +916,7 @@ export class ArrayUtil {
    * @param valueMapper
    *    {@link TFunction1} to transform elements of `sourceArray`
    * @param filterPredicate
-   *    {@link TPredicate1} to filter elements of `sourceArray`
+   *    {@link TPredicate1} to filter elements of `sourceArray`. If it is `null` or `undefined` then all elements will be used
    *
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
    *         that verifies `filterPredicate`, to generate the keys of the returned one
@@ -1652,9 +1636,6 @@ export class ArrayUtil {
    *    Returns an array with the longest prefix of elements included in `sourceArray` that satisfy the
    * {@link TPredicate1} `filterPredicate`.
    *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceArray` will be returned.
-   *
    * <pre>
    *    takeWhile(                               Result:
    *      [1, 3, 4, 5, 6],                        [1, 3]
@@ -1665,7 +1646,8 @@ export class ArrayUtil {
    * @param sourceArray
    *    Array to filter
    * @param filterPredicate
-   *    {@link TPredicate1} used to find given elements to filter
+   *    {@link TPredicate1} used to find given elements to filter. If it` is `null` or `undefined` then all elements
+   *    of `sourceArray` will be returned
    *
    * @return the longest prefix of provided `sourceArray` whose elements all satisfy `filterPredicate`
    */
@@ -1852,9 +1834,6 @@ export class ArrayUtil {
   /**
    * Transposes the rows and columns of the given `sourceMatrix`.
    *
-   * @apiNote
-   *    If `sourceMatrix` is `null`, `undefined` or empty then an empty array is returned.
-   *
    * <pre>
    *    transpose(                                            Result:
    *       [[1, 2, 3], [4, 5, 6]]                              [[1, 4], [2, 5], [3, 6]]
@@ -1868,7 +1847,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceMatrix
-   *    Array of arrays to transpose
+   *    Array of arrays to transpose. If it is `null`, `undefined` or empty then an empty array is returned
    *
    * @return Array of arrays
    */
