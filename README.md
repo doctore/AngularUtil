@@ -3,6 +3,7 @@
 - [Why was this project created?](#why-was-this-project-created)
 - [Elements included in this project](#elements-included-in-this-project)
   - [New types](#new-types)
+  - [Services](#services)
   - [Util classes](#util-classes)
   - [Angular components](#angular-components) 
 - [How to use the project](#how-to-use-the-project)
@@ -43,6 +44,12 @@ Others related with functional programming:
 * [Optional](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/optional.type.ts) a container object which may or may not contain a non-null value.
 * [Try](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/try.type.ts) computation representation that may either result in an error, or return a successfully computed value.
 * [Validation](https://github.com/doctore/AngularUtil/blob/main/src/app/core/types/functional/validation.type.ts) used to validate the given instance, defining 2 different status to manage the result: `Valid` and `Invalid`.
+
+
+### Services
+
+* [CookiesService](https://github.com/doctore/AngularUtil/blob/main/src/app/core/services/cookie.service.ts)
+* [WebStorageService](https://github.com/doctore/AngularUtil/blob/main/src/app/core/services/web-storage.service.ts)
 
 
 ### Util classes
