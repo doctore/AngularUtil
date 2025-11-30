@@ -67,7 +67,7 @@ export class GenericSubject<T> {
    *   }
    * </pre>
    *
-   * @returns {Observable} that the {@link Subject} casts to
+   * @return {Observable} that the {@link Subject} casts to
    */
   asObservable = (): Observable<T> =>
     this.subject.asObservable();
@@ -120,7 +120,7 @@ export class GenericSubject<T> {
    * @param unsubscribe
    *   {@link Subject} used to unsubscribe all returned {@link Observable}s created from current {@link Subject}
    *
-   * @returns {Observable} that the {@link Subject} casts to
+   * @return {Observable} that the {@link Subject} casts to
    */
   asObservableUntil = (unsubscribe: Subject<void>): Observable<T> =>
     this.subject.asObservable()

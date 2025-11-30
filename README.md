@@ -48,7 +48,7 @@ Others related with functional programming:
 
 ### Services
 
-* [CookiesService](https://github.com/doctore/AngularUtil/blob/main/src/app/core/services/cookie.service.ts)
+* [CookieService](https://github.com/doctore/AngularUtil/blob/main/src/app/core/services/cookie.service.ts)
 * [WebStorageService](https://github.com/doctore/AngularUtil/blob/main/src/app/core/services/web-storage.service.ts)
 
 
