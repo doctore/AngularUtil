@@ -23,7 +23,7 @@ export abstract class Validation<E, T> {
    *
    * @return the {@link Valid} value
    *
-   * @throws {@link ReferenceError} if this is an {@link Left}
+   * @throws {@link ReferenceError} if this is an {@link Invalid}
    */
   abstract get(): T;
 
@@ -91,7 +91,7 @@ export abstract class Validation<E, T> {
    */
   static combine = <E, T>(validations: NullableOrUndefined<Validation<E, T>[]>): Validation<E, T> => {
     // @ts-ignore
-    let result: Validation<E, T> = Validation.valid<T, E>(null);
+    let result: Validation<E, T> = Validation.valid<E, T>(null);
     if (!ArrayUtil.isEmpty(validations)) {
       for (let validation of validations!) {
         result = result.ap(validation);
@@ -123,7 +123,7 @@ export abstract class Validation<E, T> {
    */
   static combineGetFirstInvalid = <E, T>(validations: NullableOrUndefined<TFunction0<Validation<E, T>>[]>): Validation<E, T> => {
     // @ts-ignore
-    let result: Validation<E, T> = Validation.valid<T, E>(null);
+    let result: Validation<E, T> = Validation.valid<E, T>(null);
     if (!ArrayUtil.isEmpty(validations)) {
       for (let validation of validations!) {
         result = result.ap(
@@ -743,7 +743,7 @@ export class Invalid<E, T> extends Validation<E, T> {
    *
    * @return {@link Invalid}
    */
-  static of = <E, T>(errors: E[]) =>
+  static of = <E, T>(errors: E[]): Invalid<E, T> =>
     new Invalid<E, T>(
       ArrayUtil.isEmpty(errors)
         ? []

@@ -4,7 +4,6 @@ import { Consumer1, TConsumer1 } from '@app-core/types/consumer';
 import { Function0, Function1, isFFunction0, PartialFunction, TFunction0, TFunction1 } from '@app-core/types/function';
 import { Either } from '@app-core/types/functional';
 import { Predicate1, TPredicate1 } from '@app-core/types/predicate';
-import { IllegalArgumentError } from '@app-core/errors';
 
 /**
  *    A container object which may or may not contain a non-`null` value. If a value is present,
