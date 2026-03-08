@@ -14,6 +14,7 @@
   - [Running benchmarks](#running-benchmarks)
   - [Running end-to-end tests](#running-end-to-end-tests)
   - [Additional Resources](#additional-resources)
+- [Changelog](#changelog) 
 
 
 ## Why was this project created?
@@ -150,3 +151,12 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ### Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+<br><br>
+
+
+
+## Changelog
+
+There are previous versions of this project located with other git branches different than [main](https://github.com/doctore/AngularUtil/tree/main):
+
+* [2.7.5](https://github.com/doctore/AngularUtil/tree/archive/v2.7.5) related with Angular 15 and TypeScript 4.9.
