@@ -1,0 +1,272 @@
+import {
+  FBinaryOperator,
+  isFBinaryOperator,
+  BinaryOperator,
+  FUnaryOperator,
+  UnaryOperator
+} from '@app-core/type/function/operator';
+import {
+  FFunction1,
+  Function1,
+  Function3
+} from '@app-core/type/function';
+import { NullableOrUndefined } from '@app-core/type';
+import { IllegalArgumentError } from '@app-core/error';
+
+/**
+ * To invoke only this test:
+ *
+ *    ng test --include src/app/core/type/function/operator/binary-operator.type.spec.ts
+ */
+describe('isFBinaryOperator', () => {
+
+  it('when no function is provided then false is returned', () => {
+    expect(isFBinaryOperator()).toBe(false);
+    expect(isFBinaryOperator(null)).toBe(false);
+    expect(isFBinaryOperator(12)).toBe(false);
+    expect(isFBinaryOperator({})).toBe(false);
+  });
+
+
+  it('when a function that does not match is provided then false is returned', () => {
+    expect(isFBinaryOperator((t1: number) => t1)).toBe(false);
+    expect(isFBinaryOperator((t1: number, t2: number, t3: number) => t1 + t2 + t3)).toBe(false);
+  });
+
+
+  it('when a function that matches is provided then true is returned', () => {
+    expect(isFBinaryOperator((t1: number, t2: number) => {})).toBe(true);
+    expect(isFBinaryOperator((t1: number, t2: number) => t1 + t2)).toBe(true);
+  });
+
+});
+
+
+
+
+describe('BinaryOperator', () => {
+
+
+  describe('returnFirst', () => {
+
+    it('when two parameters are received then the first one is returned', () => {
+      const returnFirstBinaryOperator: BinaryOperator<number> =
+        BinaryOperator.returnFirst();
+
+      expect(returnFirstBinaryOperator.apply(12, 11)).toEqual(12);
+      expect(returnFirstBinaryOperator.apply(0, -3)).toEqual(0);
+    });
+
+  });
+
+
+
+  describe('returnSecond', () => {
+
+    it('when two parameters are received then the second one is returned', () => {
+      const returnSecondBinaryOperator: BinaryOperator<string> =
+        BinaryOperator.returnSecond();
+
+      expect(returnSecondBinaryOperator.apply('12', '11')).toEqual('11');
+      expect(returnSecondBinaryOperator.apply('0', '-3')).toEqual('-3');
+    });
+
+  });
+
+
+
+  describe('isBinaryOperator', () => {
+
+    it('when no function is provided then false is returned', () => {
+      expect(BinaryOperator.isBinaryOperator()).toBe(false);
+      expect(BinaryOperator.isBinaryOperator(null)).toBe(false);
+      expect(BinaryOperator.isBinaryOperator('')).toBe(false);
+      expect(BinaryOperator.isBinaryOperator(12)).toBe(false);
+      expect(BinaryOperator.isBinaryOperator({})).toBe(false);
+      expect(BinaryOperator.isBinaryOperator({ apply: (n: number) => n * 2 })).toBe(false);
+    });
+
+
+    it('when provided function is different than BinaryOperator then false is returned', () => {
+      const stringLengthPlusNumbers: Function3<string, number, number, number> =
+        Function3.of((s: NullableOrUndefined<string>, n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => s!.length + n1! + n2!);
+
+      expect(BinaryOperator.isBinaryOperator(stringLengthPlusNumbers)).toBe(false);
+    });
+
+
+    it('when a BinaryOperator is provided then true is returned', () => {
+      expect(BinaryOperator.isBinaryOperator(joinStringsBinaryOperator)).toBe(true);
+
+      expect(BinaryOperator.isBinaryOperator(BinaryOperator.returnFirst())).toBe(true);
+      expect(BinaryOperator.isBinaryOperator(BinaryOperator.returnSecond())).toBe(true);
+    });
+
+  });
+
+
+
+  describe('of', () => {
+
+    it('when null or undefined func is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => BinaryOperator.of(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => BinaryOperator.of(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when a raw function equivalent to FBinaryOperator is provided then a valid BinaryOperator is returned', () => {
+      const func = BinaryOperator.of(joinStringsRaw);
+
+      expect(BinaryOperator.isBinaryOperator(func)).toBe(true);
+      expect(func.apply('abc', 'zf')).toEqual('abczf');
+    });
+
+
+    it('when an instance of FBinaryOperator is provided then a valid BinaryOperator is returned', () => {
+      const func = BinaryOperator.of(plusNumbersFBinaryOperator);
+
+      expect(BinaryOperator.isBinaryOperator(func)).toBe(true);
+      expect(func.apply(9, 1)).toEqual(10);
+    });
+
+
+    it('when an instance of BinaryOperator is provided then the same one is returned', () => {
+      const multiplyNumbers: BinaryOperator<number> =
+        BinaryOperator.of((n1: number, n2: number) => n1 * n2);
+
+      const func = BinaryOperator.of(multiplyNumbers);
+
+      expect(BinaryOperator.isBinaryOperator(func)).toBe(true);
+      expect(func.apply(11, 2)).toEqual(22);
+    });
+
+  });
+
+
+
+  describe('getMapper', () => {
+
+    it('then return internal mapper', () => {
+      const mapper: FBinaryOperator<string> = joinStringsBinaryOperator.getMapper();
+
+      expect(mapper('abc', 'v2')).toEqual('abcv2');
+    });
+
+  });
+
+
+
+  describe('andThen', () => {
+
+    it('when null or undefined after is given then an error is thrown', () => {
+      // @ts-ignore
+      expect(() => joinStringsBinaryOperator.andThen(null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => joinStringsBinaryOperator.andThen(undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when a raw function equivalent to FBinaryOperator is provided then it will be applied after current one', () => {
+      const multiply2 = (n: NullableOrUndefined<number>) => 2 * n!;
+
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
+
+      expect(plusNumbersAndThenMultiply2.apply(0, 1)).toEqual(2);
+      expect(plusNumbersAndThenMultiply2.apply(3, 7)).toEqual(20);
+    });
+
+
+    it('when a FUnaryOperator is provided then it will be applied after current one', () => {
+      const multiply2: FUnaryOperator<number> =
+        (n: NullableOrUndefined<number>) => 2 * n!;
+
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
+
+      expect(plusNumbersAndThenMultiply2.apply(0, 2)).toEqual(4);
+      expect(plusNumbersAndThenMultiply2.apply(3, 4)).toEqual(14);
+    });
+
+
+    it('when a FFunction1 is provided then it will be applied after current one', () => {
+      const toString: FFunction1<number, string> =
+        (n: NullableOrUndefined<number>) => '' + n!;
+
+      const plusNumbersAndThenToString = plusNumbersBinaryOperator.andThen(toString);
+
+      expect(plusNumbersAndThenToString.apply(0, 5)).toEqual('5');
+      expect(plusNumbersAndThenToString.apply(3, 9)).toEqual('12');
+    });
+
+
+    it('when a UnaryOperator is provided then it will be applied after current one', () => {
+      const multiply2: UnaryOperator<number> =
+        UnaryOperator.of((n: number) => 2 * n);
+
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
+
+      expect(plusNumbersAndThenMultiply2.apply(1, 2)).toEqual(6);
+      expect(plusNumbersAndThenMultiply2.apply(2, 3)).toEqual(10);
+    });
+
+
+    it('when a Function1 is provided then it will be applied after current one', () => {
+      const multiply2: Function1<number, number> =
+        Function1.of((n: NullableOrUndefined<number>) => 2 * n!);
+
+      const plusNumbersAndThenMultiply2 = plusNumbersBinaryOperator.andThen(multiply2);
+
+      expect(plusNumbersAndThenMultiply2.apply(2, 4)).toEqual(12);
+      expect(plusNumbersAndThenMultiply2.apply(6, 8)).toEqual(28);
+    });
+
+  });
+
+
+
+  describe('apply', () => {
+
+    it('when a BinaryOperator is provided then the received input will be transformed', () => {
+      const joinStrings: BinaryOperator<string> =
+        BinaryOperator.of((s1: string, s2: string) => s1 + s2);
+
+      const multiplyNumbers: BinaryOperator<number> =
+        BinaryOperator.of((n1: number, n2: number) => n1 * n2);
+
+      expect(joinStrings.apply('abc', 'hg')).toEqual('abchg');
+      expect(multiplyNumbers.apply(11, 3)).toEqual(33);
+    });
+
+  });
+
+});
+
+
+
+const joinStringsRaw =
+  (s1: NullableOrUndefined<string>,
+   s2: NullableOrUndefined<string>) =>
+    s1! + s2!;
+
+
+const joinStringsBinaryOperator: BinaryOperator<string> =
+  BinaryOperator.of(
+    (s1: string,
+     s2: string) =>
+      s1 + s2
+  );
+
+
+const plusNumbersFBinaryOperator: FBinaryOperator<number> =
+  (n1: NullableOrUndefined<number>,
+   n2: NullableOrUndefined<number>) =>
+    n1! + n2!;
+
+
+const plusNumbersBinaryOperator: BinaryOperator<number> =
+  BinaryOperator.of(
+    (n1: NullableOrUndefined<number>,
+     n2: NullableOrUndefined<number>) =>
+      n1! + n2!
+  );

@@ -1,0 +1,51 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "module": "preserve",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "paths": {
+      "@app-core/error": ["src/app/core/error/index.ts"],
+      "@app-core/model": ["src/app/core/model/index.ts"],
+      "@app-core/service": ["src/app/core/service/index.ts"],
+      "@app-core/type": ["src/app/core/type/index.ts"],
+      "@app-core/type/collection": ["src/app/core/type/collection/index.ts"],
+      "@app-core/type/collection/set": ["src/app/core/type/collection/set/index.ts"],
+      "@app-core/type/consumer": ["src/app/core/type/consumer/index.ts"],
+      "@app-core/type/comparator": ["src/app/core/type/comparator/index.ts"],
+      "@app-core/type/function": ["src/app/core/type/function/index.ts"],
+      "@app-core/type/function/operator": ["src/app/core/type/function/operator/index.ts"],
+      "@app-core/type/functional": ["src/app/core/type/functional/index.ts"],
+      "@app-core/type/predicate": ["src/app/core/type/predicate/index.ts"],
+      "@app-core/type/subject": ["src/app/core/type/subject/index.ts"],
+      "@app-core/util": ["src/app/core/util/index.ts"],
+      "@app-env/*": ["src/environments/*"]
+    },
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
