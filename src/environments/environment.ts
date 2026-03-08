@@ -2,7 +2,7 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import { EnvironmentConfiguration } from '@app-core/models';
+import { EnvironmentConfiguration } from '@app-core/model';
 
 export const environment: EnvironmentConfiguration = {
   name: 'local',

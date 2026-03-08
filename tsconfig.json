@@ -1,53 +1,51 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "module": "preserve",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "paths": {
-      "@app-core/errors": ["src/app/core/errors/index.ts"],
-      "@app-core/models": ["src/app/core/models/index.ts"],
-      "@app-core/services": ["src/app/core/services/index.ts"],
-      "@app-core/types": ["src/app/core/types/index.ts"],
-      "@app-core/types/comparator": ["src/app/core/types/comparator/index.ts"],
-      "@app-core/types/consumer": ["src/app/core/types/consumer/index.ts"],
-      "@app-core/types/function": ["src/app/core/types/function/index.ts"],
-      "@app-core/types/function/operator": ["src/app/core/types/function/operator/index.ts"],
-      "@app-core/types/functional": ["src/app/core/types/functional/index.ts"],
-      "@app-core/types/predicate": ["src/app/core/types/predicate/index.ts"],
-      "@app-core/types/subject": ["src/app/core/types/subject/index.ts"],
-      "@app-core/types/tuple": ["src/app/core/types/tuple/index.ts"],
+      "@app-core/error": ["src/app/core/error/index.ts"],
+      "@app-core/model": ["src/app/core/model/index.ts"],
+      "@app-core/service": ["src/app/core/service/index.ts"],
+      "@app-core/type": ["src/app/core/type/index.ts"],
+      "@app-core/type/collection": ["src/app/core/type/collection/index.ts"],
+      "@app-core/type/collection/set": ["src/app/core/type/collection/set/index.ts"],
+      "@app-core/type/consumer": ["src/app/core/type/consumer/index.ts"],
+      "@app-core/type/comparator": ["src/app/core/type/comparator/index.ts"],
+      "@app-core/type/function": ["src/app/core/type/function/index.ts"],
+      "@app-core/type/function/operator": ["src/app/core/type/function/operator/index.ts"],
+      "@app-core/type/functional": ["src/app/core/type/functional/index.ts"],
+      "@app-core/type/predicate": ["src/app/core/type/predicate/index.ts"],
+      "@app-core/type/subject": ["src/app/core/type/subject/index.ts"],
       "@app-core/util": ["src/app/core/util/index.ts"],
-      "@app-shared/dialog": ["src/app/shared/dialog/index.ts"],
-      "@app-shared/directive": ["src/app/shared/directive/index.ts"],
       "@app-env/*": ["src/environments/*"]
     },
-    "outDir": "./dist/out-tsc",
-    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
-    "declaration": false,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "ES2022",
-    "module": "ES2022",
-    "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
-    "resolveJsonModule": true,
-    "strictPropertyInitialization": false
+    "target": "esnext"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
 }

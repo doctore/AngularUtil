@@ -1,4 +1,4 @@
-import { EnvironmentConfiguration } from '@app-core/models';
+import { EnvironmentConfiguration } from '../app/core/model';
 
 export const environment: EnvironmentConfiguration = {
   name: 'local',
