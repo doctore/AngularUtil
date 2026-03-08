@@ -1031,38 +1031,38 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet vs SwissTa
   });
 
 
-  bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+  bench("ImmutableHashSet remove: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
       equals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
 
-  bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+  bench("ImmutableHashSet remove: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
       equals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
 
-  bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+  bench("ImmutableHashSet remove: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
       equals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
@@ -1111,38 +1111,38 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet vs SwissTa
   });
 
 
-  bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+  bench("ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
       equals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
 
-  bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+  bench("ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
       equals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
 
-  bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+  bench("ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
       equals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
@@ -1191,38 +1191,38 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet vs SwissTa
   });
 
 
-  bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+  bench("ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
       equals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
 
-  bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+  bench("ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
       equals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
 
-  bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+  bench("ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
       equals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
-      set = set.delete(item);
+      set = set.remove(item);
     }
   });
 
