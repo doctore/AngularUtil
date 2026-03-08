@@ -2,8 +2,8 @@ import { EqualityFunction, HashFunction } from '@app-core/type/collection';
 import { ImmutableSet } from '@app-core/type/collection/set';
 import { NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil, SetUtil } from '@app-core/util';
+import { UnsupportedOperationError } from '@app-core/error';
 import _ from 'lodash';
-import {UnsupportedOperationError} from '@app-core/error';
 
 /**
  *    Immutable {@link Set} based on hash function to locate internal elements. This {@link Set} never change, that is,

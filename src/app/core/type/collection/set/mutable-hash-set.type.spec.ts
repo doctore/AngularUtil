@@ -2,7 +2,7 @@ import { MutableHashSet } from '@app-core/type/collection/set';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { Nullable } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
-import {UnsupportedOperationError} from '@app-core/error';
+import { UnsupportedOperationError } from '@app-core/error';
 
 /**
  * To invoke only this test:
