@@ -65,14 +65,14 @@ There are new collections used to store, search, sort and organize data more eas
 
 ### Util classes
 
-* [ArrayUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/array.util.ts)
-* [AssertUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/assert.util.ts)
-* [JsonUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/json.util.ts)
-* [MapUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/map.util.ts)
-* [NumberUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/number.util.ts)
-* [ObjectUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/object.util.ts)
+* [ArrayUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/array-util.ts)
+* [AssertUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/assert-util.ts)
+* [JsonUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/json-util.ts)
+* [MapUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/map-util.ts)
+* [NumberUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/number-util.ts)
+* [ObjectUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/object-util.ts)
 * [SetUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/set-util.ts)
-* [StringUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/string.util.ts)
+* [StringUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/string-util.ts)
 <br><br>
 
 
