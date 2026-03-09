@@ -16,7 +16,7 @@ import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
  *
  * @apiNote
  *    {@link Optional} is primarily intended for use as a method return type where there is a clear need to represent
- * "no result," and where using `null` is likely to cause errors. A variable whose type is {@link Optional}
+ * "no result", and where using `null` is likely to cause errors. A variable whose type is {@link Optional}
  * should never itself be `null`; it should always point to an {@link Optional} instance.
  *
  * @param <T>
