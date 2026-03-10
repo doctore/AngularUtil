@@ -380,8 +380,8 @@ export class ArrayUtil {
    * given {@link TPredicate1} `filterPredicate`.
    *
    * <pre>
-   *    filter(                                                                               Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
+   *    filter(                                                                            Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -423,8 +423,8 @@ export class ArrayUtil {
    * Returns from the given `sourceArray` the first element that verifies the provided `filterPredicate`.
    *
    * <pre>
-   *    filterFirst(                                                                          Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            {id: 1, name: 'user1'}
+   *    filterFirst(                                                                       Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         {id: 1, name: 'user1'}
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -461,8 +461,8 @@ export class ArrayUtil {
    * -1 if no one verifies it.
    *
    * <pre>
-   *    filterFirstIndex(                                                                     Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            1
+   *    filterFirstIndex(                                                                  Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         1
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -498,8 +498,8 @@ export class ArrayUtil {
    * Returns from the given `sourceArray` the last element that verifies the provided `filterPredicate`.
    *
    * <pre>
-   *    filterLast(                                                                           Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            {id: 3, name: 'user3'}
+   *    filterLast(                                                                        Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         {id: 3, name: 'user3'}
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -537,8 +537,8 @@ export class ArrayUtil {
    * given {@link TPredicate1} `filterPredicate`.
    *
    * <pre>
-   *    filterNot(                                                                            Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            {id: 2, name: 'user2'}
+   *    filterNot(                                                                         Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         {id: 2, name: 'user2'}
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -570,8 +570,8 @@ export class ArrayUtil {
    * `equalsFunction`.
    *
    * <pre>
-   *    find(                                                                                 Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            {id: 2, name: 'user2'}
+   *    find(                                                                              Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         {id: 2, name: 'user2'}
    *      {id: 2, name: 'user2 v2'},
    *      (u1: User, u2: User) => u1.id == u2.id
    *    )
@@ -614,8 +614,8 @@ export class ArrayUtil {
    * {@link TPredicate2} `equalsFunction`, -1 if no one verifies it.
    *
    * <pre>
-   *    findIndex(                                                                            Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],            1
+   *    findIndex(                                                                         Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         1
    *      {id: 2, name: 'user2 v2'},
    *      (u1: User, u2: User) => u1.id == u2.id
    *    )
@@ -659,8 +659,8 @@ export class ArrayUtil {
    * `equalsFunction`.
    *
    * <pre>
-   *    find(                                                                                 Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user3'}],            {id: 2, name: 'user3'}
+   *    find(                                                                              Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user3'}],         {id: 2, name: 'user3'}
    *      {id: 2, name: 'user2 v2'},
    *      (u1: User, u2: User) => u1.id == u2.id
    *    )
@@ -704,8 +704,8 @@ export class ArrayUtil {
    *  the provided {@link TPredicate2} `equalsFunction`. {@link Optional#empty} otherwise.
    *
    * <pre>
-   *    find(                                                                               Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],          Optional({id: 2, name: 'user2'})
+   *    find(                                                                              Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         Optional({id: 2, name: 'user2'})
    *      {id: 2, name: 'user2 v2'},
    *      (u1: User, u2: User) => u1.id == u2.id
    *    )

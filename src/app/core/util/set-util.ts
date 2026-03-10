@@ -1,4 +1,4 @@
-import { Nullable } from '@app-core/type';
+import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
 import { ImmutableHashSet, ImmutableSet, MutableHashSet } from '@app-core/type/collection/set';
 import { UnsupportedOperationError } from '@app-core/error';
@@ -13,7 +13,22 @@ export class SetUtil {
   }
 
 
-  // TODO: PENDING TO ADD MORE UTILITY METHODS
+  /**
+   * Returns a new {@link Set} containing the elements of provided `sourceSet`.
+   *
+   * @param sourceSet
+   *    {@link Set} with the elements to copy. If it is `null` or `undefined` then an empty {@link Set} will be returned
+   *
+   * @return new {@link Set} containing all elements included in `sourceSet`
+   */
+  static copy = <T>(sourceSet: NullableOrUndefined<Set<T>>): Set<T> => {
+    if (!sourceSet) {
+      return new Set<T>();
+    }
+    return this.cloneSet(
+      sourceSet
+    );
+  }
 
 
   /**
@@ -51,7 +66,7 @@ export class SetUtil {
    * @return `true` if `input` is an instance of {@link isReadonlySetLike},
    *         `false` otherwise
    */
-  static isReadonlySetLike (input?: unknown): input is ReadonlySetLike<unknown> {
+  static isReadonlySetLike(input?: unknown): input is ReadonlySetLike<unknown> {
     if (ObjectUtil.isNullOrUndefined(input) || 'object' !== typeof input) {
       return false;
     }
@@ -88,7 +103,7 @@ export class SetUtil {
    *
    * @throws {UnsupportedOperationError} if the given `input` is not a managed {@link Set}
    */
-  private static createEmptySet <T>(input?: unknown): Set<T> {
+  private static createEmptySet<T>(input?: unknown): Set<T> {
     if (input instanceof Set) {
       return new Set<T>();
     }
@@ -102,6 +117,42 @@ export class SetUtil {
       return MutableHashSet.empty<T>(
         input.getHash(),
         input.getEquals()
+      );
+    }
+    throw new UnsupportedOperationError(
+      'Provided input does not belong to a managed Set'
+    );
+  }
+
+
+  /**
+   * Returns a new {@link Set} based on the type of provided `input`, adding its stored values.
+   *
+   * @param input
+   *    Source {@link Set} used to know the type of the returned instance
+   *
+   * @return {@link Set} whose type is based on the provided `input`, including its stored values
+   *
+   * @throws {UnsupportedOperationError} if the given `input` is not a managed {@link Set}
+   */
+  private static cloneSet<T>(input?: unknown): Set<T> {
+    if (input instanceof Set) {
+      return new Set<T>(
+        input
+      );
+    }
+    if (input instanceof ImmutableHashSet) {
+      return ImmutableHashSet.of<T>(
+        input.getHash(),
+        input.getEquals(),
+        input
+      );
+    }
+    if (input instanceof MutableHashSet) {
+      return MutableHashSet.of<T>(
+        input.getHash(),
+        input.getEquals(),
+        input
       );
     }
     throw new UnsupportedOperationError(

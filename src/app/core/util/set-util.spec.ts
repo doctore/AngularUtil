@@ -21,6 +21,98 @@ describe('SetUtil', () => {
 
 
 
+  describe('copy', () => {
+
+    it('when given sourceSet is a native one and has no elements then empty Set is returned', () => {
+      const emptySet = new Set<number>();
+
+      expect(SetUtil.copy(null)).toEqual(emptySet);
+      expect(SetUtil.copy(undefined)).toEqual(emptySet);
+      expect(SetUtil.copy(emptySet)).toEqual(emptySet);
+    });
+
+
+    it('when given sourceSet is a mutable one and has no elements then empty Set is returned', () => {
+      const emptyNativeSet = new Set<number>();
+      const emptyMutableSet = MutableHashSet.empty();
+
+      expect(SetUtil.copy(null)).toEqual(emptyNativeSet);
+      expect(SetUtil.copy(undefined)).toEqual(emptyNativeSet);
+      expect(SetUtil.copy(emptyMutableSet)).toEqual(emptyMutableSet);
+    });
+
+
+    it('when given sourceSet is an immutable one and has no elements then empty Set is returned', () => {
+      const emptyNativeSet = new Set<number>();
+      const emptyImmutableSet = ImmutableHashSet.empty();
+
+      expect(SetUtil.copy(null)).toEqual(emptyNativeSet);
+      expect(SetUtil.copy(undefined)).toEqual(emptyNativeSet);
+      expect(SetUtil.copy(emptyImmutableSet)).toEqual(emptyImmutableSet);
+    });
+
+
+    it('when given sourceSet is a native one and has elements then a copy is returned', () => {
+      const sourceSet = new Set<number>(
+        [ 1, 2, 3, 6 ]
+      );
+
+      const result = SetUtil.copy(sourceSet);
+
+      verifySets(
+        result,
+        sourceSet
+      );
+      sourceSet.clear();
+      expect(sourceSet.size).toEqual(0);
+      expect(result).toBeInstanceOf(Set);
+      expect(result.size).toEqual(4);
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements then a copy is returned', () => {
+      const sourceSet = MutableHashSet.of(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+
+      const result = SetUtil.copy(sourceSet);
+
+      verifySets(
+        result,
+        sourceSet
+      );
+      sourceSet.clear();
+      expect(sourceSet.size).toEqual(0);
+      expect(result).toBeInstanceOf(MutableHashSet);
+      expect(result.size).toEqual(4);
+    });
+
+
+    it('when given sourceSet is an immutable one and has elements then a copy is returned', () => {
+      let sourceSet = ImmutableHashSet.of(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+
+      const result = SetUtil.copy(sourceSet);
+
+      verifySets(
+        result,
+        sourceSet
+      );
+      sourceSet = sourceSet.clear();
+      expect(sourceSet.size).toEqual(0);
+      expect(result).toBeInstanceOf(ImmutableHashSet);
+      expect(result.size).toEqual(4);
+    });
+
+  });
+
+
+
   describe('isEmpty', () => {
 
     it('when given setToVerify is null, undefined or is an empty Set then true is returned', () => {
@@ -57,10 +149,6 @@ describe('SetUtil', () => {
     });
 
   });
-
-
-
-
 
 
   describe('isImmutableSet', () => {
@@ -261,6 +349,17 @@ class User implements Hashable {
 interface Role {
   id: number;
   name: string;
+}
+
+
+function verifySets(actualSet: Set<unknown>,
+                    expectedSet: Set<unknown>) {
+  expect(expectedSet.size).toEqual(actualSet.size);
+  if (0 < expectedSet.size) {
+    for (const v of expectedSet) {
+      expect(actualSet.has(v)).toEqual(true);
+    }
+  }
 }
 
 
