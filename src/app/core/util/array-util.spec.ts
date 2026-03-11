@@ -76,9 +76,9 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and partialFunction and orElseMapper are valid then a new filtered and transformed array is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
-      const expectedResult: number[] = [2, 4, 4, 12];
+      const expectedResult: number[] = [ 2, 4, 4, 12 ];
 
       verifyArrays(
         ArrayUtil.applyOrElse(sourceArray, plus1ForOddPP, multiply2Function),
@@ -88,9 +88,9 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and defaultMapper and orElseMapper are valid but filterPredicate is null or undefined then all elements will be transformed using defaultMapper', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
-      const expectedResult: number[] = [2, 3, 4, 7];
+      const expectedResult: number[] = [ 2, 3, 4, 7 ];
 
       verifyArrays(
         // @ts-ignore
@@ -106,9 +106,9 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and defaultMapper, orElseMapper and filterPredicate are valid then a new filtered and transformed array is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
-      const expectedResult: number[] = [2, 4, 4, 12];
+      const expectedResult: number[] = [ 2, 4, 4, 12 ];
 
       verifyArrays(
         ArrayUtil.applyOrElse(sourceArray, plus1Raw, multiply2Raw, isOddRaw),
@@ -135,7 +135,8 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray has no elements and mapFunction and filterPredicate are provided then empty array is returned', () => {
       const emptyArray: number[] = [];
-      const multiply2AndString: FFunction1<number, string> = (n: number) => '' + (2 * n);
+      const multiply2AndString: FFunction1<number, string> =
+        (n: number) => '' + (2 * n);
 
       const expectedResult: string[] = [];
 
@@ -147,26 +148,26 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.collect([1], null)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.collect([ 1 ], null)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.collect([1], undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.collect([ 1 ], undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray is not empty but mapFunction is null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.collect([1], null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.collect([ 1 ], null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.collect([1], undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.collect([ 1 ], undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed array is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
-      const expectedResult: string[] = ['4', '12'];
+      const expectedResult: string[] = [ '4', '12' ];
 
       verifyArrays(
         ArrayUtil.collect(sourceArray, multiply2AndStringForEvenPP),
@@ -176,11 +177,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and mapFunction is valid but filterPredicate is null or undefined then all elements will be transformed', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
       const multiply2AndString: FFunction1<number, string> =
         (n: number) => '' + (2 * n);
 
-      const expectedResult: string[] = ['2', '4', '6', '12'];
+      const expectedResult: string[] = [ '2', '4', '6', '12' ];
 
       verifyArrays(
         // @ts-ignore
@@ -196,11 +197,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and mapFunction and filterPredicate are valid then a new filtered and transformed array is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
       const multiply2AndString = (n: number) => '' + (2 * n);
 
-      const expectedResult: string[] = ['4', '12'];
+      const expectedResult: string[] = [ '4', '12' ];
 
       verifyArrays(
         ArrayUtil.collect(sourceArray, multiply2AndString, isEvenRaw),
@@ -233,14 +234,14 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and partialFunction is defined but no one element matches with its domain then an empty Optional is returned', () => {
-      const sourceArray: number[] = [1, 3, 5, 7];
+      const sourceArray: number[] = [ 1, 3, 5, 7 ];
 
       expect(ArrayUtil.collectFirst(sourceArray, multiply2AndStringForEvenPP).isPresent()).toBe(false);
     });
 
 
     it('when given sourceArray has elements and partialFunction is defined and there are elements that match with its domain then a non empty Optional is returned', () => {
-      const sourceArray: number[] = [1, 3, 4, 8];
+      const sourceArray: number[] = [ 1, 3, 4, 8 ];
 
       const expectedResult: Optional<string> = Optional.of('8');
 
@@ -269,7 +270,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements then a copy is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
       const result = ArrayUtil.copy(sourceArray);
 
@@ -298,7 +299,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements but filterPredicate is null or undefined then sourceArray length is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
       expect(ArrayUtil.count(sourceArray, null)).toEqual(4);
       expect(ArrayUtil.count(sourceArray, undefined)).toEqual(4);
@@ -306,7 +307,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and filterPredicate is valid then the number of elements matching filterPredicate is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 7];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 7 ];
 
       expect(ArrayUtil.count(sourceArray, isEvenRaw)).toEqual(2);
       expect(ArrayUtil.count(sourceArray, isOddFPredicate)).toEqual(3);
@@ -327,8 +328,8 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty but filterPredicate is null or undefined then sourceArray is returned', () => {
-      const sourceArray: number[] = [1, 10, 21, 2];
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then a copy of sourceArray is returned', () => {
+      const sourceArray: number[] = [ 1, 10, 21, 2 ];
 
       verifyArrays(
         ArrayUtil.dropWhile(sourceArray, null),
@@ -342,11 +343,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
-      const sourceArray: number[] = [1, 3, 10, 21, 5];
+      const sourceArray: number[] = [ 1, 3, 10, 21, 5 ];
 
       verifyArrays(
         ArrayUtil.dropWhile(sourceArray, isOddRaw),
-        [10, 21, 5]
+        [ 10, 21, 5 ]
       );
     });
 
@@ -365,30 +366,30 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty but filterPredicate is null or undefined then sourceArray is returned', () => {
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then a copy of sourceArray is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
       verifyArrays(
-        ArrayUtil.filter([r1, r2, r3], undefined),
-        [r1, r2, r3]
+        ArrayUtil.filter([ r1, r2, r3 ], undefined),
+        [ r1, r2, r3 ]
       );
       verifyArrays(
-        ArrayUtil.filter([3, 5, 2], null),
-        [3, 5, 2]
+        ArrayUtil.filter([ 3, 5, 2 ], null),
+        [ 3, 5, 2 ]
       );
     });
 
 
-    it('when given sourceArray has elements then filtered array is returned', () => {
+    it('when given sourceArray has elements and filterPredicate is provided then filtered array is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
       verifyArrays(
-        ArrayUtil.filter([r1, r2, r3], isRoleIdOddRaw),
-        [r1, r3]
+        ArrayUtil.filter([ r1, r2, r3 ], isRoleIdOddRaw),
+        [ r1, r3 ]
       );
     });
 
@@ -408,8 +409,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty but filterPredicate is null or undefined then undefined is returned', () => {
-      expect(ArrayUtil.filterFirst([1], undefined)).toBe(undefined);
-      expect(ArrayUtil.filterFirst([1], null)).toBe(undefined);
+      expect(ArrayUtil.filterFirst([ 1 ], undefined)).toBe(undefined);
+      expect(ArrayUtil.filterFirst([ 1 ], null)).toBe(undefined);
     });
 
 
@@ -422,7 +423,7 @@ describe('ArrayUtil', () => {
       const isIdGreaterThan10: Predicate1<Role> =
         Predicate1.of((role: Role) => 10 < role.id);
 
-      expect(ArrayUtil.filterFirst([r1, r2, r3, r4], isIdGreaterThan10)).toBe(undefined);
+      expect(ArrayUtil.filterFirst([ r1, r2, r3, r4 ], isIdGreaterThan10)).toBe(undefined);
     });
 
 
@@ -432,7 +433,7 @@ describe('ArrayUtil', () => {
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
 
-      expect(ArrayUtil.filterFirst([u1, u2, u3, u4], isUserIdOddRaw)).toEqual(u1);
+      expect(ArrayUtil.filterFirst([ u1, u2, u3, u4 ], isUserIdOddRaw)).toEqual(u1);
     });
 
   });
@@ -451,8 +452,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty but filterPredicate is null or undefined then -1 is returned', () => {
-      expect(ArrayUtil.filterFirstIndex([1], undefined)).toBe(-1);
-      expect(ArrayUtil.filterFirstIndex([1], null)).toBe(-1);
+      expect(ArrayUtil.filterFirstIndex([ 1 ], undefined)).toBe(-1);
+      expect(ArrayUtil.filterFirstIndex([ 1 ], null)).toBe(-1);
     });
 
 
@@ -465,7 +466,7 @@ describe('ArrayUtil', () => {
       const isIdGreaterThan10: Predicate1<Role> =
         Predicate1.of((role: Role) => 10 < role.id);
 
-      expect(ArrayUtil.filterFirstIndex([r1, r2, r3, r4], isIdGreaterThan10)).toBe(-1);
+      expect(ArrayUtil.filterFirstIndex([ r1, r2, r3, r4 ], isIdGreaterThan10)).toBe(-1);
     });
 
 
@@ -508,7 +509,7 @@ describe('ArrayUtil', () => {
       const isIdGreaterThan10: Predicate1<Role> =
         Predicate1.of((role: Role) => 10 < role.id);
 
-      expect(ArrayUtil.filterLast([r1, r2, r3, r4], isIdGreaterThan10)).toBe(undefined);
+      expect(ArrayUtil.filterLast([ r1, r2, r3, r4 ], isIdGreaterThan10)).toBe(undefined);
     });
 
 
@@ -518,7 +519,7 @@ describe('ArrayUtil', () => {
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
 
-      expect(ArrayUtil.filterLast([u1, u2, u3, u4], isUserIdOddRaw)).toEqual(u3);
+      expect(ArrayUtil.filterLast([ u1, u2, u3, u4 ], isUserIdOddRaw)).toEqual(u3);
     });
 
   });
@@ -542,12 +543,12 @@ describe('ArrayUtil', () => {
       const r3 = { id: 3, name: 'role3' } as Role;
 
       verifyArrays(
-        ArrayUtil.filterNot([r1, r2, r3], undefined),
-        [r1, r2, r3]
+        ArrayUtil.filterNot([ r1, r2, r3 ], undefined),
+        [ r1, r2, r3 ]
       );
       verifyArrays(
-        ArrayUtil.filterNot([3, 5, 2], null),
-        [3, 5, 2]
+        ArrayUtil.filterNot([ 3, 5, 2 ], null),
+        [ 3, 5, 2 ]
       );
     });
 
@@ -558,8 +559,8 @@ describe('ArrayUtil', () => {
       const u3 = new User(3, 'user3');
 
       verifyArrays(
-        ArrayUtil.filterNot([u1, u2, u3], isUserIdOddRaw),
-        [u2]
+        ArrayUtil.filterNot([ u1, u2, u3 ], isUserIdOddRaw),
+        [ u2 ]
       );
     });
 
@@ -590,8 +591,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty and contains null or undefined, the item is null or undefined then expected element is returned', () => {
-      expect(ArrayUtil.find([1, undefined, 2], undefined)).toBe(undefined);
-      expect(ArrayUtil.find([1, 3, null], null)).toBeNull();
+      expect(ArrayUtil.find([ 1, undefined, 2 ], undefined)).toBe(undefined);
+      expect(ArrayUtil.find([ 1, 3, null ], null)).toBeNull();
     });
 
 
@@ -600,7 +601,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
-      const sourceArray = [u1, u2, u3, u4];
+      const sourceArray = [ u1, u2, u3, u4 ];
 
       const uToSearch = new User(5, 'user5');
 
@@ -617,7 +618,7 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
+      const sourceArray = [ r1, r2, r3, r4 ];
 
       const r2SameId = { id: 2, name: 'role2 v2' } as Role;
       const r2Cloned = { id: 2, name: 'role2' } as Role;
@@ -667,7 +668,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
-      const sourceArray = [u1, u2, u3, u4];
+      const sourceArray = [ u1, u2, u3, u4 ];
 
       const uToSearch = new User(5, 'user5');
 
@@ -684,7 +685,7 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
+      const sourceArray = [ r1, r2, r3, r4 ];
 
       const r2SameId = { id: 2, name: 'role2 v2' } as Role;
       const r2Cloned = { id: 2, name: 'role2' } as Role;
@@ -733,7 +734,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
-      const sourceArray = [u1, u2, u3, u4];
+      const sourceArray = [ u1, u2, u3, u4 ];
 
       const uToSearch = new User(5, 'user5');
 
@@ -750,7 +751,7 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
+      const sourceArray = [ r1, r2, r3, r4 ];
 
       const r2SameId = { id: 2, name: 'role2 v2' } as Role;
       const r2Cloned = { id: 2, name: 'role2' } as Role;
@@ -789,7 +790,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
-      const sourceArray = [u1, u2, u3, u4];
+      const sourceArray = [ u1, u2, u3, u4 ];
 
       const uToSearch = new User(5, 'user5');
 
@@ -806,7 +807,7 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
+      const sourceArray = [ r1, r2, r3, r4 ];
 
       const r2SameId = { id: 2, name: 'role2 v2' } as Role;
       const r2Cloned = { id: 2, name: 'role2' } as Role;
@@ -845,8 +846,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty but only has one dimension then same array is returned', () => {
-      const sourceArray1: number[] = [1, 3, 10, 21];
-      const sourceArray2: string[] = ['a', 'b', 'c', 'd', 'e'];
+      const sourceArray1: number[] = [ 1, 3, 10, 21 ];
+      const sourceArray2: string[] = [ 'a', 'b', 'c', 'd', 'e' ];
 
       verifyArrays(
         ArrayUtil.flatten(sourceArray1),
@@ -861,11 +862,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty and has more than one dimension then flatten array is returned', () => {
-      const sourceArray1 = [1, 3, [10, 21], [], 5];
-      const sourceArray2 = ['a', ['b', ['c', 'd'], []], 'e', [[]]];
+      const sourceArray1 = [ 1, 3, [10, 21], [], 5 ];
+      const sourceArray2 = [ 'a', [ 'b', [ 'c', 'd' ], [] ], 'e', [ [] ] ];
 
-      const expectedResultArray1: number[] =  [1, 3, 10, 21, 5];
-      const expectedResultArray2: string[] =  ['a', 'b', 'c', 'd', 'e'];
+      const expectedResultArray1: number[] =  [ 1, 3, 10, 21, 5 ];
+      const expectedResultArray2: string[] =  [ 'a', 'b', 'c', 'd', 'e' ];
 
       verifyArrays(
         ArrayUtil.flatten(sourceArray1),
@@ -906,7 +907,7 @@ describe('ArrayUtil', () => {
 
     it('when given accumulator is null or undefined then initialValue is returned', () => {
       const intValue = 10;
-      const intArray: number[] = [2, 3, 4];
+      const intArray: number[] = [ 2, 3, 4 ];
 
       const nullAccumulatorResult = ArrayUtil.foldLeft(intArray, intValue, null);
       const undefinedAccumulatorResult = ArrayUtil.foldLeft(intArray, intValue, undefined);
@@ -920,8 +921,8 @@ describe('ArrayUtil', () => {
       const intValue = 10;
       const stringValue = 'a';
 
-      const intArray: number[] = [2, 3, 4];
-      const stringArray: string[] = ['b', 'c', 'd'];
+      const intArray: number[] = [ 2, 3, 4 ];
+      const stringArray: string[] = [ 'b', 'c', 'd' ];
 
       const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
@@ -940,8 +941,8 @@ describe('ArrayUtil', () => {
       const intValue = 10;
       const stringValue = 'a';
 
-      const intArray: number[] = [2, 3, 4];
-      const stringArray: string[] = ['b', 'c', 'd', 'e'];
+      const intArray: number[] = [ 2, 3, 4 ];
+      const stringArray: string[] = [ 'b', 'c', 'd', 'e' ];
 
       const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
@@ -984,13 +985,13 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey is valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
-      expectedResult.set(2, [1]);
-      expectedResult.set(3, [2]);
-      expectedResult.set(4, [3, 3]);
-      expectedResult.set(7, [6]);
+      expectedResult.set(2, [ 1 ]);
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(4, [ 3, 3 ]);
+      expectedResult.set(7, [ 6 ]);
 
       verifyMaps(
         // @ts-ignore
@@ -1006,11 +1007,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
-      expectedResult.set(2, [1]);
-      expectedResult.set(4, [3, 3]);
+      expectedResult.set(2, [ 1 ]);
+      expectedResult.set(4, [ 3, 3 ]);
 
       verifyMaps(
         ArrayUtil.groupBy(sourceArray, plus1Raw, isOddRaw),
@@ -1059,7 +1060,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey is valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 11, 12 ];
 
       const oddEvenAndCompareWith5: FFunction1<number, string[]> =
         (n: number) => {
@@ -1078,10 +1079,10 @@ describe('ArrayUtil', () => {
         };
 
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
-      expectedResult.set("even", [2, 6, 12]);
-      expectedResult.set("odd", [1, 3, 11]);
-      expectedResult.set("smaller5", [1, 2, 3]);
-      expectedResult.set("greaterEqual5", [6, 11, 12]);
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("odd", [ 1, 3, 11 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6, 11, 12 ]);
 
       verifyMaps(
         // @ts-ignore
@@ -1097,7 +1098,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 11, 12 ];
 
       const oddEvenAndCompareWith5 = (n: number) => {
         const keys: string[] = [];
@@ -1115,10 +1116,10 @@ describe('ArrayUtil', () => {
       };
 
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
-      expectedResult.set("even", [2, 6]);
-      expectedResult.set("odd", [1, 3]);
-      expectedResult.set("smaller5", [1, 2, 3]);
-      expectedResult.set("greaterEqual5", [6]);
+      expectedResult.set("even", [ 2, 6 ]);
+      expectedResult.set("odd", [ 1, 3 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6 ]);
 
       verifyMaps(
         ArrayUtil.groupByMultiKey(sourceArray, oddEvenAndCompareWith5, lessThan10Raw),
@@ -1156,31 +1157,31 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([1], null)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([1], undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray is not empty but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([1], null, plus1Raw,  isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], null, plus1Raw,  isOddRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([1], undefined, plus1Raw, isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], undefined, plus1Raw, isOddRaw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([1], sameValueRaw, null, isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], sameValueRaw, null, isOddRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([1], sameValueRaw, undefined, isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], sameValueRaw, undefined, isOddRaw)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
-      expectedResult.set(1, [2]);
-      expectedResult.set(3, [4, 4]);
+      expectedResult.set(1, [ 2 ]);
+      expectedResult.set(3, [ 4, 4 ]);
 
       verifyMaps(
         ArrayUtil.groupMap(sourceArray, numberAsKeyAndPlus1AsValueForOddPP),
@@ -1190,13 +1191,13 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
-      expectedResult.set(1, [2]);
-      expectedResult.set(2, [3]);
-      expectedResult.set(3, [4, 4]);
-      expectedResult.set(6, [7]);
+      expectedResult.set(1, [ 2 ]);
+      expectedResult.set(2, [ 3 ]);
+      expectedResult.set(3, [ 4, 4 ]);
+      expectedResult.set(6, [ 7 ]);
 
       verifyMaps(
         // @ts-ignore
@@ -1212,11 +1213,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
-      expectedResult.set(1, [2]);
-      expectedResult.set(3, [4, 4]);
+      expectedResult.set(1, [ 2 ]);
+      expectedResult.set(3, [ 4, 4 ]);
 
       verifyMaps(
         ArrayUtil.groupMap(sourceArray, sameValueRaw, plus1Raw, isOddRaw),
@@ -1273,19 +1274,19 @@ describe('ArrayUtil', () => {
       };
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapMultiKey([1], null, sameValueRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], null, sameValueRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapMultiKey([1], undefined, sameValueRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], undefined, sameValueRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapMultiKey([1], oddEvenAndCompareWith5, null, lessThan10Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], oddEvenAndCompareWith5, null, lessThan10Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapMultiKey([1], oddEvenAndCompareWith5, undefined, lessThan10Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], oddEvenAndCompareWith5, undefined, lessThan10Raw)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 11, 12 ];
 
       const oddEvenAndCompareWith5: FFunction1<number, string[]> =
         (n: number) => {
@@ -1304,10 +1305,10 @@ describe('ArrayUtil', () => {
       };
 
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
-      expectedResult.set("even", [2, 6, 12]);
-      expectedResult.set("odd", [1, 3, 11]);
-      expectedResult.set("smaller5", [1, 2, 3]);
-      expectedResult.set("greaterEqual5", [6, 11, 12]);
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("odd", [ 1, 3, 11 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6, 11, 12 ]);
 
       verifyMaps(
         // @ts-ignore
@@ -1323,7 +1324,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 11, 12];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 11, 12 ];
 
       const oddEvenAndCompareWith5 = (n: number) => {
         const keys: string[] = [];
@@ -1341,10 +1342,10 @@ describe('ArrayUtil', () => {
       };
 
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
-      expectedResult.set("even", [2, 6]);
-      expectedResult.set("odd", [1, 3]);
-      expectedResult.set("smaller5", [1, 2, 3]);
-      expectedResult.set("greaterEqual5", [6]);
+      expectedResult.set("even", [ 2, 6 ]);
+      expectedResult.set("odd", [ 1, 3 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6 ]);
 
       verifyMaps(
         ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameValueRaw, lessThan10Raw),
@@ -1382,37 +1383,37 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but reduceValues or partialFunction is null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], null, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], null, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], undefined, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], undefined, mod3AsKeyAndPlus1AsValueForLowerThan10PP)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], sumValuesRaw, null)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], sumValuesRaw, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], sumValuesRaw, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], sumValuesRaw, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray is not empty but reduceValues, discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], null, mod3Raw,  plus1Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], null, mod3Raw,  plus1Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], undefined, mod3Raw, plus1Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], undefined, mod3Raw, plus1Raw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], sumValuesRaw, null,  plus1Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], sumValuesRaw, null,  plus1Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], sumValuesRaw, undefined, plus1Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], sumValuesRaw, undefined, plus1Raw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], sumValuesRaw, mod3Raw,  null)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], sumValuesRaw, mod3Raw,  null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapReduce([1], sumValuesRaw, mod3Raw, undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapReduce([ 1 ], sumValuesRaw, mod3Raw, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements and reduceValues and partialFunction are valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 7, 11, 12];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 7, 11, 12 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(0, 11);
@@ -1427,7 +1428,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and reduceValues, discriminatorKey and valueMapper are valid then a transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 7];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 7 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(0, 11);
@@ -1467,8 +1468,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty and contains null or undefined, the item is null or undefined then true is returned', () => {
-      expect(ArrayUtil.has([1, undefined, 2], undefined)).toBe(true);
-      expect(ArrayUtil.has([1, 3, null], null)).toBe(true);
+      expect(ArrayUtil.has([ 1, undefined, 2 ], undefined)).toBe(true);
+      expect(ArrayUtil.has([ 1, 3, null ], null)).toBe(true);
     });
 
 
@@ -1477,7 +1478,7 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
       const u4 = new User(4, 'user1');
-      const sourceArray = [u1, u2, u3, u4];
+      const sourceArray = [ u1, u2, u3, u4 ];
 
       const uToSearch = new User(5, 'user5');
 
@@ -1494,7 +1495,7 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
       const r4 = { id: 4, name: 'role2' } as Role;
-      const sourceArray = [r1, r2, r3, r4];
+      const sourceArray = [ r1, r2, r3, r4 ];
 
       const r2SameId = { id: 2, name: 'role2 v2' } as Role;
       const r2Cloned = { id: 2, name: 'role2' } as Role;
@@ -1535,8 +1536,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given input is an array then true will be returned', () => {
-      const arrayNative: string[] = ["a"];
-      const arrayObject: Array<number> = [1, 2, 3];
+      const arrayNative: string[] = [ "a" ];
+      const arrayObject: Array<number> = [ 1, 2, 3 ];
 
       const expectedResult = true;
 
@@ -1566,9 +1567,9 @@ describe('ArrayUtil', () => {
 
       const expectedResult = false;
 
-      expect(ArrayUtil.isEmpty([1, 2])).toEqual(expectedResult);
-      expect(ArrayUtil.isEmpty(['a', 'b', 'c'])).toEqual(expectedResult);
-      expect(ArrayUtil.isEmpty([role])).toEqual(expectedResult);
+      expect(ArrayUtil.isEmpty([ 1, 2 ])).toEqual(expectedResult);
+      expect(ArrayUtil.isEmpty([ 'a', 'b', 'c' ])).toEqual(expectedResult);
+      expect(ArrayUtil.isEmpty([ role ])).toEqual(expectedResult);
     });
 
   });
@@ -1616,14 +1617,14 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and mapFunction is valid then a new transformed array is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6];
+      const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
       const toString = (n: number) => '' + n;
       const plus2: Function1<number, number> =
         Function1.of((n: number) => 2 + n);
 
-      const expectedToStringResult: string[] = ['1', '2', '3', '6'];
-      const expectedPlus2Result: number[] = [3, 4, 5, 8];
+      const expectedToStringResult: string[] = [ '1', '2', '3', '6' ];
+      const expectedPlus2Result: number[] = [ 3, 4, 5, 8 ];
 
       verifyArrays(
         ArrayUtil.map(sourceArray, toString),
@@ -1677,8 +1678,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and comparator is valid then its largest value is returned', () => {
-      let numberArray: number[] = [1, 10, 21, 2];
-      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+      let numberArray: number[] = [ 1, 10, 21, 2 ];
+      let stringArray: NullableOrUndefined<string>[] = [ 'a', 'ab', null, undefined, 'abc' ];
 
       const numberComparator = (a: number, b: number) => a - b;
       const stringComparator: Comparator<NullableOrUndefined<string>> =
@@ -1729,16 +1730,16 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.maxOptional([1], null)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.maxOptional([ 1 ], null)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.maxOptional([1], undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.maxOptional([ 1 ], undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements and comparator is valid then and Optional with its largest value is returned', () => {
-      let numberArray: number[] = [1, 10, 21, 2];
-      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+      let numberArray: number[] = [ 1, 10, 21, 2 ];
+      let stringArray: NullableOrUndefined<string>[] = [ 'a', 'ab', null, undefined, 'abc' ];
 
       const numberComparator = (a: number, b: number) => a - b;
       const stringComparator: Comparator<NullableOrUndefined<string>> =
@@ -1803,8 +1804,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and comparator is valid then its smallest value is returned', () => {
-      let numberArray: number[] = [1, 10, 21, 2];
-      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+      let numberArray: number[] = [ 1, 10, 21, 2 ];
+      let stringArray: NullableOrUndefined<string>[] = [ 'a', 'ab', null, undefined, 'abc' ];
 
       const numberComparator = (a: number, b: number) => a - b;
       const stringComparator: Comparator<NullableOrUndefined<string>> =
@@ -1863,8 +1864,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and comparator is valid then and Optional with its largest value is returned', () => {
-      let numberArray: number[] = [1, 10, 21, 2];
-      let stringArray: NullableOrUndefined<string>[] = ['a', 'ab', null, undefined, 'abc'];
+      let numberArray: number[] = [ 1, 10, 21, 2 ];
+      let stringArray: NullableOrUndefined<string>[] = [ 'a', 'ab', null, undefined, 'abc' ];
 
       const numberComparator = (a: number, b: number) => a - b;
       const stringComparator: Comparator<NullableOrUndefined<string>> =
@@ -1912,8 +1913,8 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not null and accumulator is valid then accumulator is applied to contained elements', () => {
-      const intArray: number[] = [2];
-      const stringArray: string[] = ['b', 'c', 'd'];
+      const intArray: number[] = [ 2 ];
+      const stringArray: string[] = [ 'b', 'c', 'd' ];
 
       const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
       const stringAccumulator = (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!;
@@ -1939,13 +1940,13 @@ describe('ArrayUtil', () => {
       const stringComparison = (s1: string, s2: string) => s1 == s2;
       const userComparison = (u1: User, u2: User) => u1.equals(u2);
 
-      expect(ArrayUtil.removeAll(null, [1, 2])).toEqual([]);
-      expect(ArrayUtil.removeAll(undefined, ['a', 'b'])).toEqual([]);
-      expect(ArrayUtil.removeAll([], [u1, u2])).toEqual([]);
+      expect(ArrayUtil.removeAll(null, [ 1, 2 ])).toEqual([]);
+      expect(ArrayUtil.removeAll(undefined, [ 'a', 'b' ])).toEqual([]);
+      expect(ArrayUtil.removeAll([], [ u1, u2 ])).toEqual([]);
 
-      expect(ArrayUtil.removeAll(null, [1, 2], numberComparison)).toEqual([]);
-      expect(ArrayUtil.removeAll(undefined, ['a', 'b'], stringComparison)).toEqual([]);
-      expect(ArrayUtil.removeAll([], [u1, u2], userComparison)).toEqual([]);
+      expect(ArrayUtil.removeAll(null, [ 1, 2 ], numberComparison)).toEqual([]);
+      expect(ArrayUtil.removeAll(undefined, [ 'a', 'b' ], stringComparison)).toEqual([]);
+      expect(ArrayUtil.removeAll([], [ u1, u2 ], userComparison)).toEqual([]);
     });
 
 
@@ -1958,28 +1959,28 @@ describe('ArrayUtil', () => {
       const userComparison = (u1: User, u2: User) => u1.equals(u2);
 
       verifyArrays(
-        ArrayUtil.removeAll([1, 2], null),
+        ArrayUtil.removeAll([ 1, 2 ], null),
         [1, 2]
       );
       verifyArrays(
-        ArrayUtil.removeAll(['a', 'b'], undefined),
+        ArrayUtil.removeAll([ 'a', 'b' ], undefined),
         ['a', 'b']
       );
       verifyArrays(
-        ArrayUtil.removeAll([u1, u2], []),
+        ArrayUtil.removeAll([ u1, u2 ], []),
         [u1, u2]
       );
 
       verifyArrays(
-        ArrayUtil.removeAll([1, 2], null, numberComparison),
+        ArrayUtil.removeAll([ 1, 2 ], null, numberComparison),
         [1, 2]
       );
       verifyArrays(
-        ArrayUtil.removeAll(['a', 'b'], undefined, stringComparison),
+        ArrayUtil.removeAll([ 'a', 'b' ], undefined, stringComparison),
         ['a', 'b']
       );
       verifyArrays(
-        ArrayUtil.removeAll([u1, u2], [], userComparison),
+        ArrayUtil.removeAll([ u1, u2 ], [], userComparison),
         [u1, u2]
       );
     });
@@ -1991,15 +1992,15 @@ describe('ArrayUtil', () => {
       const r3 = { id: 1, name: 'role3' } as Role;
 
       verifyArrays(
-        ArrayUtil.removeAll([1, 2, 3], [1, 3, 4]),
+        ArrayUtil.removeAll([ 1, 2, 3 ], [ 1, 3, 4 ]),
         [2]
       );
       verifyArrays(
-        ArrayUtil.removeAll(['a', 'b', 'c', 'f'], ['b', 'c', 'd']),
+        ArrayUtil.removeAll([ 'a', 'b', 'c', 'f' ], [ 'b', 'c', 'd' ]),
         ['a', 'f']
       );
       verifyArrays(
-        ArrayUtil.removeAll([r1, r2, r3], [r1]),
+        ArrayUtil.removeAll([ r1, r2, r3 ], [ r1 ]),
         [r2, r3]
       );
     });
@@ -2015,16 +2016,16 @@ describe('ArrayUtil', () => {
       const userComparison = (u1: User, u2: User) => u1.equals(u2);
 
       verifyArrays(
-        ArrayUtil.removeAll([1, 2, 3, 4], [1, 3, 5], numberComparison),
-        [2, 4]
+        ArrayUtil.removeAll([ 1, 2, 3, 4 ], [ 1, 3, 5 ], numberComparison),
+        [ 2, 4 ]
       );
       verifyArrays(
-        ArrayUtil.removeAll(['a', 'bb', 'ccc', 'dddd'], ['a', 'cc'], stringComparison),
-        ['ccc', 'dddd']
+        ArrayUtil.removeAll([ 'a', 'bb', 'ccc', 'dddd' ], [ 'a', 'cc' ], stringComparison),
+        [ 'ccc', 'dddd' ]
       );
       verifyArrays(
-        ArrayUtil.removeAll([u1, u2, u3], [u1], userComparison),
-        [u2]
+        ArrayUtil.removeAll([ u1, u2, u3 ], [ u1 ], userComparison),
+        [ u2 ]
       );
     });
 
@@ -2042,13 +2043,13 @@ describe('ArrayUtil', () => {
       const stringComparison = (s1: string, s2: string) => s1 == s2;
       const userComparison = (u1: User, u2: User) => u1.equals(u2);
 
-      expect(ArrayUtil.retainAll(null, [1, 2])).toEqual([]);
-      expect(ArrayUtil.retainAll(undefined, ['a', 'b'])).toEqual([]);
-      expect(ArrayUtil.retainAll([], [u1, u2])).toEqual([]);
+      expect(ArrayUtil.retainAll(null, [ 1, 2 ])).toEqual([]);
+      expect(ArrayUtil.retainAll(undefined, [ 'a', 'b' ])).toEqual([]);
+      expect(ArrayUtil.retainAll([], [ u1, u2 ])).toEqual([]);
 
-      expect(ArrayUtil.retainAll(null, [1, 2], numberComparison)).toEqual([]);
-      expect(ArrayUtil.retainAll(undefined, ['a', 'b'], stringComparison)).toEqual([]);
-      expect(ArrayUtil.retainAll([], [u1, u2], userComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll(null, [ 1, 2 ], numberComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll(undefined, [ 'a', 'b' ], stringComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll([], [ u1, u2 ], userComparison)).toEqual([]);
     });
 
 
@@ -2060,13 +2061,13 @@ describe('ArrayUtil', () => {
       const stringComparison = (s1: string, s2: string) => s1 == s2;
       const userComparison = (u1: User, u2: User) => u1.equals(u2);
 
-      expect(ArrayUtil.retainAll([1, 2], null )).toEqual([]);
-      expect(ArrayUtil.retainAll(['a', 'b'], undefined )).toEqual([]);
-      expect(ArrayUtil.retainAll([u1, u2], [] )).toEqual([]);
+      expect(ArrayUtil.retainAll([ 1, 2 ], null )).toEqual([]);
+      expect(ArrayUtil.retainAll([ 'a', 'b' ], undefined )).toEqual([]);
+      expect(ArrayUtil.retainAll([ u1, u2 ], [])).toEqual([]);
 
-      expect(ArrayUtil.retainAll([1, 2], null, numberComparison)).toEqual([]);
-      expect(ArrayUtil.retainAll(['a', 'b'], undefined , stringComparison)).toEqual([]);
-      expect(ArrayUtil.retainAll([u1, u2], [], userComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll([ 1, 2 ], null, numberComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll([ 'a', 'b' ], undefined , stringComparison)).toEqual([]);
+      expect(ArrayUtil.retainAll([ u1, u2 ], [], userComparison)).toEqual([]);
     });
 
 
@@ -2076,16 +2077,16 @@ describe('ArrayUtil', () => {
       const r3 = { id: 1, name: 'role3' } as Role;
 
       verifyArrays(
-        ArrayUtil.retainAll([1, 2, 3], [1, 3, 4]),
-        [1, 3]
+        ArrayUtil.retainAll([ 1, 2, 3 ], [ 1, 3, 4 ]),
+        [ 1, 3 ]
       );
       verifyArrays(
-        ArrayUtil.retainAll(['a', 'b', 'c', 'f'], ['b', 'c', 'd']),
-        ['b', 'c']
+        ArrayUtil.retainAll([ 'a', 'b', 'c', 'f' ], [ 'b', 'c', 'd' ]),
+        [ 'b', 'c' ]
       );
       verifyArrays(
-        ArrayUtil.retainAll([r1, r2, r3], [r1, r2]),
-        [r1, r2]
+        ArrayUtil.retainAll([ r1, r2, r3 ], [ r1, r2 ]),
+        [ r1, r2 ]
       );
     });
 
@@ -2100,16 +2101,16 @@ describe('ArrayUtil', () => {
       const userComparison = (u1: User, u2: User) => u1.equals(u2);
 
       verifyArrays(
-        ArrayUtil.retainAll([1, 2, 3, 4], [1, 3, 5], numberComparison),
-        [1, 3]
+        ArrayUtil.retainAll([ 1, 2, 3, 4 ], [ 1, 3, 5 ], numberComparison),
+        [ 1, 3 ]
       );
       verifyArrays(
-        ArrayUtil.retainAll(['a', 'bb', 'ccc', 'dddd'], ['a', 'cc'], stringComparison),
-        ['a', 'bb']
+        ArrayUtil.retainAll([ 'a', 'bb', 'ccc', 'dddd' ], [ 'a', 'cc' ], stringComparison),
+        [ 'a', 'bb' ]
       );
       verifyArrays(
-        ArrayUtil.retainAll([u1, u2, u3], [u1], userComparison),
-        [u1, u3]
+        ArrayUtil.retainAll([ u1, u2, u3 ], [ u1 ], userComparison),
+        [ u1, u3 ]
       );
     });
 
@@ -2135,9 +2136,9 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty but comparator is null or undefined then default sort is applied', () => {
-      const sourceArray: number[] = [1, 10, 21, 2];
+      const sourceArray: number[] = [ 1, 10, 21, 2 ];
 
-      const expectedResult: number[] = [1, 10, 2, 21];
+      const expectedResult: number[] = [ 1, 10, 2, 21 ];
 
       verifyArrays(
         ArrayUtil.sort(sourceArray),
@@ -2157,10 +2158,10 @@ describe('ArrayUtil', () => {
 
 
     it('using basic types, when given sourceArray is not empty and comparator is valid then the sorted array using comparator is returned', () => {
-      const sourceArray: number[] = [1, 10, 21, 2];
+      const sourceArray: number[] = [ 1, 10, 21, 2 ];
       const comparator = (a: number, b: number) => a - b;
 
-      const expectedResult: number[] = [1, 2, 10, 21];
+      const expectedResult: number[] = [ 1, 2, 10, 21 ];
 
       verifyArrays(
         ArrayUtil.sort(sourceArray, comparator),
@@ -2177,8 +2178,8 @@ describe('ArrayUtil', () => {
       const comparator = (r1: Role, r2: Role) => r1.id - r2.id;
 
       verifyArrays(
-        ArrayUtil.sort([r1, r3, r2], comparator),
-        [r1, r2, r3]
+        ArrayUtil.sort([ r1, r3, r2 ], comparator),
+        [ r1, r2, r3 ]
       );
     });
 
@@ -2191,8 +2192,8 @@ describe('ArrayUtil', () => {
       const comparator: FComparator<User> = (u1: User, u2: User) => u2.id - u1.id;
 
       verifyArrays(
-        ArrayUtil.sort([u3, u1, u2], comparator),
-        [u3, u2, u1]
+        ArrayUtil.sort([ u3, u1, u2 ], comparator),
+        [ u3, u2, u1 ]
       );
     });
 
@@ -2215,50 +2216,50 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but size is less than 0 then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.sliding([1], -2)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.sliding([ 1 ], -2)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.sliding([1], -1)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.sliding([ 1 ], -1)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements but size is equals to 0 then empty array is returned', () => {
       const expectedResult: number[][] = [];
 
-      expect(ArrayUtil.sliding([1], 0)).toEqual(expectedResult);
-      expect(ArrayUtil.sliding([1, 2], 0)).toEqual(expectedResult);
-      expect(ArrayUtil.sliding([1, 2, 3], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.sliding([ 1 ], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.sliding([ 1, 2 ], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.sliding([ 1, 2, 3 ], 0)).toEqual(expectedResult);
     });
 
 
     it('when given sourceArray is not empty and size is greater than 0 then the matrix with containing the right chunks is returned', () => {
-      const sourceArray1: number[] = [1, 3, 10, 21];
-      const sourceArray2: string[] = ['a', 'b', 'c', 'd', 'e'];
+      const sourceArray1: number[] = [ 1, 3, 10, 21 ];
+      const sourceArray2: string[] = [ 'a', 'b', 'c', 'd', 'e' ];
 
       verifyMatrix(
         ArrayUtil.sliding(sourceArray1, 2),
-        [[1, 3], [3, 10], [10, 21]]
+        [ [ 1, 3 ], [ 3, 10 ], [ 10, 21 ] ]
       );
 
       verifyMatrix(
         ArrayUtil.sliding(sourceArray1, 3),
-        [[1, 3, 10], [3, 10, 21]]
+        [ [ 1, 3, 10 ], [ 3, 10, 21 ] ]
       );
       verifyMatrix(
         ArrayUtil.sliding(sourceArray1, 5),
-        [[1, 3, 10, 21]]
+        [ [ 1, 3, 10, 21 ] ]
       );
 
       verifyMatrix(
         ArrayUtil.sliding(sourceArray2, 1),
-        [['a'], ['b'], ['c'], ['d'], ['e']]
+        [ [ 'a' ], [ 'b' ], [ 'c' ], [ 'd' ], [ 'e' ] ]
       );
       verifyMatrix(
         ArrayUtil.sliding(sourceArray2, 3),
-        [['a', 'b', 'c'], ['b', 'c', 'd'], ['c', 'd', 'e']]
+        [ [ 'a', 'b', 'c' ], [ 'b', 'c', 'd' ], [ 'c', 'd', 'e' ] ]
       );
       verifyMatrix(
         ArrayUtil.sliding(sourceArray2, 7),
-        [['a', 'b', 'c', 'd', 'e']]
+        [ [ 'a', 'b', 'c', 'd', 'e' ] ]
       );
     });
 
@@ -2281,50 +2282,50 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but size is less than 0 then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.split([1], -2)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.split([ 1 ], -2)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.split([1], -1)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.split([ 1 ], -1)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements but size is equals to 0 then empty array is returned', () => {
       const expectedResult: number[][] = [];
 
-      expect(ArrayUtil.split([1], 0)).toEqual(expectedResult);
-      expect(ArrayUtil.split([1, 2], 0)).toEqual(expectedResult);
-      expect(ArrayUtil.split([1, 2, 3], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.split([ 1 ], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.split([ 1, 2 ], 0)).toEqual(expectedResult);
+      expect(ArrayUtil.split([ 1, 2, 3 ], 0)).toEqual(expectedResult);
     });
 
 
     it('when given sourceArray is not empty and size is greater than 0 then the matrix with containing the right chunks is returned', () => {
-      const sourceArray1: number[] = [1, 3, 10, 21];
-      const sourceArray2: string[] = ['a', 'b', 'c', 'd', 'e'];
+      const sourceArray1: number[] = [ 1, 3, 10, 21 ];
+      const sourceArray2: string[] = [ 'a', 'b', 'c', 'd', 'e' ];
 
       verifyMatrix(
         ArrayUtil.split(sourceArray1, 2),
-        [[1, 3], [10, 21]]
+        [ [ 1, 3 ], [ 10, 21 ] ]
       );
 
       verifyMatrix(
         ArrayUtil.split(sourceArray1, 3),
-        [[1, 3, 10], [21]]
+        [ [ 1, 3, 10 ], [ 21 ] ]
       );
       verifyMatrix(
         ArrayUtil.split(sourceArray1, 5),
-        [[1, 3, 10, 21]]
+        [ [ 1, 3, 10, 21 ] ]
       );
 
       verifyMatrix(
         ArrayUtil.split(sourceArray2, 1),
-        [['a'], ['b'], ['c'], ['d'], ['e']]
+        [ [ 'a' ], [ 'b' ], [ 'c' ], [ 'd' ], [ 'e' ] ]
       );
       verifyMatrix(
         ArrayUtil.split(sourceArray2, 3),
-        [['a', 'b', 'c'], ['d', 'e']]
+        [ [ 'a', 'b', 'c' ], [ 'd', 'e' ] ]
       );
       verifyMatrix(
         ArrayUtil.split(sourceArray2, 7),
-        [['a', 'b', 'c', 'd', 'e']]
+        [ [ 'a', 'b', 'c', 'd', 'e' ] ]
       );
     });
 
@@ -2343,8 +2344,8 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty but filterPredicate is null or undefined then sourceArray is returned', () => {
-      const sourceArray: number[] = [1, 10, 21, 2];
+    it('when given sourceArray is not empty but filterPredicate is null or undefined then a copy of sourceArray is returned', () => {
+      const sourceArray: number[] = [ 1, 10, 21, 2 ];
 
       verifyArrays(
         ArrayUtil.takeWhile(sourceArray, null),
@@ -2358,11 +2359,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray is not empty and filterPredicate is valid then longest prefix of filtered elements is returned', () => {
-      const sourceArray: number[] = [1, 3, 10, 21, 5];
+      const sourceArray: number[] = [ 1, 3, 10, 21, 5 ];
 
       verifyArrays(
         ArrayUtil.takeWhile(sourceArray, isOddRaw),
-        [1, 3]
+        [ 1, 3 ]
       );
     });
 
@@ -2383,15 +2384,15 @@ describe('ArrayUtil', () => {
 
       verifyArrays(
         ArrayUtil.toArray(1, null, 3),
-        [1, null, 3]
+        [ 1, null, 3 ]
       );
       verifyArrays(
         ArrayUtil.toArray('a', 'bc', undefined, '5rt'),
-        ['a', 'bc', undefined, '5rt']
+        [ 'a', 'bc', undefined, '5rt' ]
       );
       verifyArrays(
         ArrayUtil.toArray(undefined, 1, null, 3),
-        [undefined, 1, null, 3]
+        [ undefined, 1, null, 3 ]
       );
     });
 
@@ -2436,27 +2437,27 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([1], null)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([1], undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], undefined)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray is not empty but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([1], null)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([1], undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], undefined)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([1], null, plus1Raw,  isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], null, plus1Raw,  isOddRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([1], undefined, plus1Raw, isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], undefined, plus1Raw, isOddRaw)).toThrowError(IllegalArgumentError);
     });
 
 
     it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 2);
@@ -2470,7 +2471,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and only a valid discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 1);
@@ -2486,7 +2487,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 2);
@@ -2508,7 +2509,7 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [1, 2, 3, 6, 3];
+      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 2);
@@ -2538,11 +2539,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceMatrix has elements and all internal arrays have the same size then transposed matrix is returned', () => {
-      const sourceMatrix1: number[][] = [[1, 2, 3], [4, 5, 6]];
-      const sourceMatrix2: string[][] = [['a1', 'a2'], ['b1', 'b2'], ['c1', 'c2']];
+      const sourceMatrix1: number[][] = [ [ 1, 2, 3 ], [ 4, 5, 6 ] ];
+      const sourceMatrix2: string[][] = [ [ 'a1', 'a2' ], [ 'b1', 'b2' ], [ 'c1', 'c2' ] ];
 
-      const expectedResult1: number[][] = [[1, 4], [2, 5], [3, 6]];
-      const expectedResult2: string[][] = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']];
+      const expectedResult1: number[][] = [ [ 1, 4 ], [ 2, 5 ], [ 3, 6 ] ];
+      const expectedResult2: string[][] = [ [ 'a1', 'b1', 'c1' ], [ 'a2', 'b2', 'c2' ] ];
 
       verifyMatrix(
         ArrayUtil.transpose(sourceMatrix1),
@@ -2556,11 +2557,11 @@ describe('ArrayUtil', () => {
 
 
     it('when given sourceMatrix has elements but not all internal arrays have the same size then transposed matrix is returned', () => {
-      const sourceMatrix1: number[][] = [[1, 2], [0], [7, 8, 9]];
-      const sourceMatrix2: string[][] = [['a1'], ['b1', 'b2', 'b3'], ['c1', 'c2']];
+      const sourceMatrix1: number[][] = [ [ 1, 2 ], [ 0 ], [ 7, 8, 9 ] ];
+      const sourceMatrix2: string[][] = [ [ 'a1' ], [ 'b1', 'b2', 'b3' ], [ 'c1', 'c2' ] ];
 
-      const expectedResult1: number[][] = [[1, 0, 7], [2, 8], [9]];
-      const expectedResult2: string[][] = [['a1', 'b1', 'c1'], ['b2', 'c2'], ['b3']];
+      const expectedResult1: number[][] = [ [ 1, 0, 7 ], [ 2, 8 ], [ 9 ] ];
+      const expectedResult2: string[][] = [ [ 'a1', 'b1', 'c1' ], [ 'b2', 'c2' ], [ 'b3' ] ];
 
       verifyMatrix(
         ArrayUtil.transpose(sourceMatrix1),
@@ -2575,14 +2576,14 @@ describe('ArrayUtil', () => {
 
     it('when given sourceMatrix has elements and contains null or undefined elements then those ones will be included in the returned transposed matrix', () => {
       // @ts-ignore
-      const sourceMatrix1: number[][] = [[1, null], null, [4, null]];
+      const sourceMatrix1: number[][] = [ [ 1, null ], null, [ 4, null ] ];
       // @ts-ignore
-      const sourceMatrix2: string[][] = [['a1', undefined, 'a3'], ['b1', 'b2', 'b3'], ['c1', 'c2']];
+      const sourceMatrix2: string[][] = [ [ 'a1', undefined, 'a3' ], [ 'b1', 'b2', 'b3' ], [ 'c1', 'c2' ] ];
 
       // @ts-ignore
-      const expectedResult1: number[][] = [[1, 4], [null, null]];
+      const expectedResult1: number[][] = [ [ 1, 4 ], [ null, null ] ];
       // @ts-ignore
-      const expectedResult2: string[][] = [['a1', 'b1', 'c1'], [undefined, 'b2', 'c2'], ['a3', 'b3']];
+      const expectedResult2: string[][] = [ [ 'a1', 'b1', 'c1' ], [ undefined, 'b2', 'c2' ], [ 'a3', 'b3' ] ];
 
       verifyMatrix(
         ArrayUtil.transpose(sourceMatrix1),
@@ -2709,36 +2710,36 @@ describe('ArrayUtil', () => {
         BinaryOperator.of((oldElto: Role, newElto: Role) => oldElto);
 
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id']),
-        [r3, r2]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id']),
+        [ r3, r2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], false),
-        [r3, r2]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id'], false),
+        [ r3, r2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], true),
-        [r1, r2]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id'], true),
+        [ r1, r2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id'], getFirstElto),
-        [r1, r2]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id'], getFirstElto),
+        [ r1, r2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name']),
-        [r1, r2, r3]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id', 'name']),
+        [ r1, r2, r3 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], false),
-        [r1, r2, r3]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id', 'name'], false),
+        [ r1, r2, r3 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], true),
-        [r1, r2, r3]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id', 'name'], true),
+        [ r1, r2, r3 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([r1, r2, r3], ['id', 'name'], getFirstElto),
-        [r1, r2, r3]
+        ArrayUtil.uniqueByProperties([ r1, r2, r3 ], ['id', 'name'], getFirstElto),
+        [ r1, r2, r3 ]
       );
     });
 
@@ -2752,36 +2753,36 @@ describe('ArrayUtil', () => {
         BinaryOperator.of((oldElto: User, newElto: User) => newElto);
 
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name']),
-        [u3, u2]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['name']),
+        [ u3, u2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], false),
-        [u3, u2]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['name'], false),
+        [ u3, u2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], true),
-        [u1, u2]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['name'], true),
+        [ u1, u2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['name'], getLastElto),
-        [u3, u2]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['name'], getLastElto),
+        [ u3, u2 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name']),
-        [u1, u2, u3]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['id', 'name']),
+        [ u1, u2, u3 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], false),
-        [u1, u2, u3]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['id', 'name'], false),
+        [ u1, u2, u3 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], true),
-        [u1, u2, u3]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['id', 'name'], true),
+        [ u1, u2, u3 ]
       );
       verifyArrays(
-        ArrayUtil.uniqueByProperties([u1, u2, u3], ['id', 'name'], getLastElto),
-        [u1, u2, u3]
+        ArrayUtil.uniqueByProperties([ u1, u2, u3 ], ['id', 'name'], getLastElto),
+        [ u1, u2, u3 ]
       );
     });
 
@@ -2921,12 +2922,12 @@ const isOddFPredicate: FPredicate1<number> =
     1 == n % 2;
 
 
-const isRoleIdEvenRaw =
-  (role: Role) => 0 == role.id % 2;
-
-
 const isRoleIdEvenPredicate: Predicate1<Role> =
   Predicate1.of((role: Role) => 0 == role.id % 2);
+
+
+const isRoleIdEvenRaw =
+  (role: Role) => 0 == role.id % 2;
 
 
 const isRoleIdOddPredicate: Predicate1<Role> =

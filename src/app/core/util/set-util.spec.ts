@@ -2,6 +2,7 @@ import { ObjectUtil, SetUtil } from '@app-core/util';
 import { Nullable } from '@app-core/type';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
+import {FPredicate1, Predicate1} from '@app-core/type/predicate';
 
 /**
  * To invoke only this test:
@@ -24,31 +25,31 @@ describe('SetUtil', () => {
   describe('copy', () => {
 
     it('when given sourceSet is a native one and has no elements then empty Set is returned', () => {
-      const emptySet = new Set<number>();
+      const nativeSet = new Set<number>();
 
-      expect(SetUtil.copy(null)).toEqual(emptySet);
-      expect(SetUtil.copy(undefined)).toEqual(emptySet);
-      expect(SetUtil.copy(emptySet)).toEqual(emptySet);
+      expect(SetUtil.copy(null)).toEqual(nativeSet);
+      expect(SetUtil.copy(undefined)).toEqual(nativeSet);
+      expect(SetUtil.copy(nativeSet)).toEqual(nativeSet);
     });
 
 
     it('when given sourceSet is a mutable one and has no elements then empty Set is returned', () => {
-      const emptyNativeSet = new Set<number>();
-      const emptyMutableSet = MutableHashSet.empty();
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
 
-      expect(SetUtil.copy(null)).toEqual(emptyNativeSet);
-      expect(SetUtil.copy(undefined)).toEqual(emptyNativeSet);
-      expect(SetUtil.copy(emptyMutableSet)).toEqual(emptyMutableSet);
+      expect(SetUtil.copy(null)).toEqual(nativeSet);
+      expect(SetUtil.copy(undefined)).toEqual(nativeSet);
+      expect(SetUtil.copy(mutableHashSet)).toEqual(mutableHashSet);
     });
 
 
     it('when given sourceSet is an immutable one and has no elements then empty Set is returned', () => {
-      const emptyNativeSet = new Set<number>();
-      const emptyImmutableSet = ImmutableHashSet.empty();
+      const nativeSet = new Set<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
 
-      expect(SetUtil.copy(null)).toEqual(emptyNativeSet);
-      expect(SetUtil.copy(undefined)).toEqual(emptyNativeSet);
-      expect(SetUtil.copy(emptyImmutableSet)).toEqual(emptyImmutableSet);
+      expect(SetUtil.copy(null)).toEqual(nativeSet);
+      expect(SetUtil.copy(undefined)).toEqual(nativeSet);
+      expect(SetUtil.copy(immutableHashSet)).toEqual(immutableHashSet);
     });
 
 
@@ -107,6 +108,178 @@ describe('SetUtil', () => {
       expect(sourceSet.size).toEqual(0);
       expect(result).toBeInstanceOf(ImmutableHashSet);
       expect(result.size).toEqual(4);
+    });
+
+  });
+
+
+
+  describe('filter', () => {
+
+    it('when given sourceSet is a native one and has no elements then empty Set is returned', () => {
+      const nativeSet = new Set<number>();
+
+      expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filter(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filter(nativeSet, isEvenRaw)).toEqual(nativeSet);
+    });
+
+
+    it('when given sourceSet is a mutable one and has no elements then empty Set is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+
+      expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filter(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filter(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
+    });
+
+
+    it('when given sourceSet is an immutable one and has no elements then empty Set is returned', () => {
+      const nativeSet = new Set<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filter(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filter(immutableHashSet, isEvenRaw)).toEqual(immutableHashSet);
+    });
+
+
+    it('when given sourceSet is a native one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = new Set<Role>(
+        [ r1, r2, r3 ]
+      );
+
+      verifySets(
+        SetUtil.filter(sourceSet, null),
+        sourceSet
+      );
+      verifySets(
+        SetUtil.filter(sourceSet, undefined),
+        sourceSet
+      );
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = MutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+
+      verifySets(
+        SetUtil.filter(sourceSet, null),
+        sourceSet
+      );
+      verifySets(
+        SetUtil.filter(sourceSet, undefined),
+        sourceSet
+      );
+    });
+
+
+    it('when given sourceSet is a immutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+
+      verifySets(
+        SetUtil.filter(sourceSet, null),
+        sourceSet
+      );
+      verifySets(
+        SetUtil.filter(sourceSet, undefined),
+        sourceSet
+      );
+    });
+
+
+    it('when given sourceSet is a native one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = new Set<User>(
+        [ u1, u2, u3 ]
+      );
+      const expectedResult = new Set<User>(
+        [ u1, u3 ]
+      );
+
+      const result = SetUtil.filter(sourceSet, isUserIdOddRaw);
+
+      verifySets(
+        result,
+        expectedResult
+      );
+      expect(result).toBeInstanceOf(Set);
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = MutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+      const expectedResult = MutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u3 ]
+      );
+
+      const result = SetUtil.filter(sourceSet, isUserIdOddFPredicate);
+
+      verifySets(
+        result,
+        expectedResult
+      );
+      expect(result).toBeInstanceOf(MutableHashSet);
+    });
+
+
+    it('when given sourceSet is an immutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = ImmutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+      const expectedResult = ImmutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u3 ]
+      );
+
+      const result = SetUtil.filter(sourceSet, isUserIdOddPredicate);
+
+      verifySets(
+        result,
+        expectedResult
+      );
+      expect(result).toBeInstanceOf(ImmutableHashSet);
     });
 
   });
@@ -208,6 +381,7 @@ describe('SetUtil', () => {
     });
 
   });
+
 
 
   describe('isReadonlySetLike', () => {
@@ -373,6 +547,47 @@ const areRolesEquals: EqualityFunction<Role> =
 
 const areStringEquals: EqualityFunction<string> =
   (s1: string, s2: string) => s1 == s2;
+
+
+const isEvenFPredicate: FPredicate1<number> =
+  (n: number) =>
+    0 == n % 2;
+
+
+const isEvenPredicate: Predicate1<number> =
+  Predicate1.of(
+    (n: number) =>
+      0 == n % 2
+  );
+
+
+const isEvenRaw =
+  (n: number) =>
+    0 == n % 2;
+
+
+const isRoleIdOddFPredicate: FPredicate1<Role> =
+  (role: Role) => 1 == role.id % 2;
+
+
+const isRoleIdOddPredicate: Predicate1<Role> =
+  Predicate1.of((role: Role) => 1 == role.id % 2);
+
+
+const isRoleIdOddRaw =
+  (role: Role) => 1 == role.id % 2;
+
+
+const isUserIdOddFPredicate: FPredicate1<User> =
+  (user: User) => 1 == user.id % 2;
+
+
+const isUserIdOddPredicate: Predicate1<User> =
+  Predicate1.of((user: User) => 1 == user.id % 2);
+
+
+const isUserIdOddRaw =
+  (user: User) => 1 == user.id % 2;
 
 
 const numberHash: HashFunction<number> =

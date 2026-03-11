@@ -1,7 +1,7 @@
 import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
 import { ImmutableHashSet, ImmutableSet, MutableHashSet } from '@app-core/type/collection/set';
-import { UnsupportedOperationError } from '@app-core/error';
+import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 
 /**
  * Helper functions to manage {@link Set}.
@@ -28,6 +28,65 @@ export class SetUtil {
     return this.cloneSet(
       sourceSet
     );
+  }
+
+
+  /**
+   *    Returns a new {@link Set} using `sourceSet` as source, adding from the result the elements that verify the
+   * given {@link TPredicate1} `filterPredicate`.
+   *
+   * <pre>
+   *    filter(                                                                            Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    of `sourceSet` will be returned
+   *
+   * @return empty {@link Set} if `sourceSet` has no elements or no one verifies provided `filterPredicate`,
+   *         otherwise a new {@link Set} with the elements of `sourceSet` which verify `filterPredicate`
+   */
+  static filter = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                      filterPredicate: NullableOrUndefined<TPredicate1<T>>): Set<T> => {
+    if (!sourceSet || !filterPredicate) {
+      return this.copy(
+        sourceSet
+      );
+    }
+    const finalFilterPredicate = Predicate1.of(
+      filterPredicate
+    );
+    const result = this.createEmptySet(
+      sourceSet
+    );
+    if (this.isImmutableSet(result)) {
+      const elementsToAdd: T[] = [];
+      for (const v of sourceSet) {
+        if (finalFilterPredicate.apply(v)) {
+          elementsToAdd.push(
+            v
+          );
+        }
+      }
+      return result.addAll(
+        elementsToAdd
+      );
+    }
+    else {
+      for (const v of sourceSet) {
+        if (finalFilterPredicate.apply(v)) {
+          result.add(
+            v
+          );
+        }
+      }
+    }
+    return result;
   }
 
 
@@ -97,16 +156,11 @@ export class SetUtil {
    * Returns an empty {@link Set} based on the type of provided `input`.
    *
    * @param input
-   *    Source {@link Set} used to know the type of the returned instance
+   *    Source {@link ReadonlySetLike} used to know the type of the returned instance
    *
    * @return {@link Set} whose type is based on the provided `input`
-   *
-   * @throws {UnsupportedOperationError} if the given `input` is not a managed {@link Set}
    */
-  private static createEmptySet<T>(input?: unknown): Set<T> {
-    if (input instanceof Set) {
-      return new Set<T>();
-    }
+  private static createEmptySet<T>(input?: ReadonlySetLike<T>): Set<T> {
     if (input instanceof ImmutableHashSet) {
       return ImmutableHashSet.empty<T>(
         input.getHash(),
@@ -119,9 +173,7 @@ export class SetUtil {
         input.getEquals()
       );
     }
-    throw new UnsupportedOperationError(
-      'Provided input does not belong to a managed Set'
-    );
+    return new Set<T>();
   }
 
 
@@ -132,15 +184,8 @@ export class SetUtil {
    *    Source {@link Set} used to know the type of the returned instance
    *
    * @return {@link Set} whose type is based on the provided `input`, including its stored values
-   *
-   * @throws {UnsupportedOperationError} if the given `input` is not a managed {@link Set}
    */
-  private static cloneSet<T>(input?: unknown): Set<T> {
-    if (input instanceof Set) {
-      return new Set<T>(
-        input
-      );
-    }
+  private static cloneSet<T>(input?: Set<T>): Set<T> {
     if (input instanceof ImmutableHashSet) {
       return ImmutableHashSet.of<T>(
         input.getHash(),
@@ -155,8 +200,8 @@ export class SetUtil {
         input
       );
     }
-    throw new UnsupportedOperationError(
-      'Provided input does not belong to a managed Set'
+    return new Set<T>(
+      input
     );
   }
 
