@@ -2,7 +2,7 @@ import { ObjectUtil, SetUtil } from '@app-core/util';
 import { Nullable } from '@app-core/type';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
-import {FPredicate1, Predicate1} from '@app-core/type/predicate';
+import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
 
 /**
  * To invoke only this test:
@@ -286,6 +286,225 @@ describe('SetUtil', () => {
 
 
 
+  describe('filterNot', () => {
+
+    it('when given sourceSet is a native one and has no elements then empty Set is returned', () => {
+      const nativeSet = new Set<number>();
+
+      expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(nativeSet, isEvenRaw)).toEqual(nativeSet);
+    });
+
+
+    it('when given sourceSet is a mutable one and has no elements then empty Set is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+
+      expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
+    });
+
+
+    it('when given sourceSet is an immutable one and has no elements then empty Set is returned', () => {
+      const nativeSet = new Set<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(immutableHashSet, isEvenRaw)).toEqual(immutableHashSet);
+    });
+
+
+    it('when given sourceSet is a native one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = new Set<Role>(
+        [ r1, r2, r3 ]
+      );
+
+      verifySets(
+        SetUtil.filterNot(sourceSet, null),
+        sourceSet
+      );
+      verifySets(
+        SetUtil.filterNot(sourceSet, undefined),
+        sourceSet
+      );
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = MutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+
+      verifySets(
+        SetUtil.filterNot(sourceSet, null),
+        sourceSet
+      );
+      verifySets(
+        SetUtil.filterNot(sourceSet, undefined),
+        sourceSet
+      );
+    });
+
+
+    it('when given sourceSet is a immutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+
+      verifySets(
+        SetUtil.filterNot(sourceSet, null),
+        sourceSet
+      );
+      verifySets(
+        SetUtil.filterNot(sourceSet, undefined),
+        sourceSet
+      );
+    });
+
+
+    it('when given sourceSet is a native one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = new Set<User>(
+        [ u1, u2, u3 ]
+      );
+      const expectedResult = new Set<User>(
+        [ u2 ]
+      );
+
+      const result = SetUtil.filterNot(sourceSet, isUserIdOddRaw);
+
+      verifySets(
+        result,
+        expectedResult
+      );
+      expect(result).toBeInstanceOf(Set);
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = MutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+      const expectedResult = MutableHashSet.of(
+        undefined,
+        undefined,
+        [ u2 ]
+      );
+
+      const result = SetUtil.filterNot(sourceSet, isUserIdOddFPredicate);
+
+      verifySets(
+        result,
+        expectedResult
+      );
+      expect(result).toBeInstanceOf(MutableHashSet);
+    });
+
+
+    it('when given sourceSet is an immutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = ImmutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+      const expectedResult = ImmutableHashSet.of(
+        undefined,
+        undefined,
+        [ u2 ]
+      );
+
+      const result = SetUtil.filterNot(sourceSet, isUserIdOddPredicate);
+
+      verifySets(
+        result,
+        expectedResult
+      );
+      expect(result).toBeInstanceOf(ImmutableHashSet);
+    });
+
+  });
+
+
+
+  describe('isAbstractSet', () => {
+
+    it('when given input is null or undefined then false will be returned', () => {
+      const expectedResult = false;
+
+      expect(SetUtil.isAbstractSet()).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(undefined)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(null)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is not an AbstractSet then false will be returned', () => {
+      const user = new User(1, 'user1');
+      const nativeSet = new Set<number>(
+        [ 1 ]
+      );
+      const expectedResult = false;
+
+      expect(SetUtil.isAbstractSet(12)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet("abc")).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet({})).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(user)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(nativeSet)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is an AbstractSet then true will be returned', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 3 ]
+      );
+      const immutableHashSet = ImmutableHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+
+      const expectedResult = true;
+
+      expect(SetUtil.isAbstractSet(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(immutableHashSet)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
   describe('isEmpty', () => {
 
     it('when given setToVerify is null, undefined or is an empty Set then true is returned', () => {
@@ -335,7 +554,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given input is not a isImmutableSet then false will be returned', () => {
+    it('when given input is not an ImmutableSet then false will be returned', () => {
       const user = new User(1, 'user1');
       const nativeSet = new Set<number>(
         [ 1 ]
@@ -357,7 +576,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given input is a isImmutableSet then true will be returned', () => {
+    it('when given input is an ImmutableSet then true will be returned', () => {
       const setOfNumber = ImmutableHashSet.of<number>(
         numberHash,
         areNumberEquals,
@@ -480,6 +699,78 @@ describe('SetUtil', () => {
 
   });
 
+
+
+  describe('toArray', () => {
+
+    it('when given sourceSet is empty then an empty array is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<string>(
+        stringHash,
+        areStringEquals
+      );
+      const immutableHashSet = ImmutableHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+
+      expect(SetUtil.toArray(nativeSet)).toEqual([]);
+      expect(SetUtil.toArray(mutableHashSet)).toEqual([]);
+      expect(SetUtil.toArray(immutableHashSet)).toEqual([]);
+    });
+
+
+    it('when given sourceSet is an AbstractSet with elements then an array containing them is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const mutableHashSet = MutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'b', 'c' ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+
+      verifyArraysRegardlessOfOrder(
+        SetUtil.toArray(mutableHashSet),
+        [ 'a', 'b', 'c' ]
+      );
+      verifyArraysRegardlessOfOrder(
+        SetUtil.toArray(immutableHashSet),
+        [ r1, r2, r3 ]
+      );
+    });
+
+
+    it('when given sourceSet is not an AbstractSet with elements then an array containing them is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const nativeNumberSet = new Set<number>(
+        [ 1, 3, 6 ]
+      );
+      const nativeUserSet = new Set<User>(
+        [ u1, u2, u3 ]
+      );
+
+      verifyArraysRegardlessOfOrder(
+        SetUtil.toArray(nativeNumberSet),
+        [ 1, 3, 6 ]
+      );
+      verifyArraysRegardlessOfOrder(
+        SetUtil.toArray(nativeUserSet),
+        [ u1, u2, u3 ]
+      );
+    });
+
+  });
+
 });
 
 
@@ -523,6 +814,16 @@ class User implements Hashable {
 interface Role {
   id: number;
   name: string;
+}
+
+
+
+function verifyArraysRegardlessOfOrder(actualArray: unknown[],
+                                       expectedArray: unknown[]) {
+  expect(expectedArray.length).toEqual(actualArray.length);
+  if (0 < expectedArray.length) {
+    expect(expectedArray).toEqual(expect.arrayContaining(actualArray));
+  }
 }
 
 

@@ -1,6 +1,5 @@
 import { Nullable, NullableOrUndefined } from '@app-core/type';
-import { ObjectUtil } from '@app-core/util';
-import { ImmutableHashSet, ImmutableSet, MutableHashSet } from '@app-core/type/collection/set';
+import {AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet} from '@app-core/type/collection/set';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 
 /**
@@ -91,6 +90,39 @@ export class SetUtil {
 
 
   /**
+   *    Returns a new {@link Set} using `sourceSet` as source, removing from the result the elements that verify the
+   * given {@link TPredicate1} `filterPredicate`.
+   *
+   * <pre>
+   *    filterNot(                                                                         Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{id: 2, name: 'user2'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    of `sourceSet` will be returned
+   *
+   * @return empty {@link Set} if `sourceSet` has no elements,
+   *         otherwise a new {@link Set} with the elements of `sourceSet` which do not verify `filterPredicate`
+   */
+  static filterNot = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                         filterPredicate: NullableOrUndefined<TPredicate1<T>>): Set<T> => {
+    const finalFilterPredicate = !filterPredicate
+      ? null
+      : Predicate1.of(filterPredicate).not();
+
+    return this.filter(
+      sourceSet,
+      finalFilterPredicate
+    );
+  }
+
+
+  /**
    * Verifies if the given `setToVerify` contains at least one element.
    *
    * @param setToVerify
@@ -104,6 +136,21 @@ export class SetUtil {
 
 
   /**
+   *    Verifies if the given `input` is classified as {@link AbstractSet} object, which includes implementations like: {@link MutableHashSet}
+   * or {@link ImmutableHashSet}.
+   *
+   * @param input
+   *    Object to verify
+   *
+   * @return `true` if `input` is an instance of {@link AbstractSet},
+   *         `false` otherwise
+   */
+  static isAbstractSet = (input?: any): input is AbstractSet<any> =>
+    input instanceof MutableHashSet ||
+    input instanceof ImmutableHashSet;
+
+
+  /**
    * Verifies if the given `input` is classified as {@link ImmutableSet} object (including new ones like: {@link ImmutableHashSet}).
    *
    * @param input
@@ -112,7 +159,7 @@ export class SetUtil {
    * @return `true` if `input` is an instance of {@link ImmutableSet},
    *         `false` otherwise
    */
-  static isImmutableSet = (input?: unknown): input is ImmutableSet<unknown> =>
+  static isImmutableSet = (input?: any): input is ImmutableSet<any> =>
     input instanceof ImmutableHashSet;
 
 
@@ -125,8 +172,8 @@ export class SetUtil {
    * @return `true` if `input` is an instance of {@link isReadonlySetLike},
    *         `false` otherwise
    */
-  static isReadonlySetLike(input?: unknown): input is ReadonlySetLike<unknown> {
-    if (ObjectUtil.isNullOrUndefined(input) || 'object' !== typeof input) {
+  static isReadonlySetLike(input?: any): input is ReadonlySetLike<any> {
+    if (!input || 'object' !== typeof input) {
       return false;
     }
     const obj = input as Partial<ReadonlySetLike<unknown>>;
@@ -146,10 +193,29 @@ export class SetUtil {
    * @return `true` if `input` is an instance of {@link Set},
    *         `false` otherwise
    */
-  static isSet = (input?: unknown): input is Set<unknown> =>
+  static isSet = (input?: any): input is Set<any> =>
     input instanceof Set ||
-    input instanceof MutableHashSet ||
-    input instanceof ImmutableHashSet;
+    this.isAbstractSet(input);
+
+
+  /**
+   * Returns an array containing the elements of provided `sourceSet`.
+   *
+   * @param sourceSet
+   *    {@link ReadonlySetLike} to convert
+   *
+   * @return an array which contains all the elements of `sourceSet`
+   */
+  static toArray = <T>(sourceSet: NullableOrUndefined<ReadonlySetLike<T>>): T[] => {
+    if (this.isEmpty(sourceSet)) {
+      return [];
+    }
+    if (this.isAbstractSet(sourceSet)) {
+      return sourceSet.toArray();
+    }
+    // @ts-ignore
+    return [...sourceSet!.keys()];
+  }
 
 
   /**

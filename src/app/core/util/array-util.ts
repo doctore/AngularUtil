@@ -312,7 +312,7 @@ export class ArrayUtil {
     if (this.isEmpty(sourceArray)) {
       return 0;
     }
-    if (ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (!filterPredicate) {
       return sourceArray!.length;
     }
     const finalFilterPredicate = Predicate1.of(
@@ -349,8 +349,7 @@ export class ArrayUtil {
    */
   static dropWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
                          filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
-    if (this.isEmpty(sourceArray) ||
-        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceArray) || !filterPredicate) {
       return this.copy(
         sourceArray
       );
@@ -397,8 +396,7 @@ export class ArrayUtil {
    */
   static filter = <T>(sourceArray: NullableOrUndefined<T[]>,
                       filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
-    if (this.isEmpty(sourceArray) ||
-        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceArray) || !filterPredicate) {
       return this.copy(
         sourceArray
       );
@@ -440,8 +438,7 @@ export class ArrayUtil {
    */
   static filterFirst = <T>(sourceArray: NullableOrUndefined<T[]>,
                            filterPredicate: NullableOrUndefined<TPredicate1<T>>): OrUndefined<T> => {
-    if (this.isEmpty(sourceArray) ||
-        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceArray) || !filterPredicate) {
       return undefined;
     }
     const finalFilterPredicate = Predicate1.of(
@@ -478,8 +475,7 @@ export class ArrayUtil {
    */
   static filterFirstIndex = <T>(sourceArray: NullableOrUndefined<T[]>,
                                 filterPredicate: NullableOrUndefined<TPredicate1<T>>): number => {
-    if (this.isEmpty(sourceArray) ||
-        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceArray) || !filterPredicate) {
       return -1;
     }
     const finalFilterPredicate = Predicate1.of(
@@ -515,8 +511,7 @@ export class ArrayUtil {
    */
   static filterLast = <T>(sourceArray: NullableOrUndefined<T[]>,
                           filterPredicate: NullableOrUndefined<TPredicate1<T>>): OrUndefined<T> => {
-    if (this.isEmpty(sourceArray) ||
-      ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceArray) || !filterPredicate) {
       return undefined;
     }
     const finalFilterPredicate = Predicate1.of(
@@ -538,7 +533,7 @@ export class ArrayUtil {
    *
    * <pre>
    *    filterNot(                                                                         Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         {id: 2, name: 'user2'}
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{id: 2, name: 'user2'}]
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -554,7 +549,7 @@ export class ArrayUtil {
    */
   static filterNot = <T>(sourceArray: NullableOrUndefined<T[]>,
                          filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
-    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+    const finalFilterPredicate = !filterPredicate
       ? null
       : Predicate1.of(filterPredicate).not();
 
@@ -756,8 +751,8 @@ export class ArrayUtil {
     }
     let result: T[] = [];
     for (let item of sourceArray!) {
-      if (Array.isArray(item)) {
-        const recursiveResult: T[] = this.flatten(
+      if (this.isArray(item)) {
+        const recursiveResult = this.flatten(
           item
         );
         if (!this.isEmpty(recursiveResult)) {
@@ -855,14 +850,13 @@ export class ArrayUtil {
                         initialValue: R,
                         accumulator: NullableOrUndefined<TFunction2<R, T, R>>,
                         filterPredicate?: TPredicate1<T>): R {
-    if (this.isEmpty(sourceArray) ||
-        ObjectUtil.isNullOrUndefined(accumulator)) {
+    if (this.isEmpty(sourceArray) || !accumulator) {
       return initialValue
     }
     const finalAccumulator = Function2.of(
       accumulator
     );
-    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+    const finalFilterPredicate = !filterPredicate
       ? Predicate1.alwaysTrue<T>()
       : Predicate1.of(filterPredicate);
 
@@ -912,7 +906,7 @@ export class ArrayUtil {
       const finalDiscriminatorKey = Function1.of(
         discriminatorKey
       );
-      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      const finalFilterPredicate = !filterPredicate
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
@@ -983,7 +977,7 @@ export class ArrayUtil {
       const finalDiscriminatorKey = Function1.of(
         discriminatorKey
       );
-      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      const finalFilterPredicate = !filterPredicate
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
@@ -1162,7 +1156,7 @@ export class ArrayUtil {
       const finalDiscriminatorKey = Function1.of(
         discriminatorKey
       );
-      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      const finalFilterPredicate = !filterPredicate
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
@@ -1362,7 +1356,7 @@ export class ArrayUtil {
    * @return `true` if `input` is an instance of {@link Array} object or a native array,
    *         `false` otherwise
    */
-  static isArray = (input?: unknown): input is unknown[] =>
+  static isArray = (input?: any): input is any[] =>
     Array.isArray(input)
 
 
@@ -1959,8 +1953,7 @@ export class ArrayUtil {
    */
   static takeWhile = <T>(sourceArray: NullableOrUndefined<T[]>,
                          filterPredicate: NullableOrUndefined<TPredicate1<T>>): T[] => {
-    if (this.isEmpty(sourceArray) ||
-        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceArray) || !filterPredicate) {
       return this.copy(
         sourceArray
       );
@@ -1999,7 +1992,7 @@ export class ArrayUtil {
    * @return an array which contains all the input `elements`
    */
   static toArray = <T>(...elements: NullableOrUndefined<T>[]): T[] => {
-    if (ArrayUtil.isEmpty(elements)) {
+    if (this.isEmpty(elements)) {
       return [];
     }
     const result: T[] = [];

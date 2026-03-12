@@ -329,7 +329,7 @@ export class MapUtil {
                       mergeValueFunction?: TBinaryOperator<V>): Map<K, V> {
     const result = new Map<K, V>();
     if (!ArrayUtil.isEmpty(sourceMaps)) {
-      const finalMergeValueFunction: BinaryOperator<V> = ObjectUtil.isNullOrUndefined(mergeValueFunction)
+      const finalMergeValueFunction: BinaryOperator<V> = !mergeValueFunction
         ? BinaryOperator.returnSecond()
         : BinaryOperator.of(mergeValueFunction);
 
@@ -405,7 +405,7 @@ export class MapUtil {
     if (this.isEmpty(sourceMap)) {
       return 0;
     }
-    if (ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (!filterPredicate) {
       return sourceMap!.size;
     }
     const finalFilterPredicate = Predicate2.of(
@@ -444,8 +444,7 @@ export class MapUtil {
    */
   static dropWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                             filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
-    if (this.isEmpty(sourceMap) ||
-      ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceMap) || !filterPredicate) {
       return this.copy(sourceMap);
     }
     const finalFilterPredicate = Predicate2.of(
@@ -495,8 +494,7 @@ export class MapUtil {
    */
   static filter = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                          filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
-    if (this.isEmpty(sourceMap) ||
-        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceMap) || !filterPredicate) {
       return this.copy(sourceMap);
     }
     const finalFilterPredicate = Predicate2.of(
@@ -576,7 +574,7 @@ export class MapUtil {
    */
   static filterNot = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                             filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
-    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+    const finalFilterPredicate = !filterPredicate
       ? null
       : Predicate2.of(filterPredicate).not();
 
@@ -750,14 +748,13 @@ export class MapUtil {
                            initialValue: R,
                            accumulator: NullableOrUndefined<TFunction3<R, K, V, R>>,
                            filterPredicate?: TPredicate2<K, V>): R {
-    if (this.isEmpty(sourceMap) ||
-        ObjectUtil.isNullOrUndefined(accumulator)) {
+    if (this.isEmpty(sourceMap) || !accumulator) {
       return initialValue
     }
     const finalAccumulator = Function3.of(
       accumulator
     );
-    const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+    const finalFilterPredicate = !filterPredicate
       ? Predicate2.alwaysTrue<K, V>()
       : Predicate2.of(filterPredicate);
 
@@ -785,8 +782,7 @@ export class MapUtil {
    *         `false` otherwise.
    */
   static isEmpty = (mapToVerify?: Nullable<Map<unknown, unknown>>): boolean =>
-    ObjectUtil.isNullOrUndefined(mapToVerify) ||
-      0 == mapToVerify!.size;
+    !mapToVerify || 0 == mapToVerify!.size;
 
 
   /**
@@ -798,7 +794,7 @@ export class MapUtil {
    * @return `true` if `input` is an instance of {@link Map},
    *         `false` otherwise
    */
-  static isMap = (input?: unknown): input is Map<unknown, unknown> =>
+  static isMap = (input?: any): input is Map<any, any> =>
     input instanceof Map;
 
 
@@ -904,7 +900,7 @@ export class MapUtil {
       const finalDiscriminator = Function2.of(
         discriminator
       );
-      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      const finalFilterPredicate = !filterPredicate
         ? Predicate2.alwaysTrue<K, V>()
         : Predicate2.of(filterPredicate);
 
@@ -914,7 +910,7 @@ export class MapUtil {
             key,
             value
           );
-          MapUtil.setIfAbsent(
+          this.setIfAbsent(
             result,
             discriminatorResult,
             new Map<K, V>()
@@ -982,7 +978,7 @@ export class MapUtil {
       const finalDiscriminator = Function2.of(
         discriminator
       );
-      const finalFilterPredicate = ObjectUtil.isNullOrUndefined(filterPredicate)
+      const finalFilterPredicate = !filterPredicate
         ? Predicate2.alwaysTrue<K, V>()
         : Predicate2.of(filterPredicate);
 
@@ -996,7 +992,7 @@ export class MapUtil {
             []
           );
           for (let i = 0; i < discriminatorResult.length; i++) {
-            MapUtil.setIfAbsent(
+            this.setIfAbsent(
               result,
               discriminatorResult[i],
               new Map<K, V>()
@@ -1096,7 +1092,7 @@ export class MapUtil {
       for (let [key, value] of sourceMap!) {
         if (finalPartialFunction.isDefinedAt([key, value])) {
           const pairKeyValue: [K2, V2] = <[K2, V2]>finalPartialFunction.apply([key, value]);
-          MapUtil.setIfAbsent(
+          this.setIfAbsent(
             result,
             pairKeyValue[0],
             []
@@ -1845,8 +1841,7 @@ export class MapUtil {
    */
   static takeWhile = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                             filterPredicate: NullableOrUndefined<TPredicate2<K, V>>): Map<K, V> => {
-    if (this.isEmpty(sourceMap) ||
-        ObjectUtil.isNullOrUndefined(filterPredicate)) {
+    if (this.isEmpty(sourceMap) || !filterPredicate) {
       return this.copy(sourceMap);
     }
     const finalFilterPredicate = Predicate2.of(
