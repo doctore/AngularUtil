@@ -1,6 +1,7 @@
 import { Nullable, NullableOrUndefined } from '@app-core/type';
 import {AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet} from '@app-core/type/collection/set';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
+import {Comparator, TComparator} from '@app-core/type/comparator';
 
 /**
  * Helper functions to manage {@link Set}.
@@ -27,6 +28,45 @@ export class SetUtil {
     return this.cloneSet(
       sourceSet
     );
+  }
+
+
+  /**
+   * Counts the number of elements in `sourceSet` which satisfy the `filterPredicate`.
+   *
+   * <pre>
+   *    count(                                   Result:
+   *      [1, 2, 3, 6],                           2
+   *      (n: number) => 0 == n % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to filter
+   * @param filterPredicate
+   *   {@link TPredicate1} to filter elements from `sourceSet`. If it is `null` or `undefined` then the length
+   *   of `sourceSet` will be returned
+   *
+   * @return the number of elements satisfying the {@link TPredicate1} `filterPredicate`
+   */
+  static count = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                     filterPredicate: NullableOrUndefined<TPredicate1<T>>): number => {
+    if (this.isEmpty(sourceSet)) {
+      return 0;
+    }
+    if (!filterPredicate) {
+      return sourceSet!.size;
+    }
+    const finalFilterPredicate = Predicate1.of(
+      filterPredicate
+    );
+    let result = 0;
+    for (const v of sourceSet!) {
+      if (finalFilterPredicate.apply(v)) {
+        result++;
+      }
+    }
+    return result;
   }
 
 
@@ -199,6 +239,45 @@ export class SetUtil {
 
 
   /**
+   * Sorts the given `sourceSet` using `comparator` if provided or default ordination otherwise.
+   *
+   * @apiNote
+   *    The default sort order is ascending, built upon converting the elements into strings, then comparing their
+   * sequences of UTF-16 code units values.
+   *
+   * <pre>
+   *    sort(                                              Result:
+   *      [1, 10, 21, 2]                                    [1, 10, 2, 21]
+   *    )
+   *    sort(                                              Result:
+   *      [1, 10, 21, 2],                                   [1, 2, 10, 21]
+   *      (a: number, b: number) => a - b
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to sort
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return new sorted array
+   */
+  static sort = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                    comparator?: Nullable<TComparator<T>>): T[] => {
+    if (this.isEmpty(sourceSet)) {
+      return [];
+    }
+    const clonedSourceSetAsArray = [...sourceSet!.values()];
+    return comparator
+      ? clonedSourceSetAsArray!.sort(
+          Comparator.of(comparator)
+            .getComparator()
+        )
+      : clonedSourceSetAsArray!.sort();
+  }
+
+
+  /**
    * Returns an array containing the elements of provided `sourceSet`.
    *
    * @param sourceSet
@@ -214,7 +293,7 @@ export class SetUtil {
       return sourceSet.toArray();
     }
     // @ts-ignore
-    return [...sourceSet!.keys()];
+    return [...sourceSet.keys()];
   }
 
 

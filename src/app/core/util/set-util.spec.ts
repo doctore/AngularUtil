@@ -3,6 +3,7 @@ import { Nullable } from '@app-core/type';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
 import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
+import { Comparator, FComparator } from '@app-core/type/comparator';
 
 /**
  * To invoke only this test:
@@ -108,6 +109,123 @@ describe('SetUtil', () => {
       expect(sourceSet.size).toEqual(0);
       expect(result).toBeInstanceOf(ImmutableHashSet);
       expect(result.size).toEqual(4);
+    });
+
+  });
+
+
+
+  describe('count', () => {
+
+    it('when given sourceSet is a native one and has no elements then 0 is returned', () => {
+      const nativeSet = new Set<number>();
+
+      expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
+      expect(SetUtil.count(undefined, isEvenPredicate)).toEqual(0);
+      expect(SetUtil.count(nativeSet, isEvenRaw)).toEqual(0);
+    });
+
+
+    it('when given sourceSet is a mutable one and has no elements then 0 is returned', () => {
+      const mutableHashSet = MutableHashSet.empty<number>();
+
+      expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
+      expect(SetUtil.count(undefined, isEvenPredicate)).toEqual(0);
+      expect(SetUtil.count(mutableHashSet, isEvenRaw)).toEqual(0);
+    });
+
+
+    it('when given sourceSet is an immutable one and has no elements then 0 is returned', () => {
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
+      expect(SetUtil.count(undefined, isEvenPredicate)).toEqual(0);
+      expect(SetUtil.count(immutableHashSet, isEvenRaw)).toEqual(0);
+    });
+
+
+    it('when given sourceSet is a native one and has elements but filterPredicate is null or undefined then size of sourceSet is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = new Set<User>(
+        [ u1, u2, u3 ]
+      );
+
+      expect(SetUtil.count(sourceSet, null)).toEqual(sourceSet.size);
+      expect(SetUtil.count(sourceSet, undefined)).toEqual(sourceSet.size);
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements but filterPredicate is null or undefined then size of sourceSet is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = MutableHashSet.of<User>(
+        roleHash,
+        areRolesEquals,
+        [ u1, u2, u3 ]
+      );
+
+      expect(SetUtil.count(sourceSet, null)).toEqual(sourceSet.size);
+      expect(SetUtil.count(sourceSet, undefined)).toEqual(sourceSet.size);
+    });
+
+
+    it('when given sourceSet is a immutable one and has elements but filterPredicate is null or undefined then size of sourceSet is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const sourceSet = ImmutableHashSet.of<User>(
+        roleHash,
+        areRolesEquals,
+        [ u1, u2, u3 ]
+      );
+
+      expect(SetUtil.count(sourceSet, null)).toEqual(sourceSet.size);
+      expect(SetUtil.count(sourceSet, undefined)).toEqual(sourceSet.size);
+    });
+
+
+    it('when given sourceSet is a native one and has elements and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = new Set<Role>(
+        [ r1, r2, r3 ]
+      );
+
+      expect(SetUtil.count(sourceSet, isRoleIdOddRaw)).toEqual(2);
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = new Set<Role>(
+        [ r1, r2, r3 ]
+      );
+
+      expect(SetUtil.count(sourceSet, isRoleIdOddFPredicate)).toEqual(2);
+    });
+
+
+    it('when given sourceSet is an immutable one and has elements and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const sourceSet = new Set<Role>(
+        [ r1, r2, r3 ]
+      );
+
+      expect(SetUtil.count(sourceSet, isRoleIdOddPredicate)).toEqual(2);
     });
 
   });
@@ -701,6 +819,190 @@ describe('SetUtil', () => {
 
 
 
+  describe('sort', () => {
+
+    it('when given sourceSet is a native one and has no elements then empty array is returned', () => {
+      const nativeSet = new Set<number>();
+      const comparator =
+        (a: number, b: number) => a - b;
+
+      const expectedResult: number[] = [];
+
+      expect(SetUtil.sort(null)).toEqual(expectedResult);
+      expect(SetUtil.sort(undefined)).toEqual(expectedResult);
+      expect(SetUtil.sort(nativeSet)).toEqual(expectedResult);
+
+      expect(SetUtil.sort(null, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(undefined, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(nativeSet, comparator)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is a mutable one and has no elements then empty array is returned', () => {
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const comparator: FComparator<number> =
+        (a, b) => a - b;
+
+      const expectedResult: number[] = [];
+
+      expect(SetUtil.sort(null)).toEqual(expectedResult);
+      expect(SetUtil.sort(undefined)).toEqual(expectedResult);
+      expect(SetUtil.sort(mutableHashSet)).toEqual(expectedResult);
+
+      expect(SetUtil.sort(null, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(undefined, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(mutableHashSet, comparator)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is an immutable one and has no elements then empty array is returned', () => {
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+      const comparator: Comparator<number> =
+        Comparator.of((a, b) => a - b);
+
+      const expectedResult: number[] = [];
+
+      expect(SetUtil.sort(null)).toEqual(expectedResult);
+      expect(SetUtil.sort(undefined)).toEqual(expectedResult);
+      expect(SetUtil.sort(immutableHashSet)).toEqual(expectedResult);
+
+      expect(SetUtil.sort(null, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(undefined, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(immutableHashSet, comparator)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is a native one and has elements but comparator is null or undefined then default sort is applied', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 10, 21, 2 ]
+      );
+
+      const expectedResult = [ 1, 10, 2, 21 ];
+
+      verifyArrays(
+        SetUtil.sort(nativeSet),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(nativeSet, undefined),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(nativeSet, null),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a mutable one and has elements but comparator is null or undefined then default sort is applied', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 10, 21, 2 ]
+      );
+
+      const expectedResult = [ 1, 10, 2, 21 ];
+
+      verifyArrays(
+        SetUtil.sort(mutableHashSet),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(mutableHashSet, undefined),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(mutableHashSet, null),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is an immutable one and has elements but comparator is null or undefined then default sort is applied', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 10, 21, 2 ]
+      );
+
+      const expectedResult = [ 1, 10, 2, 21 ];
+
+      verifyArrays(
+        SetUtil.sort(immutableHashSet),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(immutableHashSet, undefined),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(immutableHashSet, null),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a not empty native one and comparator is provided then the sorted array using comparator is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const nativeSet = new Set<Role>(
+        [ r2, r3, r1 ]
+      );
+      const comparator =
+        (a: Role, b: Role) => a.id - b.id;
+
+      verifyArrays(
+        SetUtil.sort(nativeSet, comparator),
+        [ r1, r2, r3 ]
+      );
+    });
+
+
+    it('when given sourceSet is a not empty mutable one and comparator is provided then the sorted array using comparator is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const mutableHashSet = MutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r2, r3, r1 ]
+      );
+      const comparator: FComparator<Role> =
+        (a, b) => b.id - a.id;
+
+      verifyArrays(
+        SetUtil.sort(mutableHashSet, comparator),
+        [ r3, r2, r1 ]
+      );
+    });
+
+
+    it('when given sourceSet is a not empty immutable one and comparator is provided then the sorted array using comparator is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const immutableHashSet = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ u3, u1, u2 ]
+      );
+      const comparator: Comparator<User> =
+        Comparator.of((a, b) => a.id - b.id);
+
+      verifyArrays(
+        SetUtil.sort(immutableHashSet, comparator),
+        [ u1, u2, u3 ]
+      );
+    });
+
+  });
+
+
+
   describe('toArray', () => {
 
     it('when given sourceSet is empty then an empty array is returned', () => {
@@ -816,6 +1118,16 @@ interface Role {
   name: string;
 }
 
+
+function verifyArrays(actualArray: unknown[],
+                      expectedArray: unknown[]) {
+  expect(expectedArray.length).toEqual(actualArray.length);
+  if (0 < expectedArray.length) {
+    for (let i = 0; i < expectedArray.length; i++) {
+      expect(expectedArray[i]).toEqual(actualArray[i]);
+    }
+  }
+}
 
 
 function verifyArraysRegardlessOfOrder(actualArray: unknown[],

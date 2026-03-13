@@ -378,7 +378,8 @@ describe('MapUtil', () => {
       const sourceMap3 = new Map<string, number>();
       sourceMap3.set('c', 5);
 
-      const plusNumbers = (n1: number, n2: number) => n1 + n2;
+      const plusNumbers =
+        (n1: number, n2: number) => n1 + n2;
 
       const expectedResult = new Map<string, number>();
       expectedResult.set('a', 1);
@@ -609,7 +610,8 @@ describe('MapUtil', () => {
       sourceMap.set(u2.id, u2);
       sourceMap.set(u3.id, u3);
 
-      const isKeyAndIdGreaterThan10: Predicate2<number, User> = Predicate2.of((k: number, user: User) => 10 < k && 10 < user.id);
+      const isKeyAndIdGreaterThan10: Predicate2<number, User> =
+        Predicate2.of((k: number, user: User) => 10 < k && 10 < user.id);
 
       expect(MapUtil.filterFirst(sourceMap, isKeyAndIdGreaterThan10)).toBe(undefined);
     });
@@ -903,7 +905,8 @@ describe('MapUtil', () => {
 
       const intValue = 10;
 
-      const intAccumulator = (prev: number, k: number, v: number) => prev * k * v;
+      const intAccumulator =
+        (prev: number, k: number, v: number) => prev * k * v;
 
       const intResult = MapUtil.foldLeft(sourceMap, intValue, intAccumulator);
 
@@ -1418,7 +1421,8 @@ describe('MapUtil', () => {
       sourceMap.set(7, 'World');
       sourceMap.set(8, 'Ok');
 
-      const isKeyOddOrGreaterThan6 = (k: number, v: string) => 1 == k % 2 || 6 < k;
+      const isKeyOddOrGreaterThan6 =
+        (k: number, v: string) => 1 == k % 2 || 6 < k;
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(1, [2, 5]);
@@ -1586,7 +1590,8 @@ describe('MapUtil', () => {
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'Hola');
 
-      const keyPlus1AndValueV2 = (k: number, v: string): [number, string] => [k+1, v + 'v2'];
+      const keyPlus1AndValueV2 =
+        (k: number, v: string): [number, string] => [k+1, v + 'v2'];
 
       const expectedKeyAndValueLengthResult = new Map<number, number>();
       expectedKeyAndValueLengthResult.set(1, 2);
@@ -1659,7 +1664,8 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'k');
       sourceMap.set(3, 'cd');
 
-      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareKeys =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
       const compareElements: Comparator<[number, string]> =
         Comparator.of(
           (a: [number, string], b: [number, string]) => {
@@ -1724,7 +1730,8 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'k');
       sourceMap.set(3, 'cd');
 
-      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareKeys =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
       const compareElements: Comparator<[number, string]> =
         Comparator.of(
           (a: [number, string], b: [number, string]) => {
@@ -1795,7 +1802,8 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'k');
       sourceMap.set(3, 'cd');
 
-      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareKeys =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
       const compareElements: Comparator<[number, string]> =
         Comparator.of(
           (a: [number, string], b: [number, string]) => {
@@ -1860,7 +1868,8 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'k');
       sourceMap.set(3, 'cd');
 
-      const compareKeys = (a: [number, string], b: [number, string]) => a[0] - b[0];
+      const compareKeys =
+        (a: [number, string], b: [number, string]) => a[0] - b[0];
       const compareElements: Comparator<[number, string]> =
         Comparator.of(
           (a: [number, string], b: [number, string]) => {
@@ -2065,7 +2074,8 @@ describe('MapUtil', () => {
 
       const emptyMap = new Map<number, string>();
 
-      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+      const mapElementsComparison =
+        (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
 
       expect(MapUtil.removeAll(null, sourceMap)).toEqual(emptyMap);
       expect(MapUtil.removeAll(undefined, sourceMap)).toEqual(emptyMap);
@@ -2171,7 +2181,8 @@ describe('MapUtil', () => {
 
       const emptyMap = new Map<number, string>();
 
-      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+      const mapElementsComparison =
+        (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
 
       expect(MapUtil.retainAll(null, sourceMap)).toEqual(emptyMap);
       expect(MapUtil.retainAll(undefined, sourceMap)).toEqual(emptyMap);
@@ -2190,7 +2201,8 @@ describe('MapUtil', () => {
 
       const emptyMap = new Map<number, string>();
 
-      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+      const mapElementsComparison =
+        (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
 
       verifyMaps(
         MapUtil.retainAll(sourceMap, null),
@@ -2256,7 +2268,8 @@ describe('MapUtil', () => {
       sourceMap.set(2, u2);
       sourceMap.set(3, u3);
 
-      const mapElementsComparison = (e1: [number, User], e2: [number, User]) => e1[1].equals(e2[1]);
+      const mapElementsComparison =
+        (e1: [number, User], e2: [number, User]) => e1[1].equals(e2[1]);
 
       verifyMaps(
         MapUtil.retainAll(sourceMap, MapUtil.of([[1, u1]]), mapElementsComparison),
@@ -2329,18 +2342,20 @@ describe('MapUtil', () => {
 
   describe('sort', () => {
 
-    it('when given sourceMap has no elements then empty Map is returned', () => {
+    it('when given sourceMap has no elements then an empty array is returned', () => {
       const emptyMap = new Map<number, number>();
       const compareKeys: Comparator<[number, number]> =
         Comparator.of((a: [number, number], b: [number, number]) => a[0] - b[0]);
 
-      expect(MapUtil.sort(null)).toEqual(emptyMap);
-      expect(MapUtil.sort(undefined)).toEqual(emptyMap);
-      expect(MapUtil.sort(emptyMap)).toEqual(emptyMap);
+      const expectedResult: [number, number][] = [];
 
-      expect(MapUtil.sort(null, compareKeys)).toEqual(emptyMap);
-      expect(MapUtil.sort(undefined, compareKeys)).toEqual(emptyMap);
-      expect(MapUtil.sort(emptyMap, compareKeys)).toEqual(emptyMap);
+      expect(MapUtil.sort(null)).toEqual(expectedResult);
+      expect(MapUtil.sort(undefined)).toEqual(expectedResult);
+      expect(MapUtil.sort(emptyMap)).toEqual(expectedResult);
+
+      expect(MapUtil.sort(null, compareKeys)).toEqual(expectedResult);
+      expect(MapUtil.sort(undefined, compareKeys)).toEqual(expectedResult);
+      expect(MapUtil.sort(emptyMap, compareKeys)).toEqual(expectedResult);
     });
 
 
@@ -2351,30 +2366,29 @@ describe('MapUtil', () => {
       sourceMap.set(11, 'k');
       sourceMap.set(3, 'c');
 
-      const expectedResult = new Map<number, string>();
-      expectedResult.set(1, 'a');
-      expectedResult.set(11, 'k');
-      expectedResult.set(3, 'c');
-      expectedResult.set(4, 'd');
+      const expectedResult: [number, string][] = [
+        [ 1, 'a' ],
+        [ 11, 'k' ],
+        [ 3, 'c' ],
+        [ 4, 'd' ]
+      ];
 
-      verifyMaps(
+      verifyArrays(
         MapUtil.sort(sourceMap),
         expectedResult
       );
-
-      verifyMaps(
+      verifyArrays(
         MapUtil.sort(sourceMap, undefined),
         expectedResult
       );
-
-      verifyMaps(
+      verifyArrays(
         MapUtil.sort(sourceMap, null),
         expectedResult
       );
     });
 
 
-    it('using basic types, when given sourceMap is not empty and comparator is valid then the sorted map using comparator is returned', () => {
+     it('using basic types, when given sourceMap is not empty and comparator is valid then the sorted map using comparator is returned', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'a');
       sourceMap.set(4, 'd');
@@ -2384,13 +2398,14 @@ describe('MapUtil', () => {
       const compareKeys: FComparator<[number, string]> =
         (a: [number, string], b: [number, string]) => a[0] - b[0];
 
-      const expectedResult = new Map<number, string>();
-      expectedResult.set(1, 'a');
-      expectedResult.set(3, 'c');
-      expectedResult.set(4, 'd');
-      expectedResult.set(11, 'k');
+       const expectedResult: [number, string][] = [
+         [ 1, 'a' ],
+         [ 3, 'c' ],
+         [ 4, 'd' ],
+         [ 11, 'k' ]
+       ];
 
-      verifyMaps(
+       verifyArrays(
         MapUtil.sort(sourceMap, compareKeys),
         expectedResult
       );
@@ -2407,14 +2422,16 @@ describe('MapUtil', () => {
       sourceMap.set(r3.id, r3);
       sourceMap.set(r2.id, r2);
 
-      const compareKeys = (a: [number, Role], b: [number, Role]) => a[0] - b[0];
+      const compareKeys =
+        (a: [number, Role], b: [number, Role]) => a[0] - b[0];
 
-      const expectedResult = new Map<number, Role>();
-      expectedResult.set(r1.id, r1);
-      expectedResult.set(r2.id, r2);
-      expectedResult.set(r3.id, r3);
+      const expectedResult: [number, Role][] = [
+        [ r1.id, r1 ],
+        [ r2.id, r2 ],
+        [ r3.id, r3 ]
+      ];
 
-      verifyMaps(
+      verifyArrays(
         MapUtil.sort(sourceMap, compareKeys),
         expectedResult
       );
@@ -2431,14 +2448,16 @@ describe('MapUtil', () => {
       sourceMap.set(u3.id, u3);
       sourceMap.set(u2.id, u2);
 
-      const compareKeys = (a: [number, User], b: [number, User]) => b[0] - a[0];
+      const compareKeys =
+        (a: [number, User], b: [number, User]) => b[0] - a[0];
 
-      const expectedResult = new Map<number, User>();
-      expectedResult.set(u3.id, u3);
-      expectedResult.set(u2.id, u2);
-      expectedResult.set(u1.id, u1);
+      const expectedResult: [number, Role][] = [
+        [ u3.id, u3 ],
+        [ u2.id, u2 ],
+        [ u1.id, u1 ]
+      ];
 
-      verifyMaps(
+      verifyArrays(
         MapUtil.sort(sourceMap, compareKeys),
         expectedResult
       );

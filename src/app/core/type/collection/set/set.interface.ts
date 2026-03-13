@@ -1,5 +1,5 @@
 import { NullableOrUndefined } from '@app-core/type';
-import {EqualityFunction} from '@app-core/type/collection';
+import { EqualityFunction } from '@app-core/type/collection';
 
 /**
  *    Main interface containing the common functions included in the different implementations of {@link Set}. Those
@@ -63,7 +63,7 @@ export interface AbstractSet<T> extends Set<T>, Disposable {
 
   /**
    *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a new {@link AbstractSet} containing elements
-   * which are in either this {@link CustomMutableHashSet} or in the given `other`, but not in both.
+   * which are in either this {@link AbstractSet} or in the given `other`, but not in both.
    *
    * @apiNote
    *    Existing {@link Set#symmetricDifference} will throw {@link UnsupportedOperationError} due to its definition

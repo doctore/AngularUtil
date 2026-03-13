@@ -1775,7 +1775,8 @@ export class MapUtil {
 
 
   /**
-   * Sorts the given `sourceMap` using `comparator` if provided or default ordination otherwise.
+   *    Sorts the given `sourceMap` using `comparator` if provided or default ordination otherwise, returning a sorted
+   * array of Tuples containing the key-value pairs.
    *
    * @apiNote
    *    The default sort order is ascending, built upon converting the elements into strings, then comparing their
@@ -1785,7 +1786,7 @@ export class MapUtil {
    *    sort(                                                                  Result:
    *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')]                             [(1, 'a'), (11, 'k'), (3, 'c'), (4, 'd')]
    *    )
-   *    sort(                                                                   Result:
+   *    sort(                                                                  Result:
    *      [(1, 'a'), (4, 'd'), (11, 'k'), (3, 'c')],                            [(1, 'a'), (3, 'c'), (4, 'd'), (11, 'k')]
    *      (a: [number, string], b: [number, string]) => a[0] - b[0]
    *    )
@@ -1796,25 +1797,20 @@ export class MapUtil {
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
-   * @return new sorted {@link Map}
+   * @return new sorted array of Tuples
    */
   static sort = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                       comparator?: Nullable<TComparator<[K, V]>>): Map<K, V> => {
+                       comparator?: Nullable<TComparator<[K, V]>>): [K, V][] => {
     if (this.isEmpty(sourceMap)) {
-      return new Map<K, V>();
+      return [];
     }
     const clonedSourceMapAsArray = [...sourceMap!.entries()];
     return comparator
-      ? new Map(
-          clonedSourceMapAsArray!
-            .sort(
-              Comparator.of<[K, V]>(comparator!)
-                .getComparator()
-            )
+      ? clonedSourceMapAsArray!.sort(
+          Comparator.of<[K, V]>(comparator!)
+            .getComparator()
         )
-      : new Map(
-          clonedSourceMapAsArray!.sort()
-        );
+      : clonedSourceMapAsArray!.sort();
   }
 
 

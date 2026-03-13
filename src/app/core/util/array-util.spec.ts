@@ -298,7 +298,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray has elements but filterPredicate is null or undefined then sourceArray length is returned', () => {
+    it('when given sourceArray has elements but filterPredicate is null or undefined then length of sourceArray is returned', () => {
       const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
       expect(ArrayUtil.count(sourceArray, null)).toEqual(4);
@@ -1936,9 +1936,12 @@ describe('ArrayUtil', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
 
-      const numberComparison = (n1: number, n2: number) => n1 == n2;
-      const stringComparison = (s1: string, s2: string) => s1 == s2;
-      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+      const numberComparison =
+        (n1: number, n2: number) => n1 == n2;
+      const stringComparison =
+        (s1: string, s2: string) => s1 == s2;
+      const userComparison =
+        (u1: User, u2: User) => u1.equals(u2);
 
       expect(ArrayUtil.removeAll(null, [ 1, 2 ])).toEqual([]);
       expect(ArrayUtil.removeAll(undefined, [ 'a', 'b' ])).toEqual([]);
@@ -1954,9 +1957,12 @@ describe('ArrayUtil', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
 
-      const numberComparison = (n1: number, n2: number) => n1 == n2;
-      const stringComparison = (s1: string, s2: string) => s1 == s2;
-      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+      const numberComparison =
+        (n1: number, n2: number) => n1 == n2;
+      const stringComparison =
+        (s1: string, s2: string) => s1 == s2;
+      const userComparison =
+        (u1: User, u2: User) => u1.equals(u2);
 
       verifyArrays(
         ArrayUtil.removeAll([ 1, 2 ], null),
@@ -2011,9 +2017,12 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user3');
 
-      const numberComparison = (n1: number, n2: number) => n1 == n2;
-      const stringComparison = (s1: string, s2: string) => s1.length == s2.length;
-      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+      const numberComparison =
+        (n1: number, n2: number) => n1 == n2;
+      const stringComparison =
+        (s1: string, s2: string) => s1.length == s2.length;
+      const userComparison =
+        (u1: User, u2: User) => u1.equals(u2);
 
       verifyArrays(
         ArrayUtil.removeAll([ 1, 2, 3, 4 ], [ 1, 3, 5 ], numberComparison),
@@ -2039,9 +2048,12 @@ describe('ArrayUtil', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
 
-      const numberComparison = (n1: number, n2: number) => n1 == n2;
-      const stringComparison = (s1: string, s2: string) => s1 == s2;
-      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+      const numberComparison =
+        (n1: number, n2: number) => n1 == n2;
+      const stringComparison =
+        (s1: string, s2: string) => s1 == s2;
+      const userComparison =
+        (u1: User, u2: User) => u1.equals(u2);
 
       expect(ArrayUtil.retainAll(null, [ 1, 2 ])).toEqual([]);
       expect(ArrayUtil.retainAll(undefined, [ 'a', 'b' ])).toEqual([]);
@@ -2057,9 +2069,12 @@ describe('ArrayUtil', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
 
-      const numberComparison = (n1: number, n2: number) => n1 == n2;
-      const stringComparison = (s1: string, s2: string) => s1 == s2;
-      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+      const numberComparison =
+        (n1: number, n2: number) => n1 == n2;
+      const stringComparison =
+        (s1: string, s2: string) => s1 == s2;
+      const userComparison =
+        (u1: User, u2: User) => u1.equals(u2);
 
       expect(ArrayUtil.retainAll([ 1, 2 ], null )).toEqual([]);
       expect(ArrayUtil.retainAll([ 'a', 'b' ], undefined )).toEqual([]);
@@ -2096,9 +2111,12 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user3');
 
-      const numberComparison = (n1: number, n2: number) => n1 == n2;
-      const stringComparison = (s1: string, s2: string) => s1.length == s2.length;
-      const userComparison = (u1: User, u2: User) => u1.equals(u2);
+      const numberComparison =
+        (n1: number, n2: number) => n1 == n2;
+      const stringComparison =
+        (s1: string, s2: string) => s1.length == s2.length;
+      const userComparison =
+        (u1: User, u2: User) => u1.equals(u2);
 
       verifyArrays(
         ArrayUtil.retainAll([ 1, 2, 3, 4 ], [ 1, 3, 5 ], numberComparison),
@@ -2144,12 +2162,10 @@ describe('ArrayUtil', () => {
         ArrayUtil.sort(sourceArray),
         expectedResult
       );
-
       verifyArrays(
         ArrayUtil.sort(sourceArray, undefined),
         expectedResult
       );
-
       verifyArrays(
         ArrayUtil.sort(sourceArray, null),
         expectedResult
@@ -2157,9 +2173,10 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using basic types, when given sourceArray is not empty and comparator is valid then the sorted array using comparator is returned', () => {
+    it('using basic types, when given sourceArray is not empty and comparator is provided then the sorted array using comparator is returned', () => {
       const sourceArray: number[] = [ 1, 10, 21, 2 ];
-      const comparator = (a: number, b: number) => a - b;
+      const comparator =
+        (a: number, b: number) => a - b;
 
       const expectedResult: number[] = [ 1, 2, 10, 21 ];
 
@@ -2170,12 +2187,13 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using interfaces, when given sourceArray is not empty and comparator is valid then the sorted array using comparator is returned', () => {
+    it('using interfaces, when given sourceArray is not empty and comparator is provided then the sorted array using comparator is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const comparator = (r1: Role, r2: Role) => r1.id - r2.id;
+      const comparator =
+        (r1: Role, r2: Role) => r1.id - r2.id;
 
       verifyArrays(
         ArrayUtil.sort([ r1, r3, r2 ], comparator),
@@ -2184,12 +2202,13 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('using classes, when given sourceArray is not empty and comparator is valid then the sorted array using comparator is returned', () => {
+    it('using classes, when given sourceArray is not empty and comparator is provided then the sorted array using comparator is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const comparator: FComparator<User> = (u1: User, u2: User) => u2.id - u1.id;
+      const comparator: FComparator<User> =
+        (u1: User, u2: User) => u2.id - u1.id;
 
       verifyArrays(
         ArrayUtil.sort([ u3, u1, u2 ], comparator),
