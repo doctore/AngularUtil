@@ -2027,9 +2027,14 @@ export class ArrayUtil {
    *
    * <pre>
    *    toMap(                                   Result:
+   *      [1, 2, 3, 1],                           [('1', 1),
+   *      (n: number) => '' + n                    ('2', 2),
+   *    )                                          ('3', 3)]
+   *
+   *    toMap(                                   Result:
    *      [1, 2, 3, 1],                           [('1', 2),
-   *      (n: number) => '' + n,                   ('3', 4)]
-   *      (n: number) => 1 + n
+   *      (n: number) => '' + n,                   ('2', 3),
+   *      (n: number) => 1 + n                     ('3', 4)]
    *    )
    * </pre>
    *

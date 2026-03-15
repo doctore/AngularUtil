@@ -1,10 +1,10 @@
-import {Nullable, NullableOrUndefined, OrUndefined} from '@app-core/type';
+import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/type';
 import { AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet } from '@app-core/type/collection/set';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 import { Comparator, TComparator } from '@app-core/type/comparator';
-import {FFunction2, Function1, Function2, TFunction1, TFunction2} from '@app-core/type/function';
-import {AssertUtil} from './assert-util';
-import {BinaryOperator, FBinaryOperator, TBinaryOperator} from '@app-core/type/function/operator';
+import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
+import { AssertUtil } from './assert-util';
+import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
 
 /**
  * Helper functions to manage {@link Set}.
@@ -429,9 +429,14 @@ export class SetUtil {
    *
    * <pre>
    *    toMap(                                   Result:
-   *      [1, 2, 3, 1],                           [('1', 2),
-   *      (n: number) => '' + n,                   ('3', 4)]
-   *      (n: number) => 1 + n
+   *      [1, 2, 3],                              [('1', 1),
+   *      (n: number) => '' + n                    ('2', 2),
+   *    )                                          ('3', 3)]
+   *
+   *    toMap(                                   Result:
+   *      [1, 2, 3],                              [('1', 2),
+   *      (n: number) => '' + n,                   ('2', 3),
+   *      (n: number) => 1 + n                     ('3', 4)]
    *    )
    * </pre>
    *
