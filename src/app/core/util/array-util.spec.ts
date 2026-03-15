@@ -905,7 +905,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given accumulator is null or undefined then initialValue is returned', () => {
+    it('when given sourceArray is not null but accumulator is null or undefined then initialValue is returned', () => {
       const intValue = 10;
       const intArray: number[] = [ 2, 3, 4 ];
 
@@ -917,14 +917,15 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not null then initialValue applying accumulator is returned', () => {
+    it('when given sourceArray is not empty and accumulator is provided then initialValue applying accumulator is returned', () => {
       const intValue = 10;
       const stringValue = 'a';
 
       const intArray: number[] = [ 2, 3, 4 ];
       const stringArray: string[] = [ 'b', 'c', 'd' ];
 
-      const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+      const intAccumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
       const stringAccumulator: Function2<string, string, string> =
         Function2.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
@@ -936,27 +937,61 @@ describe('ArrayUtil', () => {
       expect(stringResult).toEqual('abcd');
     });
 
+  });
 
-    it('when given sourceArray is not null and there is a filter then initialValue applying accumulator only to the elements match filter is returned', () => {
-      const intValue = 10;
-      const stringValue = 'a';
 
-      const intArray: number[] = [ 2, 3, 4 ];
-      const stringArray: string[] = [ 'b', 'c', 'd', 'e' ];
+  describe('foldRight', () => {
 
-      const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+    it('when given sourceArray is null, undefined or empty then initialValue is returned', () => {
+      const intValue = 19;
+      const stringValue = 'afr';
+
+      const intAccumulator: FFunction2<number, number, number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
       const stringAccumulator: Function2<string, string, string> =
         Function2.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
 
-      const isNotVowel: FPredicate1<string> =
-        (s: string) => -1 == 'aeiouAEIUO'.indexOf(s);
+      const intNullResult = ArrayUtil.foldRight(null, intValue, intAccumulator);
+      const intUndefinedResult = ArrayUtil.foldRight(undefined, intValue, intAccumulator);
+      const stringResult = ArrayUtil.foldRight([], stringValue, stringAccumulator);
 
-      const intResult = ArrayUtil.foldLeft(intArray, intValue, intAccumulator, isEvenRaw);
-      const stringResult = ArrayUtil.foldLeft(stringArray, stringValue, stringAccumulator, isNotVowel);
+      expect(intNullResult).toEqual(intValue);
+      expect(intUndefinedResult).toEqual(intValue);
+      expect(stringResult).toEqual(stringValue);
+    });
 
-      expect(intResult).toEqual(80);
-      expect(stringResult).toEqual('abcd');
+
+    it('when given sourceArray is not null but accumulator is null or undefined then initialValue is returned', () => {
+      const intValue = 10;
+      const intArray: number[] = [ 2, 3, 4 ];
+
+      const nullAccumulatorResult = ArrayUtil.foldRight(intArray, intValue, null);
+      const undefinedAccumulatorResult = ArrayUtil.foldRight(intArray, intValue, undefined);
+
+      expect(nullAccumulatorResult).toEqual(intValue);
+      expect(undefinedAccumulatorResult).toEqual(intValue);
+    });
+
+
+    it('when given sourceArray is not empty and accumulator is provided then initialValue applying accumulator is returned', () => {
+      const intValue = 10;
+      const stringValue = 'a';
+
+      const intArray: number[] = [ 2, 3, 4 ];
+      const stringArray: string[] = [ 'b', 'c', 'd' ];
+
+      const intAccumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      const stringAccumulator: Function2<string, string, string> =
+        Function2.of((s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!);
+
+      const intResult = ArrayUtil.foldRight(intArray, intValue, intAccumulator);
+      const stringResult = ArrayUtil.foldRight(stringArray, stringValue, stringAccumulator);
+
+      expect(intResult).toEqual(240);
+      expect(stringResult).toEqual('adcb');
     });
 
   });
@@ -1149,9 +1184,9 @@ describe('ArrayUtil', () => {
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
 
-      expect(ArrayUtil.groupMap(null, sameValueRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
-      expect(ArrayUtil.groupMap(undefined, sameValueRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
-      expect(ArrayUtil.groupMap(emptyArray, sameValueRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMap(null, sameNumberRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMap(undefined, sameNumberRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMap(emptyArray, sameNumberRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
     });
 
 
@@ -1170,9 +1205,9 @@ describe('ArrayUtil', () => {
       expect(() => ArrayUtil.groupMap([ 1 ], undefined, plus1Raw, isOddRaw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([ 1 ], sameValueRaw, null, isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], sameNumberRaw, null, isOddRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMap([ 1 ], sameValueRaw, undefined, isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMap([ 1 ], sameNumberRaw, undefined, isOddRaw)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1201,12 +1236,12 @@ describe('ArrayUtil', () => {
 
       verifyMaps(
         // @ts-ignore
-        ArrayUtil.groupMap(sourceArray, sameValueFunction, plus1FFunction, null),
+        ArrayUtil.groupMap(sourceArray, sameNumberFFunction, plus1FFunction, null),
         expectedResult
       );
 
       verifyMaps(
-        ArrayUtil.groupMap(sourceArray, sameValueFunction, plus1FFunction, undefined),
+        ArrayUtil.groupMap(sourceArray, sameNumberFFunction, plus1FFunction, undefined),
         expectedResult
       );
     });
@@ -1220,7 +1255,7 @@ describe('ArrayUtil', () => {
       expectedResult.set(3, [ 4, 4 ]);
 
       verifyMaps(
-        ArrayUtil.groupMap(sourceArray, sameValueRaw, plus1Raw, isOddRaw),
+        ArrayUtil.groupMap(sourceArray, sameNumberRaw, plus1Raw, isOddRaw),
         expectedResult
       );
     });
@@ -1251,9 +1286,9 @@ describe('ArrayUtil', () => {
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
 
-      expect(ArrayUtil.groupMapMultiKey(null, oddEvenAndCompareWith5, sameValueRaw, lessThan10Raw)).toEqual(expectedResult);
-      expect(ArrayUtil.groupMapMultiKey(undefined, oddEvenAndCompareWith5, sameValueRaw, lessThan10Raw)).toEqual(expectedResult);
-      expect(ArrayUtil.groupMapMultiKey(emptyArray, oddEvenAndCompareWith5, sameValueRaw, lessThan10Raw)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapMultiKey(null, oddEvenAndCompareWith5, sameNumberRaw, lessThan10Raw)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapMultiKey(undefined, oddEvenAndCompareWith5, sameNumberRaw, lessThan10Raw)).toEqual(expectedResult);
+      expect(ArrayUtil.groupMapMultiKey(emptyArray, oddEvenAndCompareWith5, sameNumberRaw, lessThan10Raw)).toEqual(expectedResult);
     });
 
 
@@ -1274,9 +1309,9 @@ describe('ArrayUtil', () => {
       };
 
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], null, sameValueRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], null, sameNumberRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], undefined, sameValueRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.groupMapMultiKey([ 1 ], undefined, sameNumberRaw, lessThan10Raw)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
       expect(() => ArrayUtil.groupMapMultiKey([ 1 ], oddEvenAndCompareWith5, null, lessThan10Raw)).toThrowError(IllegalArgumentError);
@@ -1312,12 +1347,12 @@ describe('ArrayUtil', () => {
 
       verifyMaps(
         // @ts-ignore
-        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameValueFunction, null),
+        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameNumberFFunction, null),
         expectedResult
       );
 
       verifyMaps(
-        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameValueFunction, undefined),
+        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameNumberFFunction, undefined),
         expectedResult
       );
     });
@@ -1348,7 +1383,7 @@ describe('ArrayUtil', () => {
       expectedResult.set("greaterEqual5", [ 6 ]);
 
       verifyMaps(
-        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameValueRaw, lessThan10Raw),
+        ArrayUtil.groupMapMultiKey(sourceArray, oddEvenAndCompareWith5, sameNumberRaw, lessThan10Raw),
         expectedResult
       );
     });
@@ -1867,7 +1902,8 @@ describe('ArrayUtil', () => {
       let numberArray: number[] = [ 1, 10, 21, 2 ];
       let stringArray: NullableOrUndefined<string>[] = [ 'a', 'ab', null, undefined, 'abc' ];
 
-      const numberComparator = (a: number, b: number) => a - b;
+      const numberComparator =
+        (a: number, b: number) => a - b;
       const stringComparator: Comparator<NullableOrUndefined<string>> =
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
@@ -1916,8 +1952,10 @@ describe('ArrayUtil', () => {
       const intArray: number[] = [ 2 ];
       const stringArray: string[] = [ 'b', 'c', 'd' ];
 
-      const intAccumulator = (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-      const stringAccumulator = (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!;
+      const intAccumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+      const stringAccumulator: FFunction2<NullableOrUndefined<string>, NullableOrUndefined<string>, string> =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) => s1! + s2!;
 
       const intResult = ArrayUtil.reduce(intArray, intAccumulator);
       const stringResult = ArrayUtil.reduce(stringArray, stringAccumulator);
@@ -2421,44 +2459,19 @@ describe('ArrayUtil', () => {
 
   describe('toMap', () => {
 
-    it('when given sourceArray has no elements and partialFunction is provided then empty Map is returned', () => {
+    it('when given sourceArray has no elements and only discriminatorKey is provided then empty Map is returned', () => {
       const emptyArray: number[] = [];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
 
-      expect(ArrayUtil.toMap(null, numberAsKeyAndPlus1AsValueForOddPP)).toEqual(expectedResult);
-      expect(ArrayUtil.toMap(undefined, numberAsKeyAndPlus1AsValueForOddPP)).toEqual(expectedResult);
-      expect(ArrayUtil.toMap(emptyArray, numberAsKeyAndPlus1AsValueForOddPP)).toEqual(expectedResult);
-    });
+      expect(ArrayUtil.toMap(null, sameNumberRaw)).toEqual(expectedResult);
+      expect(ArrayUtil.toMap(undefined, sameNumberRaw)).toEqual(expectedResult);
 
+      expect(ArrayUtil.toMap(emptyArray, sameNumberRaw)).toEqual(expectedResult);
+      expect(ArrayUtil.toMap(emptyArray, sameNumberFFunction)).toEqual(expectedResult);
 
-    it('when given sourceArray has no elements and discriminatorKey is provided then empty Map is returned', () => {
-      const emptyArray: number[] = [];
-
-      const expectedResult: Map<number, number> = new Map<number, number>;
-
-      expect(ArrayUtil.toMap(null, sameValueRaw)).toEqual(expectedResult);
-      expect(ArrayUtil.toMap(undefined, sameValueRaw)).toEqual(expectedResult);
-      expect(ArrayUtil.toMap(emptyArray, sameValueRaw)).toEqual(expectedResult);
-    });
-
-
-    it('when given sourceArray has no elements and discriminatorKey, valueMapper and filterPredicate are provided then empty Map is returned', () => {
-      const emptyArray: number[] = [];
-
-      const expectedResult: Map<number, number> = new Map<number, number>;
-
-      expect(ArrayUtil.toMap(null, sameValueRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
-      expect(ArrayUtil.toMap(undefined, sameValueRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
-      expect(ArrayUtil.toMap(emptyArray, sameValueRaw, plus1Raw, isOddRaw)).toEqual(expectedResult);
-    });
-
-
-    it('when given sourceArray is not empty but partialFunction is null or undefined then an error is thrown', () => {
-      // @ts-ignore
-      expect(() => ArrayUtil.toMap([ 1 ], null)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => ArrayUtil.toMap([ 1 ], undefined)).toThrowError(IllegalArgumentError);
+      expect(ArrayUtil.toMap(emptyArray, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
+      expect(ArrayUtil.toMap(emptyArray, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
     });
 
 
@@ -2469,27 +2482,13 @@ describe('ArrayUtil', () => {
       expect(() => ArrayUtil.toMap([ 1 ], undefined)).toThrowError(IllegalArgumentError);
 
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([ 1 ], null, plus1Raw,  isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], null, plus1Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.toMap([ 1 ], undefined, plus1Raw, isOddRaw)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.toMap([ 1 ], undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
     });
 
 
-    it('when given sourceArray has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
-
-      const expectedResult: Map<number, number> = new Map<number, number>;
-      expectedResult.set(1, 2);
-      expectedResult.set(3, 4);
-
-      verifyMaps(
-        ArrayUtil.toMap(sourceArray, numberAsKeyAndPlus1AsValueForOddPP),
-        expectedResult
-      );
-    });
-
-
-    it('when given sourceArray has elements and only a valid discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
+    it('when given sourceArray has elements and only discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
       const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
@@ -2499,13 +2498,17 @@ describe('ArrayUtil', () => {
       expectedResult.set(6, 6);
 
       verifyMaps(
-        ArrayUtil.toMap(sourceArray, sameValueFunction),
+        ArrayUtil.toMap(sourceArray, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        ArrayUtil.toMap(sourceArray, sameNumberFFunction),
         expectedResult
       );
     });
 
 
-    it('when given sourceArray has elements and discriminatorKey and valueMapper are valid but filterPredicate is null or undefined then all elements will be transformed using discriminatorKey and valueMapper', () => {
+    it('when given sourceArray has elements and discriminatorKey and valueMapper are provided then all elements will be transformed using discriminatorKey and valueMapper', () => {
       const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
 
       const expectedResult: Map<number, number> = new Map<number, number>;
@@ -2515,27 +2518,19 @@ describe('ArrayUtil', () => {
       expectedResult.set(6, 7);
 
       verifyMaps(
-        // @ts-ignore
-        ArrayUtil.toMap(sourceArray, sameValueFunction, plus1FFunction, null),
+        ArrayUtil.toMap(sourceArray, sameNumberRaw, plus1Raw),
         expectedResult
       );
-
       verifyMaps(
-        ArrayUtil.toMap(sourceArray, sameValueFunction, plus1FFunction, undefined),
+        ArrayUtil.toMap(sourceArray, sameNumberRaw, plus1FFunction),
         expectedResult
       );
-    });
-
-
-    it('when given sourceArray has elements and discriminatorKey, valueMapper and filterPredicate are valid then a new filtered and transformed Map is returned', () => {
-      const sourceArray: number[] = [ 1, 2, 3, 6, 3 ];
-
-      const expectedResult: Map<number, number> = new Map<number, number>;
-      expectedResult.set(1, 2);
-      expectedResult.set(3, 4);
-
       verifyMaps(
-        ArrayUtil.toMap(sourceArray, sameValueRaw, plus1Raw, isOddRaw),
+        ArrayUtil.toMap(sourceArray, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        ArrayUtil.toMap(sourceArray, sameNumberFFunction, plus1Function),
         expectedResult
       );
     });
@@ -3005,16 +3000,14 @@ const plus1Function: Function1<number, number> =
   );
 
 
-const sameValueRaw =
+const sameNumberRaw =
   (n: number) =>
     n;
 
 
-const sameValueFunction: Function1<number, number> =
-  Function1.of(
-    (n: number) =>
-      n
-  );
+const sameNumberFFunction: FFunction1<number, number> =
+  (n: number) =>
+    n;
 
 
 const sumValuesRaw =

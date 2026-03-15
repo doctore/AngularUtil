@@ -117,7 +117,7 @@ export class ArrayUtil {
       const finalOrElseMapper = Function1.of(
         orElseMapper
       );
-      for (let item of sourceArray!) {
+      for (const item of sourceArray!) {
         result.push(
           finalPartialFunction.isDefinedAt(item)
             ? finalPartialFunction.apply(
@@ -212,7 +212,7 @@ export class ArrayUtil {
             filterPredicate,
             <TFunction1<T, U>>partialFunctionOrMapFunction
           );
-      for (let item of sourceArray!) {
+      for (const item of sourceArray!) {
         if (finalPartialFunction.isDefinedAt(item)) {
           result.push(
             finalPartialFunction.apply(
@@ -319,7 +319,7 @@ export class ArrayUtil {
       filterPredicate
     );
     let result = 0;
-    for (let item of sourceArray!) {
+    for (const item of sourceArray!) {
       if (finalFilterPredicate.apply(item)) {
         result++;
       }
@@ -750,7 +750,7 @@ export class ArrayUtil {
       return [];
     }
     let result: T[] = [];
-    for (let item of sourceArray!) {
+    for (const item of sourceArray!) {
       if (this.isArray(item)) {
         const recursiveResult = this.flatten(
           item
@@ -772,16 +772,16 @@ export class ArrayUtil {
 
   /**
    *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all
-   * elements of `sourceArray`, going left to right.
+   * elements of `sourceArray`, going left (head) to right (tail).
    *
    * @apiNote
    *    If `sourceArray` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
    *
    * <pre>
    *    foldLeft(                                          Result:
-   *      [5, 7, 9],                                        315
-   *      1,
-   *      (n1: number, n2: number) => n1 * n2
+   *      ['5', '7', '9'],                                  '1579'
+   *      '1',
+   *      (s1: string, s2: string) => s1 + s2
    *    )
    * </pre>
    *
@@ -793,7 +793,7 @@ export class ArrayUtil {
    *    A {@link TFunction2} which combines elements
    *
    * @return result of inserting `accumulator` between consecutive elements of `sourceArray`, going
-   *         left to right with the start value `initialValue` on the left.
+   *         left (head) to right (tail) with the start value `initialValue` on the left.
    */
   static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
@@ -805,19 +805,38 @@ export class ArrayUtil {
                         accumulator: NullableOrUndefined<FFunction2<R, T, R>>): R;
 
 
+  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+                        initialValue: R,
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R {
+    if (this.isEmpty(sourceArray) || !accumulator) {
+      return initialValue
+    }
+    const finalAccumulator = Function2.of(
+      accumulator
+    );
+    let result: R = initialValue;
+    for (let i = 0; i < sourceArray!.length; i++) {
+      result = finalAccumulator.apply(
+        result,
+        sourceArray![i]
+      );
+    }
+    return result;
+  }
+
+
   /**
-   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to elements
-   * of `sourceArray` that verify `filterPredicate`, going left to right.
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all
+   * elements of `sourceArray`, going right (tail) to left (head).
    *
    * @apiNote
    *    If `sourceArray` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
    *
    * <pre>
-   *    foldLeft(                                          Result:
-   *      [5, 7, 8, 9]                                      315
-   *      1,
-   *      (n1: number, n2: number) => n1 * n2,
-   *      (n: number) => 1 == n % 2
+   *    foldRight(                                         Result:
+   *      ['5', '7', '9'],                                  '1975'
+   *      '1',
+   *      (s1: string, s2: string) => s1 + s2
    *    )
    * </pre>
    *
@@ -827,48 +846,35 @@ export class ArrayUtil {
    *    The initial value to start with
    * @param accumulator
    *    A {@link TFunction2} which combines elements
-   * @param filterPredicate
-   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
-   *    will be used to calculate the final value
    *
-   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going
-   *         left to right with the start value `initialValue` on the left.
+   * @return result of inserting `accumulator` between consecutive elements of `sourceArray`, going
+   *         right (tail) to left (head) with the start value `initialValue` on the right.
    */
-  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+  static foldRight<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>,
-                        filterPredicate: TPredicate1<T>): R;
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R;
 
 
-  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+  static foldRight<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: NullableOrUndefined<FFunction2<R, T, R>>,
-                        filterPredicate: TPredicate1<T>): R;
+                        accumulator: NullableOrUndefined<FFunction2<R, T, R>>): R;
 
 
-  static foldLeft<T, R>(sourceArray: NullableOrUndefined<T[]>,
+  static foldRight<T, R>(sourceArray: NullableOrUndefined<T[]>,
                         initialValue: R,
-                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>,
-                        filterPredicate?: TPredicate1<T>): R {
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R {
     if (this.isEmpty(sourceArray) || !accumulator) {
       return initialValue
     }
     const finalAccumulator = Function2.of(
       accumulator
     );
-    const finalFilterPredicate = !filterPredicate
-      ? Predicate1.alwaysTrue<T>()
-      : Predicate1.of(filterPredicate);
-
     let result: R = initialValue;
-    for (let i = 0; i < sourceArray!.length; i++) {
-      const currentElement = sourceArray![i];
-      if (finalFilterPredicate.apply(currentElement)) {
-        result = finalAccumulator.apply(
-          result,
-          currentElement
-        );
-      }
+    for (let i = sourceArray!.length - 1; i >= 0; i--) {
+      result = finalAccumulator.apply(
+        result,
+        sourceArray![i]
+      );
     }
     return result;
   }
@@ -910,7 +916,7 @@ export class ArrayUtil {
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
-      for (let item of sourceArray!) {
+      for (const item of sourceArray!) {
         if (finalFilterPredicate.apply(item)) {
           const discriminatorKeyResult = finalDiscriminatorKey.apply(
             item
@@ -981,7 +987,7 @@ export class ArrayUtil {
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
-      for (let item of sourceArray!) {
+      for (const item of sourceArray!) {
         if (finalFilterPredicate.apply(item)) {
           const discriminatorKeyResult = ObjectUtil.getOrElse(
             finalDiscriminatorKey.apply(item),
@@ -1082,7 +1088,7 @@ export class ArrayUtil {
             <TFunction1<T, V>>valueMapper
           );
 
-      for (let item of sourceArray!) {
+      for (const item of sourceArray!) {
         if (finalPartialFunction.isDefinedAt(item)) {
           const pairKeyValue: [K, V] = <[K, V]>finalPartialFunction.apply(
             item
@@ -1160,7 +1166,7 @@ export class ArrayUtil {
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
-      for (let item of sourceArray!) {
+      for (const item of sourceArray!) {
         if (finalFilterPredicate.apply(item)) {
            const valueMapperResult = finalValueMapper.apply(
              item
@@ -1403,7 +1409,7 @@ export class ArrayUtil {
       const finalMapFunction = Function1.of(
         mapFunction
       );
-      for (let item of sourceArray!) {
+      for (const item of sourceArray!) {
         result.push(
           finalMapFunction.apply(
             item
@@ -1599,7 +1605,7 @@ export class ArrayUtil {
    * @param accumulator
    *    A {@link TBinaryOperator} which combines elements
    *
-   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going left to right
+   * @return result of inserting `accumulator` between consecutive elements `sourceArray`, going left (head) to right (tail)
    *
    * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceArray` is not empty
    */
@@ -1618,11 +1624,17 @@ export class ArrayUtil {
         accumulator,
         'accumulator must be not null and not undefined'
       );
-      return this.foldLeft<T, T>(
-        sourceArray!.slice(1),
-        sourceArray![0],
+      const finalAccumulator = BinaryOperator.of(
         accumulator
       );
+      let result = sourceArray![0];
+      for (let i = 1; i < sourceArray!.length; i++) {
+        result = finalAccumulator.apply(
+          result,
+          sourceArray![i]
+        );
+      }
+      return result;
     }
     return undefined;
   }
@@ -1962,7 +1974,7 @@ export class ArrayUtil {
       filterPredicate!
     );
     const result: T[] = [];
-    for (let item of sourceArray!) {
+    for (const item of sourceArray!) {
       if (finalFilterPredicate.apply(item)) {
         result.push(
           item
@@ -2005,78 +2017,19 @@ export class ArrayUtil {
 
 
   /**
-   * Converts the given `sourceArray` to a {@link Map} using provided `partialFunction`.
+   * Converts the given `sourceArray` into a {@link Map} using provided `discriminatorKey` and `valueMapper`.
    *
    * @apiNote
-   *    If several elements return the same key, the last one will be the final value.
-   *
-   * <pre>
-   *    toMap(                                   Result:
-   *      [1, 2, 3, 1],                           [(1, 2)
-   *      PartialFunction.of(                      (3, 4)]
-   *        (n: number) => 1 == n % 2,
-   *        (n: number) => [n, 1 + n]
-   *      )
-   *    )
-   * </pre>
-   *
-   * @param sourceArray
-   *    Array with the elements to filter and transform
-   * @param partialFunction
-   *    {@link PartialFunction} to filter and transform elements of `sourceArray`
-   *
-   * @return new {@link Map} from applying the given {@link PartialFunction} to each element of `sourceArray`
-   *         on which it is defined and collecting the results
-   *
-   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceArray`
-   */
-  static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
-                        partialFunction: PartialFunction<T, [K, V]>): Map<K, V>;
-
-
-  /**
-   *    Converts the given `sourceArray` into a {@link Map} using provided `discriminatorKey` and {@link Function1#identity}
-   * as values of returned {@link Map}.
-   *
-   * @apiNote
-   *    If several elements return the same key, the last one will be the final value.
-   *
-   * <pre>
-   *    toMap(                                   Result:
-   *      [1, 2, 3, 1],                           [('1', 1),
-   *      (n: number) => '' + n                    ('2', 2),
-   *    )                                          ('3', 3)]
-   * </pre>
-   *
-   * @param sourceArray
-   *    Array with the elements to transform and include in the returned {@link Map}
-   * @param discriminatorKey
-   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
-   *
-   * @return {@link Map} applying `discriminatorKey` to each element of `sourceArray` to get {@link Map}'s key,
-   *         and current element as {@link Map}'s value
-   *
-   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
-   */
-  static toMap<T, K>(sourceArray: NullableOrUndefined<T[]>,
-                     discriminatorKey: TFunction1<T, K>): Map<K, T>;
-
-
-  /**
-   *    Converts the given `sourceArray` into a {@link Map} using provided `discriminatorKey` and `valueMapper` if the
-   * current element verifies `filterPredicate` (if provided).
-   *
-   * @apiNote
-   *    If several elements return the same key, the last one will be the final value.
-   *    If `valueMapper` is `null` or `undefined` then {@link Function1#identity} will be applied.
-   *    If `filterPredicate` is `null` or `undefined` then no one element will be filtered to insert in the returned {@link Map}.
+   *   <ul>
+   *     <li>If several elements return the same key, the last one will be the final value.</li>
+   *     <li>If `valueMapper` is `null` or `undefined` then {@link Function1#identity} will be applied.</li>
+   *   </ul>
    *
    * <pre>
    *    toMap(                                   Result:
    *      [1, 2, 3, 1],                           [('1', 2),
    *      (n: number) => '' + n,                   ('3', 4)]
-   *      (n: number) => 1 + n,
-   *      (n: number) => 1 == n % 2
+   *      (n: number) => 1 + n
    *    )
    * </pre>
    *
@@ -2086,52 +2039,38 @@ export class ArrayUtil {
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param valueMapper
    *    {@link TFunction1} to transform elements of `sourceArray` into values of the returned {@link Map}
-   * @param filterPredicate
-   *    {@link TPredicate1} to filter elements of `sourceArray`
    *
    * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceArray`
-   *         that verifies `filterPredicate`
    *
    * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceArray`
    */
   static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
                         discriminatorKey: TFunction1<T, K>,
-                        valueMapper: TFunction1<T, V>,
-                        filterPredicate?: TPredicate1<T>): Map<K, V>;
-
-
-  static toMap<T, K, V>(sourceArray: NullableOrUndefined<T[]>,
-                        partialFunctionOrDiscriminatorKey: PartialFunction<T, [K, V]> | TFunction1<T, K>,
-                        valueMapper?: TFunction1<T, V>,
-                        filterPredicate?: TPredicate1<T>): Map<K, V> {
+                        valueMapper?: TFunction1<T, V>): Map<K, V> {
     const result: Map<K, V> = new Map<K, V>();
     if (!this.isEmpty(sourceArray)) {
       AssertUtil.notNullOrUndefined(
-        partialFunctionOrDiscriminatorKey,
-        'partialFunctionOrDiscriminatorKey must be not null and not undefined'
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
       );
       const finalValueMapper = valueMapper
         ? valueMapper
-        : Function1.identity()
+        : Function1.identity();
 
-      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrDiscriminatorKey)
-        ? <PartialFunction<T, [K, V]>>partialFunctionOrDiscriminatorKey
-        : PartialFunction.ofKeyValueMapper(
-            filterPredicate,
-            <TFunction1<T, K>>partialFunctionOrDiscriminatorKey,
-            <TFunction1<T, V>>finalValueMapper
-          );
-
-      for (let item of sourceArray!) {
-        if (finalPartialFunction.isDefinedAt(item)) {
-          const pairKeyValue: [K, V] = <[K, V]>finalPartialFunction.apply(
-            item
-          );
-          result.set(
-            pairKeyValue[0],
-            pairKeyValue[1]
-          );
-        }
+      const finalDiscriminatorKeyAndValueMapper = Function1.of(
+        (t: T) => [
+          Function1.of(discriminatorKey).apply(t),
+          Function1.of(finalValueMapper).apply(t)
+        ]
+      );
+      for (const item of sourceArray!) {
+        const pairKeyValue: [K, V] = <[K, V]>finalDiscriminatorKeyAndValueMapper.apply(
+          item
+        );
+        result.set(
+          pairKeyValue[0],
+          pairKeyValue[1]
+        );
       }
     }
     return result;

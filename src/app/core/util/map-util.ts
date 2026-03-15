@@ -1,5 +1,6 @@
 import { Comparator, TComparator } from '@app-core/type/comparator';
 import {
+  FFunction2,
   FFunction3,
   Function2,
   Function3,
@@ -10,7 +11,7 @@ import {
 } from '@app-core/type/function';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
 import { Optional } from '@app-core/type/functional';
-import { FPredicate2, Predicate2, TPredicate2 } from '@app-core/type/predicate';
+import { Predicate2, TPredicate2 } from '@app-core/type/predicate';
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/type';
 import { ArrayUtil, AssertUtil, ObjectUtil } from '@app-core/util';
 import _ from 'lodash';
@@ -116,7 +117,7 @@ export class MapUtil {
       const finalOrElseMapper = Function2.of(
         orElseMapper
       );
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         const elementResult = finalPartialFunction.isDefinedAt([key, value])
           ? finalPartialFunction.apply([key, value])
           : finalOrElseMapper.apply(key, value);
@@ -210,7 +211,7 @@ export class MapUtil {
             filterPredicate,
             <TFunction2<K1, V1, [K2, V2]>>partialFunctionOrMapFunction
           );
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (finalPartialFunction.isDefinedAt([key, value])) {
           const elementResult = finalPartialFunction.apply(
             [key, value]
@@ -335,11 +336,10 @@ export class MapUtil {
 
       for (let i = 0; i < sourceMaps!.length; i++) {
         const currentMap = sourceMaps[i];
+
         if (!this.isEmpty(currentMap)) {
-
-          for (let [key, value] of currentMap!) {
+          for (const [key, value] of currentMap!) {
             let finalValue: V = value;
-
             if (result.has(key)) {
               finalValue = finalMergeValueFunction.apply(
                 result.get(key)!,
@@ -369,7 +369,7 @@ export class MapUtil {
   static copy = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>): Map<K, V> => {
     const result = new Map<K, V>();
     if (!this.isEmpty(sourceMap)) {
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         result.set(
           key,
           value
@@ -412,7 +412,7 @@ export class MapUtil {
       filterPredicate
     );
     let result = 0;
-    for (let [key, value] of sourceMap!) {
+    for (const [key, value] of sourceMap!) {
       if (finalFilterPredicate.apply(key, value)) {
         result++;
       }
@@ -426,7 +426,8 @@ export class MapUtil {
    * {@link TPredicate2} `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned. This method
+   * might return different results when the provided `sourceMap` does not guarantee the {@link Map} iteration order.
    *
    * <pre>
    *    dropWhile(                                                   Result:
@@ -453,7 +454,7 @@ export class MapUtil {
     const result = new Map<K, V>();
     let wasFoundFirstElementDoesMatchPredicate = false;
     if (!this.isEmpty(sourceMap)) {
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (!finalFilterPredicate.apply(key, value) &&
             !wasFoundFirstElementDoesMatchPredicate) {
           wasFoundFirstElementDoesMatchPredicate = true;
@@ -501,7 +502,7 @@ export class MapUtil {
       filterPredicate
     );
     const result = new Map<K, V>();
-    for (let [key, value] of sourceMap!) {
+    for (const [key, value] of sourceMap!) {
       if (finalFilterPredicate.apply(key, value)) {
         result.set(
           key,
@@ -515,6 +516,10 @@ export class MapUtil {
 
   /**
    * Returns from the given `sourceMap` the first element that verifies the provided `filterPredicate`.
+   *
+   * @apiNote
+   *    This method might return different results when the provided `sourceMap` does not guarantee the {@link Map}
+   * iteration order.
    *
    * <pre>
    *    find(                                                                  Result:
@@ -540,7 +545,7 @@ export class MapUtil {
       const finalFilterPredicate = Predicate2.of(
         filterPredicate
       );
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (finalFilterPredicate.apply(key, value)) {
           return [key, value];
         }
@@ -588,6 +593,10 @@ export class MapUtil {
   /**
    *    Searching in the values of the given `sourceMap`, returns the first one equals to `valueToSearch`, based on
    * the provided {@link TPredicate2} `equalsFunction`.
+   *
+   * @apiNote
+   *    This method might return different results when the provided `sourceMap` does not guarantee the {@link Map}
+   * iteration order.
    *
    * <pre>
    *    findValue(                                                                                        Result:
@@ -673,7 +682,8 @@ export class MapUtil {
    * elements of `sourceMap`, going left to right.
    *
    * @apiNote
-   *    If `sourceMap` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
+   *    If `sourceMap` or `accumulator` are `null` or `undefined` then `initialValue` is returned. This method might
+   * return different results when the provided `sourceMap` does not guarantee the {@link Map} iteration order.
    *
    * <pre>
    *    foldLeft(                                                              Result:
@@ -703,70 +713,22 @@ export class MapUtil {
                            accumulator: NullableOrUndefined<FFunction3<R, K, V, R>>): R;
 
 
-  /**
-   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction3} to all
-   * elements of `sourceMap`, going left to right.
-   *
-   * @apiNote
-   *    If `sourceMap` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
-   *
-   * <pre>
-   *    foldLeft(                                                              Result:
-   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              3
-   *      0,
-   *      (prev: number, k: number, v: string) => prev + k + v.length(),
-   *      (k: number, v: string) => 1 == k % 2 && 2 < v.length()
-   *    )
-   * </pre>
-   *
-   * @param sourceMap
-   *    {@link Map} with elements to combine
-   * @param initialValue
-   *    The initial value to start with
-   * @param accumulator
-   *    A {@link TFunction3} which combines elements
-   * @param filterPredicate
-   *    {@link TPredicate2} used to find given elements to filter. If it is `null` or `undefined` then all elements
-   *    will be used to calculate the final value
-   *
-   * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going
-   *         left to right with the start value `initialValue` on the left.
-   */
   static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
                            initialValue: R,
-                           accumulator: NullableOrUndefined<TFunction3<R, K, V, R>>,
-                           filterPredicate: TPredicate2<K, V>): R;
-
-
-  static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                           initialValue: R,
-                           accumulator: NullableOrUndefined<FFunction3<R, K, V, R>>,
-                           filterPredicate: TPredicate2<K, V>): R;
-
-
-  static foldLeft<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                           initialValue: R,
-                           accumulator: NullableOrUndefined<TFunction3<R, K, V, R>>,
-                           filterPredicate?: TPredicate2<K, V>): R {
+                           accumulator: NullableOrUndefined<TFunction3<R, K, V, R>>): R {
     if (this.isEmpty(sourceMap) || !accumulator) {
       return initialValue
     }
     const finalAccumulator = Function3.of(
       accumulator
     );
-    const finalFilterPredicate = !filterPredicate
-      ? Predicate2.alwaysTrue<K, V>()
-      : Predicate2.of(filterPredicate);
-
     let result: R = initialValue;
-    for (let [key, value] of sourceMap!) {
-      if (finalFilterPredicate.apply(key, value)) {
-        result = finalAccumulator.apply(
-          result,
-          key,
-          value
-        );
-      }
+    for (const [key, value] of sourceMap!) {
+      result = finalAccumulator.apply(
+        result,
+        key,
+        value
+      );
     }
     return result;
   }
@@ -904,7 +866,7 @@ export class MapUtil {
         ? Predicate2.alwaysTrue<K, V>()
         : Predicate2.of(filterPredicate);
 
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (finalFilterPredicate.apply(key, value)) {
           const discriminatorResult = finalDiscriminator.apply(
             key,
@@ -982,7 +944,7 @@ export class MapUtil {
         ? Predicate2.alwaysTrue<K, V>()
         : Predicate2.of(filterPredicate);
 
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (finalFilterPredicate.apply(key, value)) {
           const discriminatorResult = ObjectUtil.getOrElse(
             finalDiscriminator.apply(
@@ -1089,7 +1051,7 @@ export class MapUtil {
             <TFunction2<K1, V1, V2>>valueMapper
           );
 
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (finalPartialFunction.isDefinedAt([key, value])) {
           const pairKeyValue: [K2, V2] = <[K2, V2]>finalPartialFunction.apply([key, value]);
           this.setIfAbsent(
@@ -1253,8 +1215,10 @@ export class MapUtil {
         mapFunction,
         'mapFunction must be not null and not undefined'
       );
-      const finalMapFunction = Function2.of(mapFunction);
-      for (let [key, value] of sourceMap!) {
+      const finalMapFunction = Function2.of(
+        mapFunction
+      );
+      for (const [key, value] of sourceMap!) {
         const elementResult = finalMapFunction.apply(
           key,
           value
@@ -1470,14 +1434,6 @@ export class MapUtil {
    * @throws {IllegalArgumentError} if `discriminator` is `null` or `undefined` and `sourceMap` is not empty
    */
   static partition<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                         discriminator: TPredicate2<K, V>): Map<boolean, Map<K, V>>;
-
-
-  static partition<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                         discriminator: FPredicate2<K, V>): Map<boolean, Map<K, V>>;
-
-
-  static partition<K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                          discriminator: TPredicate2<K, V>): Map<boolean, Map<K, V>> {
     const result: Map<boolean, Map<K, V>> = new Map<boolean, Map<K, V>>();
     result.set(
@@ -1496,7 +1452,7 @@ export class MapUtil {
       const finalDiscriminator = Predicate2.of(
         discriminator!
       );
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         result.get(
           finalDiscriminator.apply(
             key,
@@ -1518,7 +1474,8 @@ export class MapUtil {
    *
    * @apiNote
    *    This method is similar to {@link MapUtil#foldLeft} but `accumulator` works with the same type that `sourceMap`
-   * and only uses contained elements of provided {@link Map}.
+   * and only uses contained elements of provided {@link Map}. This method might return different results when the
+   * provided `sourceMap` does not guarantee the {@link Map} iteration order.
    *
    * <pre>
    *    reduce(                                                                Result:
@@ -1533,7 +1490,7 @@ export class MapUtil {
    * @param accumulator
    *    A {@link TBinaryOperator} which combines elements
    *
-   * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going left to right
+   * @return result of inserting `accumulator` between consecutive elements `sourceMap`, going left (head) to right (tail)
    *
    * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceMap` is not empty
    */
@@ -1557,7 +1514,7 @@ export class MapUtil {
         accumulator
       );
       let foundFirstElement = false;
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (!foundFirstElement) {
           result = [key, value];
         } else {
@@ -1638,9 +1595,9 @@ export class MapUtil {
       areEqualsComparison
     );
     const result = new Map<K, V>();
-    for (let [keySourceItem, valueSourceItem] of sourceMap!) {
+    for (const [keySourceItem, valueSourceItem] of sourceMap!) {
       let wasFound = false;
-      for (let [keyToRemoveItem, valueToRemoveItem] of toRemoveMap!) {
+      for (const [keyToRemoveItem, valueToRemoveItem] of toRemoveMap!) {
         if (finalAreEqualsComparison.apply([keySourceItem, valueSourceItem], [keyToRemoveItem, valueToRemoveItem])) {
           wasFound = true;
           break;
@@ -1720,9 +1677,9 @@ export class MapUtil {
       areEqualsComparison
     );
     const result = new Map<K, V>();
-    for (let [keySourceItem, valueSourceItem] of sourceMap!) {
+    for (const [keySourceItem, valueSourceItem] of sourceMap!) {
       let wasFound = false;
-      for (let [keyToKeepItem, valueToKeepItem] of toKeepMap!) {
+      for (const [keyToKeepItem, valueToKeepItem] of toKeepMap!) {
         if (finalAreEqualsComparison.apply([keySourceItem, valueSourceItem], [keyToKeepItem, valueToKeepItem])) {
           wasFound = true;
           break;
@@ -1776,7 +1733,7 @@ export class MapUtil {
 
   /**
    *    Sorts the given `sourceMap` using `comparator` if provided or default ordination otherwise, returning a sorted
-   * array of Tuples containing the key-value pairs.
+   * array of Tuples containing the `key`/`value` pairs.
    *
    * @apiNote
    *    The default sort order is ascending, built upon converting the elements into strings, then comparing their
@@ -1797,7 +1754,7 @@ export class MapUtil {
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
-   * @return new sorted array of Tuples
+   * @return new sorted array of Tuples with `key`/`value` pairs
    */
   static sort = <K, V>(sourceMap: NullableOrUndefined<Map<K, V>>,
                        comparator?: Nullable<TComparator<[K, V]>>): [K, V][] => {
@@ -1819,7 +1776,8 @@ export class MapUtil {
    * {@link TPredicate2} `filterPredicate`.
    *
    * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned.
+   *    If `filterPredicate` is `null` or `undefined` then all elements of `sourceMap` will be returned. This method
+   * might return different results when the provided `sourceMap` does not guarantee the {@link Map} iteration order.
    *
    * <pre>
    *    takeWhile(                                                   Result:
@@ -1845,7 +1803,7 @@ export class MapUtil {
     );
     const result = new Map<K, V>();
     if (!this.isEmpty(sourceMap)) {
-      for (let [key, value] of sourceMap!) {
+      for (const [key, value] of sourceMap!) {
         if (finalFilterPredicate.apply(key, value)) {
           result.set(
             key,
@@ -1883,86 +1841,28 @@ export class MapUtil {
                           keyValueMapper: TFunction2<K, V, R>): R[];
 
 
-  /**
-   *    Converts the given {@link Map} `sourceMap` in to an array using provided `keyValueMapper`, only with
-   * the elements that satisfy the {@link TPredicate2} `filterPredicate`.
-   *
-   * @apiNote
-   *    If `filterPredicate` is `null` or `undefined` then no one element will be filtered to insert in the returned array.
-   *
-   * <pre>
-   *    toArray(                                                               Result:
-   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              ['3-World']
-   *      (k: number, v: string) => k + '-' + v,
-   *      (k: number, v: string) => 1 == k % 2 && 2 < v.length()
-   *    )
-   * </pre>
-   *
-   * @param sourceMap
-   *    {@link Map} with the elements to transform and include in the returned array
-   * @param keyValueMapper
-   *    {@link TFunction2} to transform elements of `sourceMap` into elements of the returned array
-   * @param filterPredicate
-   *    {@link TPredicate2} used to filter values from `sourceMap` that will be added in the returned array
-   *
-   * @return array applying the given `keyValueMapper` to each element of `sourceMap` that verifies `filterPredicate`
-   *
-   * @throws {IllegalArgumentError} if `keyValueMapper` is `null` or `undefined` with a not empty `sourceMap`
-   */
   static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                          keyValueMapper: TFunction2<K, V, R>,
-                          filterPredicate?: TPredicate2<K, V>): R[];
-
-
-  /**
-   * Converts the given {@link Map} `sourceMap` in to an array using provided {@link PartialFunction} `partialFunction`.
-   *
-   * <pre>
-   *    toArray(                                                               Result:
-   *      [(1, 'Hi'), (2, 'Hello'), (3, 'World')],                              ['3-World']
-   *      PartialFunction.of(
-   *        (k: number, v: string) => 1 == k % 2 && 2 < v.length(),
-   *        (k: number, v: string) => k + '-' + v
-   *      )
-   *    )
-   * </pre>
-   *
-   * @param sourceMap
-   *    {@link Map} with the elements to transform and include in the returned array
-   * @param partialFunction
-   *    {@link PartialFunction} to filter and transform elements of `sourceMap`
-   *
-   * @return array applying `partialFunction` to each element of `sourceMap`
-   *
-   * @throws {IllegalArgumentError} if `partialFunction` is `null` or `undefined` with a not empty `sourceMap`
-   */
-  static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                          partialFunction: PartialFunction<[K, V], R>): R[];
+                          keyValueMapper: FFunction2<K, V, R>): R[];
 
 
   static toArray<K, V, R>(sourceMap: NullableOrUndefined<Map<K, V>>,
-                          partialFunctionOrKeyValueMapper: PartialFunction<[K, V], R> | TFunction2<K, V, R>,
-                          filterPredicate?: TPredicate2<K, V>): R[] {
+                          keyValueMapper: TFunction2<K, V, R>): R[] {
     const result: R[] = [];
     if (!this.isEmpty(sourceMap)) {
       AssertUtil.notNullOrUndefined(
-        partialFunctionOrKeyValueMapper,
-        'partialFunctionOrKeyValueMapper must be not null and not undefined'
+        keyValueMapper,
+        'keyValueMapper must be not null and not undefined'
       );
-      const finalPartialFunction = PartialFunction.isPartialFunction(partialFunctionOrKeyValueMapper)
-        ? <PartialFunction<[K, V], R>>partialFunctionOrKeyValueMapper
-        : PartialFunction.of2(
-            filterPredicate,
-            <TFunction2<K, V, R>>partialFunctionOrKeyValueMapper
-          );
-      for (let [key, value] of sourceMap!) {
-        if (finalPartialFunction.isDefinedAt([key, value])) {
-          result.push(
-            finalPartialFunction.apply(
-              [key, value]
-            )
-          );
-        }
+      const finalKeyValueMapper = Function2.of(
+        keyValueMapper
+      );
+      for (const [key, value] of sourceMap!) {
+        result.push(
+          finalKeyValueMapper.apply(
+            key,
+            value
+          )
+        );
       }
     }
     return result;

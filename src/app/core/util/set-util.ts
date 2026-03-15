@@ -1,7 +1,10 @@
-import { Nullable, NullableOrUndefined } from '@app-core/type';
-import {AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet} from '@app-core/type/collection/set';
+import {Nullable, NullableOrUndefined, OrUndefined} from '@app-core/type';
+import { AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet } from '@app-core/type/collection/set';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
-import {Comparator, TComparator} from '@app-core/type/comparator';
+import { Comparator, TComparator } from '@app-core/type/comparator';
+import {FFunction2, Function1, Function2, TFunction1, TFunction2} from '@app-core/type/function';
+import {AssertUtil} from './assert-util';
+import {BinaryOperator, FBinaryOperator, TBinaryOperator} from '@app-core/type/function/operator';
 
 /**
  * Helper functions to manage {@link Set}.
@@ -163,6 +166,62 @@ export class SetUtil {
 
 
   /**
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all
+   * elements of `sourceSet`, going left to right.
+   *
+   * @apiNote
+   *    If `sourceSet` or `accumulator` are `null` or `undefined` then `initialValue` is returned. This method might
+   * return different results when the provided `sourceSet` does not guarantee the {@link Set} iteration order.
+   *
+   * <pre>
+   *    foldLeft(                                          Result:
+   *      [5, 7, 9],                                        315
+   *      1,
+   *      (n1: number, n2: number) => n1 * n2
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} with elements to combine
+   * @param initialValue
+   *    The initial value to start with
+   * @param accumulator
+   *    A {@link TFunction2} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements of `sourceSet`, going
+   *         left to right with the start value `initialValue` on the left.
+   */
+  static foldLeft<T, R>(sourceSet: NullableOrUndefined<Set<T>>,
+                        initialValue: R,
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R;
+
+
+  static foldLeft<T, R>(sourceSet: NullableOrUndefined<Set<T>>,
+                        initialValue: R,
+                        accumulator: NullableOrUndefined<FFunction2<R, T, R>>): R;
+
+
+  static foldLeft<T, R>(sourceSet: NullableOrUndefined<Set<T>>,
+                        initialValue: R,
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R {
+    if (this.isEmpty(sourceSet) || !accumulator) {
+      return initialValue
+    }
+    const finalAccumulator = Function2.of(
+      accumulator
+    );
+    let result: R = initialValue;
+    for (const v of  sourceSet!) {
+      result = finalAccumulator.apply(
+        result,
+        v
+      );
+    }
+    return result;
+  }
+
+
+  /**
    * Verifies if the given `setToVerify` contains at least one element.
    *
    * @param setToVerify
@@ -239,6 +298,68 @@ export class SetUtil {
 
 
   /**
+   *    Performs a reduction on the elements of `sourceSet`, using an associative accumulation {@link TBinaryOperator},
+   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
+   *
+   * @apiNote
+   *    This method is similar to {@link SetUtil#foldLeft} but `accumulator` works with the same type that `sourceSet`
+   * and only uses contained elements of provided {@link Set}. This method might return different results when the
+   * provided `sourceSet` does not guarantee the {@link Set} iteration order.
+   *
+   * <pre>
+   *    reduce(                                            Result:
+   *      [5, 7, 9]                                         315
+   *      (n1: number, n2: number) => n1 * n2
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} with elements to combine
+   * @param accumulator
+   *    A {@link TBinaryOperator} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceSet`, going left (head) to right (tail)
+   *
+   * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceSet` is not empty
+   */
+  static reduce<T>(sourceSet: NullableOrUndefined<Set<T>>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T>;
+
+
+  static reduce<T>(sourceSet: NullableOrUndefined<Set<T>>,
+                   accumulator: FBinaryOperator<T>): OrUndefined<T>;
+
+
+  static reduce<T>(sourceSet: NullableOrUndefined<Set<T>>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T> {
+    let result: OrUndefined<T>;
+    if (!this.isEmpty(sourceSet)) {
+      AssertUtil.notNullOrUndefined(
+        accumulator,
+        'accumulator must be not null and not undefined'
+      );
+      const finalAccumulator = BinaryOperator.of(
+        accumulator
+      );
+      let foundFirstElement = false;
+      for (const v of sourceSet!) {
+        if (!foundFirstElement) {
+          result = v;
+        } else {
+          result = finalAccumulator.apply(
+            // @ts-ignore
+            result,
+            v
+          );
+        }
+        foundFirstElement = true;
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Sorts the given `sourceSet` using `comparator` if provided or default ordination otherwise.
    *
    * @apiNote
@@ -294,6 +415,67 @@ export class SetUtil {
     }
     // @ts-ignore
     return [...sourceSet.keys()];
+  }
+
+
+  /**
+   * Converts the given `sourceSet` into a {@link Map} using provided `discriminatorKey` and `valueMapper`.
+   *
+   * @apiNote
+   *   <ul>
+   *     <li>If several elements return the same key, the last one will be the final value.</li>
+   *     <li>If `valueMapper` is `null` or `undefined` then {@link Function1#identity} will be applied.</li>
+   *   </ul>
+   *
+   * <pre>
+   *    toMap(                                   Result:
+   *      [1, 2, 3, 1],                           [('1', 2),
+   *      (n: number) => '' + n,                   ('3', 4)]
+   *      (n: number) => 1 + n
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} with the elements to transform and include in the returned {@link Map}
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param valueMapper
+   *    {@link TFunction1} to transform elements of `sourceArray` into values of the returned {@link Map}
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceSet`
+   *
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceSet`
+   */
+  static toMap<T, K, V>(sourceSet: NullableOrUndefined<Set<T>>,
+                        discriminatorKey: TFunction1<T, K>,
+                        valueMapper?: TFunction1<T, V>): Map<K, V> {
+    const result: Map<K, V> = new Map<K, V>();
+    if (!this.isEmpty(sourceSet)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
+      const finalValueMapper = valueMapper
+        ? valueMapper
+        : Function1.identity();
+
+      const finalDiscriminatorKeyAndValueMapper = Function1.of(
+        (t: T) => [
+          Function1.of(discriminatorKey).apply(t),
+          Function1.of(finalValueMapper).apply(t)
+        ]
+      );
+      for (const v of sourceSet!) {
+        const pairKeyValue: [K, V] = <[K, V]>finalDiscriminatorKeyAndValueMapper.apply(
+          v
+        );
+        result.set(
+          pairKeyValue[0],
+          pairKeyValue[1]
+        );
+      }
+    }
+    return result;
   }
 
 

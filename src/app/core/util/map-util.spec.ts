@@ -898,7 +898,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is not null then initialValue applying accumulator is returned', () => {
+    it('when given sourceMap is not empty and accumulator is provided then initialValue applying accumulator is returned', () => {
       const sourceMap = new Map<number, number>();
       sourceMap.set(1, 2);
       sourceMap.set(5, 6);
@@ -909,23 +909,6 @@ describe('MapUtil', () => {
         (prev: number, k: number, v: number) => prev * k * v;
 
       const intResult = MapUtil.foldLeft(sourceMap, intValue, intAccumulator);
-
-      expect(intResult).toEqual(600);
-    });
-
-
-    it('when given sourceMap is not null and there is a filter then initialValue applying accumulator only to the elements match filter is returned', () => {
-      const sourceMap = new Map<number, number>();
-      sourceMap.set(1, 2);
-      sourceMap.set(4, 3);
-      sourceMap.set(5, 6);
-
-      const intValue = 10;
-
-      const intAccumulator = (prev: number, k: number, v: number) => prev * k * v;
-      const isKeyEven = (k: number, v: number) => 1 == k % 2;
-
-      const intResult = MapUtil.foldLeft(sourceMap, intValue, intAccumulator, isKeyEven);
 
       expect(intResult).toEqual(600);
     });
@@ -1926,16 +1909,16 @@ describe('MapUtil', () => {
 
       verifyMaps(
         // @ts-ignore
-        MapUtil.partition(undefined, null),
+        MapUtil.partition(null, null),
         expectedResult
       );
       verifyMaps(
         // @ts-ignore
-        MapUtil.partition(undefined, undefined),
+        MapUtil.partition(undefined, null),
         expectedResult
       );
       verifyMaps(
-        MapUtil.partition(undefined, isKeyOddRaw),
+        MapUtil.partition(null, isKeyOddRaw),
         expectedResult
       );
       verifyMaps(
@@ -1952,6 +1935,11 @@ describe('MapUtil', () => {
       expectedResult.set(true, new Map());
       expectedResult.set(false, new Map());
 
+      const isKeyOddFPredicate: FPredicate2<number, string> =
+        (k: number,
+         v: string) =>
+          1 == k % 2;
+
       verifyMaps(
         // @ts-ignore
         MapUtil.partition(emptyMap, null),
@@ -1963,7 +1951,7 @@ describe('MapUtil', () => {
         expectedResult
       );
       verifyMaps(
-        MapUtil.partition(emptyMap, isKeyOddRaw),
+        MapUtil.partition(emptyMap, isKeyOddFPredicate),
         expectedResult
       );
     });
@@ -2094,7 +2082,8 @@ describe('MapUtil', () => {
 
       const emptyMap = new Map<number, string>();
 
-      const mapElementsComparison = (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
+      const mapElementsComparison =
+        (e1: [number, string], e2: [number, string]) => e1[0] == e2[0] && e1[1] == e2[1];
 
       verifyMaps(
         MapUtil.removeAll(sourceMap, null),
@@ -2519,17 +2508,6 @@ describe('MapUtil', () => {
 
   describe('toArray', () => {
 
-    it('when given sourceMap has no elements and partialFunction is provided then empty array is returned', () => {
-      const emptyMap = new Map<number, string>();
-
-      const expectedResult: string[] = [];
-
-      expect(MapUtil.toArray(null, keyAndValueAsStringForOddKeysPP)).toEqual(expectedResult);
-      expect(MapUtil.toArray(undefined, keyAndValueAsStringForOddKeysPP)).toEqual(expectedResult);
-      expect(MapUtil.toArray(emptyMap, keyAndValueAsStringForOddKeysPP)).toEqual(expectedResult);
-    });
-
-
     it('when given sourceMap has no elements and keyValueMapper is provided then empty array is returned', () => {
       const emptyMap = new Map<number, string>();
 
@@ -2541,17 +2519,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap has no elements and keyValueMapper and filterPredicate are provided then empty array is returned', () => {
-      const emptyMap = new Map<number, string>();
-      const expectedResult: string[] = [];
-
-      expect(MapUtil.toArray(null, keyAndValueAsStringRaw, isKeyOddRaw)).toEqual(expectedResult);
-      expect(MapUtil.toArray(undefined, keyAndValueAsStringRaw, isKeyOddRaw)).toEqual(expectedResult);
-      expect(MapUtil.toArray(emptyMap, keyAndValueAsStringRaw, isKeyOddRaw)).toEqual(expectedResult);
-    });
-
-
-    it('when given sourceMap is not empty but partialFunction is null or undefined then an error is thrown', () => {
+    it('when given sourceMap is not empty but keyValueMapper is null or undefined then an error is thrown', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
 
@@ -2562,33 +2530,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is not empty but keyValueMapper is null or undefined then an error is thrown', () => {
-      const sourceMap = new Map<number, string>();
-      sourceMap.set(1, 'Hi');
-
-      // @ts-ignore
-      expect(() => MapUtil.toArray(sourceMap, null, isKeyOddRaw)).toThrowError(IllegalArgumentError);
-      // @ts-ignore
-      expect(() => MapUtil.toArray(sourceMap, undefined, isKeyOddRaw)).toThrowError(IllegalArgumentError);
-    });
-
-
-    it('when given sourceMap has elements and partialFunction is valid then a new filtered and transformed Map is returned', () => {
-      const sourceMap = new Map<number, string>();
-      sourceMap.set(1, 'Hi');
-      sourceMap.set(2, 'Hello');
-      sourceMap.set(3, 'World');
-
-      const expectedResult: string[] = ['1-Hi', '3-World'];
-
-      verifyArrays(
-        MapUtil.toArray(sourceMap, keyAndValueAsStringForOddKeysPP),
-        expectedResult
-      );
-    });
-
-
-    it('when given sourceMap has elements and only a valid keyValueMapper is provided then all elements will be transformed using keyValueMapper', () => {
+    it('when given sourceMap has elements and keyValueMapper is provided then all elements will be transformed using keyValueMapper', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(1, 'Hi');
       sourceMap.set(2, 'Hello');
@@ -2598,42 +2540,6 @@ describe('MapUtil', () => {
 
       verifyArrays(
         MapUtil.toArray(sourceMap, keyAndValueAsStringFunction),
-        expectedResult
-      );
-    });
-
-
-    it('when given sourceMap has elements and keyValueMapper is valid but filterPredicate is null or undefined then all elements will be transformed using keyValueMapper', () => {
-      const sourceMap = new Map<number, string>();
-      sourceMap.set(1, 'Hi');
-      sourceMap.set(2, 'Hello');
-      sourceMap.set(3, 'World');
-
-      const expectedResult: string[] = ['1-Hi', '2-Hello', '3-World'];
-
-      verifyArrays(
-        // @ts-ignore
-        MapUtil.toArray(sourceMap, keyAndValueAsStringFFunction, null),
-        expectedResult
-      );
-
-      verifyArrays(
-        MapUtil.toArray(sourceMap, keyAndValueAsStringFFunction, undefined),
-        expectedResult
-      );
-    });
-
-
-    it('when given sourceMap has elements and keyValueMapper and filterPredicate are valid then a new filtered and transformed array is returned', () => {
-      const sourceMap = new Map<number, string>();
-      sourceMap.set(1, 'Hi');
-      sourceMap.set(2, 'Hello');
-      sourceMap.set(3, 'World');
-
-      const expectedResult: string[] = ['1-Hi', '3-World'];
-
-      verifyArrays(
-        MapUtil.toArray(sourceMap, keyAndValueAsStringRaw, isKeyOddRaw),
         expectedResult
       );
     });

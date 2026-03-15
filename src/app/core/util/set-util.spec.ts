@@ -1,9 +1,12 @@
 import { ObjectUtil, SetUtil } from '@app-core/util';
-import { Nullable } from '@app-core/type';
+import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
 import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
 import { Comparator, FComparator } from '@app-core/type/comparator';
+import { FFunction1, FFunction2, Function1, Function2 } from '@app-core/type/function';
+import { IllegalArgumentError } from '@app-core/error';
+import { BinaryOperator, FBinaryOperator } from '@app-core/type/function/operator';
 
 /**
  * To invoke only this test:
@@ -25,7 +28,7 @@ describe('SetUtil', () => {
 
   describe('copy', () => {
 
-    it('when given sourceSet is a native one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty native one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
 
       expect(SetUtil.copy(null)).toEqual(nativeSet);
@@ -34,7 +37,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty mutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
 
@@ -44,7 +47,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty immutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
 
@@ -54,7 +57,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements then a copy is returned', () => {
+    it('when given sourceSet is a non-empty native one then a copy is returned', () => {
       const sourceSet = new Set<number>(
         [ 1, 2, 3, 6 ]
       );
@@ -72,7 +75,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements then a copy is returned', () => {
+    it('when given sourceSet is a non-empty mutable one then a copy is returned', () => {
       const sourceSet = MutableHashSet.of(
         numberHash,
         areNumberEquals,
@@ -92,7 +95,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has elements then a copy is returned', () => {
+    it('when given sourceSet is an non-empty immutable one then a copy is returned', () => {
       let sourceSet = ImmutableHashSet.of(
         numberHash,
         areNumberEquals,
@@ -117,7 +120,7 @@ describe('SetUtil', () => {
 
   describe('count', () => {
 
-    it('when given sourceSet is a native one and has no elements then 0 is returned', () => {
+    it('when given sourceSet is null, undefined or an empty native one then 0 is returned', () => {
       const nativeSet = new Set<number>();
 
       expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
@@ -126,7 +129,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has no elements then 0 is returned', () => {
+    it('when given sourceSet is null, undefined or an empty mutable one then 0 is returned', () => {
       const mutableHashSet = MutableHashSet.empty<number>();
 
       expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
@@ -135,7 +138,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has no elements then 0 is returned', () => {
+    it('when given sourceSet is null, undefined or an empty immutable one then 0 is returned', () => {
       const immutableHashSet = ImmutableHashSet.empty<number>();
 
       expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
@@ -144,7 +147,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements but filterPredicate is null or undefined then size of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty native one but filterPredicate is null or undefined then size of sourceSet is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -158,7 +161,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements but filterPredicate is null or undefined then size of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty mutable one but filterPredicate is null or undefined then size of sourceSet is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -174,7 +177,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a immutable one and has elements but filterPredicate is null or undefined then size of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty immutable one but filterPredicate is null or undefined then size of sourceSet is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -190,7 +193,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+    it('when given sourceSet is a non-empty native one and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -203,7 +206,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+    it('when given sourceSet is a non-empty mutable one and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -216,7 +219,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has elements and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+    it('when given sourceSet is an non-empty immutable one and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -234,7 +237,7 @@ describe('SetUtil', () => {
 
   describe('filter', () => {
 
-    it('when given sourceSet is a native one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty native one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
 
       expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
@@ -243,7 +246,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty mutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
 
@@ -253,7 +256,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty immutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
 
@@ -263,7 +266,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty native one but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -283,7 +286,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty mutable one but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -305,7 +308,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a immutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty immutable one but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -327,7 +330,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+    it('when given sourceSet is a non-empty native one and filterPredicate is provided then filtered Set is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -349,7 +352,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+    it('when given sourceSet is a non-empty mutable one and filterPredicate is provided then filtered Set is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -375,7 +378,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+    it('when given sourceSet is an non-empty immutable one and filterPredicate is provided then filtered Set is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -406,7 +409,7 @@ describe('SetUtil', () => {
 
   describe('filterNot', () => {
 
-    it('when given sourceSet is a native one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty native one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
 
       expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
@@ -415,7 +418,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty mutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
 
@@ -425,7 +428,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has no elements then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty immutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
 
@@ -435,7 +438,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty native one but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -455,7 +458,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty mutable one but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -477,7 +480,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a immutable one and has elements but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
+    it('when given sourceSet is a non-empty immutable one but filterPredicate is null or undefined then a copy of sourceSet is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -499,7 +502,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+    it('when given sourceSet is a non-empty native one and filterPredicate is provided then filtered Set is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -521,7 +524,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+    it('when given sourceSet is a non-empty mutable one and filterPredicate is provided then filtered Set is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -547,7 +550,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has elements and filterPredicate is provided then filtered Set is returned', () => {
+    it('when given sourceSet is an non-empty immutable one and filterPredicate is provided then filtered Set is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -570,6 +573,130 @@ describe('SetUtil', () => {
         expectedResult
       );
       expect(result).toBeInstanceOf(ImmutableHashSet);
+    });
+
+  });
+
+
+
+  describe('foldLeft', () => {
+
+    it('when given sourceSet is null, undefined or an empty native one then initialValue is returned', () => {
+      const nativeSet = new Set<number>();
+      const initialValue = 19;
+
+      const accumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(nativeSet, initialValue, accumulator)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty mutable one then initialValue is returned', () => {
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const initialValue = 19;
+
+      const accumulator: FFunction2<number, number, number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(mutableHashSet, initialValue, accumulator)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty immutable one then initialValue is returned', () => {
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+      const initialValue = 19;
+
+      const accumulator: Function2<number, number, number> =
+        Function2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
+
+      expect(SetUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(immutableHashSet, initialValue, accumulator)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceSet is a non-empty native one but when accumulator is null or undefined then initialValue is returned', () => {
+      const nativeSet = new Set<number>(
+        [ 1 ]
+      );
+      const initialValue = 19;
+
+      expect(SetUtil.foldLeft(nativeSet, initialValue, null)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(nativeSet, initialValue, undefined)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one but when accumulator is null or undefined then initialValue is returned', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
+      const initialValue = 19;
+
+      expect(SetUtil.foldLeft(mutableHashSet, initialValue, null)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(mutableHashSet, initialValue, undefined)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceSet is an non-empty immutable one but when accumulator is null or undefined then initialValue is returned', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
+      const initialValue = 19;
+
+      expect(SetUtil.foldLeft(immutableHashSet, initialValue, null)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(immutableHashSet, initialValue, undefined)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and accumulator is provided then initialValue applying accumulator is returned', () => {
+      const nativeSet = new Set<number>(
+        [ 2, 3, 4 ]
+      );
+      const initialValue = 10;
+
+      const accumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.foldLeft(nativeSet, initialValue, accumulator)).toEqual(240);
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and accumulator is provided then initialValue applying accumulator is returned', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
+      const initialValue = 10;
+
+      const accumulator: FFunction2<number, number, number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.foldLeft(mutableHashSet, initialValue, accumulator)).toEqual(240);
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and accumulator is provided then initialValue applying accumulator is returned', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
+      const initialValue = 10;
+
+      const accumulator: Function2<number, number, number> =
+        Function2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
+
+      expect(SetUtil.foldLeft(immutableHashSet, initialValue, accumulator)).toEqual(240);
     });
 
   });
@@ -625,7 +752,7 @@ describe('SetUtil', () => {
 
   describe('isEmpty', () => {
 
-    it('when given setToVerify is null, undefined or is an empty Set then true is returned', () => {
+    it('when given setToVerify is null, undefined or is null, undefined or an empty Set then true is returned', () => {
       const expectedResult = true;
 
       expect(SetUtil.isEmpty()).toEqual(expectedResult);
@@ -819,9 +946,130 @@ describe('SetUtil', () => {
 
 
 
+  describe('reduce', () => {
+
+    it('when given sourceSet is null, undefined or an empty native one then undefined is returned', () => {
+      const nativeSet = new Set<number>();
+
+      const accumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.reduce(null, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(undefined, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(nativeSet, accumulator)).toBe(undefined);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty mutable one then undefined is returned', () => {
+      const mutableHashSet = MutableHashSet.empty<number>();
+
+      const accumulator: FBinaryOperator<number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.reduce(null, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(undefined, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(mutableHashSet, accumulator)).toBe(undefined);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty immutable one then undefined is returned', () => {
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      const accumulator: BinaryOperator<number> =
+        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
+
+      expect(SetUtil.reduce(null, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(undefined, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(immutableHashSet, accumulator)).toBe(undefined);
+    });
+
+
+    it('when given sourceSet is a non-empty native one but accumulator is null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [ 2 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.reduce(nativeSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.reduce(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one but accumulator is null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.reduce(mutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.reduce(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one but accumulator is null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.reduce(immutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.reduce(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and accumulator is provided then accumulator is applied to contained elements', () => {
+      const nativeSet = new Set<number>(
+        [ 2, 3, 4 ]
+      );
+
+      const accumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.reduce(nativeSet, accumulator)).toEqual(24);
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and accumulator is provided then accumulator is applied to contained elements', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
+
+      const accumulator: FBinaryOperator<number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(SetUtil.reduce(mutableHashSet, accumulator)).toEqual(24);
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and accumulator is provided then accumulator is applied to contained elements', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
+
+      const accumulator: BinaryOperator<number> =
+        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
+
+      expect(SetUtil.reduce(immutableHashSet, accumulator)).toEqual(24);
+    });
+
+  });
+
+
+
   describe('sort', () => {
 
-    it('when given sourceSet is a native one and has no elements then empty array is returned', () => {
+    it('when given sourceSet is null, undefined or an empty native one then empty array is returned', () => {
       const nativeSet = new Set<number>();
       const comparator =
         (a: number, b: number) => a - b;
@@ -838,7 +1086,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has no elements then empty array is returned', () => {
+    it('when given sourceSet is null, undefined or an empty mutable one then empty array is returned', () => {
       const mutableHashSet = MutableHashSet.empty<number>();
       const comparator: FComparator<number> =
         (a, b) => a - b;
@@ -855,7 +1103,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has no elements then empty array is returned', () => {
+    it('when given sourceSet is null, undefined or an empty immutable one then empty array is returned', () => {
       const immutableHashSet = ImmutableHashSet.empty<number>();
       const comparator: Comparator<number> =
         Comparator.of((a, b) => a - b);
@@ -872,7 +1120,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a native one and has elements but comparator is null or undefined then default sort is applied', () => {
+    it('when given sourceSet is a non-empty native one but comparator is null or undefined then default sort is applied', () => {
       const nativeSet = new Set<number>(
         [ 1, 10, 21, 2 ]
       );
@@ -894,7 +1142,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is a mutable one and has elements but comparator is null or undefined then default sort is applied', () => {
+    it('when given sourceSet is a non-empty mutable one but comparator is null or undefined then default sort is applied', () => {
       const mutableHashSet = MutableHashSet.of<number>(
         numberHash,
         areNumberEquals,
@@ -918,7 +1166,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is an immutable one and has elements but comparator is null or undefined then default sort is applied', () => {
+    it('when given sourceSet is an non-empty immutable one but comparator is null or undefined then default sort is applied', () => {
       const immutableHashSet = ImmutableHashSet.of<number>(
         numberHash,
         areNumberEquals,
@@ -1073,6 +1321,276 @@ describe('SetUtil', () => {
 
   });
 
+
+
+  describe('toMap', () => {
+
+    it('when given sourceSet is null, undefined or an empty native one then empty Map is returned', () => {
+      const nativeSet = new Set<number>();
+      const expectedResult: Map<number, number> = new Map<number, number>;
+
+      expect(SetUtil.toMap(null, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(undefined, sameNumberRaw)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(nativeSet, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(nativeSet, sameNumberFFunction)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(nativeSet, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(nativeSet, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty mutable one then empty Map is returned', () => {
+      const mutableHashSet = MutableHashSet.empty<number>(
+        numberHash,
+        areNumberEquals
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+
+      expect(SetUtil.toMap(null, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(undefined, sameNumberRaw)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(mutableHashSet, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(mutableHashSet, sameNumberFFunction)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(mutableHashSet, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(mutableHashSet, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty immutable one then empty Map is returned', () => {
+      const immutableHashSet = ImmutableHashSet.empty<number>(
+        numberHash,
+        areNumberEquals
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+
+      expect(SetUtil.toMap(null, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(undefined, sameNumberRaw)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(immutableHashSet, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(immutableHashSet, sameNumberFFunction)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(immutableHashSet, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(immutableHashSet, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is a non-empty native one but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [ 1 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(nativeSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(nativeSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(nativeSet, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableHashSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableHashSet, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is an non-empty immutable one and but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableHashSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableHashSet, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and only discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2, 3, 6 ]
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 1);
+      expectedResult.set(2, 2);
+      expectedResult.set(3, 3);
+      expectedResult.set(6, 6);
+
+      verifyMaps(
+        SetUtil.toMap(nativeSet, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(nativeSet, sameNumberFFunction),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and only discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 1);
+      expectedResult.set(2, 2);
+      expectedResult.set(3, 3);
+      expectedResult.set(6, 6);
+
+      verifyMaps(
+        SetUtil.toMap(mutableHashSet, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableHashSet, sameNumberFFunction),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and only discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 1);
+      expectedResult.set(2, 2);
+      expectedResult.set(3, 3);
+      expectedResult.set(6, 6);
+
+      verifyMaps(
+        SetUtil.toMap(immutableHashSet, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableHashSet, sameNumberFFunction),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty native one and discriminatorKey and valueMapper are provided then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2, 3, 6 ]
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 2);
+      expectedResult.set(2, 3);
+      expectedResult.set(3, 4);
+      expectedResult.set(6, 7);
+
+      verifyMaps(
+        SetUtil.toMap(nativeSet, sameNumberRaw, plus1Raw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(nativeSet, sameNumberRaw, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(nativeSet, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(nativeSet, sameNumberFFunction, plus1Function),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and discriminatorKey and valueMapper are provided then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 2);
+      expectedResult.set(2, 3);
+      expectedResult.set(3, 4);
+      expectedResult.set(6, 7);
+
+      verifyMaps(
+        SetUtil.toMap(mutableHashSet, sameNumberRaw, plus1Raw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableHashSet, sameNumberRaw, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableHashSet, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableHashSet, sameNumberFFunction, plus1Function),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is an non-empty immutable one and discriminatorKey and valueMapper are provided then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 2);
+      expectedResult.set(2, 3);
+      expectedResult.set(3, 4);
+      expectedResult.set(6, 7);
+
+      verifyMaps(
+        SetUtil.toMap(immutableHashSet, sameNumberRaw, plus1Raw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableHashSet, sameNumberRaw, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableHashSet, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableHashSet, sameNumberFFunction, plus1Function),
+        expectedResult
+      );
+    });
+
+  });
+
+
 });
 
 
@@ -1135,6 +1653,18 @@ function verifyArraysRegardlessOfOrder(actualArray: unknown[],
   expect(expectedArray.length).toEqual(actualArray.length);
   if (0 < expectedArray.length) {
     expect(expectedArray).toEqual(expect.arrayContaining(actualArray));
+  }
+}
+
+
+function verifyMaps(actualMap: Map<unknown, unknown>,
+                    expectedMap: Map<unknown, unknown>) {
+  expect(actualMap.size).toEqual(expectedMap.size);
+  if (0 < expectedMap.size) {
+    for (let [key, value] of actualMap!) {
+      expect(expectedMap.has(key)).toBe(true);
+      expect(expectedMap.get(key)).toEqual(value);
+    }
   }
 }
 
@@ -1207,8 +1737,35 @@ const numberHash: HashFunction<number> =
   (n: number) => n % 50;
 
 
+const plus1Raw =
+  (n: number) =>
+    1 + n;
+
+
+const plus1FFunction: FFunction1<number, number> =
+  (n: number) =>
+    1 + n;
+
+
+const plus1Function: Function1<number, number> =
+  Function1.of(
+    (n: number) =>
+      1 + n
+  );
+
+
 const roleHash: HashFunction<Role> =
   (r: Role) => r.id % 50;
+
+
+const sameNumberRaw =
+  (n: number) =>
+    n;
+
+
+const sameNumberFFunction: FFunction1<number, number> =
+  (n: number) =>
+    n;
 
 
 const stringHash: HashFunction<string> =
