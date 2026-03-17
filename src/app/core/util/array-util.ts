@@ -1436,7 +1436,7 @@ export class ArrayUtil {
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
-   * @return largest value (including `null` or `undefined`) using given {@link TComparator},
+   * @return largest value using given {@link TComparator},
    *         `undefined` if `sourceArray` has no elements
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
@@ -1463,8 +1463,8 @@ export class ArrayUtil {
             return 0 == comparatorResult
               ? t1
               : 0 < comparatorResult
-                ? t1
-                : t2;
+                  ? t1
+                  : t2;
           }
         )
       );
@@ -1518,7 +1518,7 @@ export class ArrayUtil {
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
-   * @return smallest value (including `null` or `undefined`) using given {@link TComparator},
+   * @return smallest value using given {@link TComparator},
    *         `undefined` if `sourceArray` has no elements
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceArray`
@@ -1545,8 +1545,8 @@ export class ArrayUtil {
             return 0 == comparatorResult
               ? t1
               : 0 < comparatorResult
-                ? t2
-                : t1;
+                  ? t2
+                  : t1;
           }
         )
       );

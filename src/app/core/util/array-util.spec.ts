@@ -1705,10 +1705,9 @@ describe('ArrayUtil', () => {
 
     it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
       // @ts-ignore
-      expect(() => ArrayUtil.max([1], null)).toThrowError(IllegalArgumentError);
-
+      expect(() => ArrayUtil.max([ 1 ], null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
-      expect(() => ArrayUtil.max([1], undefined)).toThrowError(IllegalArgumentError);
+      expect(() => ArrayUtil.max([ 1 ], undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1721,8 +1720,8 @@ describe('ArrayUtil', () => {
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
           {
-            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
-            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
             return s1Length - s2Length;
           }
         );
@@ -1766,13 +1765,12 @@ describe('ArrayUtil', () => {
     it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
       // @ts-ignore
       expect(() => ArrayUtil.maxOptional([ 1 ], null)).toThrowError(IllegalArgumentError);
-
       // @ts-ignore
       expect(() => ArrayUtil.maxOptional([ 1 ], undefined)).toThrowError(IllegalArgumentError);
     });
 
 
-    it('when given sourceArray has elements and comparator is valid then and Optional with its largest value is returned', () => {
+    it('when given sourceArray has elements and comparator is valid then an Optional with its largest value is returned', () => {
       let numberArray: number[] = [ 1, 10, 21, 2 ];
       let stringArray: NullableOrUndefined<string>[] = [ 'a', 'ab', null, undefined, 'abc' ];
 
@@ -1781,8 +1779,8 @@ describe('ArrayUtil', () => {
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
           {
-            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
-            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
             return s1Length - s2Length;
           }
         );
@@ -1832,7 +1830,6 @@ describe('ArrayUtil', () => {
     it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
       // @ts-ignore
       expect(() => ArrayUtil.min([1], null)).toThrowError(IllegalArgumentError);
-
       // @ts-ignore
       expect(() => ArrayUtil.min([1], undefined)).toThrowError(IllegalArgumentError);
     });
@@ -1847,8 +1844,8 @@ describe('ArrayUtil', () => {
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
           {
-            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
-            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
             return s1Length - s2Length;
           }
         );
@@ -1892,13 +1889,12 @@ describe('ArrayUtil', () => {
     it('when given sourceArray is not empty but comparator is null or undefined then an error is thrown', () => {
       // @ts-ignore
       expect(() => ArrayUtil.minOptional([1], null)).toThrowError(IllegalArgumentError);
-
       // @ts-ignore
       expect(() => ArrayUtil.minOptional([1], undefined)).toThrowError(IllegalArgumentError);
     });
 
 
-    it('when given sourceArray has elements and comparator is valid then and Optional with its largest value is returned', () => {
+    it('when given sourceArray has elements and comparator is valid then an Optional with its largest value is returned', () => {
       let numberArray: number[] = [ 1, 10, 21, 2 ];
       let stringArray: NullableOrUndefined<string>[] = [ 'a', 'ab', null, undefined, 'abc' ];
 
@@ -1908,8 +1904,8 @@ describe('ArrayUtil', () => {
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
           {
-            const s1Length = ObjectUtil.isNullOrUndefined(s1) ? 0 : s1.length;
-            const s2Length = ObjectUtil.isNullOrUndefined(s2) ? 0 : s2.length;
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
             return s1Length - s2Length;
           }
         );

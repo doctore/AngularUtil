@@ -5,6 +5,7 @@ import { Comparator, TComparator } from '@app-core/type/comparator';
 import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
 import { AssertUtil } from './assert-util';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
+import {Optional} from '@app-core/type/functional';
 
 /**
  * Helper functions to manage {@link Set}.
@@ -357,6 +358,170 @@ export class SetUtil {
     }
     return result;
   }
+
+
+  /**
+   * Finds the first element of the given `sourceSet` which yields the largest value measured by `comparator`.
+   *
+   * <pre>
+   *    max(                                               Result:
+   *      [1, 10, 21, 2],                                   21
+   *      (a: number, b: number) => a - b
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to get its largest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return largest value using given {@link TComparator},
+   *         `undefined` if `sourceSet` has no elements
+   *
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
+   */
+  static max = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                   comparator: TComparator<T>): NullableOrUndefined<T> => {
+    if (!this.isEmpty(sourceSet)) {
+      AssertUtil.notNullOrUndefined(
+        comparator,
+        'comparator must be not null and not undefined'
+      );
+      const finalComparator = Comparator.of<T>(
+        comparator
+      );
+      return this.reduce<T>(
+        sourceSet,
+        BinaryOperator.of<T>(
+          (t1: T,
+           t2: T) => {
+            const comparatorResult = finalComparator.compare(
+              t1,
+              t2
+            );
+            return 0 == comparatorResult
+              ? t1
+              : 0 < comparatorResult
+                  ? t1
+                  : t2;
+          }
+        )
+      );
+    }
+    return undefined;
+  }
+
+
+  /**
+   * Finds the first element of the given `sourceSet` which yields the largest value measured by `comparator`.
+   *
+   * <pre>
+   *    maxOptional(                                       Result:
+   *      [1, 10, 21, 2],                                   Optional(21)
+   *      (a: number, b: number) => a - b
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to get its largest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return {@link Optional} with the largest value using given {@link TComparator},
+   *         {@link Optional#empty} if `sourceSet` has no elements or its largest value is `null` or `undefined`
+   *
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
+   */
+  static maxOptional = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                           comparator: TComparator<T>): Optional<T> =>
+    Optional.ofNullable(
+      this.max(
+        sourceSet,
+        comparator
+      )
+    );
+
+
+  /**
+   * Finds the first element of the given `sourceSet` which yields the smallest value measured by `comparator`.
+   *
+   * <pre>
+   *    min(                                               Result:
+   *      [1, 10, 21, 2],                                   1
+   *      (a: number, b: number) => a - b
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to get its smallest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return smallest value using given {@link TComparator},
+   *         `undefined` if `sourceSet` has no elements
+   *
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
+   */
+  static min = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                   comparator: TComparator<T>): NullableOrUndefined<T> => {
+    if (!this.isEmpty(sourceSet)) {
+      AssertUtil.notNullOrUndefined(
+        comparator,
+        'comparator must be not null and not undefined'
+      );
+      const finalComparator = Comparator.of<T>(
+        comparator
+      );
+      return this.reduce<T>(
+        sourceSet,
+        BinaryOperator.of<T>(
+          (t1: T,
+           t2: T) => {
+            const comparatorResult = finalComparator.compare(
+              t1,
+              t2
+            );
+            return 0 == comparatorResult
+              ? t1
+              : 0 < comparatorResult
+                  ? t2
+                  : t1;
+          }
+        )
+      );
+    }
+    return undefined;
+  }
+
+
+  /**
+   * Finds the first element of the given `sourceSet` which yields the smallest value measured by `comparator`.
+   *
+   * <pre>
+   *    minOptional(                                       Result:
+   *      [1, 10, 21, 2],                                   Optional(1)
+   *      (a: number, b: number) => a - b
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} to get its smallest element
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return {@link Optional} with the smallest value using given {@link TComparator},
+   *         {@link Optional#empty} if `sourceSet` has no elements or its smallest value is `null` or `undefined`
+   *
+   * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
+   */
+  static minOptional = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+                           comparator: TComparator<T>): Optional<T> =>
+    Optional.ofNullable(
+      this.min(
+        sourceSet,
+        comparator
+      )
+    );
 
 
   /**

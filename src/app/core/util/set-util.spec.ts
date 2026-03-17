@@ -120,29 +120,15 @@ describe('SetUtil', () => {
 
   describe('count', () => {
 
-    it('when given sourceSet is null, undefined or an empty native one then 0 is returned', () => {
+    it('when given sourceSet is null, undefined or an empty Set then 0 is returned', () => {
       const nativeSet = new Set<number>();
-
-      expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
-      expect(SetUtil.count(undefined, isEvenPredicate)).toEqual(0);
-      expect(SetUtil.count(nativeSet, isEvenRaw)).toEqual(0);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty mutable one then 0 is returned', () => {
       const mutableHashSet = MutableHashSet.empty<number>();
-
-      expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
-      expect(SetUtil.count(undefined, isEvenPredicate)).toEqual(0);
-      expect(SetUtil.count(mutableHashSet, isEvenRaw)).toEqual(0);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty immutable one then 0 is returned', () => {
       const immutableHashSet = ImmutableHashSet.empty<number>();
 
       expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
       expect(SetUtil.count(undefined, isEvenPredicate)).toEqual(0);
+      expect(SetUtil.count(nativeSet, isEvenRaw)).toEqual(0);
+      expect(SetUtil.count(mutableHashSet, isEvenRaw)).toEqual(0);
       expect(SetUtil.count(immutableHashSet, isEvenRaw)).toEqual(0);
     });
 
@@ -237,31 +223,15 @@ describe('SetUtil', () => {
 
   describe('filter', () => {
 
-    it('when given sourceSet is null, undefined or an empty native one then empty Set is returned', () => {
-      const nativeSet = new Set<number>();
-
-      expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filter(undefined, isEvenPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filter(nativeSet, isEvenRaw)).toEqual(nativeSet);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty mutable one then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty Set then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
-
-      expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filter(undefined, isEvenPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filter(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty immutable one then empty Set is returned', () => {
-      const nativeSet = new Set<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
 
       expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
       expect(SetUtil.filter(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filter(nativeSet, isEvenRaw)).toEqual(nativeSet);
+      expect(SetUtil.filter(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
       expect(SetUtil.filter(immutableHashSet, isEvenRaw)).toEqual(immutableHashSet);
     });
 
@@ -409,31 +379,15 @@ describe('SetUtil', () => {
 
   describe('filterNot', () => {
 
-    it('when given sourceSet is null, undefined or an empty native one then empty Set is returned', () => {
-      const nativeSet = new Set<number>();
-
-      expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filterNot(undefined, isEvenPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filterNot(nativeSet, isEvenRaw)).toEqual(nativeSet);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty mutable one then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or an empty Set then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
-
-      expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filterNot(undefined, isEvenPredicate)).toEqual(nativeSet);
-      expect(SetUtil.filterNot(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty immutable one then empty Set is returned', () => {
-      const nativeSet = new Set<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
 
       expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
       expect(SetUtil.filterNot(undefined, isEvenPredicate)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(nativeSet, isEvenRaw)).toEqual(nativeSet);
+      expect(SetUtil.filterNot(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
       expect(SetUtil.filterNot(immutableHashSet, isEvenRaw)).toEqual(immutableHashSet);
     });
 
@@ -581,8 +535,10 @@ describe('SetUtil', () => {
 
   describe('foldLeft', () => {
 
-    it('when given sourceSet is null, undefined or an empty native one then initialValue is returned', () => {
+    it('when given sourceSet is null, undefined or an empty Set then initialValue is returned', () => {
       const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
       const initialValue = 19;
 
       const accumulator =
@@ -591,31 +547,7 @@ describe('SetUtil', () => {
       expect(SetUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
       expect(SetUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
       expect(SetUtil.foldLeft(nativeSet, initialValue, accumulator)).toEqual(initialValue);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty mutable one then initialValue is returned', () => {
-      const mutableHashSet = MutableHashSet.empty<number>();
-      const initialValue = 19;
-
-      const accumulator: FFunction2<number, number, number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
-      expect(SetUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
-      expect(SetUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
       expect(SetUtil.foldLeft(mutableHashSet, initialValue, accumulator)).toEqual(initialValue);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty immutable one then initialValue is returned', () => {
-      const immutableHashSet = ImmutableHashSet.empty<number>();
-      const initialValue = 19;
-
-      const accumulator: Function2<number, number, number> =
-        Function2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
-
-      expect(SetUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
-      expect(SetUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
       expect(SetUtil.foldLeft(immutableHashSet, initialValue, accumulator)).toEqual(initialValue);
     });
 
@@ -752,7 +684,7 @@ describe('SetUtil', () => {
 
   describe('isEmpty', () => {
 
-    it('when given setToVerify is null, undefined or is null, undefined or an empty Set then true is returned', () => {
+    it('when given setToVerify is null, undefined or an empty Set then true is returned', () => {
       const expectedResult = true;
 
       expect(SetUtil.isEmpty()).toEqual(expectedResult);
@@ -946,10 +878,545 @@ describe('SetUtil', () => {
 
 
 
+  describe('max', () => {
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then undefined is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      // @ts-ignore
+      expect(SetUtil.max(null, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(undefined, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(nativeSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(nativeSet, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(mutableHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(mutableHashSet, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(immutableHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(immutableHashSet, undefined)).toBe(undefined);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then undefined is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(SetUtil.max(null, comparator)).toBe(undefined);
+      expect(SetUtil.max(undefined, comparator)).toBe(undefined);
+      expect(SetUtil.max(nativeSet, comparator)).toBe(undefined);
+      expect(SetUtil.max(mutableHashSet, comparator)).toBe(undefined);
+      expect(SetUtil.max(immutableHashSet, comparator)).toBe(undefined);
+    });
+
+
+    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2 ]
+      );
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.max(nativeSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(mutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(immutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and comparator is provided then its largest value is returned', () => {
+      const nativeSet = new Set<NullableOrUndefined<string>>(
+        [ 'a', 'ab', null, undefined, 'abc', 'zz' ]
+      );
+      const stringComparator =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
+            return s1Length - s2Length;
+          };
+
+      expect(SetUtil.max(nativeSet, stringComparator)).toEqual('abc');
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and comparator is provided then its largest value is returned', () => {
+      const mutableSet = MutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: FComparator<NullableOrUndefined<string>> =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+        {
+          const s1Length = !s1 ? 0 : s1.length;
+          const s2Length = !s2 ? 0 : s2.length;
+          return s1Length - s2Length;
+        };
+
+      expect(SetUtil.max(mutableSet, stringComparator)).toEqual('abc');
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and comparator is provided then its largest value is returned', () => {
+      const immutableSet = ImmutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      expect(SetUtil.max(immutableSet, stringComparator)).toEqual('abc');
+    });
+
+  });
+
+
+
+  describe('maxOptional', () => {
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then empty Optional is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      // @ts-ignore
+      expect(SetUtil.maxOptional(null, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(undefined, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(nativeSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(nativeSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(mutableHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(mutableHashSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(immutableHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(immutableHashSet, undefined).isPresent()).toBe(false);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then empty Optional is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(SetUtil.maxOptional(null, comparator).isPresent()).toBe(false);
+      expect(SetUtil.maxOptional(undefined, comparator).isPresent()).toBe(false);
+      expect(SetUtil.maxOptional(nativeSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.maxOptional(mutableHashSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.maxOptional(immutableHashSet, comparator).isPresent()).toBe(false);
+    });
+
+
+    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2 ]
+      );
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(nativeSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(mutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(immutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and comparator is provided then an Optional with its largest value is returned', () => {
+      const nativeSet = new Set<NullableOrUndefined<string>>(
+        [ 'a', 'ab', null, undefined, 'abc', 'zz' ]
+      );
+      const stringComparator =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+        {
+          const s1Length = !s1 ? 0 : s1.length;
+          const s2Length = !s2 ? 0 : s2.length;
+          return s1Length - s2Length;
+        };
+
+      const result = SetUtil.maxOptional(nativeSet, stringComparator);
+
+      expect(result.isPresent()).toBe(true);
+      expect(result.get()).toEqual('abc');
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and comparator is provided then an Optional with its largest value is returned', () => {
+      const mutableSet = MutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: FComparator<NullableOrUndefined<string>> =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+        {
+          const s1Length = !s1 ? 0 : s1.length;
+          const s2Length = !s2 ? 0 : s2.length;
+          return s1Length - s2Length;
+        };
+
+      const result = SetUtil.maxOptional(mutableSet, stringComparator);
+
+      expect(result.isPresent()).toBe(true);
+      expect(result.get()).toEqual('abc');
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and comparator is provided then an Optional with its largest value is returned', () => {
+      const immutableSet = ImmutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      const result = SetUtil.maxOptional(immutableSet, stringComparator);
+
+      expect(result.isPresent()).toBe(true);
+      expect(result.get()).toEqual('abc');
+    });
+
+  });
+
+
+
+  describe('min', () => {
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then undefined is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      // @ts-ignore
+      expect(SetUtil.min(null, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(undefined, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(nativeSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(nativeSet, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(mutableHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(mutableHashSet, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(immutableHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(immutableHashSet, undefined)).toBe(undefined);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then undefined is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(SetUtil.min(null, comparator)).toBe(undefined);
+      expect(SetUtil.min(undefined, comparator)).toBe(undefined);
+      expect(SetUtil.min(nativeSet, comparator)).toBe(undefined);
+      expect(SetUtil.min(mutableHashSet, comparator)).toBe(undefined);
+      expect(SetUtil.min(immutableHashSet, comparator)).toBe(undefined);
+    });
+
+
+    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2 ]
+      );
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.min(nativeSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(mutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(immutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and comparator is provided then its smallest value is returned', () => {
+      const nativeSet = new Set<NullableOrUndefined<string>>(
+        [ 'a', 'ab', null, undefined, 'abc', 'zz' ]
+      );
+      const stringComparator =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+        {
+          const s1Length = !s1 ? 0 : s1.length;
+          const s2Length = !s2 ? 0 : s2.length;
+          return s1Length - s2Length;
+        };
+
+      expect(SetUtil.min(nativeSet, stringComparator)).toBeNull();
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and comparator is provided then its smallest value is returned', () => {
+      const mutableSet = MutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: FComparator<NullableOrUndefined<string>> =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+        {
+          const s1Length = !s1 ? 0 : s1.length;
+          const s2Length = !s2 ? 0 : s2.length;
+          return s1Length - s2Length;
+        };
+
+      expect(SetUtil.min(mutableSet, stringComparator)).toEqual('a');
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and comparator is provided then its smallest value is returned', () => {
+      const immutableSet = ImmutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      expect(SetUtil.min(immutableSet, stringComparator)).toEqual('a');
+    });
+
+  });
+
+
+
+  describe('minOptional', () => {
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then empty Optional is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      // @ts-ignore
+      expect(SetUtil.minOptional(null, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(undefined, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(nativeSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(nativeSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(mutableHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(mutableHashSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(immutableHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(immutableHashSet, undefined).isPresent()).toBe(false);
+    });
+
+
+    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then empty Optional is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      const comparator: FComparator<number> =
+        (a: number, b: number) => a - b;
+
+      expect(SetUtil.minOptional(null, comparator).isPresent()).toBe(false);
+      expect(SetUtil.minOptional(undefined, comparator).isPresent()).toBe(false);
+      expect(SetUtil.minOptional(nativeSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.minOptional(mutableHashSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.minOptional(immutableHashSet, comparator).isPresent()).toBe(false);
+    });
+
+
+    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2 ]
+      );
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(nativeSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(mutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(immutableHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and comparator is provided then an Optional with its smallest value is returned', () => {
+      const nativeSet = new Set<NullableOrUndefined<string>>(
+        [ 'a', 'ab', null, undefined, 'abc', 'zz' ]
+      );
+      const stringComparator =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+        {
+          const s1Length = !s1 ? 0 : s1.length;
+          const s2Length = !s2 ? 0 : s2.length;
+          return s1Length - s2Length;
+        };
+
+      const result = SetUtil.minOptional(nativeSet, stringComparator);
+
+      expect(result.isPresent()).toBe(false);
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and comparator is provided then an Optional with its smallest value is returned', () => {
+      const mutableSet = MutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: FComparator<NullableOrUndefined<string>> =
+        (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+        {
+          const s1Length = !s1 ? 0 : s1.length;
+          const s2Length = !s2 ? 0 : s2.length;
+          return s1Length - s2Length;
+        };
+
+      const result = SetUtil.minOptional(mutableSet, stringComparator);
+
+      expect(result.isPresent()).toBe(true);
+      expect(result.get()).toEqual('a');
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and comparator is provided then an Optional with its smallest value is returned', () => {
+      const immutableSet = ImmutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+      const stringComparator: Comparator<NullableOrUndefined<string>> =
+        Comparator.of(
+          (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
+          {
+            const s1Length = !s1 ? 0 : s1.length;
+            const s2Length = !s2 ? 0 : s2.length;
+            return s1Length - s2Length;
+          }
+        );
+
+      const result = SetUtil.minOptional(immutableSet, stringComparator);
+
+      expect(result.isPresent()).toBe(true);
+      expect(result.get()).toEqual('a');
+    });
+
+  });
+
+
+
   describe('reduce', () => {
 
-    it('when given sourceSet is null, undefined or an empty native one then undefined is returned', () => {
+    it('when given sourceSet is null, undefined or an empty Set then undefined is returned', () => {
       const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
 
       const accumulator =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
@@ -957,29 +1424,7 @@ describe('SetUtil', () => {
       expect(SetUtil.reduce(null, accumulator)).toBe(undefined);
       expect(SetUtil.reduce(undefined, accumulator)).toBe(undefined);
       expect(SetUtil.reduce(nativeSet, accumulator)).toBe(undefined);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty mutable one then undefined is returned', () => {
-      const mutableHashSet = MutableHashSet.empty<number>();
-
-      const accumulator: FBinaryOperator<number> =
-        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
-
-      expect(SetUtil.reduce(null, accumulator)).toBe(undefined);
-      expect(SetUtil.reduce(undefined, accumulator)).toBe(undefined);
       expect(SetUtil.reduce(mutableHashSet, accumulator)).toBe(undefined);
-    });
-
-
-    it('when given sourceSet is null, undefined or an empty immutable one then undefined is returned', () => {
-      const immutableHashSet = ImmutableHashSet.empty<number>();
-
-      const accumulator: BinaryOperator<number> =
-        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
-
-      expect(SetUtil.reduce(null, accumulator)).toBe(undefined);
-      expect(SetUtil.reduce(undefined, accumulator)).toBe(undefined);
       expect(SetUtil.reduce(immutableHashSet, accumulator)).toBe(undefined);
     });
 
