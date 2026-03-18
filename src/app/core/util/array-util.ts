@@ -117,14 +117,14 @@ export class ArrayUtil {
       const finalOrElseMapper = Function1.of(
         orElseMapper
       );
-      for (const item of sourceArray!) {
+      for (const current of sourceArray!) {
         result.push(
-          finalPartialFunction.isDefinedAt(item)
+          finalPartialFunction.isDefinedAt(current)
             ? finalPartialFunction.apply(
-                item
+                current
               )
             : finalOrElseMapper.apply(
-                item
+                current
               )
         );
       }
@@ -212,11 +212,11 @@ export class ArrayUtil {
             filterPredicate,
             <TFunction1<T, U>>partialFunctionOrMapFunction
           );
-      for (const item of sourceArray!) {
-        if (finalPartialFunction.isDefinedAt(item)) {
+      for (const current of sourceArray!) {
+        if (finalPartialFunction.isDefinedAt(current)) {
           result.push(
             finalPartialFunction.apply(
-              item
+              current
             )
           );
         }
@@ -319,8 +319,8 @@ export class ArrayUtil {
       filterPredicate
     );
     let result = 0;
-    for (const item of sourceArray!) {
-      if (finalFilterPredicate.apply(item)) {
+    for (const current of sourceArray!) {
+      if (finalFilterPredicate.apply(current)) {
         result++;
       }
     }
@@ -750,10 +750,10 @@ export class ArrayUtil {
       return [];
     }
     let result: T[] = [];
-    for (const item of sourceArray!) {
-      if (this.isArray(item)) {
+    for (const current of sourceArray!) {
+      if (this.isArray(current)) {
         const recursiveResult = this.flatten(
-          item
+          current
         );
         if (!this.isEmpty(recursiveResult)) {
           result = result.concat(
@@ -762,7 +762,7 @@ export class ArrayUtil {
         }
       } else {
         result.push(
-          item
+          current
         );
       }
     }
@@ -893,7 +893,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceArray
-   *    Array with the elements to filter, transform and group
+   *    Array with the elements to filter and group
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param filterPredicate
@@ -909,6 +909,10 @@ export class ArrayUtil {
                           filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
     const result: Map<K, T[]> = new Map<K, T[]>();
     if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
       const finalDiscriminatorKey = Function1.of(
         discriminatorKey
       );
@@ -916,10 +920,10 @@ export class ArrayUtil {
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
-      for (const item of sourceArray!) {
-        if (finalFilterPredicate.apply(item)) {
+      for (const current of sourceArray!) {
+        if (finalFilterPredicate.apply(current)) {
           const discriminatorKeyResult = finalDiscriminatorKey.apply(
-            item
+            current
           );
           MapUtil.setIfAbsent(
             result,
@@ -927,7 +931,7 @@ export class ArrayUtil {
             []
           );
           result.get(discriminatorKeyResult)!
-            .push(item);
+            .push(current);
         }
       }
     }
@@ -964,7 +968,7 @@ export class ArrayUtil {
    * </pre>
    *
    * @param sourceArray
-   *    Array with the elements to filter, transform and group
+   *    Array with the elements to filter and group
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param filterPredicate
@@ -980,6 +984,10 @@ export class ArrayUtil {
                                   filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
     const result: Map<K, T[]> = new Map<K, T[]>();
     if (!this.isEmpty(sourceArray)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
       const finalDiscriminatorKey = Function1.of(
         discriminatorKey
       );
@@ -987,10 +995,10 @@ export class ArrayUtil {
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
-      for (const item of sourceArray!) {
-        if (finalFilterPredicate.apply(item)) {
+      for (const current of sourceArray!) {
+        if (finalFilterPredicate.apply(current)) {
           const discriminatorKeyResult = ObjectUtil.getOrElse(
-            finalDiscriminatorKey.apply(item),
+            finalDiscriminatorKey.apply(current),
             []
           );
           for (let key of discriminatorKeyResult!) {
@@ -1000,7 +1008,7 @@ export class ArrayUtil {
               []
             );
             result.get(key)!
-              .push(item);
+              .push(current);
           }
         }
       }
@@ -1088,10 +1096,10 @@ export class ArrayUtil {
             <TFunction1<T, V>>valueMapper
           );
 
-      for (const item of sourceArray!) {
-        if (finalPartialFunction.isDefinedAt(item)) {
+      for (const current of sourceArray!) {
+        if (finalPartialFunction.isDefinedAt(current)) {
           const pairKeyValue: [K, V] = <[K, V]>finalPartialFunction.apply(
-            item
+            current
           );
           MapUtil.setIfAbsent(
             result,
@@ -1166,13 +1174,13 @@ export class ArrayUtil {
         ? Predicate1.alwaysTrue<T>()
         : Predicate1.of(filterPredicate);
 
-      for (const item of sourceArray!) {
-        if (finalFilterPredicate.apply(item)) {
+      for (const current of sourceArray!) {
+        if (finalFilterPredicate.apply(current)) {
            const valueMapperResult = finalValueMapper.apply(
-             item
+             current
            );
            const discriminatorKeyResult = ObjectUtil.getOrElse(
-             finalDiscriminatorKey.apply(item),
+             finalDiscriminatorKey.apply(current),
              []
            );
           for (let key of discriminatorKeyResult!) {
@@ -1409,10 +1417,10 @@ export class ArrayUtil {
       const finalMapFunction = Function1.of(
         mapFunction
       );
-      for (const item of sourceArray!) {
+      for (const current of sourceArray!) {
         result.push(
           finalMapFunction.apply(
-            item
+            current
           )
         );
       }
@@ -2068,9 +2076,9 @@ export class ArrayUtil {
           Function1.of(finalValueMapper).apply(t)
         ]
       );
-      for (const item of sourceArray!) {
+      for (const current of sourceArray!) {
         const pairKeyValue: [K, V] = <[K, V]>finalDiscriminatorKeyAndValueMapper.apply(
-          item
+          current
         );
         result.set(
           pairKeyValue[0],

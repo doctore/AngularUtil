@@ -670,7 +670,6 @@ describe('MapUtil', () => {
         MapUtil.filterNot(roleMap, undefined),
         roleMap
       );
-
       verifyMaps(
         MapUtil.filterNot(stringsMap, null),
         stringsMap
@@ -1389,7 +1388,6 @@ describe('MapUtil', () => {
         MapUtil.groupMap(sourceMap, keyMod3Raw, valueLengthRaw, null),
         expectedResult
       );
-
       verifyMaps(
         MapUtil.groupMap(sourceMap, keyMod3Raw, valueLengthRaw, undefined),
         expectedResult
@@ -2097,7 +2095,6 @@ describe('MapUtil', () => {
         MapUtil.removeAll(sourceMap, emptyMap),
         sourceMap
       );
-
       verifyMaps(
         MapUtil.removeAll(sourceMap, null, mapElementsComparison),
         sourceMap
@@ -2205,7 +2202,6 @@ describe('MapUtil', () => {
         MapUtil.retainAll(sourceMap, emptyMap),
         emptyMap
       );
-
       verifyMaps(
         MapUtil.retainAll(sourceMap, null, mapElementsComparison),
         emptyMap

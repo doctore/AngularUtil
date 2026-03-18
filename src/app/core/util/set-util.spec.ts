@@ -635,6 +635,353 @@ describe('SetUtil', () => {
 
 
 
+  describe('groupBy', () => {
+
+    it('when given sourceSet is null, undefined or an empty Set and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(SetUtil.groupBy(null, plus1Raw, isEvenRaw)).toEqual(expectedResult);
+      expect(SetUtil.groupBy(undefined, plus1FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupBy(nativeSet, plus1Raw, isEvenRaw)).toEqual(expectedResult);
+      expect(SetUtil.groupBy(mutableHashSet, plus1FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupBy(immutableHashSet, plus1Function, isEvenPredicate)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is not empty but discriminatorKey is null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [1, 2]
+      );
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(nativeSet, null, isEvenRaw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(nativeSet, undefined, isEvenRaw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(mutableHashSet, null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(mutableHashSet, undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(immutableHashSet, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(immutableHashSet, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2, 3, 6, 4 ]
+      );
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(2, [ 1 ]);
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(4, [ 3 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupBy(nativeSet, plus1Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupBy(nativeSet, plus1FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(2, [ 1 ]);
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(4, [ 3 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupBy(mutableHashSet, plus1Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupBy(mutableHashSet, plus1FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(2, [ 1 ]);
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(4, [ 3 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupBy(immutableHashSet, plus1Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupBy(immutableHashSet, plus1FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty native one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2, 3, 6, 4 ]
+      );
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        SetUtil.groupBy(nativeSet, plus1Raw, isEvenRaw),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        SetUtil.groupBy(mutableHashSet, plus1FFunction, isEvenFPredicate),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        SetUtil.groupBy(immutableHashSet, plus1Function, isEvenPredicate),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('groupByMultiKey', () => {
+
+    it('when given sourceSet is null, undefined or an empty Set and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+      const nativeSet = new Set<number>();
+      const mutableHashSet = MutableHashSet.empty<number>();
+      const immutableHashSet = ImmutableHashSet.empty<number>();
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(SetUtil.groupByMultiKey(null, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
+      expect(SetUtil.groupByMultiKey(undefined, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupByMultiKey(nativeSet, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
+      expect(SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceSet is not empty but discriminatorKey is null or undefined then an error is thrown', () => {
+      const nativeSet = new Set<number>(
+        [1, 2]
+      );
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(nativeSet, null, isEvenRaw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(nativeSet, undefined, isEvenRaw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(mutableHashSet, null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(mutableHashSet, undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(immutableHashSet, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(immutableHashSet, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty native one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("odd", [ 1, 3, 11 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6, 11, 12 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupByMultiKey(nativeSet, oddEvenAndCompareWith5Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupByMultiKey(nativeSet, oddEvenAndCompareWith5FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("odd", [ 1, 3, 11 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6, 11, 12 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("odd", [ 1, 3, 11 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6, 11, 12 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty native one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const nativeSet = new Set<number>(
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("smaller5", [ 2 ]);
+      expectedResult.set("greaterEqual5", [ 6, 12 ]);
+
+      verifyMaps(
+        SetUtil.groupByMultiKey(nativeSet, oddEvenAndCompareWith5Raw, isEvenRaw),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("smaller5", [ 2 ]);
+      expectedResult.set("greaterEqual5", [ 6, 12 ]);
+
+      verifyMaps(
+        SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("smaller5", [ 2 ]);
+      expectedResult.set("greaterEqual5", [ 6, 12 ]);
+
+      verifyMaps(
+        SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('isAbstractSet', () => {
 
     it('when given input is null or undefined then false will be returned', () => {
@@ -2180,6 +2527,39 @@ const isUserIdOddRaw =
 
 const numberHash: HashFunction<number> =
   (n: number) => n % 50;
+
+
+const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
+  (n: number) => {
+    const keys: string[] = [];
+    if (0 == n % 2) {
+      keys.push("even");
+    } else {
+      keys.push("odd");
+    }
+    if (5 > n) {
+      keys.push("smaller5");
+    } else {
+      keys.push("greaterEqual5");
+    }
+    return keys;
+  };
+
+
+const oddEvenAndCompareWith5Raw = (n: number) => {
+  const keys: string[] = [];
+  if (0 == n % 2) {
+    keys.push("even");
+  } else {
+    keys.push("odd");
+  }
+  if (5 > n) {
+    keys.push("smaller5");
+  } else {
+    keys.push("greaterEqual5");
+  }
+  return keys;
+};
 
 
 const plus1Raw =

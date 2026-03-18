@@ -6,6 +6,8 @@ import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-c
 import { AssertUtil } from './assert-util';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
 import {Optional} from '@app-core/type/functional';
+import {MapUtil} from './map-util';
+import {ObjectUtil} from './object-util';
 
 /**
  * Helper functions to manage {@link Set}.
@@ -65,8 +67,8 @@ export class SetUtil {
       filterPredicate
     );
     let result = 0;
-    for (const v of sourceSet!) {
-      if (finalFilterPredicate.apply(v)) {
+    for (const current of sourceSet!) {
+      if (finalFilterPredicate.apply(current)) {
         result++;
       }
     }
@@ -109,10 +111,10 @@ export class SetUtil {
     );
     if (this.isImmutableSet(result)) {
       const elementsToAdd: T[] = [];
-      for (const v of sourceSet) {
-        if (finalFilterPredicate.apply(v)) {
+      for (const current of sourceSet) {
+        if (finalFilterPredicate.apply(current)) {
           elementsToAdd.push(
-            v
+            current
           );
         }
       }
@@ -121,10 +123,10 @@ export class SetUtil {
       );
     }
     else {
-      for (const v of sourceSet) {
-        if (finalFilterPredicate.apply(v)) {
+      for (const current of sourceSet) {
+        if (finalFilterPredicate.apply(current)) {
           result.add(
-            v
+            current
           );
         }
       }
@@ -212,11 +214,148 @@ export class SetUtil {
       accumulator
     );
     let result: R = initialValue;
-    for (const v of  sourceSet!) {
+    for (const current of  sourceSet!) {
       result = finalAccumulator.apply(
         result,
-        v
+        current
       );
+    }
+    return result;
+  }
+
+
+  /**
+   *    Partitions given `sourceSet` into a {@link Map}, applying `discriminatorKey` if the current element verifies
+   * `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * <pre>
+   *    groupBy(                                           Result:
+   *      [1, 2, 3, 6],                                     [(2, [1])
+   *      (n: number) => 1 + n,                              (4, [3])
+   *      (n: number) => 1 == n % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} with the elements to filter and group
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceSet`. If it is `null` or `undefined` then all elements will be used
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceSet` that verifies
+   *        `filterPredicate`
+   *
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceSet`
+   */
+  static groupBy = <T, K>(sourceSet: NullableOrUndefined<Set<T>>,
+                          discriminatorKey: TFunction1<T, K>,
+                          filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
+    const result: Map<K, T[]> = new Map<K, T[]>();
+    if (!this.isEmpty(sourceSet)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
+      const finalDiscriminatorKey = Function1.of(
+        discriminatorKey
+      );
+      const finalFilterPredicate = !filterPredicate
+        ? Predicate1.alwaysTrue<T>()
+        : Predicate1.of(filterPredicate);
+
+      for (const current of sourceSet!) {
+        if (finalFilterPredicate.apply(current)) {
+          const discriminatorKeyResult = finalDiscriminatorKey.apply(
+            current
+          );
+          MapUtil.setIfAbsent(
+            result,
+            discriminatorKeyResult,
+            []
+          );
+          result.get(discriminatorKeyResult)!
+            .push(current);
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Partitions given `sourceSet` into a {@link Map}, applying `discriminatorKey` if the current element verifies
+   * `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * @apiNote
+   *    This method is similar to {@link SetUtil#groupBy} but `discriminatorKey` returns an array of related key values.
+   *
+   * <pre>
+   *    groupByMultiKey(                                  Result:
+   *      [1, 2, 3, 6, 11, 12],                            [('even',  [2, 6])
+   *      (n: number) => {                                  ('odd',   [1, 3])
+   *        const keys: string[] = [];                      ('smaller5', [1, 2, 3])
+   *        if (0 == n % 2) {                               ('greaterEqual5', [6])]
+   *          keys.push('even');
+   *        } else {
+   *          keys.push('odd');
+   *        }
+   *        if (5 > n) {
+   *          keys.push('smaller5');
+   *        } else {
+   *          keys.push('greaterEqual5');
+   *        }
+   *        return keys;
+   *      },
+   *      (n: number) => 10 > n
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link Set} with the elements to filter and group
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceSet`. If it is `null` or `undefined` then all elements will be used
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceSet` that
+   *         verifies `filterPredicate`, to generate the keys of the returned one
+   *
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceSet`
+   */
+  static groupByMultiKey = <T, K>(sourceSet: NullableOrUndefined<Set<T>>,
+                                  discriminatorKey: TFunction1<T, K[]>,
+                                  filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
+    const result: Map<K, T[]> = new Map<K, T[]>();
+    if (!this.isEmpty(sourceSet)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
+      const finalDiscriminatorKey = Function1.of(
+        discriminatorKey
+      );
+      const finalFilterPredicate = !filterPredicate
+        ? Predicate1.alwaysTrue<T>()
+        : Predicate1.of(filterPredicate);
+
+      for (const current of sourceSet!) {
+        if (finalFilterPredicate.apply(current)) {
+          const discriminatorKeyResult = ObjectUtil.getOrElse(
+            finalDiscriminatorKey.apply(current),
+            []
+          );
+          for (let key of discriminatorKeyResult!) {
+            MapUtil.setIfAbsent(
+              result,
+              key,
+              []
+            );
+            result.get(key)!
+              .push(current);
+          }
+        }
+      }
     }
     return result;
   }
@@ -343,14 +482,14 @@ export class SetUtil {
         accumulator
       );
       let foundFirstElement = false;
-      for (const v of sourceSet!) {
+      for (const current of sourceSet!) {
         if (!foundFirstElement) {
-          result = v;
+          result = current;
         } else {
           result = finalAccumulator.apply(
             // @ts-ignore
             result,
-            v
+            current
           );
         }
         foundFirstElement = true;
@@ -635,9 +774,9 @@ export class SetUtil {
           Function1.of(finalValueMapper).apply(t)
         ]
       );
-      for (const v of sourceSet!) {
+      for (const current of sourceSet!) {
         const pairKeyValue: [K, V] = <[K, V]>finalDiscriminatorKeyAndValueMapper.apply(
-          v
+          current
         );
         result.set(
           pairKeyValue[0],
