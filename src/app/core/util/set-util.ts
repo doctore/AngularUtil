@@ -422,66 +422,24 @@ export class SetUtil {
   }
 
 
+
   /**
-   *    Performs a reduction on the elements of `sourceSet`, using an associative accumulation {@link TBinaryOperator},
-   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
+   * Verifies if the given `input` is classified as {@link TSet} object (including new ones like:
+   * <p>
+   * <ul>
+   *   <li>{@link MutableHashSet}</li>
+   *   <li>{@link ImmutableHashSet}</li>
+   * </ul>
    *
-   * @apiNote
-   *    This method is similar to {@link SetUtil#foldLeft} but `accumulator` works with the same type that `sourceSet`
-   * and only uses contained elements of provided {@link TSet}. This method might return different results when the
-   * provided `sourceSet` does not guarantee the {@link TSet} iteration order.
+   * @param input
+   *    Object to verify
    *
-   * <pre>
-   *    reduce(                                            Result:
-   *      [5, 7, 9]                                         315
-   *      (n1: number, n2: number) => n1 * n2
-   *    )
-   * </pre>
-   *
-   * @param sourceSet
-   *    {@link TSet} with elements to combine
-   * @param accumulator
-   *    A {@link TBinaryOperator} which combines elements
-   *
-   * @return result of inserting `accumulator` between consecutive elements `sourceSet`, going left (head) to right (tail)
-   *
-   * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceSet` is not empty
+   * @return `true` if `input` is an instance of {@link TSet},
+   *         `false` otherwise
    */
-  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
-                   accumulator: TBinaryOperator<T>): OrUndefined<T>;
-
-
-  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
-                   accumulator: FBinaryOperator<T>): OrUndefined<T>;
-
-
-  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
-                   accumulator: TBinaryOperator<T>): OrUndefined<T> {
-    let result: OrUndefined<T>;
-    if (!this.isEmpty(sourceSet)) {
-      AssertUtil.notNullOrUndefined(
-        accumulator,
-        'accumulator must be not null and not undefined'
-      );
-      const finalAccumulator = BinaryOperator.of(
-        accumulator
-      );
-      let foundFirstElement = false;
-      for (const current of sourceSet!) {
-        if (!foundFirstElement) {
-          result = current;
-        } else {
-          result = finalAccumulator.apply(
-            // @ts-ignore
-            result,
-            current
-          );
-        }
-        foundFirstElement = true;
-      }
-    }
-    return result;
-  }
+  static isTSet = (input?: any): input is TSet<any> =>
+    input instanceof Set ||
+    this.isAbstractSet(input);
 
 
   /**
@@ -646,6 +604,68 @@ export class SetUtil {
         comparator
       )
     );
+
+
+  /**
+   *    Performs a reduction on the elements of `sourceSet`, using an associative accumulation {@link TBinaryOperator},
+   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
+   *
+   * @apiNote
+   *    This method is similar to {@link SetUtil#foldLeft} but `accumulator` works with the same type that `sourceSet`
+   * and only uses contained elements of provided {@link TSet}. This method might return different results when the
+   * provided `sourceSet` does not guarantee the {@link TSet} iteration order.
+   *
+   * <pre>
+   *    reduce(                                            Result:
+   *      [5, 7, 9]                                         315
+   *      (n1: number, n2: number) => n1 * n2
+   *    )
+   * </pre>
+   *
+   * @param sourceSet
+   *    {@link TSet} with elements to combine
+   * @param accumulator
+   *    A {@link TBinaryOperator} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceSet`, going left (head) to right (tail)
+   *
+   * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceSet` is not empty
+   */
+  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T>;
+
+
+  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
+                   accumulator: FBinaryOperator<T>): OrUndefined<T>;
+
+
+  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T> {
+    let result: OrUndefined<T>;
+    if (!this.isEmpty(sourceSet)) {
+      AssertUtil.notNullOrUndefined(
+        accumulator,
+        'accumulator must be not null and not undefined'
+      );
+      const finalAccumulator = BinaryOperator.of(
+        accumulator
+      );
+      let foundFirstElement = false;
+      for (const current of sourceSet!) {
+        if (!foundFirstElement) {
+          result = current;
+        } else {
+          result = finalAccumulator.apply(
+            // @ts-ignore
+            result,
+            current
+          );
+        }
+        foundFirstElement = true;
+      }
+    }
+    return result;
+  }
 
 
   /**

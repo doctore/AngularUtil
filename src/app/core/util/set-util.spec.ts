@@ -1176,6 +1176,55 @@ describe('SetUtil', () => {
 
 
 
+  describe('isTSet', () => {
+
+    it('when given input is null or undefined then false will be returned', () => {
+      const expectedResult = false;
+
+      expect(SetUtil.isTSet()).toEqual(expectedResult);
+      expect(SetUtil.isTSet(undefined)).toEqual(expectedResult);
+      expect(SetUtil.isTSet(null)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is not a Set then false will be returned', () => {
+      const user = new User(1, 'user1');
+
+      const expectedResult = false;
+
+      expect(SetUtil.isTSet(12)).toEqual(expectedResult);
+      expect(SetUtil.isTSet("abc")).toEqual(expectedResult);
+      expect(SetUtil.isTSet({})).toEqual(expectedResult);
+      expect(SetUtil.isTSet(user)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is a Set then true will be returned', () => {
+      const nativeSet = new Set<number>(
+        [ 1 ]
+      );
+      const mutableHashSet = MutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'b', 'c' ]
+      );
+      const immutableHashSet = ImmutableHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+
+      const expectedResult = true;
+
+      expect(SetUtil.isTSet(new Set<string>)).toEqual(expectedResult);
+      expect(SetUtil.isTSet(nativeSet)).toEqual(expectedResult);
+      expect(SetUtil.isTSet(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isTSet(immutableHashSet)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
   describe('max', () => {
 
     it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then undefined is returned', () => {
