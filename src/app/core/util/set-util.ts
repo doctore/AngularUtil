@@ -422,13 +422,12 @@ export class SetUtil {
   }
 
 
-
   /**
-   * Verifies if the given `input` is classified as {@link TSet} object (including new ones like:
+   * Verifies if the given `input` is classified as {@link TSet} object, including new ones like:
    * <p>
    * <ul>
-   *   <li>{@link MutableHashSet}</li>
-   *   <li>{@link ImmutableHashSet}</li>
+   *   <li>{@link Set}</li>
+   *   <li>{@link AbstractSet}</li>
    * </ul>
    *
    * @param input

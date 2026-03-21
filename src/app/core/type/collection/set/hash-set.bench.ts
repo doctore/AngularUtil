@@ -995,38 +995,38 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   });
 
 
-  bench("ImmutableHashSet remove: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+  bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
       equals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
 
-  bench("ImmutableHashSet remove: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+  bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
       equals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
 
-  bench("ImmutableHashSet remove: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+  bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
       equals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
@@ -1075,38 +1075,38 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   });
 
 
-  bench("ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+  bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
       equals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
 
-  bench("ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+  bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
       equals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
 
-  bench("ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+  bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
       equals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
@@ -1155,38 +1155,38 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   });
 
 
-  bench("ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+  bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
       equals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
 
-  bench("ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+  bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
       equals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
 
-  bench("ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+  bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
       equals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
-      set = set.remove(item);
+      set = set.delete(item);
     }
   });
 
@@ -1204,18 +1204,19 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
  MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash            2,003.31  0.4497   2.4075  0.4992  0.4999   1.5756   1.7565   2.0251  ±2.00%     1002
  MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash        2,965.38  0.3152   1.8830  0.3372  0.3372   0.5051   0.5286   0.6545  ±0.72%     1483
  MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash          1,948.74  0.4888   1.0135  0.5132  0.5136   0.6130   0.7516   1.0135  ±0.39%      975
- ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - noCollisionHash            1.8527  521.51   563.32  539.76  560.62   563.32   563.32   563.32  ±2.39%       10
- ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash        6.9699  142.56   145.12  143.47  143.90   145.12   145.12   145.12  ±0.44%       10
- ImmutableHashSet remove: mediumNumberOfItemsConsecutiveIds - highCollisionHash          103.93  9.4258  10.1370  9.6215  9.6485  10.1370  10.1370  10.1370  ±0.41%       53
+ ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash            1.8527  521.51   563.32  539.76  560.62   563.32   563.32   563.32  ±2.39%       10
+ ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash        6.9699  142.56   145.12  143.47  143.90   145.12   145.12   145.12  ±0.44%       10
+ ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash          103.93  9.4258  10.1370  9.6215  9.6485  10.1370  10.1370  10.1370  ±0.41%       53
 
  Native Set delete: mediumNumberOfItemsNoConsecutiveIds                                3,141.94  0.2661   2.2580  0.3183  0.3222   0.5172   1.9379   2.2070  ±2.09%     1571
  MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash          2,016.18  0.4512   1.9013  0.4960  0.5013   1.2017   1.5485   1.7275  ±1.56%     1010
  MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash      2,939.10  0.3166   0.7725  0.3402  0.3416   0.4827   0.5541   0.7295  ±0.44%     1470
  MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash        1,919.18  0.4997   0.8351  0.5211  0.5229   0.6306   0.7051   0.8351  ±0.28%      960
- ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash          1.8870  521.32   540.91  529.95  532.90   540.91   540.91   540.91  ±0.85%       10
- ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash      7.5229  132.02   133.62  132.93  133.43   133.62   133.62   133.62  ±0.30%       10
- ImmutableHashSet remove: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash        104.57  8.9411  29.3677  9.5626  9.1981  29.3677  29.3677  29.3677  ±8.02%       53
+ ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash          1.8870  521.32   540.91  529.95  532.90   540.91   540.91   540.91  ±0.85%       10
+ ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash      7.5229  132.02   133.62  132.93  133.43   133.62   133.62   133.62  ±0.30%       10
+ ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash        104.57  8.9411  29.3677  9.5626  9.1981  29.3677  29.3677  29.3677  ±8.02%       53
 */
+
 
 
   /**
