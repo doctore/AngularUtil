@@ -2,7 +2,6 @@ import { MutableHashSet } from '@app-core/type/collection/set';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { Nullable } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
-import { UnsupportedOperationError } from '@app-core/error';
 
 /**
  * To invoke only this test:
@@ -730,26 +729,6 @@ describe('MutableHashSet', () => {
 
   describe('difference', () => {
 
-    it('then an error is thrown', () => {
-      const set = MutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.difference(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.difference(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.difference([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('differenceCustom', () => {
-
     it('when provided Sets are empty then an empty Set is returned', () => {
       const setOfNumberSource = MutableHashSet.empty<number>(
         hashNumber,
@@ -762,13 +741,13 @@ describe('MutableHashSet', () => {
       const setOfHashableObjectSource = MutableHashSet.empty<User>();
       const setOfHashableObjectOther = MutableHashSet.empty<User>();
 
-      const setOfNumberResult = setOfNumberSource.differenceCustom(
+      const setOfNumberResult = setOfNumberSource.difference(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.differenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.difference(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.difference(
         setOfHashableObjectOther
       );
 
@@ -805,13 +784,13 @@ describe('MutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.differenceCustom(
+      const setOfNumberResult = setOfNumber.difference(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.differenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.difference(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -860,13 +839,13 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfNumberResult = setOfNumber.differenceCustom(
+      const setOfNumberResult = setOfNumber.difference(
         setOfNumberOther
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.differenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.difference(
         [ r3 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -922,13 +901,13 @@ describe('MutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfNumberResult = setOfNumber.differenceCustom(
+      const setOfNumberResult = setOfNumber.difference(
         setOfNumberOther
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.differenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.difference(
         [ r3, r4 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -967,7 +946,7 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -995,7 +974,7 @@ describe('MutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -1390,26 +1369,6 @@ describe('MutableHashSet', () => {
 
   describe('intersection', () => {
 
-    it('then an error is thrown', () => {
-      const set = MutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.intersection(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.intersection(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.intersection([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('intersectionCustom', () => {
-
     it('when provided Sets are empty then an empty Set is returned', () => {
       const setOfNumberSource = MutableHashSet.empty<number>(
         hashNumber,
@@ -1422,13 +1381,13 @@ describe('MutableHashSet', () => {
       const setOfHashableObjectSource = MutableHashSet.empty<User>();
       const setOfHashableObjectOther = MutableHashSet.empty<User>();
 
-      const setOfNumberResult = setOfNumberSource.intersectionCustom(
+      const setOfNumberResult = setOfNumberSource.intersection(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.intersectionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.intersection(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.intersection(
         setOfHashableObjectOther
       );
 
@@ -1465,13 +1424,13 @@ describe('MutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.intersectionCustom(
+      const setOfNumberResult = setOfNumber.intersection(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.intersectionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.intersection(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1513,13 +1472,13 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfNumberResult = setOfNumber.intersectionCustom(
+      const setOfNumberResult = setOfNumber.intersection(
         setOfNumberOther
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.intersectionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.intersection(
         [ r3 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1566,13 +1525,13 @@ describe('MutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfNumberResult = setOfNumber.intersectionCustom(
+      const setOfNumberResult = setOfNumber.intersection(
         setOfNumberOther
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.intersectionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.intersection(
         [ r3, r4 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1611,7 +1570,7 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1636,7 +1595,7 @@ describe('MutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -2712,26 +2671,6 @@ describe('MutableHashSet', () => {
 
   describe('symmetricDifference', () => {
 
-    it('then an error is thrown', () => {
-      const set = MutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.symmetricDifference(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.symmetricDifference(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.symmetricDifference([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('symmetricDifferenceCustom', () => {
-
     it('when provided Sets are empty then a new Set containing the values added in other is returned', () => {
       const n = 19;
       const r1 = { id: 1, name: 'role1' } as Role;
@@ -2753,13 +2692,13 @@ describe('MutableHashSet', () => {
         [ u1, u2 ]
       );
 
-      const setOfNumberResult = setOfNumberSource.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumberSource.symmetricDifference(
         [ n ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.symmetricDifference(
         [ r1, r2 ]
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2803,13 +2742,13 @@ describe('MutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumber.symmetricDifference(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifference(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2857,13 +2796,13 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfNumberResult = setOfNumber.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumber.symmetricDifference(
         [ n2 ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifference(
         [ r3 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2918,13 +2857,13 @@ describe('MutableHashSet', () => {
         [ u3, u4, u5 ]
       );
 
-      const setOfNumberResult = setOfNumber.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumber.symmetricDifference(
         [ n3 ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifference(
         [ r3, r4 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2964,7 +2903,7 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2993,7 +2932,7 @@ describe('MutableHashSet', () => {
         [ u3, u4, u5 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -3084,26 +3023,6 @@ describe('MutableHashSet', () => {
 
   describe('union', () => {
 
-    it('then an error is thrown', () => {
-      const set = MutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.union(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.union(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.union([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('unionCustom', () => {
-
     it('when provided Sets are empty then an empty Set is returned', () => {
       const setOfNumberSource = MutableHashSet.empty<number>(
         hashNumber,
@@ -3116,13 +3035,13 @@ describe('MutableHashSet', () => {
       const setOfHashableObjectSource = MutableHashSet.empty<User>();
       const setOfHashableObjectOther = MutableHashSet.empty<User>();
 
-      const setOfNumberResult = setOfNumberSource.unionCustom(
+      const setOfNumberResult = setOfNumberSource.union(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.union(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.union(
         setOfHashableObjectOther
       );
 
@@ -3159,13 +3078,13 @@ describe('MutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.unionCustom(
+      const setOfNumberResult = setOfNumber.union(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.union(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3211,13 +3130,13 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfNumberResult = setOfNumber.unionCustom(
+      const setOfNumberResult = setOfNumber.union(
         [ n ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.union(
         [ r3 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3270,13 +3189,13 @@ describe('MutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfNumberResult = setOfNumber.unionCustom(
+      const setOfNumberResult = setOfNumber.union(
         [ n3 ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.union(
         [ r3, r4 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3315,7 +3234,7 @@ describe('MutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3343,7 +3262,7 @@ describe('MutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 

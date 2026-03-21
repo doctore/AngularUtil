@@ -2,13 +2,32 @@ import { NullableOrUndefined } from '@app-core/type';
 import { EqualityFunction } from '@app-core/type/collection';
 
 /**
+ * Union type of {@link AbstractSet} and {@link Set}
+ */
+export type TSet<T> = AbstractSet<T> | Set<T>;
+
+
+
+/**
  *    Main interface containing the common functions included in the different implementations of {@link Set}. Those
  * collections are {@link Iterable}s that contain no duplicate elements.
  *
  * @see ImmutableSet
  * @see MutableSet
  */
-export interface AbstractSet<T> extends Set<T>, Disposable {
+export interface AbstractSet<T> extends ReadonlySetLike<T>, Disposable {
+
+  /**
+   * Appends the given `value` in this {@link AbstractSet} if it does not exist.
+   *
+   * @param value
+   *    New element to add
+   *
+   * @return this {@link AbstractSet} if it is a mutable one,
+   *         new {@link AbstractSet} if it is an immutable instance
+   */
+  add(value: T): this;
+
 
   /**
    *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a new {@link AbstractSet} containing
@@ -24,7 +43,7 @@ export interface AbstractSet<T> extends Set<T>, Disposable {
    *
    * @return a new {@link AbstractSet} containing all the elements in this {@link AbstractSet} which are not also in `other`
    */
-  differenceCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
+  difference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
 
 
   /**
@@ -33,6 +52,24 @@ export interface AbstractSet<T> extends Set<T>, Disposable {
    * @return {@link EqualityFunction}
    */
   getEquals(): EqualityFunction<T>;
+
+
+  /**
+   * Returns an {@link SetIterator} of [T, T] pairs for every value in this {@link AbstractSet}.
+   */
+  entries(): SetIterator<[T, T]>;
+
+
+  /**
+   * Executes a provided function `callbackFn` once per each value in this {@link AbstractSet}, in insertion order.
+   *
+   * @param callbackFn
+   *    The function to execute for each entry in this {@link AbstractSet}
+   * @param thisArg
+   *    This {@link AbstractSet}
+   */
+  forEach(callbackFn: (value: T, value2: T, set: AbstractSet<T>) => void,
+          thisArg?: any): void
 
 
   /**
@@ -49,7 +86,20 @@ export interface AbstractSet<T> extends Set<T>, Disposable {
    *
    * @return a new {@link AbstractSet} containing elements in both this {@link AbstractSet} and provided `other`
    */
-  intersectionCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
+  intersection(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
+
+
+  /**
+   *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if this {@link AbstractSet}
+   * has no elements in common with the given `other`.
+   *
+   * @param other
+   *    {@link Iterable} or {@link ReadonlySetLike} with the elements to search
+   *
+   * @return `true` if this {@link AbstractSet} has no elements in common with `other` set,
+   *         `false` otherwise.
+   */
+  isDisjointFrom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean;
 
 
   /**
@@ -59,6 +109,32 @@ export interface AbstractSet<T> extends Set<T>, Disposable {
    *         `false` otherwise
    */
   isEmpty(): boolean;
+
+
+  /**
+   *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if all elements of
+   * this {@link AbstractSet} are in the given `other`.
+   *
+   * @param other
+   *    {@link Iterable} or {@link ReadonlySetLike} to verify
+   *
+   * @return `true` if all elements in this {@link AbstractSet} are also in `other`,
+   *         `false` otherwise
+   */
+  isSubsetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean;
+
+
+  /**
+   *     Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if all elements of
+   * the given `other` are in this {@link AbstractSet}.
+   *
+   * @param other
+   *    {@link Iterable} or {@link ReadonlySetLike} to verify
+   *
+   * @return `true` if all elements in `other` are also in this {@link AbstractSet},
+   *         `false` otherwise.
+   */
+  isSupersetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean;
 
 
   /**
@@ -76,7 +152,7 @@ export interface AbstractSet<T> extends Set<T>, Disposable {
    * @return a new {@link AbstractSet} containing elements which are in either this {@link AbstractSet} or
    *         in the given `other`, but not in both
    */
-  symmetricDifferenceCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
+  symmetricDifference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
 
 
   /**
@@ -102,7 +178,25 @@ export interface AbstractSet<T> extends Set<T>, Disposable {
    * @return a new {@link AbstractSet} containing elements which are in either or both of this {@link AbstractSet}
    *         and provided `other`
    */
-  unionCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
+  union(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this;
+
+
+  /**
+   * Iterates over values in this {@link AbstractSet}.
+   */
+  [Symbol.iterator](): SetIterator<T>;
+
+
+  /**
+   * Returns an {@link SetIterator} of values in this {@link AbstractSet}.
+   */
+  values(): SetIterator<T>;
+
+
+  /**
+   * Returns the value for the property containing a string that represents the type of this object.
+   */
+  readonly [Symbol.toStringTag]: string;
 
 }
 
@@ -126,6 +220,26 @@ export interface ImmutableSet<T> extends AbstractSet<T> {
 
 
   /**
+   * Removes all values stored in this {@link ImmutableSet}.
+   *
+   * @return new empty {@link ImmutableSet}.
+   */
+  clear(): this;
+
+
+  /**
+   * Removes the given `value` from this {@link ImmutableSet}.
+   *
+   * @param value
+   *    Element to remove
+   *
+   * @return new {@link ImmutableSet} if `value` exists,
+   *         this {@link ImmutableSet} otherwise
+   */
+  delete(value: T): this;
+
+
+  /**
    * Removes from this {@link ImmutableSet} all of its elements that are contained in the provided `values`.
    *
    * @param values
@@ -134,22 +248,6 @@ export interface ImmutableSet<T> extends AbstractSet<T> {
    * @return a new {@link ImmutableSet} with the elements of this {@link Set} not included in the given `values`
    */
   deleteAll(values: NullableOrUndefined<Iterable<T>>): this;
-
-
-  /**
-   * Removes the given `value` from this {@link ImmutableSet}.
-   *
-   * @apiNote
-   *    This new method is required for {@link ImmutableSet} because the current definition of {@link Set#delete} does not
-   *    allow to return an instance of a {@link Set} but a `boolean` result.
-   *
-   * @param value
-   *    Element to remove
-   *
-   * @return new {@link ImmutableSet} if `value` exists,
-   *         this {@link ImmutableSet} otherwise
-   */
-  remove(value: T): this;
 
 }
 
@@ -171,6 +269,24 @@ export interface MutableSet<T> extends AbstractSet<T> {
    *         `false` otherwise
    */
   addAll(values: NullableOrUndefined<Iterable<T>>): boolean;
+
+
+  /**
+   * Removes all values stored in this {@link MutableSet}.
+   */
+  clear(): void;
+
+
+  /**
+   * Removes the given `value` from this {@link MutableSet}.
+   *
+   * @param value
+   *    Element to remove
+   *
+   * @return `true` if an element in the Set existed and has been removed,
+   *         `false` if the element does not exist
+   */
+  delete(value: T): boolean;
 
 
   /**

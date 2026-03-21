@@ -1,7 +1,7 @@
 import { ObjectUtil, SetUtil } from '@app-core/util';
 import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
-import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
+import { ImmutableHashSet, MutableHashSet, TSet } from '@app-core/type/collection/set';
 import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
 import { Comparator, FComparator } from '@app-core/type/comparator';
 import { FFunction1, FFunction2, Function1, Function2 } from '@app-core/type/function';
@@ -1170,55 +1170,6 @@ describe('SetUtil', () => {
       expect(SetUtil.isReadonlySetLike(nativeSet)).toEqual(expectedResult);
       expect(SetUtil.isReadonlySetLike(mutableHashSet)).toEqual(expectedResult);
       expect(SetUtil.isReadonlySetLike(immutableHashSet)).toEqual(expectedResult);
-    });
-
-  });
-
-
-
-  describe('isSet', () => {
-
-    it('when given input is null or undefined then false will be returned', () => {
-      const expectedResult = false;
-
-      expect(SetUtil.isSet()).toEqual(expectedResult);
-      expect(SetUtil.isSet(undefined)).toEqual(expectedResult);
-      expect(SetUtil.isSet(null)).toEqual(expectedResult);
-    });
-
-
-    it('when given input is not a Set then false will be returned', () => {
-      const user = new User(1, 'user1');
-
-      const expectedResult = false;
-
-      expect(SetUtil.isSet(12)).toEqual(expectedResult);
-      expect(SetUtil.isSet("abc")).toEqual(expectedResult);
-      expect(SetUtil.isSet({})).toEqual(expectedResult);
-      expect(SetUtil.isSet(user)).toEqual(expectedResult);
-    });
-
-
-    it('when given input is a Set then true will be returned', () => {
-      const nativeSet = new Set<number>(
-        [ 1 ]
-      );
-      const mutableHashSet = MutableHashSet.of<string>(
-        stringHash,
-        areStringEquals,
-        [ 'a', 'b', 'c' ]
-      );
-      const immutableHashSet = ImmutableHashSet.empty<Role>(
-        roleHash,
-        areRolesEquals
-      );
-
-      const expectedResult = true;
-
-      expect(SetUtil.isSet(new Set<string>)).toEqual(expectedResult);
-      expect(SetUtil.isSet(nativeSet)).toEqual(expectedResult);
-      expect(SetUtil.isSet(mutableHashSet)).toEqual(expectedResult);
-      expect(SetUtil.isSet(immutableHashSet)).toEqual(expectedResult);
     });
 
   });
@@ -2461,8 +2412,8 @@ function verifyMaps(actualMap: Map<unknown, unknown>,
 }
 
 
-function verifySets(actualSet: Set<unknown>,
-                    expectedSet: Set<unknown>) {
+function verifySets(actualSet: TSet<any>,
+                    expectedSet: TSet<any>) {
   expect(expectedSet.size).toEqual(actualSet.size);
   if (0 < expectedSet.size) {
     for (const v of expectedSet) {

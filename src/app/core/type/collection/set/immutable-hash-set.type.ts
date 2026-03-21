@@ -1,8 +1,7 @@
 import { EqualityFunction, HashFunction } from '@app-core/type/collection';
-import { ImmutableSet } from '@app-core/type/collection/set';
+import { AbstractSet, ImmutableSet } from '@app-core/type/collection/set';
 import { NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil, SetUtil } from '@app-core/util';
-import { UnsupportedOperationError } from '@app-core/error';
 import _ from 'lodash';
 
 /**
@@ -72,16 +71,6 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     );
 
 
-  /**
-   *    Appends the given `value` in this {@link ImmutableHashSet} if it does not exist, returning a new
-   * {@link ImmutableHashSet} if `value` was added.
-   *
-   * @param value
-   *    New element to add
-   *
-   * @return new {@link ImmutableHashSet} if `value` does not exist,
-   *         this {@link ImmutableHashSet} otherwise
-   */
   add(value: T): this {
     const hashValue = this.hash(
       value
@@ -143,12 +132,8 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  /**
-   * Removes all values stored in this {@link ImmutableHashSet}.
-   *
-   * @return new empty {@link ImmutableHashSet}.
-   */
-  clear(): ImmutableHashSet<T> {
+  clear(): this {
+    // @ts-ignore
     return this.cloneImmutableHashSet(
       this.hash,
       this.equals,
@@ -158,297 +143,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  delete(value: T): boolean {
-    throw new UnsupportedOperationError(
-      'Use the alternative method remove'
-    );
-  }
-
-
-  deleteAll(values: NullableOrUndefined<Iterable<T>>): this {
-    if (ObjectUtil.isNullOrUndefined(values)) {
-      return this;
-    }
-    const result = this.cloneImmutableHashSet(
-      this.hash,
-      this.equals,
-      this.cloneHashTable(),
-      this.size
-    );
-    for (const v of values) {
-      result.deleteInternal(
-        v
-      );
-    }
-    // @ts-ignore
-    return result;
-  }
-
-
-  difference<U>(other: ReadonlySetLike<U>): Set<T> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method differenceCustom'
-    );
-  }
-
-
-  differenceCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    let result = new ImmutableHashSet<T>(
-      this.hash,
-      this.equals,
-      this
-    );
-    if (ObjectUtil.nonNullOrUndefined(other)) {
-      let otherSet = SetUtil.isReadonlySetLike(other)
-        ? other
-        : new ImmutableHashSet<T>(
-            this.hash,
-            this.equals,
-            other
-          );
-      if (0 !== otherSet.size) {
-        for (const v of this) {
-          if (otherSet.has(v)) {
-            result.deleteInternal(
-              v
-            );
-          }
-        }
-      }
-    }
-    // @ts-ignore
-    return result;
-  }
-
-
-  /**
-   * Returns an {@link SetIterator} of [T, T] pairs for every value in this {@link ImmutableHashSet}.
-   */
-  *entries(): SetIterator<[T, T]> {
-    for (const valuesWithSameHash of this.hashTable.values()) {
-      for (let i = 0; i < valuesWithSameHash.length; i++) {
-        yield [
-          valuesWithSameHash[i],
-          valuesWithSameHash[i]
-        ];
-      }
-    }
-  }
-
-
-  /**
-   * Executes a provided function `callbackFn` once per each value in this {@link ImmutableHashSet}, in insertion order.
-   *
-   * @param callbackFn
-   *    The function to execute for each entry in this {@link MutableHashSet}
-   * @param thisArg
-   *    This {@link MutableHashSet}
-   */
-  forEach(callbackFn: (value: T, value2: T, set: Set<T>) => void,
-          thisArg?: any): void {
-    for (const v of this.values()) {
-      callbackFn.call(
-        thisArg,
-        v,
-        v,
-        // @ts-ignore
-        this
-      );
-    }
-  }
-
-
-  getEquals(): EqualityFunction<T> {
-    return this.equals;
-  }
-
-
-  /**
-   * Returns the hash function to locate internal elements stored in the current {@link ImmutableHashSet}.
-   *
-   * @return {@link HashFunction}
-   */
-  getHash(): HashFunction<T> {
-    return this.hash;
-  }
-
-
-  /**
-   * Returns the number of elements stored in this {@link ImmutableHashSet}.
-   *
-   * @return number of elements inside {@link ImmutableHashSet}
-   */
-  get size(): number {
-    return this._size;
-  }
-
-
-  get [Symbol.toStringTag](): string {
-    return "ImmutableHashSet"
-  }
-
-
-  /**
-   * Returns a boolean indicating whether the specified `value` exists in this {@link ImmutableHashSet} or not.
-   *
-   * @returns `true` if `value` exists in this {@link ImmutableHashSet},
-   *          `false` otherwise
-   */
-  has(value: T): boolean {
-    return ObjectUtil.nonNullOrUndefined(value)
-      ? this.findInHashTable(
-          this.hashTable,
-          value
-        )
-      : false;
-  }
-
-
-  intersection<U>(other: ReadonlySetLike<U>): Set<T & U> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method intersectionCustom'
-    );
-  }
-
-
-  intersectionCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    let result = new ImmutableHashSet<T>(
-      this.hash,
-      this.equals
-    );
-    if (ObjectUtil.nonNullOrUndefined(other)) {
-      let otherSet = SetUtil.isReadonlySetLike(other)
-        ? other
-        : new ImmutableHashSet<T>(
-            this.hash,
-            this.equals,
-            other
-          );
-      if (0 !== otherSet.size) {
-        for (const v of this) {
-          if (otherSet.has(v)) {
-            result.addInternal(
-              v
-            );
-          }
-        }
-      }
-    }
-    // @ts-ignore
-    return result;
-  }
-
-
-  /**
-   *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if this {@link ImmutableHashSet}
-   * has no elements in common with the given `other`.
-   *
-   * @param other
-   *    {@link Iterable} or {@link ReadonlySetLike} with the elements to search
-   *
-   * @return `true` if this {@link ImmutableHashSet} has no elements in common with `other` set,
-   *         `false` otherwise.
-   */
-  isDisjointFrom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<unknown>>): boolean {
-    if (ObjectUtil.isNullOrUndefined(other)) {
-      return true;
-    }
-    if (SetUtil.isReadonlySetLike(other)) {
-      for (const v of this) {
-        if (other.has(v)) {
-          return false;
-        }
-      }
-    }
-    else {
-      for (const v of other) {
-        if (this.has(v)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-
-  isEmpty(): boolean {
-    return 0 === this.size;
-  }
-
-
-  /**
-   *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if all elements of
-   * this {@link ImmutableHashSet} are in the given `other`.
-   *
-   * @param other
-   *    {@link Iterable} or {@link ReadonlySetLike} to verify
-   *
-   * @return `true` if all elements in this {@link ImmutableHashSet} are also in `other`,
-   *         `false` otherwise
-   */
-  isSubsetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<unknown>>): boolean {
-    if (ObjectUtil.isNullOrUndefined(other)) {
-      return false;
-    }
-    let otherSet;
-    if (SetUtil.isReadonlySetLike(other)) {
-      if (this.size > other.size) {
-        return false;
-      }
-      otherSet = other;
-    }
-    else {
-      otherSet = new ImmutableHashSet<T>(
-        this.hash,
-        this.equals,
-        other
-      );
-    }
-    for (const v of this) {
-      if (!otherSet.has(v)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-
-  /**
-   *     Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if all elements of the
-   * given `other` are in this {@link ImmutableHashSet}.
-   *
-   * @param other
-   *    {@link Iterable} or {@link ReadonlySetLike} to verify
-   *
-   * @return `true` if all elements in `other` are also in this {@link ImmutableHashSet},
-   *         `false` otherwise.
-   */
-  isSupersetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<unknown>>): boolean {
-    if (ObjectUtil.isNullOrUndefined(other)) {
-      return false;
-    }
-    // @ts-ignore
-    const iterableOther: Iterable<T> = SetUtil.isReadonlySetLike(other)
-      ? other.keys()
-      : other;
-    for (const v of iterableOther) {
-      if (!this.has(v)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-
-  /**
-   * Despite its name, returns a {@link SetIterator} of values in the {@link ImmutableHashSet}.
-   */
-  keys(): SetIterator<T> {
-    return this.values();
-  }
-
-
-  remove(value: T): this {
+  delete(value: T): this {
     const hashValue = this.hash(
       value
     );
@@ -495,6 +190,225 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
+  deleteAll(values: NullableOrUndefined<Iterable<T>>): this {
+    if (ObjectUtil.isNullOrUndefined(values)) {
+      return this;
+    }
+    const result = this.cloneImmutableHashSet(
+      this.hash,
+      this.equals,
+      this.cloneHashTable(),
+      this.size
+    );
+    for (const v of values) {
+      result.deleteInternal(
+        v
+      );
+    }
+    // @ts-ignore
+    return result;
+  }
+
+
+  difference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+    let result = new ImmutableHashSet<T>(
+      this.hash,
+      this.equals,
+      this
+    );
+    if (ObjectUtil.nonNullOrUndefined(other)) {
+      let otherSet = SetUtil.isReadonlySetLike(other)
+        ? other
+        : new ImmutableHashSet<T>(
+            this.hash,
+            this.equals,
+            other
+          );
+      if (0 !== otherSet.size) {
+        for (const v of this) {
+          if (otherSet.has(v)) {
+            result.deleteInternal(
+              v
+            );
+          }
+        }
+      }
+    }
+    // @ts-ignore
+    return result;
+  }
+
+
+  *entries(): SetIterator<[T, T]> {
+    for (const valuesWithSameHash of this.hashTable.values()) {
+      for (let i = 0; i < valuesWithSameHash.length; i++) {
+        yield [
+          valuesWithSameHash[i],
+          valuesWithSameHash[i]
+        ];
+      }
+    }
+  }
+
+
+  forEach(callbackFn: (value: T, value2: T, set: AbstractSet<T>) => void,
+          thisArg?: any): void {
+    for (const v of this.values()) {
+      callbackFn.call(
+        thisArg,
+        v,
+        v,
+        // @ts-ignore
+        this
+      );
+    }
+  }
+
+
+  getEquals(): EqualityFunction<T> {
+    return this.equals;
+  }
+
+
+  /**
+   * Returns the hash function to locate internal elements stored in the current {@link ImmutableHashSet}.
+   *
+   * @return {@link HashFunction}
+   */
+  getHash(): HashFunction<T> {
+    return this.hash;
+  }
+
+
+  /**
+   * Returns the number of elements stored in this {@link ImmutableHashSet}.
+   *
+   * @return number of elements inside {@link ImmutableHashSet}
+   */
+  get size(): number {
+    return this._size;
+  }
+
+
+  get [Symbol.toStringTag](): string {
+    return "ImmutableHashSet"
+  }
+
+
+  has(value: T): boolean {
+    return ObjectUtil.nonNullOrUndefined(value)
+      ? this.findInHashTable(
+          this.hashTable,
+          value
+        )
+      : false;
+  }
+
+
+  intersection(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+    let result = new ImmutableHashSet<T>(
+      this.hash,
+      this.equals
+    );
+    if (ObjectUtil.nonNullOrUndefined(other)) {
+      let otherSet = SetUtil.isReadonlySetLike(other)
+        ? other
+        : new ImmutableHashSet<T>(
+            this.hash,
+            this.equals,
+            other
+          );
+      if (0 !== otherSet.size) {
+        for (const v of this) {
+          if (otherSet.has(v)) {
+            result.addInternal(
+              v
+            );
+          }
+        }
+      }
+    }
+    // @ts-ignore
+    return result;
+  }
+
+
+  isDisjointFrom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean {
+    if (ObjectUtil.isNullOrUndefined(other)) {
+      return true;
+    }
+    if (SetUtil.isReadonlySetLike(other)) {
+      for (const v of this) {
+        if (other.has(v)) {
+          return false;
+        }
+      }
+    }
+    else {
+      for (const v of other) {
+        if (this.has(v)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
+  isEmpty(): boolean {
+    return 0 === this.size;
+  }
+
+
+  isSubsetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean {
+    if (ObjectUtil.isNullOrUndefined(other)) {
+      return false;
+    }
+    let otherSet;
+    if (SetUtil.isReadonlySetLike(other)) {
+      if (this.size > other.size) {
+        return false;
+      }
+      otherSet = other;
+    }
+    else {
+      otherSet = new ImmutableHashSet<T>(
+        this.hash,
+        this.equals,
+        other
+      );
+    }
+    for (const v of this) {
+      if (!otherSet.has(v)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+  isSupersetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean {
+    if (ObjectUtil.isNullOrUndefined(other)) {
+      return false;
+    }
+    // @ts-ignore
+    const iterableOther: Iterable<T> = SetUtil.isReadonlySetLike(other)
+      ? other.keys()
+      : other;
+    for (const v of iterableOther) {
+      if (!this.has(v)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+  keys(): SetIterator<T> {
+    return this.values();
+  }
+
+
   [Symbol.dispose](): void {
     this.clear()
   }
@@ -505,14 +419,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  symmetricDifference<U>(other: ReadonlySetLike<U>): Set<T | U> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method symmetricDifferenceCustom'
-    );
-  }
-
-
-  symmetricDifferenceCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+  symmetricDifference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
     if (ObjectUtil.isNullOrUndefined(other)) {
       return this;
     }
@@ -547,14 +454,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  union<U>(other: ReadonlySetLike<U>): Set<T | U> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method unionCustom'
-    );
-  }
-
-
-  unionCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+  union(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
     let result = new ImmutableHashSet<T>(
       this.hash,
       this.equals,
@@ -576,9 +476,6 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  /**
-   * Returns a {@link SetIterator} of values in the {@link ImmutableHashSet}.
-   */
   *values(): SetIterator<T> {
     for (const valuesWithSameHash of this.hashTable.values()) {
       for (const value of valuesWithSameHash) {

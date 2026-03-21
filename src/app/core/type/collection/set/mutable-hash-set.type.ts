@@ -1,8 +1,7 @@
 import { EqualityFunction, HashFunction } from '@app-core/type/collection';
-import { MutableSet } from '@app-core/type/collection/set';
+import {AbstractSet, MutableSet} from '@app-core/type/collection/set';
 import { NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil, SetUtil } from '@app-core/util';
-import { UnsupportedOperationError } from '@app-core/error';
 import _ from 'lodash';
 
 /**
@@ -71,14 +70,6 @@ export class MutableHashSet<T> implements MutableSet<T> {
     );
 
 
-  /**
-   * Appends the given `value` in this {@link MutableHashSet} if it does not exist.
-   *
-   * @param value
-   *    New element to add
-   *
-   * @return this {@link MutableHashSet}
-   */
   add(value: T): this {
     const hashValue = this.hash(
       value
@@ -122,24 +113,12 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   * Removes all values stored in this {@link MutableHashSet}.
-   */
   clear(): void {
     this.hashTable.clear();
     this._size = 0;
   }
 
 
-  /**
-   * Removes the given `value` from this {@link MutableHashSet}.
-   *
-   * @param value
-   *    Element to remove
-   *
-   * @return `true` if `value` in this {@link MutableHashSet} existed and has been removed,
-   *         `false` otherwise
-   */
   delete(value: T): boolean {
     const hashValue = this.hash(
       value
@@ -189,14 +168,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  difference<U>(other: ReadonlySetLike<U>): Set<T> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method differenceCustom'
-    );
-  }
-
-
-  differenceCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+  difference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
     let result = new MutableHashSet<T>(
       this.hash,
       this.equals,
@@ -225,9 +197,6 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   * Returns an {@link SetIterator} of [T, T] pairs for every value in this {@link MutableHashSet}.
-   */
   *entries(): SetIterator<[T, T]> {
     for (const valuesWithSameHash of this.hashTable.values()) {
       for (let i = 0; i < valuesWithSameHash.length; i++) {
@@ -240,15 +209,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   * Executes a provided function `callbackFn` once per each value in this {@link MutableHashSet}, in insertion order.
-   *
-   * @param callbackFn
-   *    The function to execute for each entry in this {@link MutableHashSet}
-   * @param thisArg
-   *    This {@link MutableHashSet}
-   */
-  forEach(callbackFn: (value: T, value2: T, set: Set<T>) => void,
+  forEach(callbackFn: (value: T, value2: T, set: AbstractSet<T>) => void,
           thisArg?: any): void {
     for (const v of this.values()) {
       callbackFn.call(
@@ -292,12 +253,6 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   * Returns a boolean indicating whether the specified `value` exists in this {@link MutableHashSet} or not.
-   *
-   * @returns `true` if `value` exists in this {@link MutableHashSet},
-   *          `false` otherwise
-   */
   has(value: T): boolean {
     return ObjectUtil.nonNullOrUndefined(value)
       ? this.findInHashTable(
@@ -307,14 +262,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  intersection<U>(other: ReadonlySetLike<U>): Set<T & U> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method intersectionCustom'
-    );
-  }
-
-
-  intersectionCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+  intersection(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
     let result = new MutableHashSet<T>(
       this.hash,
       this.equals
@@ -342,17 +290,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if this {@link MutableHashSet}
-   * has no elements in common with the given `other`.
-   *
-   * @param other
-   *    {@link Iterable} or {@link ReadonlySetLike} with the elements to search
-   *
-   * @return `true` if this {@link MutableHashSet} has no elements in common with `other` set,
-   *         `false` otherwise.
-   */
-  isDisjointFrom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<unknown>>): boolean {
+  isDisjointFrom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean {
     if (ObjectUtil.isNullOrUndefined(other)) {
       return true;
     }
@@ -379,17 +317,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if all elements of
-   * this {@link MutableHashSet} are in the given `other`.
-   *
-   * @param other
-   *    {@link Iterable} or {@link ReadonlySetLike} to verify
-   *
-   * @return `true` if all elements in this {@link MutableHashSet} are also in `other`,
-   *         `false` otherwise
-   */
-  isSubsetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<unknown>>): boolean {
+  isSubsetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean {
     if (ObjectUtil.isNullOrUndefined(other)) {
       return false;
     }
@@ -416,17 +344,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   *     Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a boolean indicating if all elements of
-   * the given `other` are in this {@link MutableHashSet}.
-   *
-   * @param other
-   *    {@link Iterable} or {@link ReadonlySetLike} to verify
-   *
-   * @return `true` if all elements in `other` are also in this {@link MutableHashSet},
-   *         `false` otherwise.
-   */
-  isSupersetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<unknown>>): boolean {
+  isSupersetOf(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): boolean {
     if (ObjectUtil.isNullOrUndefined(other)) {
       return false;
     }
@@ -443,9 +361,6 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   * Despite its name, returns a {@link SetIterator} of values in the {@link MutableHashSet}.
-   */
   keys(): SetIterator<T> {
     return this.values();
   }
@@ -461,14 +376,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  symmetricDifference<U>(other: ReadonlySetLike<U>): Set<T | U> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method symmetricDifferenceCustom'
-    );
-  }
-
-
-  symmetricDifferenceCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+  symmetricDifference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
     if (ObjectUtil.isNullOrUndefined(other)) {
       return this;
     }
@@ -503,14 +411,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  union<U>(other: ReadonlySetLike<U>): Set<T | U> {
-    throw new UnsupportedOperationError(
-      'Use the alternative method unionCustom'
-    );
-  }
-
-
-  unionCustom(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
+  union(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
     let result = new MutableHashSet<T>(
       this.hash,
       this.equals,
@@ -532,9 +433,6 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  /**
-   * Returns an {@link SetIterator} of values in this {@link MutableHashSet}.
-   */
   *values(): SetIterator<T> {
     for (const valuesWithSameHash of this.hashTable.values()) {
       for (let i = 0; i < valuesWithSameHash.length; i++) {

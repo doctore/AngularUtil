@@ -2,7 +2,6 @@ import { ImmutableHashSet } from '@app-core/type/collection/set';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { Nullable } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
-import { UnsupportedOperationError } from '@app-core/error';
 
 /**
  * To invoke only this test:
@@ -393,18 +392,147 @@ describe('ImmutableHashSet', () => {
 
   describe('delete', () => {
 
-    it('then an error is thrown', () => {
-      const set = ImmutableHashSet.empty<number>(
+    it('using provided hash and equals functions, when the value to remove does not exist then the new Set has not changed', () => {
+      const n1 = 19;
+      const n2 = 69;
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const u1 = new User(1, 'user 1');
+      const u2 = new User(2, 'user 2');
+
+      const setOfNumber = ImmutableHashSet.of<number>(
         hashNumber,
-        areNumberEquals
+        areNumberEquals,
+        [ n1 ]
+      );
+      const setOfNotHashableObject = ImmutableHashSet.of<Role>(
+        hashRole,
+        areRolesEquals,
+        [ r1 ]
+      );
+      const setOfHashableObject = ImmutableHashSet.of<User>(
+        hashUser,
+        areUsersEquals,
+        [ u1 ]
       );
 
-      // @ts-ignore
-      expect(() => set.delete(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.delete(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.delete(1)).toThrowError(UnsupportedOperationError);
+      const newSetOfNumber = setOfNumber.delete(n2);
+      const newsetOfNotHashableObject = setOfNotHashableObject.delete(r2);
+      const newSetOfHashableObject = setOfHashableObject.delete(u2);
+
+      expect(setOfNumber.size).toBe(1);
+      expect(setOfNumber.has(n1)).toBe(true);
+      expect(setOfNumber.has(n2)).toBe(false);
+      expect(newSetOfNumber.size).toBe(1);
+      expect(newSetOfNumber.has(n1)).toBe(true);
+      expect(newSetOfNumber.has(n2)).toBe(false);
+
+      expect(setOfNotHashableObject.size).toBe(1);
+      expect(setOfNotHashableObject.has(r1)).toBe(true);
+      expect(setOfNotHashableObject.has(r2)).toBe(false);
+      expect(newsetOfNotHashableObject.size).toBe(1);
+      expect(newsetOfNotHashableObject.has(r1)).toBe(true);
+      expect(newsetOfNotHashableObject.has(r2)).toBe(false);
+
+      expect(setOfHashableObject.size).toBe(1);
+      expect(setOfHashableObject.has(u1)).toBe(true);
+      expect(setOfHashableObject.has(u2)).toBe(false);
+      expect(newSetOfHashableObject.size).toBe(1);
+      expect(newSetOfHashableObject.has(u1)).toBe(true);
+      expect(newSetOfHashableObject.has(u2)).toBe(false);
+    });
+
+
+    it('using provided hash and equals functions, when the value to remove exists then the new Set does not contain removed value', () => {
+      const n1 = 19;
+      const n2 = 69;
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const u1 = new User(1, 'user 1');
+      const u2 = new User(2, 'user 2');
+
+      const setOfNumber = ImmutableHashSet.of<number>(
+        hashNumber,
+        areNumberEquals,
+        [ n1, n2 ]
+      );
+      const setOfNotHashableObject = ImmutableHashSet.of<Role>(
+        hashRole,
+        areRolesEquals,
+        [ r1, r2 ]
+      );
+      const setOfHashableObject = ImmutableHashSet.of<User>(
+        hashUser,
+        areUsersEquals,
+        [ u1, u2 ]
+      );
+
+      const newSetOfNumber = setOfNumber.delete(n2);
+      const newsetOfNotHashableObject = setOfNotHashableObject.delete(r2);
+      const newSetOfHashableObject = setOfHashableObject.delete(u2);
+
+      expect(setOfNumber.size).toBe(2);
+      expect(setOfNumber.has(n1)).toBe(true);
+      expect(setOfNumber.has(n2)).toBe(true);
+      expect(newSetOfNumber.size).toBe(1);
+      expect(newSetOfNumber.has(n1)).toBe(true);
+      expect(newSetOfNumber.has(n2)).toBe(false);
+
+      expect(setOfNotHashableObject.size).toBe(2);
+      expect(setOfNotHashableObject.has(r1)).toBe(true);
+      expect(setOfNotHashableObject.has(r2)).toBe(true);
+      expect(newsetOfNotHashableObject.size).toBe(1);
+      expect(newsetOfNotHashableObject.has(r1)).toBe(true);
+      expect(newsetOfNotHashableObject.has(r2)).toBe(false);
+
+      expect(setOfHashableObject.size).toBe(2);
+      expect(setOfHashableObject.has(u1)).toBe(true);
+      expect(setOfHashableObject.has(u2)).toBe(true);
+      expect(newSetOfHashableObject.size).toBe(1);
+      expect(newSetOfHashableObject.has(u1)).toBe(true);
+      expect(newSetOfHashableObject.has(u2)).toBe(false);
+    });
+
+
+    it('using default hash and equals functions, when the value to remove does not exist then the new Set has not changed', () => {
+      const u1 = new User(1, 'user 1');
+      const u2 = new User(2, 'user 2');
+
+      const setOfHashableObject = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ u1 ]
+      );
+
+      const newSetOfHashableObject = setOfHashableObject.delete(u2);
+
+      expect(setOfHashableObject.size).toBe(1);
+      expect(setOfHashableObject.has(u1)).toBe(true);
+      expect(setOfHashableObject.has(u2)).toBe(false);
+      expect(newSetOfHashableObject.size).toBe(1);
+      expect(newSetOfHashableObject.has(u1)).toBe(true);
+      expect(newSetOfHashableObject.has(u2)).toBe(false);
+    });
+
+
+    it('using default hash and equals functions, when the value to remove exists then the new Set does not contain removed value', () => {
+      const u1 = new User(1, 'user 1');
+      const u2 = new User(2, 'user 2');
+
+      const setOfHashableObject = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ u1, u2 ]
+      );
+
+      const newSetOfHashableObject = setOfHashableObject.delete(u2);
+
+      expect(setOfHashableObject.size).toBe(2);
+      expect(setOfHashableObject.has(u1)).toBe(true);
+      expect(setOfHashableObject.has(u2)).toBe(true);
+      expect(newSetOfHashableObject.size).toBe(1);
+      expect(newSetOfHashableObject.has(u1)).toBe(true);
+      expect(newSetOfHashableObject.has(u2)).toBe(false);
     });
 
   });
@@ -631,26 +759,6 @@ describe('ImmutableHashSet', () => {
 
   describe('difference', () => {
 
-    it('then an error is thrown', () => {
-      const set = ImmutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.difference(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.difference(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.difference([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('differenceCustom', () => {
-
     it('when provided Sets are empty then an empty Set is returned', () => {
       const setOfNumberSource = ImmutableHashSet.empty<number>(
         hashNumber,
@@ -663,13 +771,13 @@ describe('ImmutableHashSet', () => {
       const setOfHashableObjectSource = ImmutableHashSet.empty<User>();
       const setOfHashableObjectOther = ImmutableHashSet.empty<User>();
 
-      const setOfNumberResult = setOfNumberSource.differenceCustom(
+      const setOfNumberResult = setOfNumberSource.difference(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.differenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.difference(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.difference(
         setOfHashableObjectOther
       );
 
@@ -706,13 +814,13 @@ describe('ImmutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.differenceCustom(
+      const setOfNumberResult = setOfNumber.difference(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.differenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.difference(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.differenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -761,13 +869,13 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const newSetOfNumber = setOfNumber.differenceCustom(
+      const newSetOfNumber = setOfNumber.difference(
         setOfNumberOther
       );
-      const newsetOfNotHashableObject = setOfNotHashableObject.differenceCustom(
+      const newsetOfNotHashableObject = setOfNotHashableObject.difference(
         [ r3 ]
       );
-      const newSetOfHashableObject = setOfHashableObject.differenceCustom(
+      const newSetOfHashableObject = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -823,13 +931,13 @@ describe('ImmutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const newSetOfNumber = setOfNumber.differenceCustom(
+      const newSetOfNumber = setOfNumber.difference(
         setOfNumberOther
       );
-      const newsetOfNotHashableObject = setOfNotHashableObject.differenceCustom(
+      const newsetOfNotHashableObject = setOfNotHashableObject.difference(
         [ r3, r4 ]
       );
-      const newSetOfHashableObject = setOfHashableObject.differenceCustom(
+      const newSetOfHashableObject = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -868,7 +976,7 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const newSetOfHashableObject = setOfHashableObject.differenceCustom(
+      const newSetOfHashableObject = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -896,7 +1004,7 @@ describe('ImmutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const newSetOfHashableObject = setOfHashableObject.differenceCustom(
+      const newSetOfHashableObject = setOfHashableObject.difference(
         setOfHashableObjectOther
       );
 
@@ -1291,26 +1399,6 @@ describe('ImmutableHashSet', () => {
 
   describe('intersection', () => {
 
-    it('then an error is thrown', () => {
-      const set = ImmutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.intersection(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.intersection(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.intersection([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('intersectionCustom', () => {
-
     it('when provided Sets are empty then an empty Set is returned', () => {
       const setOfNumberSource = ImmutableHashSet.empty<number>(
         hashNumber,
@@ -1323,13 +1411,13 @@ describe('ImmutableHashSet', () => {
       const setOfHashableObjectSource = ImmutableHashSet.empty<User>();
       const setOfHashableObjectOther = ImmutableHashSet.empty<User>();
 
-      const setOfNumberResult = setOfNumberSource.intersectionCustom(
+      const setOfNumberResult = setOfNumberSource.intersection(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.intersectionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.intersection(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.intersection(
         setOfHashableObjectOther
       );
 
@@ -1366,13 +1454,13 @@ describe('ImmutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.intersectionCustom(
+      const setOfNumberResult = setOfNumber.intersection(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.intersectionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.intersection(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.intersectionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1414,13 +1502,13 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const newSetOfNumber = setOfNumber.intersectionCustom(
+      const newSetOfNumber = setOfNumber.intersection(
         setOfNumberOther
       );
-      const newsetOfNotHashableObject = setOfNotHashableObject.intersectionCustom(
+      const newsetOfNotHashableObject = setOfNotHashableObject.intersection(
         [ r3 ]
       );
-      const newSetOfHashableObject = setOfHashableObject.intersectionCustom(
+      const newSetOfHashableObject = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1467,13 +1555,13 @@ describe('ImmutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const newSetOfNumber = setOfNumber.intersectionCustom(
+      const newSetOfNumber = setOfNumber.intersection(
         setOfNumberOther
       );
-      const newsetOfNotHashableObject = setOfNotHashableObject.intersectionCustom(
+      const newsetOfNotHashableObject = setOfNotHashableObject.intersection(
         [ r3, r4 ]
       );
-      const newSetOfHashableObject = setOfHashableObject.intersectionCustom(
+      const newSetOfHashableObject = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1512,7 +1600,7 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const newSetOfHashableObject = setOfHashableObject.intersectionCustom(
+      const newSetOfHashableObject = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -1537,7 +1625,7 @@ describe('ImmutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const newSetOfHashableObject = setOfHashableObject.intersectionCustom(
+      const newSetOfHashableObject = setOfHashableObject.intersection(
         setOfHashableObjectOther
       );
 
@@ -2262,155 +2350,6 @@ describe('ImmutableHashSet', () => {
 
 
 
-  describe('remove', () => {
-
-    it('using provided hash and equals functions, when the value to remove does not exist then the new Set has not changed', () => {
-      const n1 = 19;
-      const n2 = 69;
-      const r1 = { id: 1, name: 'role1' } as Role;
-      const r2 = { id: 2, name: 'role2' } as Role;
-      const u1 = new User(1, 'user 1');
-      const u2 = new User(2, 'user 2');
-
-      const setOfNumber = ImmutableHashSet.of<number>(
-        hashNumber,
-        areNumberEquals,
-        [ n1 ]
-      );
-      const setOfNotHashableObject = ImmutableHashSet.of<Role>(
-        hashRole,
-        areRolesEquals,
-        [ r1 ]
-      );
-      const setOfHashableObject = ImmutableHashSet.of<User>(
-        hashUser,
-        areUsersEquals,
-        [ u1 ]
-      );
-
-      const newSetOfNumber = setOfNumber.remove(n2);
-      const newsetOfNotHashableObject = setOfNotHashableObject.remove(r2);
-      const newSetOfHashableObject = setOfHashableObject.remove(u2);
-
-      expect(setOfNumber.size).toBe(1);
-      expect(setOfNumber.has(n1)).toBe(true);
-      expect(setOfNumber.has(n2)).toBe(false);
-      expect(newSetOfNumber.size).toBe(1);
-      expect(newSetOfNumber.has(n1)).toBe(true);
-      expect(newSetOfNumber.has(n2)).toBe(false);
-
-      expect(setOfNotHashableObject.size).toBe(1);
-      expect(setOfNotHashableObject.has(r1)).toBe(true);
-      expect(setOfNotHashableObject.has(r2)).toBe(false);
-      expect(newsetOfNotHashableObject.size).toBe(1);
-      expect(newsetOfNotHashableObject.has(r1)).toBe(true);
-      expect(newsetOfNotHashableObject.has(r2)).toBe(false);
-
-      expect(setOfHashableObject.size).toBe(1);
-      expect(setOfHashableObject.has(u1)).toBe(true);
-      expect(setOfHashableObject.has(u2)).toBe(false);
-      expect(newSetOfHashableObject.size).toBe(1);
-      expect(newSetOfHashableObject.has(u1)).toBe(true);
-      expect(newSetOfHashableObject.has(u2)).toBe(false);
-    });
-
-
-    it('using provided hash and equals functions, when the value to remove exists then the new Set does not contain removed value', () => {
-      const n1 = 19;
-      const n2 = 69;
-      const r1 = { id: 1, name: 'role1' } as Role;
-      const r2 = { id: 2, name: 'role2' } as Role;
-      const u1 = new User(1, 'user 1');
-      const u2 = new User(2, 'user 2');
-
-      const setOfNumber = ImmutableHashSet.of<number>(
-        hashNumber,
-        areNumberEquals,
-        [ n1, n2 ]
-      );
-      const setOfNotHashableObject = ImmutableHashSet.of<Role>(
-        hashRole,
-        areRolesEquals,
-        [ r1, r2 ]
-      );
-      const setOfHashableObject = ImmutableHashSet.of<User>(
-        hashUser,
-        areUsersEquals,
-        [ u1, u2 ]
-      );
-
-      const newSetOfNumber = setOfNumber.remove(n2);
-      const newsetOfNotHashableObject = setOfNotHashableObject.remove(r2);
-      const newSetOfHashableObject = setOfHashableObject.remove(u2);
-
-      expect(setOfNumber.size).toBe(2);
-      expect(setOfNumber.has(n1)).toBe(true);
-      expect(setOfNumber.has(n2)).toBe(true);
-      expect(newSetOfNumber.size).toBe(1);
-      expect(newSetOfNumber.has(n1)).toBe(true);
-      expect(newSetOfNumber.has(n2)).toBe(false);
-
-      expect(setOfNotHashableObject.size).toBe(2);
-      expect(setOfNotHashableObject.has(r1)).toBe(true);
-      expect(setOfNotHashableObject.has(r2)).toBe(true);
-      expect(newsetOfNotHashableObject.size).toBe(1);
-      expect(newsetOfNotHashableObject.has(r1)).toBe(true);
-      expect(newsetOfNotHashableObject.has(r2)).toBe(false);
-
-      expect(setOfHashableObject.size).toBe(2);
-      expect(setOfHashableObject.has(u1)).toBe(true);
-      expect(setOfHashableObject.has(u2)).toBe(true);
-      expect(newSetOfHashableObject.size).toBe(1);
-      expect(newSetOfHashableObject.has(u1)).toBe(true);
-      expect(newSetOfHashableObject.has(u2)).toBe(false);
-    });
-
-
-    it('using default hash and equals functions, when the value to remove does not exist then the new Set has not changed', () => {
-      const u1 = new User(1, 'user 1');
-      const u2 = new User(2, 'user 2');
-
-      const setOfHashableObject = ImmutableHashSet.of<User>(
-        undefined,
-        undefined,
-        [ u1 ]
-      );
-
-      const newSetOfHashableObject = setOfHashableObject.remove(u2);
-
-      expect(setOfHashableObject.size).toBe(1);
-      expect(setOfHashableObject.has(u1)).toBe(true);
-      expect(setOfHashableObject.has(u2)).toBe(false);
-      expect(newSetOfHashableObject.size).toBe(1);
-      expect(newSetOfHashableObject.has(u1)).toBe(true);
-      expect(newSetOfHashableObject.has(u2)).toBe(false);
-    });
-
-
-    it('using default hash and equals functions, when the value to remove exists then the new Set does not contain removed value', () => {
-      const u1 = new User(1, 'user 1');
-      const u2 = new User(2, 'user 2');
-
-      const setOfHashableObject = ImmutableHashSet.of<User>(
-        undefined,
-        undefined,
-        [ u1, u2 ]
-      );
-
-      const newSetOfHashableObject = setOfHashableObject.remove(u2);
-
-      expect(setOfHashableObject.size).toBe(2);
-      expect(setOfHashableObject.has(u1)).toBe(true);
-      expect(setOfHashableObject.has(u2)).toBe(true);
-      expect(newSetOfHashableObject.size).toBe(1);
-      expect(newSetOfHashableObject.has(u1)).toBe(true);
-      expect(newSetOfHashableObject.has(u2)).toBe(false);
-    });
-
-  });
-
-
-
   describe('size', () => {
 
     it('when provided Set is empty then 0 is returned', () => {
@@ -2699,26 +2638,6 @@ describe('ImmutableHashSet', () => {
 
   describe('symmetricDifference', () => {
 
-    it('then an error is thrown', () => {
-      const set = ImmutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.symmetricDifference(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.symmetricDifference(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.symmetricDifference([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('symmetricDifferenceCustom', () => {
-
     it('when provided Sets are empty then a new Set containing the values added in other is returned', () => {
       const n = 19;
       const r1 = { id: 1, name: 'role1' } as Role;
@@ -2740,13 +2659,13 @@ describe('ImmutableHashSet', () => {
         [ u1, u2 ]
       );
 
-      const setOfNumberResult = setOfNumberSource.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumberSource.symmetricDifference(
         [ n ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.symmetricDifference(
         [ r1, r2 ]
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2790,13 +2709,13 @@ describe('ImmutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumber.symmetricDifference(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifference(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2844,13 +2763,13 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfNumberResult = setOfNumber.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumber.symmetricDifference(
         [ n2 ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifference(
         [ r3 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2905,13 +2824,13 @@ describe('ImmutableHashSet', () => {
         [ u3, u4, u5 ]
       );
 
-      const setOfNumberResult = setOfNumber.symmetricDifferenceCustom(
+      const setOfNumberResult = setOfNumber.symmetricDifference(
         [ n3 ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifferenceCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.symmetricDifference(
         [ r3, r4 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2951,7 +2870,7 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -2980,7 +2899,7 @@ describe('ImmutableHashSet', () => {
         [ u3, u4, u5 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.symmetricDifferenceCustom(
+      const setOfHashableObjectResult = setOfHashableObject.symmetricDifference(
         setOfHashableObjectOther
       );
 
@@ -3071,26 +2990,6 @@ describe('ImmutableHashSet', () => {
 
   describe('union', () => {
 
-    it('then an error is thrown', () => {
-      const set = ImmutableHashSet.empty<number>(
-        hashNumber,
-        areNumberEquals
-      );
-
-      // @ts-ignore
-      expect(() => set.union(null)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.union(undefined)).toThrowError(UnsupportedOperationError);
-      // @ts-ignore
-      expect(() => set.union([ 1 ])).toThrowError(UnsupportedOperationError);
-    });
-
-  });
-
-
-
-  describe('unionCustom', () => {
-
     it('when provided Sets are empty then an empty Set is returned', () => {
       const setOfNumberSource = ImmutableHashSet.empty<number>(
         hashNumber,
@@ -3103,13 +3002,13 @@ describe('ImmutableHashSet', () => {
       const setOfHashableObjectSource = ImmutableHashSet.empty<User>();
       const setOfHashableObjectOther = ImmutableHashSet.empty<User>();
 
-      const setOfNumberResult = setOfNumberSource.unionCustom(
+      const setOfNumberResult = setOfNumberSource.union(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObjectSource.union(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObjectSource.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObjectSource.union(
         setOfHashableObjectOther
       );
 
@@ -3146,13 +3045,13 @@ describe('ImmutableHashSet', () => {
         areUsersEquals
       );
 
-      const setOfNumberResult = setOfNumber.unionCustom(
+      const setOfNumberResult = setOfNumber.union(
         null
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.union(
         undefined
       );
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3198,13 +3097,13 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfNumberResult = setOfNumber.unionCustom(
+      const setOfNumberResult = setOfNumber.union(
         [ n ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.union(
         [ r3 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3257,13 +3156,13 @@ describe('ImmutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfNumberResult = setOfNumber.unionCustom(
+      const setOfNumberResult = setOfNumber.union(
         [ n3 ]
       );
-      const setOfNotHashableObjectResult = setOfNotHashableObject.unionCustom(
+      const setOfNotHashableObjectResult = setOfNotHashableObject.union(
         [ r3, r4 ]
       );
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3302,7 +3201,7 @@ describe('ImmutableHashSet', () => {
         [ u3 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 
@@ -3330,7 +3229,7 @@ describe('ImmutableHashSet', () => {
         [ u3, u4 ]
       );
 
-      const setOfHashableObjectResult = setOfHashableObject.unionCustom(
+      const setOfHashableObjectResult = setOfHashableObject.union(
         setOfHashableObjectOther
       );
 

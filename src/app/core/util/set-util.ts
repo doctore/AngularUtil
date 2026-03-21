@@ -1,16 +1,16 @@
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/type';
-import { AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet } from '@app-core/type/collection/set';
+import { AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet, TSet } from '@app-core/type/collection/set';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 import { Comparator, TComparator } from '@app-core/type/comparator';
 import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
 import { AssertUtil } from './assert-util';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
-import {Optional} from '@app-core/type/functional';
-import {MapUtil} from './map-util';
-import {ObjectUtil} from './object-util';
+import { Optional } from '@app-core/type/functional';
+import { MapUtil } from './map-util';
+import { ObjectUtil } from './object-util';
 
 /**
- * Helper functions to manage {@link Set}.
+ * Helper functions to manage {@link Set} and {@link AbstractSet} (both included in the {@link TSet} type).
  */
 export class SetUtil {
 
@@ -20,14 +20,14 @@ export class SetUtil {
 
 
   /**
-   * Returns a new {@link Set} containing the elements of provided `sourceSet`.
+   * Returns a new {@link TSet} containing the elements of provided `sourceSet`.
    *
    * @param sourceSet
-   *    {@link Set} with the elements to copy. If it is `null` or `undefined` then an empty {@link Set} will be returned
+   *    {@link TSet} with the elements to copy. If it is `null` or `undefined` then an empty {@link TSet} will be returned
    *
-   * @return new {@link Set} containing all elements included in `sourceSet`
+   * @return new {@link TSet} containing all elements included in `sourceSet`
    */
-  static copy = <T>(sourceSet: NullableOrUndefined<Set<T>>): Set<T> => {
+  static copy = <T>(sourceSet: NullableOrUndefined<TSet<T>>): TSet<T> => {
     if (!sourceSet) {
       return new Set<T>();
     }
@@ -48,14 +48,14 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to filter
+   *    {@link TSet} to filter
    * @param filterPredicate
    *   {@link TPredicate1} to filter elements from `sourceSet`. If it is `null` or `undefined` then the length
    *   of `sourceSet` will be returned
    *
    * @return the number of elements satisfying the {@link TPredicate1} `filterPredicate`
    */
-  static count = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static count = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
                      filterPredicate: NullableOrUndefined<TPredicate1<T>>): number => {
     if (this.isEmpty(sourceSet)) {
       return 0;
@@ -77,7 +77,7 @@ export class SetUtil {
 
 
   /**
-   *    Returns a new {@link Set} using `sourceSet` as source, adding from the result the elements that verify the
+   *    Returns a new {@link TSet} using `sourceSet` as source, adding from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *
    * <pre>
@@ -88,16 +88,16 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to filter
+   *    {@link TSet} to filter
    * @param filterPredicate
    *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
    *    of `sourceSet` will be returned
    *
-   * @return empty {@link Set} if `sourceSet` has no elements or no one verifies provided `filterPredicate`,
-   *         otherwise a new {@link Set} with the elements of `sourceSet` which verify `filterPredicate`
+   * @return empty {@link TSet} if `sourceSet` has no elements or no one verifies provided `filterPredicate`,
+   *         otherwise a new {@link TSet} with the elements of `sourceSet` which verify `filterPredicate`
    */
-  static filter = <T>(sourceSet: NullableOrUndefined<Set<T>>,
-                      filterPredicate: NullableOrUndefined<TPredicate1<T>>): Set<T> => {
+  static filter = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
+                      filterPredicate: NullableOrUndefined<TPredicate1<T>>): TSet<T> => {
     if (!sourceSet || !filterPredicate) {
       return this.copy(
         sourceSet
@@ -136,7 +136,7 @@ export class SetUtil {
 
 
   /**
-   *    Returns a new {@link Set} using `sourceSet` as source, removing from the result the elements that verify the
+   *    Returns a new {@link TSet} using `sourceSet` as source, removing from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *
    * <pre>
@@ -147,16 +147,16 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to filter
+   *    {@link TSet} to filter
    * @param filterPredicate
    *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
    *    of `sourceSet` will be returned
    *
-   * @return empty {@link Set} if `sourceSet` has no elements,
-   *         otherwise a new {@link Set} with the elements of `sourceSet` which do not verify `filterPredicate`
+   * @return empty {@link TSet} if `sourceSet` has no elements,
+   *         otherwise a new {@link TSet} with the elements of `sourceSet` which do not verify `filterPredicate`
    */
-  static filterNot = <T>(sourceSet: NullableOrUndefined<Set<T>>,
-                         filterPredicate: NullableOrUndefined<TPredicate1<T>>): Set<T> => {
+  static filterNot = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
+                         filterPredicate: NullableOrUndefined<TPredicate1<T>>): TSet<T> => {
     const finalFilterPredicate = !filterPredicate
       ? null
       : Predicate1.of(filterPredicate).not();
@@ -174,7 +174,7 @@ export class SetUtil {
    *
    * @apiNote
    *    If `sourceSet` or `accumulator` are `null` or `undefined` then `initialValue` is returned. This method might
-   * return different results when the provided `sourceSet` does not guarantee the {@link Set} iteration order.
+   * return different results when the provided `sourceSet` does not guarantee the {@link TSet} iteration order.
    *
    * <pre>
    *    foldLeft(                                          Result:
@@ -185,7 +185,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} with elements to combine
+   *    {@link TSet} with elements to combine
    * @param initialValue
    *    The initial value to start with
    * @param accumulator
@@ -194,17 +194,17 @@ export class SetUtil {
    * @return result of inserting `accumulator` between consecutive elements of `sourceSet`, going
    *         left to right with the start value `initialValue` on the left.
    */
-  static foldLeft<T, R>(sourceSet: NullableOrUndefined<Set<T>>,
+  static foldLeft<T, R>(sourceSet: NullableOrUndefined<TSet<T>>,
                         initialValue: R,
                         accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R;
 
 
-  static foldLeft<T, R>(sourceSet: NullableOrUndefined<Set<T>>,
+  static foldLeft<T, R>(sourceSet: NullableOrUndefined<TSet<T>>,
                         initialValue: R,
                         accumulator: NullableOrUndefined<FFunction2<R, T, R>>): R;
 
 
-  static foldLeft<T, R>(sourceSet: NullableOrUndefined<Set<T>>,
+  static foldLeft<T, R>(sourceSet: NullableOrUndefined<TSet<T>>,
                         initialValue: R,
                         accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R {
     if (this.isEmpty(sourceSet) || !accumulator) {
@@ -237,7 +237,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} with the elements to filter and group
+   *    {@link TSet} with the elements to filter and group
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param filterPredicate
@@ -248,7 +248,7 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceSet`
    */
-  static groupBy = <T, K>(sourceSet: NullableOrUndefined<Set<T>>,
+  static groupBy = <T, K>(sourceSet: NullableOrUndefined<TSet<T>>,
                           discriminatorKey: TFunction1<T, K>,
                           filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
     const result: Map<K, T[]> = new Map<K, T[]>();
@@ -312,7 +312,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} with the elements to filter and group
+   *    {@link TSet} with the elements to filter and group
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param filterPredicate
@@ -323,7 +323,7 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceSet`
    */
-  static groupByMultiKey = <T, K>(sourceSet: NullableOrUndefined<Set<T>>,
+  static groupByMultiKey = <T, K>(sourceSet: NullableOrUndefined<TSet<T>>,
                                   discriminatorKey: TFunction1<T, K[]>,
                                   filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
     const result: Map<K, T[]> = new Map<K, T[]>();
@@ -423,28 +423,13 @@ export class SetUtil {
 
 
   /**
-   *    Verifies if the given `input` is classified as {@link Set} object (including new ones like: {@link MutableHashSet}
-   * or {@link ImmutableHashSet}).
-   *
-   * @param input
-   *    Object to verify
-   *
-   * @return `true` if `input` is an instance of {@link Set},
-   *         `false` otherwise
-   */
-  static isSet = (input?: any): input is Set<any> =>
-    input instanceof Set ||
-    this.isAbstractSet(input);
-
-
-  /**
    *    Performs a reduction on the elements of `sourceSet`, using an associative accumulation {@link TBinaryOperator},
    * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
    *
    * @apiNote
    *    This method is similar to {@link SetUtil#foldLeft} but `accumulator` works with the same type that `sourceSet`
-   * and only uses contained elements of provided {@link Set}. This method might return different results when the
-   * provided `sourceSet` does not guarantee the {@link Set} iteration order.
+   * and only uses contained elements of provided {@link TSet}. This method might return different results when the
+   * provided `sourceSet` does not guarantee the {@link TSet} iteration order.
    *
    * <pre>
    *    reduce(                                            Result:
@@ -454,7 +439,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} with elements to combine
+   *    {@link TSet} with elements to combine
    * @param accumulator
    *    A {@link TBinaryOperator} which combines elements
    *
@@ -462,15 +447,15 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceSet` is not empty
    */
-  static reduce<T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
                    accumulator: TBinaryOperator<T>): OrUndefined<T>;
 
 
-  static reduce<T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
                    accumulator: FBinaryOperator<T>): OrUndefined<T>;
 
 
-  static reduce<T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static reduce<T>(sourceSet: NullableOrUndefined<TSet<T>>,
                    accumulator: TBinaryOperator<T>): OrUndefined<T> {
     let result: OrUndefined<T>;
     if (!this.isEmpty(sourceSet)) {
@@ -510,7 +495,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to get its largest element
+   *    {@link TSet} to get its largest element
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
@@ -519,7 +504,7 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
    */
-  static max = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static max = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
                    comparator: TComparator<T>): NullableOrUndefined<T> => {
     if (!this.isEmpty(sourceSet)) {
       AssertUtil.notNullOrUndefined(
@@ -562,7 +547,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to get its largest element
+   *    {@link TSet} to get its largest element
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
@@ -571,7 +556,7 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
    */
-  static maxOptional = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static maxOptional = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
                            comparator: TComparator<T>): Optional<T> =>
     Optional.ofNullable(
       this.max(
@@ -592,7 +577,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to get its smallest element
+   *    {@link TSet} to get its smallest element
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
@@ -601,7 +586,7 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
    */
-  static min = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static min = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
                    comparator: TComparator<T>): NullableOrUndefined<T> => {
     if (!this.isEmpty(sourceSet)) {
       AssertUtil.notNullOrUndefined(
@@ -644,7 +629,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to get its smallest element
+   *    {@link TSet} to get its smallest element
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
@@ -653,7 +638,7 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `comparator` is `null` or `undefined` with a not empty `sourceSet`
    */
-  static minOptional = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static minOptional = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
                            comparator: TComparator<T>): Optional<T> =>
     Optional.ofNullable(
       this.min(
@@ -681,13 +666,13 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} to sort
+   *    {@link TSet} to sort
    * @param comparator
    *    {@link TComparator} used to determine the order of the elements
    *
    * @return new sorted array
    */
-  static sort = <T>(sourceSet: NullableOrUndefined<Set<T>>,
+  static sort = <T>(sourceSet: NullableOrUndefined<TSet<T>>,
                     comparator?: Nullable<TComparator<T>>): T[] => {
     if (this.isEmpty(sourceSet)) {
       return [];
@@ -745,7 +730,7 @@ export class SetUtil {
    * </pre>
    *
    * @param sourceSet
-   *    {@link Set} with the elements to transform and include in the returned {@link Map}
+   *    {@link TSet} with the elements to transform and include in the returned {@link Map}
    * @param discriminatorKey
    *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
    * @param valueMapper
@@ -755,7 +740,7 @@ export class SetUtil {
    *
    * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceSet`
    */
-  static toMap<T, K, V>(sourceSet: NullableOrUndefined<Set<T>>,
+  static toMap<T, K, V>(sourceSet: NullableOrUndefined<TSet<T>>,
                         discriminatorKey: TFunction1<T, K>,
                         valueMapper?: TFunction1<T, V>): Map<K, V> {
     const result: Map<K, V> = new Map<K, V>();
@@ -789,14 +774,14 @@ export class SetUtil {
 
 
   /**
-   * Returns an empty {@link Set} based on the type of provided `input`.
+   * Returns an empty {@link TSet} based on the type of provided `input`.
    *
    * @param input
-   *    Source {@link ReadonlySetLike} used to know the type of the returned instance
+   *    Source {@link TSet} used to know the type of the returned instance
    *
-   * @return {@link Set} whose type is based on the provided `input`
+   * @return {@link TSet} whose type is based on the provided `input`
    */
-  private static createEmptySet<T>(input?: ReadonlySetLike<T>): Set<T> {
+  private static createEmptySet<T>(input?: TSet<T>): TSet<T> {
     if (input instanceof ImmutableHashSet) {
       return ImmutableHashSet.empty<T>(
         input.getHash(),
@@ -814,14 +799,14 @@ export class SetUtil {
 
 
   /**
-   * Returns a new {@link Set} based on the type of provided `input`, adding its stored values.
+   * Returns a new {@link TSet} based on the type of provided `input`, adding its stored values.
    *
    * @param input
-   *    Source {@link Set} used to know the type of the returned instance
+   *    Source {@link TSet} used to know the type of the returned instance
    *
-   * @return {@link Set} whose type is based on the provided `input`, including its stored values
+   * @return {@link TSet} whose type is based on the provided `input`, including its stored values
    */
-  private static cloneSet<T>(input?: Set<T>): Set<T> {
+  private static cloneSet<T>(input?: TSet<T>): TSet<T> {
     if (input instanceof ImmutableHashSet) {
       return ImmutableHashSet.of<T>(
         input.getHash(),
