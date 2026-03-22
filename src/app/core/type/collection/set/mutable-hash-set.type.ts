@@ -254,11 +254,21 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   has(value: T): boolean {
-    return ObjectUtil.nonNullOrUndefined(value)
-      ? this.findInHashTable(
-          value
-        )
-      : false;
+    const hashOfValue = this.hash(
+      value
+    );
+    const valuesWithSameHash = this.hashTable.get(
+      hashOfValue
+    );
+    if (!valuesWithSameHash) {
+      return false;
+    }
+    return valuesWithSameHash.some(v =>
+      this.equals(
+        v,
+        value
+      )
+    );
   }
 
 
@@ -503,34 +513,6 @@ export class MutableHashSet<T> implements MutableSet<T> {
       h = ((h << 5) - h + jsonOfValue.charCodeAt(i)) | 0;
     }
     return h;
-  }
-
-
-  /**
-   *    Searches the given `value` inside the values of this {@link MutableHashSet#hashTable}, returning `true` if
-   * `value` exists, `false` otherwise.
-   *
-   * @param value
-   *    Element to find inside provided `hashTable`
-   *
-   * @return `true` if the values of this {@link MutableHashSet#hashTable} contains the given `value`,
-   *         `false` otherwise.
-   */
-  private findInHashTable(value: T): boolean {
-    const hashOfValue = this.hash(
-      value
-    );
-    const valuesWithSameHash = this.hashTable.get(
-      hashOfValue
-    );
-    if (valuesWithSameHash) {
-      for (const current of valuesWithSameHash) {
-        if (this.equals(current, value)) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
 }

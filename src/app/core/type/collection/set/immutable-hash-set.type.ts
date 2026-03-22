@@ -296,12 +296,21 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   has(value: T): boolean {
-    return ObjectUtil.nonNullOrUndefined(value)
-      ? this.findInHashTable(
-          this.hashTable,
-          value
-        )
-      : false;
+    const hashOfValue = this.hash(
+      value
+    );
+    const valuesWithSameHash = this.hashTable.get(
+      hashOfValue
+    );
+    if (!valuesWithSameHash) {
+      return false;
+    }
+    return valuesWithSameHash.some(v =>
+      this.equals(
+        v,
+        value
+      )
+    );
   }
 
 
@@ -669,37 +678,6 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
       );
     }
     return true;
-  }
-
-
-  /**
-   *    Searches the given `value` inside the values of provided `hashTable`, returning `true` if `value` exists,
-   * false otherwise.
-   *
-   * @param hashTable
-   *    Source {@link Map} to search the given `value`
-   * @param value
-   *    Element to find inside provided `hashTable`
-   *
-   * @return `true` the values of `hashTable` contains the given `value`,
-   *         `false` otherwise
-   */
-  private findInHashTable(hashTable: Map<number, T[]>,
-                          value: T): boolean {
-    const hashOfValue = this.hash(
-      value
-    );
-    const valuesWithSameHash = hashTable.get(
-      hashOfValue
-    );
-    if (valuesWithSameHash) {
-      for (const current of valuesWithSameHash) {
-        if (this.equals(current, value)) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
 }
