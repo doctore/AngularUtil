@@ -24,6 +24,32 @@ import { ArrayUtil } from '@app-core/util';
 describe("Benchmark: ArrayUtil", () => {
 
   /**
+   * copy comparison:
+   */
+  bench("copy: lowNumberOfItems", () => {
+    ArrayUtil.copy(lowNumberOfItems);
+  });
+
+
+  bench("copy: mediumNumberOfItems", () => {
+    ArrayUtil.copy(mediumNumberOfItems);
+  });
+
+
+  bench("copy: highNumberOfItems", () => {
+    ArrayUtil.copy(highNumberOfItems);
+  });
+
+
+/*
+ copy: lowNumberOfItems                 16,173,271.45    0.0000    0.3805    0.0001    0.0001    0.0002    0.0002    0.0009  ±0.25%  8086636
+ copy: mediumNumberOfItems                 274,992.47    0.0017    0.4011    0.0036    0.0037    0.0045    0.0061    0.0090  ±0.48%   137497
+ copy: highNumberOfItems                     8,181.81    0.0981    2.7443    0.1222    0.1111    0.1840    0.3220    2.4888  ±4.03%     4091
+*/
+
+
+
+  /**
    * Filter comparison:
    */
   bench("filter: lowNumberOfItems", () => {

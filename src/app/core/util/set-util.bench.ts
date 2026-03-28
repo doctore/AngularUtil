@@ -24,6 +24,96 @@ import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set'
  */
 describe("Benchmark: SetUtil", () => {
 
+  /**
+   * copy comparison:
+   */
+  bench("Native Set copy: lowNumberOfItemsConsecutiveIds", () => {
+    SetUtil.copy(nativeSet_LowNumberOfItemsConsecutiveIds);
+  });
+
+  bench("MutableHashSet copy: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+    SetUtil.copy(mutableHashSet_LowNumberOfItemsConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("MutableHashSet copy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.copy(mutableHashSet_LowNumberOfItemsConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("MutableHashSet copy: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+    SetUtil.copy(mutableHashSet_LowNumberOfItemsConsecutiveIds_HighCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet copy: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+    SetUtil.copy(immutableHashSet_LowNumberOfItemsConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet copy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.copy(immutableHashSet_LowNumberOfItemsConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet copy: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+    SetUtil.copy(immutableHashSet_LowNumberOfItemsConsecutiveIds_HighCollisionHash);
+  });
+
+
+  bench("Native Set copy: mediumNumberOfItemsNoConsecutiveIds", () => {
+    SetUtil.copy(nativeSet_MediumNumberOfItemsNoConsecutiveIds);
+  });
+
+  bench("MutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+    SetUtil.copy(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("MutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.copy(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("MutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+    SetUtil.copy(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_HighCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+    SetUtil.copy(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.copy(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+    SetUtil.copy(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_HighCollisionHash);
+  });
+
+
+/*
+ Native Set copy: lowNumberOfItemsConsecutiveIds                                     1,675,420.73  0.0003  2.9782  0.0006  0.0006  0.0012  0.0014  0.0032  ±1.29%   837711
+ MutableHashSet copy: lowNumberOfItemsConsecutiveIds - noCollisionHash                 277,763.81  0.0030  0.4135  0.0036  0.0037  0.0056  0.0064  0.0078  ±0.35%   138882
+ MutableHashSet copy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash             257,365.97  0.0031  0.4988  0.0039  0.0039  0.0062  0.0070  0.0097  ±0.46%   128683
+ MutableHashSet copy: lowNumberOfItemsConsecutiveIds - highCollisionHash               280,595.35  0.0030  0.3723  0.0036  0.0036  0.0061  0.0067  0.0083  ±0.33%   140298
+ ImmutableHashSet copy: lowNumberOfItemsConsecutiveIds - noCollisionHash               259,701.18  0.0030  0.5261  0.0039  0.0039  0.0064  0.0070  0.0094  ±0.50%   129851
+ ImmutableHashSet copy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash           261,584.05  0.0031  0.4721  0.0038  0.0039  0.0059  0.0068  0.0094  ±0.45%   130793
+ ImmutableHashSet copy: lowNumberOfItemsConsecutiveIds - highCollisionHash             268,609.84  0.0030  0.6040  0.0037  0.0038  0.0058  0.0066  0.0083  ±0.46%   134305
+
+ Native Set copy: mediumNumberOfItemsNoConsecutiveIds                                   15,244.54  0.0474  9.0820  0.0656  0.0572  0.1094  0.1623  3.0216  ±6.07%     7626
+ MutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash              3,098.52  0.2853  1.9191  0.3227  0.3165  1.1688  1.2545  1.9068  ±1.72%     1550
+ MutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash          7,536.68  0.1144  0.5221  0.1327  0.1327  0.1891  0.3035  0.3926  ±0.48%     3769
+ MutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash            3,125.96  0.2913  0.7508  0.3199  0.3211  0.4068  0.4873  0.7378  ±0.41%     1563
+ ImmutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash            2,985.36  0.2952  1.7281  0.3350  0.3304  1.1549  1.2930  1.5020  ±1.65%     1493
+ ImmutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash        8,193.63  0.1088  0.7637  0.1220  0.1217  0.2282  0.2680  0.3262  ±0.51%     4097
+ ImmutableHashSet copy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash          3,422.98  0.2707  0.6495  0.2921  0.2907  0.3777  0.4508  0.6453  ±0.42%     1712
+*/
+
+
 
   /**
    * Count comparison:
@@ -104,6 +194,7 @@ describe("Benchmark: SetUtil", () => {
  ImmutableHashSet count: lowNumberOfItemsConsecutiveIds - noCollisionHash              715,555.74  0.0012  0.2178  0.0014  0.0014  0.0021  0.0027  0.0042  ±0.15%   357778
  ImmutableHashSet count: lowNumberOfItemsConsecutiveIds - mediumCollisionHash          675,419.48  0.0011  4.1848  0.0015  0.0014  0.0036  0.0042  0.0068  ±1.65%   337710
  ImmutableHashSet count: lowNumberOfItemsConsecutiveIds - highCollisionHash            778,384.18  0.0010  0.7329  0.0013  0.0012  0.0030  0.0035  0.0070  ±0.39%   389193
+
  Native Set count: mediumNumberOfItemsNoConsecutiveIds                                  26,383.60  0.0323  0.3303  0.0379  0.0380  0.0474  0.0523  0.1491  ±0.32%    13192
  MutableHashSet count: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash            19,119.29  0.0452  0.4539  0.0523  0.0525  0.0635  0.0760  0.2118  ±0.38%     9560
  MutableHashSet count: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash        23,605.98  0.0353  0.2027  0.0424  0.0426  0.0508  0.0613  0.1475  ±0.27%    11804
@@ -194,6 +285,7 @@ describe("Benchmark: SetUtil", () => {
  ImmutableHashSet filter: lowNumberOfItemsConsecutiveIds - noCollisionHash             309,320.64  0.0024  2.1316  0.0032  0.0031  0.0062  0.0076  0.0156  ±1.52%   154661
  ImmutableHashSet filter: lowNumberOfItemsConsecutiveIds - mediumCollisionHash         317,485.57  0.0024  2.2117  0.0031  0.0031  0.0058  0.0066  0.0120  ±1.35%   158743
  ImmutableHashSet filter: lowNumberOfItemsConsecutiveIds - highCollisionHash           252,291.04  0.0023  4.5473  0.0040  0.0029  0.0062  0.0075  0.0124  ±8.47%   126146
+
  Native Set filter: mediumNumberOfItemsNoConsecutiveIds                                  8,991.14  0.0934  4.3811  0.1112  0.1120  0.1822  0.2315  0.2693  ±1.73%     4496
  MutableHashSet filter: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash            6,170.34  0.1399  0.7358  0.1621  0.1602  0.3135  0.3873  0.5999  ±0.69%     3086
  MutableHashSet filter: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       10,183.59  0.0880  0.3697  0.0982  0.1002  0.1257  0.2113  0.2224  ±0.34%     5092
@@ -284,6 +376,7 @@ describe("Benchmark: SetUtil", () => {
  ImmutableHashSet sort: lowNumberOfItemsConsecutiveIds - noCollisionHash               322,542.31  0.0026  0.1621  0.0031  0.0031  0.0050  0.0056  0.0070  ±0.25%   161272
  ImmutableHashSet sort: lowNumberOfItemsConsecutiveIds - mediumCollisionHash           306,834.95  0.0026  0.3691  0.0033  0.0033  0.0058  0.0067  0.0089  ±0.34%   153419
  ImmutableHashSet sort: lowNumberOfItemsConsecutiveIds - highCollisionHash             162,778.13  0.0052  0.3012  0.0061  0.0062  0.0089  0.0097  0.0125  ±0.27%    81390
+
  Native Set sort: mediumNumberOfItemsNoConsecutiveIds                                   17,541.99  0.0487  0.5503  0.0570  0.0579  0.0764  0.0824  0.2471  ±0.38%     8772
  MutableHashSet sort: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash              6,716.28  0.1265  0.3983  0.1489  0.1545  0.2407  0.2688  0.3717  ±0.43%     3359
  MutableHashSet sort: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash          2,756.53  0.3316  0.8579  0.3628  0.3660  0.5145  0.5881  0.8172  ±0.47%     1379
@@ -291,6 +384,97 @@ describe("Benchmark: SetUtil", () => {
  ImmutableHashSet sort: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash            6,773.85  0.1286  0.3946  0.1476  0.1538  0.2252  0.3017  0.3428  ±0.41%     3387
  ImmutableHashSet sort: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash        2,751.26  0.3256  0.7925  0.3635  0.3665  0.4976  0.5950  0.7885  ±0.47%     1376
  ImmutableHashSet sort: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash          3,191.37  0.2735  1.6342  0.3133  0.3205  0.5259  0.6225  0.9874  ±0.84%     1596
+*/
+
+
+
+  /**
+   * toArray comparison:
+   */
+  bench("Native Set toArray: lowNumberOfItemsConsecutiveIds", () => {
+    SetUtil.toArray(nativeSet_LowNumberOfItemsConsecutiveIds);
+  });
+
+  bench("MutableHashSet toArray: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+    SetUtil.toArray(mutableHashSet_LowNumberOfItemsConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("MutableHashSet toArray: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.toArray(mutableHashSet_LowNumberOfItemsConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("MutableHashSet toArray: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+    SetUtil.toArray(mutableHashSet_LowNumberOfItemsConsecutiveIds_HighCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet toArray: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+    SetUtil.toArray(immutableHashSet_LowNumberOfItemsConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet toArray: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.toArray(immutableHashSet_LowNumberOfItemsConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet toArray: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+    SetUtil.toArray(immutableHashSet_LowNumberOfItemsConsecutiveIds_HighCollisionHash);
+  });
+
+
+  bench("Native Set toArray: mediumNumberOfItemsNoConsecutiveIds", () => {
+    SetUtil.toArray(nativeSet_MediumNumberOfItemsNoConsecutiveIds);
+  });
+
+  bench("MutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+    SetUtil.toArray(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("MutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.toArray(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("MutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+    SetUtil.toArray(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_HighCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+    SetUtil.toArray(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_NoCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.toArray(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_MediumCollisionHash);
+  });
+
+
+  bench("ImmutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+    SetUtil.toArray(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_HighCollisionHash);
+  });
+
+
+/*
+ Native Set toArray: lowNumberOfItemsConsecutiveIds                                   4,864,318.19  0.0002  0.2189  0.0002  0.0002  0.0004  0.0005  0.0008  ±0.28%  2432160
+ MutableHashSet toArray: lowNumberOfItemsConsecutiveIds - noCollisionHash               477,253.88  0.0017  0.2777  0.0021  0.0021  0.0031  0.0041  0.0052  ±0.32%   238627
+ MutableHashSet toArray: lowNumberOfItemsConsecutiveIds - mediumCollisionHash           476,871.96  0.0017  0.3294  0.0021  0.0021  0.0032  0.0041  0.0051  ±0.32%   238436
+ MutableHashSet toArray: lowNumberOfItemsConsecutiveIds - highCollisionHash             548,829.85  0.0015  0.2347  0.0018  0.0018  0.0030  0.0037  0.0048  ±0.35%   274415
+ ImmutableHashSet toArray: lowNumberOfItemsConsecutiveIds - noCollisionHash             471,508.90  0.0017  0.3113  0.0021  0.0021  0.0033  0.0042  0.0054  ±0.33%   235755
+ ImmutableHashSet toArray: lowNumberOfItemsConsecutiveIds - mediumCollisionHash         472,573.03  0.0018  0.2966  0.0021  0.0021  0.0031  0.0041  0.0052  ±0.37%   236287
+ ImmutableHashSet toArray: lowNumberOfItemsConsecutiveIds - highCollisionHash           535,737.79  0.0015  0.3057  0.0019  0.0019  0.0030  0.0038  0.0048  ±0.28%   267869
+
+ Native Set toArray: mediumNumberOfItemsNoConsecutiveIds                                135,740.71  0.0051  0.5901  0.0074  0.0074  0.0100  0.0116  0.0161  ±0.42%    67871
+ MutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash           10,432.30  0.0808  0.4873  0.0959  0.0957  0.1712  0.2200  0.3054  ±0.49%     5217
+ MutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       12,218.20  0.0707  0.2487  0.0818  0.0824  0.1087  0.1954  0.2124  ±0.33%     6110
+ MutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash         12,413.03  0.0697  0.3634  0.0806  0.0810  0.1175  0.2149  0.2434  ±0.41%     6207
+ ImmutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash         11,016.37  0.0801  0.4759  0.0908  0.0908  0.1481  0.1903  0.2429  ±0.41%     5509
+ ImmutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash     12,855.36  0.0694  0.2529  0.0778  0.0784  0.1088  0.1927  0.2233  ±0.35%     6428
+ ImmutableHashSet toArray: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash       13,149.47  0.0673  0.4563  0.0760  0.0768  0.1156  0.1861  0.2035  ±0.36%     6575
 */
 
 
