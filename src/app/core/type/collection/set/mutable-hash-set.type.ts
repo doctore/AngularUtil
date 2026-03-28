@@ -371,7 +371,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  keys(): SetIterator<T> {
+  keys(): IterableIterator<T> {
     return this.values();
   }
 
@@ -381,7 +381,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  [Symbol.iterator](): SetIterator<T> {
+  [Symbol.iterator](): IterableIterator<T> {
     return this.values();
   }
 
@@ -443,12 +443,36 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  *values(): SetIterator<T> {
-    for (const valuesWithSameHash of this.hashTable.values()) {
-      for (let i = 0; i < valuesWithSameHash.length; i++) {
-        yield valuesWithSameHash[i];
+  values(): IterableIterator<T> {
+    const valuesWithSameHash = this.hashTable.values();
+    let currentBucket: T[] | undefined;
+    let index = 0;
+
+    return {
+      [Symbol.iterator]() {
+        return this;
+      },
+
+      next(): IteratorResult<T> {
+        while (true) {
+          if (currentBucket !== undefined && index < currentBucket.length) {
+            return {
+              value: currentBucket[index++],
+              done: false
+            };
+          }
+          const nextBucket = valuesWithSameHash.next();
+          if (nextBucket.done) {
+            return {
+              value: undefined as any,
+              done: true
+            };
+          }
+          currentBucket = nextBucket.value;
+          index = 0;
+        }
       }
-    }
+    };
   }
 
 

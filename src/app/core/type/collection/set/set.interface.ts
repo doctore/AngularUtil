@@ -55,9 +55,9 @@ export interface AbstractSet<T> extends ReadonlySetLike<T>, Disposable {
 
 
   /**
-   * Returns an {@link SetIterator} of [T, T] pairs for every value in this {@link AbstractSet}.
+   * Returns an {@link Iterator} of [T, T] pairs for every value in this {@link AbstractSet}.
    */
-  entries(): SetIterator<[T, T]>;
+  entries(): Iterator<[T, T]>;
 
 
   /**
@@ -184,13 +184,13 @@ export interface AbstractSet<T> extends ReadonlySetLike<T>, Disposable {
   /**
    * Iterates over values in this {@link AbstractSet}.
    */
-  [Symbol.iterator](): SetIterator<T>;
+  [Symbol.iterator](): IterableIterator<T>;
 
 
   /**
-   * Returns an {@link SetIterator} of values in this {@link AbstractSet}.
+   * Returns an {@link IterableIterator} of values in this {@link AbstractSet}.
    */
-  values(): SetIterator<T>;
+  values(): IterableIterator<T>;
 
 
   /**

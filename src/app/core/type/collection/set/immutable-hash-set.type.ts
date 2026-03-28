@@ -413,7 +413,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  keys(): SetIterator<T> {
+  keys(): IterableIterator<T> {
     return this.values();
   }
 
@@ -423,7 +423,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  [Symbol.iterator](): SetIterator<T> {
+  [Symbol.iterator](): IterableIterator<T> {
     return this.values();
   }
 
@@ -485,13 +485,38 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  *values(): SetIterator<T> {
-    for (const valuesWithSameHash of this.hashTable.values()) {
-      for (const value of valuesWithSameHash) {
-        yield value;
+  values(): IterableIterator<T> {
+    const valuesWithSameHash = this.hashTable.values();
+    let currentBucket: T[] | undefined;
+    let index = 0;
+
+    return {
+      [Symbol.iterator]() {
+        return this;
+      },
+
+      next(): IteratorResult<T> {
+        while (true) {
+          if (currentBucket !== undefined && index < currentBucket.length) {
+            return {
+              value: currentBucket[index++],
+              done: false
+            };
+          }
+          const nextBucket = valuesWithSameHash.next();
+          if (nextBucket.done) {
+            return {
+              value: undefined as any,
+              done: true
+            };
+          }
+          currentBucket = nextBucket.value;
+          index = 0;
+        }
       }
-    }
+    };
   }
+
 
 
   /**

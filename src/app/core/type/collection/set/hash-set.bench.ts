@@ -37,7 +37,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
   });
@@ -46,7 +46,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
   });
@@ -55,7 +55,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
   });
@@ -64,7 +64,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
   });
@@ -73,7 +73,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
   });
@@ -82,7 +82,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
   });
@@ -96,7 +96,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
   });
@@ -105,7 +105,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
   });
@@ -114,7 +114,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
   });
@@ -123,7 +123,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
   });
@@ -132,7 +132,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
   });
@@ -141,7 +141,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
   });
@@ -155,7 +155,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
   });
@@ -164,7 +164,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
   });
@@ -173,7 +173,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
   });
@@ -182,7 +182,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
   });
@@ -191,7 +191,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
   });
@@ -200,7 +200,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
   });
@@ -248,7 +248,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
       set.add(item);
@@ -259,7 +259,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
       set.add(item);
@@ -270,7 +270,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
       set.add(item);
@@ -281,7 +281,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
       set = set.add(item);
@@ -292,7 +292,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
       set = set.add(item);
@@ -303,7 +303,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
       set = set.add(item);
@@ -322,7 +322,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
       set.add(item);
@@ -333,7 +333,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
       set.add(item);
@@ -344,7 +344,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
       set.add(item);
@@ -355,7 +355,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
       set = set.add(item);
@@ -366,7 +366,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
       set = set.add(item);
@@ -377,7 +377,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
       set = set.add(item);
@@ -396,7 +396,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
       set.add(item);
@@ -407,7 +407,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
       set.add(item);
@@ -418,7 +418,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.empty<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
       set.add(item);
@@ -429,7 +429,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
       set = set.add(item);
@@ -440,7 +440,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
       set = set.add(item);
@@ -451,7 +451,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.empty<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
       set = set.add(item);
@@ -493,7 +493,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(lowNumberOfItemsConsecutiveIds);
   });
@@ -502,7 +502,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(lowNumberOfItemsConsecutiveIds);
   });
@@ -511,7 +511,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(lowNumberOfItemsConsecutiveIds);
   });
@@ -520,7 +520,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(lowNumberOfItemsConsecutiveIds);
   });
@@ -529,7 +529,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(lowNumberOfItemsConsecutiveIds);
   });
@@ -538,7 +538,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(lowNumberOfItemsConsecutiveIds);
   });
@@ -547,7 +547,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsConsecutiveIds);
   });
@@ -556,7 +556,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsConsecutiveIds);
   });
@@ -565,7 +565,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsConsecutiveIds);
   });
@@ -574,7 +574,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsConsecutiveIds);
   });
@@ -583,7 +583,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsConsecutiveIds);
   });
@@ -592,7 +592,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsConsecutiveIds);
   });
@@ -601,7 +601,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsNoConsecutiveIds);
   });
@@ -610,7 +610,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsNoConsecutiveIds);
   });
@@ -619,7 +619,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsNoConsecutiveIds);
   });
@@ -628,7 +628,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsNoConsecutiveIds);
   });
@@ -637,7 +637,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsNoConsecutiveIds);
   });
@@ -646,7 +646,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals
+      areItemsEquals
     );
     set.addAll(mediumNumberOfItemsNoConsecutiveIds);
   });
@@ -691,7 +691,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -703,7 +703,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -715,7 +715,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -727,7 +727,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -739,7 +739,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -751,7 +751,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -771,7 +771,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -783,7 +783,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -795,7 +795,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -807,7 +807,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -819,7 +819,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -831,7 +831,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -851,7 +851,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -863,7 +863,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -875,7 +875,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet has: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -887,7 +887,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -899,7 +899,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -911,7 +911,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet has: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -962,7 +962,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -974,7 +974,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -986,7 +986,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -998,7 +998,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -1010,7 +1010,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -1022,7 +1022,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     for (const item of lowNumberOfItemsConsecutiveIds) {
@@ -1042,7 +1042,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -1054,7 +1054,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -1066,7 +1066,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -1078,7 +1078,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -1090,7 +1090,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -1102,7 +1102,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     for (const item of mediumNumberOfItemsConsecutiveIds) {
@@ -1122,7 +1122,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -1134,7 +1134,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -1146,7 +1146,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -1158,7 +1158,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -1170,7 +1170,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -1182,7 +1182,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     for (const item of mediumNumberOfItemsNoConsecutiveIds) {
@@ -1225,7 +1225,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     set.deleteAll(lowNumberOfItemsConsecutiveIds);
@@ -1235,7 +1235,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     set.deleteAll(lowNumberOfItemsConsecutiveIds);
@@ -1245,7 +1245,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     set.deleteAll(lowNumberOfItemsConsecutiveIds);
@@ -1255,7 +1255,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     set.deleteAll(lowNumberOfItemsConsecutiveIds);
@@ -1265,7 +1265,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     set.deleteAll(lowNumberOfItemsConsecutiveIds);
@@ -1275,7 +1275,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     set.deleteAll(lowNumberOfItemsConsecutiveIds);
@@ -1285,7 +1285,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsConsecutiveIds);
@@ -1295,7 +1295,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsConsecutiveIds);
@@ -1305,7 +1305,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsConsecutiveIds);
@@ -1315,7 +1315,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsConsecutiveIds);
@@ -1325,7 +1325,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsConsecutiveIds);
@@ -1335,7 +1335,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsConsecutiveIds);
@@ -1345,7 +1345,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsNoConsecutiveIds);
@@ -1355,7 +1355,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsNoConsecutiveIds);
@@ -1365,7 +1365,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsNoConsecutiveIds);
@@ -1375,7 +1375,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsNoConsecutiveIds);
@@ -1385,7 +1385,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsNoConsecutiveIds);
@@ -1395,7 +1395,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     set.deleteAll(mediumNumberOfItemsNoConsecutiveIds);
@@ -1442,7 +1442,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1455,7 +1455,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1468,7 +1468,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1481,7 +1481,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1494,7 +1494,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1507,7 +1507,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       lowNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1529,7 +1529,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1542,7 +1542,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1555,7 +1555,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1568,7 +1568,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1581,7 +1581,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1594,7 +1594,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsConsecutiveIds
     );
     let cont = 0;
@@ -1616,7 +1616,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     let cont = 0;
@@ -1629,7 +1629,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     let cont = 0;
@@ -1642,7 +1642,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     let cont = 0;
@@ -1655,7 +1655,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       noCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     let cont = 0;
@@ -1668,7 +1668,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       mediumCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     let cont = 0;
@@ -1681,7 +1681,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
   bench("ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
     let set = ImmutableHashSet.of<Item>(
       highCollisionHash,
-      equals,
+      areItemsEquals,
       mediumNumberOfItemsNoConsecutiveIds
     );
     let cont = 0;
@@ -1692,29 +1692,29 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
 
 /*
- Native Set for...of: lowNumberOfItemsConsecutiveIds                                    517,643.92  0.0015   0.3287  0.0019  0.0020   0.0028   0.0033   0.0056  ±0.28%   258822
- MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - noCollisionHash              197,476.66  0.0039  12.5009  0.0051  0.0047   0.0183   0.0190   0.0219  ±4.91%    98739
- MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash          213,624.29  0.0040   0.2130  0.0047  0.0047   0.0076   0.0085   0.0106  ±0.30%   106813
- MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - highCollisionHash            244,411.18  0.0035   0.3597  0.0041  0.0041   0.0064   0.0069   0.0084  ±0.37%   122206
- ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - noCollisionHash            162,023.10  0.0054   0.3310  0.0062  0.0062   0.0091   0.0097   0.0119  ±0.38%    81012
- ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash        160,256.92  0.0054   0.4160  0.0062  0.0063   0.0090   0.0096   0.0120  ±0.36%    80129
- ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - highCollisionHash          186,471.62  0.0046   0.3259  0.0054  0.0054   0.0081   0.0086   0.0103  ±0.39%    93236
+ Native Set for...of: lowNumberOfItemsConsecutiveIds                                    513,248.54  0.0014   0.4032  0.0019  0.0020   0.0028   0.0032   0.0057  ±0.32%   256625
+ MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - noCollisionHash              289,092.58  0.0027   1.8071  0.0035  0.0035   0.0056   0.0066   0.0116  ±0.76%   144547
+ MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash          286,257.13  0.0028   0.3799  0.0035  0.0036   0.0053   0.0061   0.0082  ±0.31%   143129
+ MutableHashSet for...of: lowNumberOfItemsConsecutiveIds - highCollisionHash            320,084.88  0.0026   0.3375  0.0031  0.0032   0.0051   0.0058   0.0074  ±0.17%   160043
+ ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - noCollisionHash            295,714.49  0.0027   0.3139  0.0034  0.0034   0.0053   0.0061   0.0077  ±0.29%   147858
+ ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - mediumCollisionHash        293,457.92  0.0027   0.3131  0.0034  0.0035   0.0053   0.0060   0.0081  ±0.30%   146729
+ ImmutableHashSet for...of: lowNumberOfItemsConsecutiveIds - highCollisionHash          323,431.43  0.0025   0.3648  0.0031  0.0032   0.0048   0.0056   0.0073  ±0.17%   161716
 
- Native Set for...of: mediumNumberOfItemsConsecutiveIds                                   4,924.13  0.1708   4.3536  0.2031  0.2006   0.2513   0.3604   4.3220  ±3.94%     2463
- MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - noCollisionHash             2,811.55  0.3234   2.0891  0.3557  0.3401   1.3270   1.5453   2.0317  ±2.06%     1406
- MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash         5,063.93  0.1830   0.5927  0.1975  0.1989   0.2867   0.3945   0.4845  ±0.43%     2532
- MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - highCollisionHash           2,691.21  0.3446   0.7833  0.3716  0.3767   0.4570   0.5550   0.7267  ±0.37%     1346
- ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - noCollisionHash           2,280.76  0.3923   1.3029  0.4385  0.4366   1.0933   1.1872   1.2838  ±1.44%     1141
- ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash       4,022.38  0.2290   0.5908  0.2486  0.2500   0.3751   0.4155   0.5454  ±0.42%     2012
- ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - highCollisionHash         2,353.81  0.3959   0.8307  0.4248  0.4238   0.5829   0.6398   0.7504  ±0.45%     1177
+ Native Set for...of: mediumNumberOfItemsConsecutiveIds                                   4,815.18  0.1710   3.3913  0.2077  0.2114   0.2390   0.4007   3.0934  ±2.87%     2408
+ MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - noCollisionHash             3,542.58  0.2477   1.5941  0.2823  0.2759   1.1285   1.2760   1.5830  ±1.81%     1772
+ MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash         6,833.81  0.1347   0.6703  0.1463  0.1493   0.2161   0.3133   0.3641  ±0.47%     3417
+ MutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - highCollisionHash           3,061.36  0.2947   5.7484  0.3267  0.3215   0.4621   0.5214   0.8482  ±2.18%     1531
+ ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - noCollisionHash           3,555.69  0.2516   1.5890  0.2812  0.2702   1.3069   1.3610   1.5708  ±2.01%     1780
+ ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash       6,836.54  0.1332   0.5293  0.1463  0.1506   0.1887   0.2901   0.3690  ±0.41%     3419
+ ImmutableHashSet for...of: mediumNumberOfItemsConsecutiveIds - highCollisionHash         3,080.54  0.2993   0.7058  0.3246  0.3274   0.4042   0.4993   0.5718  ±0.36%     1541
 
- Native Set for...of: mediumNumberOfItemsNoConsecutiveIds                                 4,936.61  0.1700   4.2328  0.2026  0.2012   0.2626   0.3995   3.8748  ±3.49%     2469
- MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash           2,821.61  0.3203   2.0342  0.3544  0.3366   1.4385   1.5337   1.9610  ±2.08%     1411
- MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       5,092.18  0.1819   0.5627  0.1964  0.1975   0.2575   0.3928   0.4641  ±0.42%     2547
- MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash         2,189.43  0.3776   1.6437  0.4567  0.4637   0.7572   0.9389   1.2525  ±1.05%     1095
- ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash         2,255.12  0.3989   1.5429  0.4434  0.4346   1.1915   1.2559   1.4882  ±1.53%     1128
- ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash     3,974.96  0.2332   0.7912  0.2516  0.2524   0.3988   0.4646   0.7096  ±0.57%     1988
- ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash       2,353.79  0.3915   0.9172  0.4248  0.4319   0.5540   0.5819   0.7308  ±0.40%     1177
+ Native Set for...of: mediumNumberOfItemsNoConsecutiveIds                                 4,868.34  0.1710   3.9968  0.2054  0.2024   0.4014   0.4867   3.3210  ±3.21%     2435
+ MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash           3,364.52  0.2587   1.7277  0.2972  0.2857   1.2096   1.4185   1.7064  ±2.03%     1683
+ MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       6,437.20  0.1406   0.6539  0.1553  0.1590   0.2180   0.2726   0.3558  ±0.43%     3219
+ MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash         2,920.75  0.3184   0.9186  0.3424  0.3428   0.4816   0.5147   0.6550  ±0.42%     1461
+ ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash         3,509.83  0.2507   2.7160  0.2849  0.2776   1.1627   1.2586   1.9017  ±2.06%     1755
+ ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash     6,757.54  0.1343   0.5442  0.1480  0.1541   0.2105   0.2569   0.2954  ±0.35%     3379
+ ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash       2,930.98  0.3164   0.5793  0.3412  0.3449   0.4387   0.5106   0.5491  ±0.30%     1466
 */
 
 
@@ -1729,7 +1729,6 @@ interface Item {
 
 const LOW_COUNT = 100;
 const MEDIUM_COUNT = 5000;
-const HIGH_COUNT = 50_000;
 
 const lowNumberOfItemsConsecutiveIds: Item[] = Array.from(
   { length: LOW_COUNT },
@@ -1755,14 +1754,6 @@ const mediumNumberOfItemsNoConsecutiveIds: Item[] = Array.from(
       name: `Item ${(i + (i * 100))}`
     })
 );
-const highNumberOfItemsConsecutiveIds: Item[] = Array.from(
-  { length: HIGH_COUNT },
-  (_, i) =>
-    ({
-      id: i,
-      name: `Item ${i}`
-    })
-);
 
 const noCollisionHash =
   (i: Item) => i.id;
@@ -1771,5 +1762,5 @@ const mediumCollisionHash =
 const highCollisionHash =
   (i: Item) => i.id % 50;
 
-const equals =
+const areItemsEquals =
   (a: Item, b: Item) => a.id === b.id;
