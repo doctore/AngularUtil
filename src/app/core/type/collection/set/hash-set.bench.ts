@@ -235,7 +235,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
 
   /**
-   * Add comparison:
+   * add comparison:
    */
   bench("Native Set add: lowNumberOfItemsConsecutiveIds", () => {
     const set = new Set<Item>();
@@ -488,7 +488,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
 
   /**
-   * AddAll comparison:
+   * addAll comparison:
    */
   bench("MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(
@@ -678,7 +678,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
 
   /**
-   * Has comparison:
+   * has comparison:
    */
   bench("Native Set has: lowNumberOfItemsConsecutiveIds", () => {
     const set = new Set(lowNumberOfItemsConsecutiveIds);
@@ -949,7 +949,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
 
   /**
-   * Delete comparison:
+   * delete comparison:
    */
   bench("Native Set delete: lowNumberOfItemsConsecutiveIds", () => {
     const set = new Set(lowNumberOfItemsConsecutiveIds);
@@ -1220,7 +1220,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
 
   /**
-   * DeleteAll comparison:
+   * deleteAll comparison:
    */
   bench("MutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
     const set = MutableHashSet.of<Item>(

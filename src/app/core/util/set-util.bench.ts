@@ -116,7 +116,7 @@ describe("Benchmark: SetUtil", () => {
 
 
   /**
-   * Count comparison:
+   * count comparison:
    */
   bench("Native Set count: lowNumberOfItemsConsecutiveIds", () => {
     SetUtil.count(nativeSet_LowNumberOfItemsConsecutiveIds, isItemIdEven);
@@ -207,7 +207,7 @@ describe("Benchmark: SetUtil", () => {
 
 
   /**
-   * Filter comparison:
+   * filter comparison:
    */
   bench("Native Set filter: lowNumberOfItemsConsecutiveIds", () => {
     SetUtil.filter(nativeSet_LowNumberOfItemsConsecutiveIds, isItemIdEven);
@@ -298,7 +298,98 @@ describe("Benchmark: SetUtil", () => {
 
 
   /**
-   * Sort comparison:
+   * groupBy comparison:
+   */
+  bench("Native Set groupBy: lowNumberOfItemsConsecutiveIds", () => {
+    SetUtil.groupBy(nativeSet_LowNumberOfItemsConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+  bench("MutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+    SetUtil.groupBy(mutableHashSet_LowNumberOfItemsConsecutiveIds_NoCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("MutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.groupBy(mutableHashSet_LowNumberOfItemsConsecutiveIds_MediumCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("MutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+    SetUtil.groupBy(mutableHashSet_LowNumberOfItemsConsecutiveIds_HighCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - noCollisionHash", () => {
+    SetUtil.groupBy(immutableHashSet_LowNumberOfItemsConsecutiveIds_NoCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.groupBy(immutableHashSet_LowNumberOfItemsConsecutiveIds_MediumCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - highCollisionHash", () => {
+    SetUtil.groupBy(immutableHashSet_LowNumberOfItemsConsecutiveIds_HighCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("Native Set groupBy: mediumNumberOfItemsNoConsecutiveIds", () => {
+    SetUtil.groupBy(nativeSet_MediumNumberOfItemsNoConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+  bench("MutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+    SetUtil.groupBy(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_NoCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("MutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.groupBy(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_MediumCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("MutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+    SetUtil.groupBy(mutableHashSet_MediumNumberOfItemsNoConsecutiveIds_HighCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash", () => {
+    SetUtil.groupBy(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_NoCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash", () => {
+    SetUtil.groupBy(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_MediumCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash", () => {
+    SetUtil.groupBy(immutableHashSet_MediumNumberOfItemsNoConsecutiveIds_HighCollisionHash, getItemId, isItemIdEven);
+  });
+
+
+/*
+ Native Set groupBy: lowNumberOfItemsConsecutiveIds                                     237,961.62  0.0035  0.3520  0.0042  0.0043  0.0072  0.0082  0.0127  ±0.30%   118981
+ MutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - noCollisionHash               189,810.52  0.0045  0.2029  0.0053  0.0053  0.0082  0.0088  0.0121  ±0.25%    94906
+ MutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash           184,640.85  0.0045  0.3589  0.0054  0.0055  0.0085  0.0094  0.0141  ±0.25%    92321
+ MutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - highCollisionHash             189,486.79  0.0044  0.3290  0.0053  0.0053  0.0081  0.0086  0.0101  ±0.28%    94744
+ ImmutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - noCollisionHash             198,103.61  0.0044  0.2106  0.0050  0.0051  0.0077  0.0082  0.0098  ±0.23%    99052
+ ImmutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - mediumCollisionHash         196,789.57  0.0045  0.1809  0.0051  0.0051  0.0081  0.0086  0.0110  ±0.25%    98395
+ ImmutableHashSet groupBy: lowNumberOfItemsConsecutiveIds - highCollisionHash           189,911.17  0.0042  2.8861  0.0053  0.0052  0.0082  0.0088  0.0113  ±1.16%    94956
+
+ Native Set groupBy: mediumNumberOfItemsNoConsecutiveIds                                  4,033.06  0.2205  0.6156  0.2480  0.2456  0.4391  0.4911  0.6071  ±0.55%     2017
+ MutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash            3,854.18  0.2340  1.0319  0.2595  0.2619  0.5330  0.5617  0.6777  ±0.79%     1928
+ MutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash        4,001.34  0.2314  0.7712  0.2499  0.2462  0.5113  0.5914  0.6931  ±0.71%     2003
+ MutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash          4,241.52  0.2188  0.6893  0.2358  0.2328  0.4005  0.5151  0.6632  ±0.60%     2121
+ ImmutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash          3,738.92  0.2336  0.7320  0.2675  0.2654  0.4776  0.5590  0.6597  ±0.63%     1870
+ ImmutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash      3,876.34  0.2312  0.7543  0.2580  0.2573  0.4783  0.5826  0.7281  ±0.71%     1939
+ ImmutableHashSet groupBy: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash        3,980.66  0.2229  0.6199  0.2512  0.2490  0.5138  0.5540  0.5976  ±0.71%     1991
+*/
+
+
+
+  /**
+   * sort comparison:
    */
   bench("Native Set sort: lowNumberOfItemsConsecutiveIds", () => {
     SetUtil.sort(nativeSet_LowNumberOfItemsConsecutiveIds, itemsComparator);
@@ -513,8 +604,12 @@ const mediumCollisionHash =
 const highCollisionHash =
   (i: Item) => i.id % 50;
 
+
 const areItemsEquals =
   (a: Item, b: Item) => a.id === b.id;
+
+const getItemId =
+  (item: Item) => item.id;
 
 const isItemIdEven =
   (item: Item) => 0 == item.id % 2;

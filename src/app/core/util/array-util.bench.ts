@@ -50,7 +50,7 @@ describe("Benchmark: ArrayUtil", () => {
 
 
   /**
-   * Filter comparison:
+   * filter comparison:
    */
   bench("filter: lowNumberOfItems", () => {
     ArrayUtil.filter(lowNumberOfItems, isItemIdEven);
@@ -76,7 +76,7 @@ describe("Benchmark: ArrayUtil", () => {
 
 
   /**
-   * FilterFirst comparison:
+   * filterFirst comparison:
    */
   bench("filterFirst: lowNumberOfItems", () => {
     ArrayUtil.filterFirst(lowNumberOfItems, isItemIdEvenAndHigherThan2500);
@@ -102,7 +102,7 @@ describe("Benchmark: ArrayUtil", () => {
 
 
   /**
-   * FilterFirstIndex comparison:
+   * filterFirstIndex comparison:
    */
   bench("filterFirstIndex: lowNumberOfItems", () => {
     ArrayUtil.filterFirstIndex(lowNumberOfItems, isItemIdEvenAndHigherThan2500);
@@ -128,7 +128,7 @@ describe("Benchmark: ArrayUtil", () => {
 
 
   /**
-   * Find comparison:
+   * find comparison:
    */
   bench("find: lowNumberOfItems", () => {
     for (const item of lowNumberOfItems) {
@@ -160,7 +160,7 @@ describe("Benchmark: ArrayUtil", () => {
 
 
   /**
-   * FindIndex comparison:
+   * findIndex comparison:
    */
   bench("findIndex: lowNumberOfItems", () => {
     for (const item of lowNumberOfItems) {
@@ -192,33 +192,27 @@ describe("Benchmark: ArrayUtil", () => {
 
 
   /**
-   * Has comparison:
+   * groupMap comparison:
    */
-  bench("has: lowNumberOfItems", () => {
-    for (const item of lowNumberOfItems) {
-      ArrayUtil.has(lowNumberOfItems, item, areItemsEquals);
-    }
+  bench("groupMap: lowNumberOfItems", () => {
+    ArrayUtil.groupMap(lowNumberOfItems, getItemId, itemIdentity, isItemIdEven);
   });
 
 
-  bench("has: mediumNumberOfItems", () => {
-    for (const item of mediumNumberOfItems) {
-      ArrayUtil.has(mediumNumberOfItems, item, areItemsEquals);
-    }
+  bench("groupMap: mediumNumberOfItems", () => {
+    ArrayUtil.groupMap(mediumNumberOfItems, getItemId, itemIdentity, isItemIdEven);
   });
 
 
-  bench("has: highNumberOfItems", () => {
-    for (const item of highNumberOfItems) {
-      ArrayUtil.has(highNumberOfItems, item, areItemsEquals);
-    }
+  bench("groupMap: highNumberOfItems", () => {
+    ArrayUtil.groupMap(highNumberOfItems, getItemId, itemIdentity, isItemIdEven);
   });
 
 
 /*
- has: lowNumberOfItems                     72,171.69    0.0120    0.3212    0.0139    0.0146    0.0184    0.0205    0.0290  ±0.29%    36086
- has: mediumNumberOfItems                     113.50    8.6039    9.9121    8.8105    8.8335    9.9121    9.9121    9.9121  ±0.86%       57
- has: highNumberOfItems                       0.9541  1,043.95  1,052.29  1,048.16  1,049.81  1,052.29  1,052.29  1,052.29  ±0.17%       10
+ groupMap: lowNumberOfItems                 72,026.51    0.0121    0.3979    0.0139    0.0138    0.0181    0.0202    0.0299  ±0.33%    36014
+ groupMap: mediumNumberOfItems               1,472.30    0.6289    1.1825    0.6792    0.6714    1.0108    1.0833    1.1825  ±0.68%      737
+ groupMap: highNumberOfItems                   123.51    6.9367   14.0960    8.0966    8.9888   14.0960   14.0960   14.0960  ±4.07%       62
 */
 
 
@@ -289,11 +283,17 @@ const highNumberOfItems: Item[] = Array.from(
 const areItemsEquals =
   (a: Item, b: Item) => a.id === b.id;
 
+const getItemId =
+  (item: Item) => item.id;
+
 const isItemIdEven =
   (item: Item) => 0 == item.id % 2;
 
 const isItemIdEvenAndHigherThan2500 =
   (item: Item) => 0 == item.id % 2 && 2500 > item.id;
+
+const itemIdentity =
+  (item: Item) => item;
 
 const itemsComparator =
   (a: Item, b: Item) => a.id - b.id;

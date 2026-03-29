@@ -1320,48 +1320,6 @@ export class ArrayUtil {
 
 
   /**
-   *    Returns `true` if the given `item` exists in the provided `sourceArray` based on the {@link TPredicate2} `equalsFunction`,
-   * `false` otherwise.
-   *
-   * <pre>
-   *    has(                                                                                 Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],           true
-   *      {id: 2, name: 'user2 v2'},
-   *      (u1: User, u2: User) => u1.id == u2.id
-   *    )
-   * </pre>
-   *
-   * @param sourceArray
-   *    Array to search
-   * @param item
-   *    Element to compare and search in `sourceArray`
-   * @param equalsFunction
-   *    {@link TPredicate2} used to compare `item` with the current element in `sourceArray`. If it is `null` or `undefined`
-   *    then {@link _.isEqual} will be used.
-   *
-   * @return `false` if `sourceArray` has no elements or no one verifies provided `equalsFunction`. `true` otherwise.
-   */
-  static has = <T>(sourceArray: NullableOrUndefined<T[]>,
-                   item: T,
-                   equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): boolean => {
-    if (this.isEmpty(sourceArray)) {
-      return false;
-    }
-    const finalEqualsFunction = equalsFunction
-      ? Predicate2.of(equalsFunction)
-      : Predicate2.of(
-          (a: T, b: T) => _.isEqual(a, b)
-        );
-    for (const current of sourceArray!) {
-      if (finalEqualsFunction.apply(current, item)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-
-  /**
    * Verifies if the given `input` is classified as {@link Array} object or a native array.
    *
    * @param input
