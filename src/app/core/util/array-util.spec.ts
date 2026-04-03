@@ -199,7 +199,8 @@ describe('ArrayUtil', () => {
     it('when given sourceArray has elements and mapFunction and filterPredicate are valid then a new filtered and transformed array is returned', () => {
       const sourceArray: number[] = [ 1, 2, 3, 6 ];
 
-      const multiply2AndString = (n: number) => '' + (2 * n);
+      const multiply2AndString =
+        (n: number) => '' + (2 * n);
 
       const expectedResult: string[] = [ '4', '12' ];
 
@@ -317,6 +318,226 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('delete', () => {
+
+    it('when given sourceArray is undefined, null or empty and itemToFind is provided then empty array is returned', () => {
+      const emptyArray: Role[] = [];
+      const role = { id: 1, name: 'role1' } as Role;
+
+      const expectedResult: Role[] = [];
+
+      expect(ArrayUtil.delete(undefined, role)).toEqual(expectedResult);
+      expect(ArrayUtil.delete(null, role)).toEqual(expectedResult);
+      expect(ArrayUtil.delete(emptyArray, role)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is undefined, null or empty and itemToFind and equalsFunction are provided then empty array is returned', () => {
+      const emptyArray: Role[] = [];
+      const role = { id: 1, name: 'role1' } as Role;
+
+      const expectedResult: Role[] = [];
+
+      expect(ArrayUtil.delete(undefined, role, areAllRolePropertiesEqualsFPredicate)).toEqual(expectedResult);
+      expect(ArrayUtil.delete(null, role, areAllRolePropertiesEqualsFPredicate)).toEqual(expectedResult);
+      expect(ArrayUtil.delete(emptyArray, role, areAllRolePropertiesEqualsFPredicate)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty and contains null or undefined, the itemToFind is null or undefined then an array without it is returned', () => {
+      verifyArrays(
+        ArrayUtil.delete([ 1, undefined, 2 ], undefined),
+        [ 1, 2 ]
+      );
+      verifyArrays(
+        ArrayUtil.delete([ 1, 3, null ], null),
+        [ 1, 3 ]
+      );
+    });
+
+
+    it('when given sourceArray is not empty, itemToFind is provided but there is no element that matches then an array with the same elements than provided is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const sourceArray = [ u1, u2, u3, u4 ];
+
+      const uToSearch = new User(5, 'user5');
+
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, uToSearch),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, uToSearch, null),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, uToSearch, areUsersEqualsByIdRaw),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, uToSearch, areAllUserPropertiesEqualsFPredicate),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, uToSearch, areUsersEqualsPredicate),
+        sourceArray
+      );
+    });
+
+
+    it('when given sourceArray is not empty, itemToFind is provided and there is an element that matches then an array without itemToFind is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 2, name: 'role3' } as Role;
+      const r4 = { id: 4, name: 'role2' } as Role;
+      const sourceArray = [ r1, r2, r3, r4 ];
+
+      const r2SameId = { id: 2, name: 'role2 v2' } as Role;
+      const r2Cloned = { id: 2, name: 'role2' } as Role;
+
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, r2),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, r2, null),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, r3, areRolesEqualsByIdRaw),
+        [ r1, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, r2SameId, areRolesEqualsByIdRaw),
+        [ r1, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, r2Cloned, areAllRolePropertiesEqualsFPredicate),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.delete(sourceArray, r3, areRolesEqualsPredicate),
+        [ r1, r2, r4 ]
+      );
+    });
+
+  });
+
+
+
+  describe('deleteFirst', () => {
+
+    it('when given sourceArray is undefined, null or empty and itemToFind is provided then empty array is returned', () => {
+      const emptyArray: Role[] = [];
+      const role = { id: 1, name: 'role1' } as Role;
+
+      const expectedResult: Role[] = [];
+
+      expect(ArrayUtil.deleteFirst(undefined, role)).toEqual(expectedResult);
+      expect(ArrayUtil.deleteFirst(null, role)).toEqual(expectedResult);
+      expect(ArrayUtil.deleteFirst(emptyArray, role)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is undefined, null or empty and itemToFind and equalsFunction are provided then empty array is returned', () => {
+      const emptyArray: Role[] = [];
+      const role = { id: 1, name: 'role1' } as Role;
+
+      const expectedResult: Role[] = [];
+
+      expect(ArrayUtil.deleteFirst(undefined, role, areAllRolePropertiesEqualsFPredicate)).toEqual(expectedResult);
+      expect(ArrayUtil.deleteFirst(null, role, areAllRolePropertiesEqualsFPredicate)).toEqual(expectedResult);
+      expect(ArrayUtil.deleteFirst(emptyArray, role, areAllRolePropertiesEqualsFPredicate)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceArray is not empty and contains null or undefined, the itemToFind is null or undefined then an array without it is returned', () => {
+      verifyArrays(
+        ArrayUtil.deleteFirst([ 1, undefined, 2 ], undefined),
+        [ 1, 2 ]
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst([ 1, 3, null ], null),
+        [ 1, 3 ]
+      );
+    });
+
+
+    it('when given sourceArray is not empty, itemToFind is provided but there is no element that matches then an array with the same elements than provided is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const sourceArray = [ u1, u2, u3, u4 ];
+
+      const uToSearch = new User(5, 'user5');
+
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, uToSearch),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, uToSearch, null),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, uToSearch, areUsersEqualsByIdRaw),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, uToSearch, areAllUserPropertiesEqualsFPredicate),
+        sourceArray
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, uToSearch, areUsersEqualsPredicate),
+        sourceArray
+      );
+    });
+
+
+    it('when given sourceArray is not empty, itemToFind is provided and there is an element that matches then an array without first position of itemToFind is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 2, name: 'role3' } as Role;
+      const r4 = { id: 4, name: 'role2' } as Role;
+      const sourceArray = [ r1, r2, r3, r4 ];
+
+      const r2SameId = { id: 2, name: 'role2 v2' } as Role;
+      const r2Cloned = { id: 2, name: 'role2' } as Role;
+
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, r2),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, r2, null),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, r3, areRolesEqualsByIdRaw),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, r2SameId, areRolesEqualsByIdRaw),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, r2Cloned, areAllRolePropertiesEqualsFPredicate),
+        [ r1, r3, r4 ]
+      );
+      verifyArrays(
+        ArrayUtil.deleteFirst(sourceArray, r3, areRolesEqualsPredicate),
+        [ r1, r2, r4 ]
+      );
+    });
+
+  });
+
+
+
   describe('dropWhile', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
@@ -399,7 +620,7 @@ describe('ArrayUtil', () => {
 
   describe('filterFirst', () => {
 
-    it('when given sourceArray is undefined, null or is an empty array and filterPredicate is provided then undefined is returned', () => {
+    it('when given sourceArray is undefined, null or empty and filterPredicate is provided then undefined is returned', () => {
       const emptyArray: Role[] = [];
 
       expect(ArrayUtil.filterFirst(undefined, isRoleIdOddPredicate)).toBe(undefined);
@@ -442,7 +663,7 @@ describe('ArrayUtil', () => {
 
   describe('filterFirstIndex', () => {
 
-    it('when given sourceArray is undefined, null or is an empty array and filterPredicate is provided then -1 is returned', () => {
+    it('when given sourceArray is undefined, null or empty and filterPredicate is provided then -1 is returned', () => {
       const emptyArray: Role[] = [];
 
       expect(ArrayUtil.filterFirstIndex(undefined, isRoleIdOddPredicate)).toBe(-1);
@@ -485,7 +706,7 @@ describe('ArrayUtil', () => {
 
   describe('filterLast', () => {
 
-    it('when given sourceArray is undefined, null or is an empty array and filterPredicate is provided then undefined is returned', () => {
+    it('when given sourceArray is undefined, null or empty and filterPredicate is provided then undefined is returned', () => {
       const emptyArray: Role[] = [];
 
       expect(ArrayUtil.filterLast(undefined, isRoleIdOddPredicate)).toBe(undefined);
@@ -570,7 +791,7 @@ describe('ArrayUtil', () => {
 
   describe('find', () => {
 
-    it('when given sourceArray is undefined, null or is an empty array and item is provided then undefined is returned', () => {
+    it('when given sourceArray is undefined, null or empty and itemToFind is provided then undefined is returned', () => {
       const emptyArray: Role[] = [];
       const role = { id: 1, name: 'role1' } as Role;
 
@@ -580,7 +801,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is undefined, null or is an empty array and item and equalsFunction are provided then undefined is returned', () => {
+    it('when given sourceArray is undefined, null or empty and itemToFind and equalsFunction are provided then undefined is returned', () => {
       const emptyArray: Role[] = [];
       const role = { id: 1, name: 'role1' } as Role;
 
@@ -590,13 +811,13 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty and contains null or undefined, the item is null or undefined then expected element is returned', () => {
+    it('when given sourceArray is not empty and contains null or undefined, the itemToFind is null or undefined then expected element is returned', () => {
       expect(ArrayUtil.find([ 1, undefined, 2 ], undefined)).toBe(undefined);
       expect(ArrayUtil.find([ 1, 3, null ], null)).toBeNull();
     });
 
 
-    it('when given sourceArray is not empty, item is provided but there is no element that matches then undefined is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided but there is no element that matches then undefined is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
@@ -613,7 +834,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty, item is provided and there is an element that matches then expected element is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided and there is an element that matches then expected element is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
@@ -637,7 +858,7 @@ describe('ArrayUtil', () => {
 
   describe('findIndex', () => {
 
-    it('when given sourceArray is undefined, null or is an empty array and item is provided then -1 is returned', () => {
+    it('when given sourceArray is undefined, null or empty and itemToFind is provided then -1 is returned', () => {
       const emptyArray: Role[] = [];
       const role = { id: 1, name: 'role1' } as Role;
 
@@ -647,7 +868,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is undefined, null or is an empty array and item and equalsFunction are provided then -1 is returned', () => {
+    it('when given sourceArray is undefined, null or empty and itemToFind and equalsFunction are provided then -1 is returned', () => {
       const emptyArray: Role[] = [];
       const role = { id: 1, name: 'role1' } as Role;
 
@@ -657,13 +878,13 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty and contains null or undefined, the item is null or undefined then its position is returned', () => {
+    it('when given sourceArray is not empty and contains null or undefined, the itemToFind is null or undefined then its position is returned', () => {
       expect(ArrayUtil.findIndex([1, undefined, 2], undefined)).toBe(1);
       expect(ArrayUtil.findIndex([1, 3, null], null)).toBe(2);
     });
 
 
-    it('when given sourceArray is not empty, item is provided but there is no element that matches then -1 is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided but there is no element that matches then -1 is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
@@ -680,7 +901,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty, item is provided and there is an element that matches then its position is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided and there is an element that matches then its position is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
@@ -703,7 +924,7 @@ describe('ArrayUtil', () => {
 
   describe('findLast', () => {
 
-    it('when given sourceArray is undefined, null or is an empty array and item is provided then undefined is returned', () => {
+    it('when given sourceArray is undefined, null or empty and itemToFind is provided then undefined is returned', () => {
       const emptyArray: Role[] = [];
       const role = { id: 1, name: 'role1' } as Role;
 
@@ -713,7 +934,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is undefined, null or is an empty array and item and equalsFunction are provided then undefined is returned', () => {
+    it('when given sourceArray is undefined, null or empty and itemToFind and equalsFunction are provided then undefined is returned', () => {
       const emptyArray: Role[] = [];
       const role = { id: 1, name: 'role1' } as Role;
 
@@ -723,13 +944,13 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty and contains null or undefined, the item is null or undefined then expected element is returned', () => {
+    it('when given sourceArray is not empty and contains null or undefined, the itemToFind is null or undefined then expected element is returned', () => {
       expect(ArrayUtil.findLast([1, undefined, 2], undefined)).toBe(undefined);
       expect(ArrayUtil.findLast([1, 3, null], null)).toBeNull();
     });
 
 
-    it('when given sourceArray is not empty, item is provided but there is no element that matches then undefined is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided but there is no element that matches then undefined is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
@@ -746,7 +967,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty, item is provided and there is an element that matches then expected element is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided and there is an element that matches then expected element is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
@@ -769,7 +990,7 @@ describe('ArrayUtil', () => {
 
   describe('findOptional', () => {
 
-    it('when given sourceArray is undefined, null or is an empty array then empty Optional is returned', () => {
+    it('when given sourceArray is undefined, null or empty then empty Optional is returned', () => {
       let emptyArray: Role[] = [];
       const role = { id: 1, name: 'role1' } as Role;
 
@@ -779,13 +1000,13 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty but filterPredicate is null or undefined then empty Optional is returned', () => {
+    it('when given sourceArray is not empty but equalsFunction is null or undefined then empty Optional is returned', () => {
       expect(ArrayUtil.findOptional([1], undefined).isPresent()).toBe(false);
       expect(ArrayUtil.findOptional([1], null).isPresent()).toBe(false);
     });
 
 
-    it('when given sourceArray is not empty, item is provided but there is no element that matches then empty Optional is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided but there is no element that matches then empty Optional is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(1, 'user2');
@@ -802,7 +1023,7 @@ describe('ArrayUtil', () => {
     });
 
 
-    it('when given sourceArray is not empty, item is provided and there is an element that matches then Optional with expected element is returned', () => {
+    it('when given sourceArray is not empty, itemToFind is provided and there is an element that matches then Optional with expected element is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 2, name: 'role3' } as Role;
@@ -1409,7 +1630,7 @@ describe('ArrayUtil', () => {
 
   describe('isEmpty', () => {
 
-    it('when given arrayToVerify is null, undefined or is an empty array then true is returned', () => {
+    it('when given arrayToVerify is null, undefined or empty then true is returned', () => {
       const expectedResult = true;
 
       expect(ArrayUtil.isEmpty()).toEqual(expectedResult);
@@ -2821,12 +3042,14 @@ const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
     const keys: string[] = [];
     if (0 == n % 2) {
       keys.push("even");
-    } else {
+    }
+    else {
       keys.push("odd");
     }
     if (5 > n) {
       keys.push("smaller5");
-    } else {
+    }
+    else {
       keys.push("greaterEqual5");
     }
     return keys;
@@ -2837,12 +3060,14 @@ const oddEvenAndCompareWith5Raw = (n: number) => {
   const keys: string[] = [];
   if (0 == n % 2) {
     keys.push("even");
-  } else {
+  }
+  else {
     keys.push("odd");
   }
   if (5 > n) {
     keys.push("smaller5");
-  } else {
+  }
+  else {
     keys.push("greaterEqual5");
   }
   return keys;

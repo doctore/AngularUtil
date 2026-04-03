@@ -190,7 +190,8 @@ export class CookieService {
         finalExpires = new Date(
           new Date().getTime() + options.expires * 1000 * 60    // options.expires minutes in the future
         );
-      } else {
+      }
+      else {
         finalExpires = options.expires;
       }
       cookieString += this.createCookieOption(

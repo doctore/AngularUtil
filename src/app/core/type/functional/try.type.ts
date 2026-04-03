@@ -754,8 +754,8 @@ export abstract class Try<T> {
       );
 
     // This is a Failure instance
-    } else {
-
+    }
+    else {
       // Due to only this is Failure, returns this
       if (t.isSuccess()) {
         return Try.failure<T>(
@@ -820,7 +820,8 @@ export abstract class Try<T> {
             finalError
           );
       }
-    } else {
+    }
+    else {
       return Function1.of(mapperFailure)
         .apply(
           this.getError()
@@ -1121,7 +1122,8 @@ export abstract class Try<T> {
         'mapperSuccess must be not null and not undefined'
       );
       return this.internalMapTry(mapperSuccess);
-    } else {
+    }
+    else {
       AssertUtil.notNullOrUndefined(
         mapperFailure,
         'mapperFailure must be not null and not undefined'

@@ -582,7 +582,7 @@ describe('MapUtil', () => {
 
   describe('filterFirst', () => {
 
-    it('when given sourceMap is undefined, null or is an empty Map then undefined is returned', () => {
+    it('when given sourceMap is undefined, null or empty then undefined is returned', () => {
       const emptyMap = new Map<number, number>();
 
       expect(MapUtil.filterFirst(null, areKeyValueEvenPredicate)).toBe(undefined);
@@ -703,7 +703,7 @@ describe('MapUtil', () => {
 
   describe('findValue', () => {
 
-    it('when given sourceMap is undefined, null or is an empty Map and item is provided then undefined is returned', () => {
+    it('when given sourceMap is undefined, null or empty and valueToSearch is provided then undefined is returned', () => {
       const emptyMap = new Map<number, number>();
 
       expect(MapUtil.findValue(null, 1)).toBe(undefined);
@@ -712,7 +712,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is undefined, null or is an empty array and item and equalsFunction are provided then undefined is returned', () => {
+    it('when given sourceMap is undefined, null or is an empty array and valueToSearch and equalsFunction are provided then undefined is returned', () => {
       const emptyMap = new Map<number, number>();
 
       expect(MapUtil.findValue(undefined, 1, isEvenRaw)).toBe(undefined);
@@ -721,7 +721,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is not empty but item is null or undefined then undefined is returned', () => {
+    it('when given sourceMap is not empty but valueToSearch is null or undefined then undefined is returned', () => {
       const sourceMap = new Map<number, number>();
       sourceMap.set(11, 19);
 
@@ -733,7 +733,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is not empty, item is provided but there is no value that matches then undefined is returned', () => {
+    it('when given sourceMap is not empty, valueToSearch is provided but there is no value that matches then undefined is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -752,7 +752,7 @@ describe('MapUtil', () => {
 
 
 
-    it('when given sourceMap is not empty, item is provided and there is a value that matches then expected one is returned', () => {
+    it('when given sourceMap is not empty, valueToSearch is provided and there is a value that matches then expected one is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -779,7 +779,7 @@ describe('MapUtil', () => {
 
   describe('findValueOptional', () => {
 
-    it('when given sourceMap is undefined, null or is an empty Map and item is provided then empty Optional is returned', () => {
+    it('when given sourceMap is undefined, null or empty and valueToSearch is provided then empty Optional is returned', () => {
       const emptyMap = new Map<number, number>();
 
       expect(MapUtil.findValueOptional(null, 1).isPresent()).toBe(false);
@@ -788,7 +788,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is undefined, null or is an empty array and item and equalsFunction are provided then empty Optional is returned', () => {
+    it('when given sourceMap is undefined, null or is an empty array and valueToSearch and equalsFunction are provided then empty Optional is returned', () => {
       const emptyMap = new Map<number, number>();
 
       expect(MapUtil.findValueOptional(undefined, 1, isEvenRaw).isPresent()).toBe(false);
@@ -797,7 +797,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is not empty but item is null or undefined then undefined is returned', () => {
+    it('when given sourceMap is not empty but valueToSearch is null or undefined then undefined is returned', () => {
       const sourceMap = new Map<number, number>();
       sourceMap.set(11, 19);
 
@@ -809,7 +809,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given sourceMap is not empty, item is provided but there is no value that matches then empty Optional is returned', () => {
+    it('when given sourceMap is not empty, valueToSearch is provided but there is no value that matches then empty Optional is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -828,7 +828,7 @@ describe('MapUtil', () => {
 
 
 
-    it('when given sourceMap is not empty, item is provided and there is a value that matches then Optional with expected one is returned', () => {
+    it('when given sourceMap is not empty, valueToSearch is provided and there is a value that matches then Optional with expected one is returned', () => {
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
@@ -918,7 +918,7 @@ describe('MapUtil', () => {
 
   describe('isEmpty', () => {
 
-    it('when given mapToVerify is null, undefined or is an empty Map then true will be returned', () => {
+    it('when given mapToVerify is null, undefined or empty then true will be returned', () => {
       const expectedResult = true;
 
       expect(MapUtil.isEmpty()).toEqual(expectedResult);
@@ -1173,7 +1173,8 @@ describe('MapUtil', () => {
           }
           if (5 > k) {
             keys.push("smaller5Key");
-          } else {
+          }
+          else {
             keys.push("greaterEqual5Key");
           }
           return keys;
@@ -1223,7 +1224,8 @@ describe('MapUtil', () => {
           }
           if (5 > k) {
             keys.push("smaller5Key");
-          } else {
+          }
+          else {
             keys.push("greaterEqual5Key");
           }
           return keys;
@@ -1269,7 +1271,8 @@ describe('MapUtil', () => {
           }
           if (5 > k) {
             keys.push("smaller5Key");
-          } else {
+          }
+          else {
             keys.push("greaterEqual5Key");
           }
           return keys;
@@ -2053,7 +2056,7 @@ describe('MapUtil', () => {
 
   describe('removeAll', () => {
 
-    it('when given sourceMap is null, undefined or empty then empty map is returned', () => {
+    it('when given sourceMap is null, undefined or empty then empty Map is returned', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'World');
@@ -2160,7 +2163,7 @@ describe('MapUtil', () => {
 
   describe('retainAll', () => {
 
-    it('when given sourceMap is null, undefined or empty then empty map is returned', () => {
+    it('when given sourceMap is null, undefined or empty then empty Map is returned', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'World');
@@ -2180,7 +2183,7 @@ describe('MapUtil', () => {
     });
 
 
-    it('when given toKeepMap is null, undefined or empty then empty map is returned', () => {
+    it('when given toKeepMap is null, undefined or empty then empty Map is returned', () => {
       const sourceMap = new Map<number, string>();
       sourceMap.set(2, 'Hello');
       sourceMap.set(3, 'World');

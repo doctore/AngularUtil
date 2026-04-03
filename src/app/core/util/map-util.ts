@@ -1517,7 +1517,8 @@ export class MapUtil {
       for (const [key, value] of sourceMap!) {
         if (!foundFirstElement) {
           result = [key, value];
-        } else {
+        }
+        else {
           result = finalAccumulator.apply(
             // @ts-ignore
             result,
@@ -1809,7 +1810,8 @@ export class MapUtil {
             key,
             value
           );
-        } else {
+        }
+        else {
           return result;
         }
       }

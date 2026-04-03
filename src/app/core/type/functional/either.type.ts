@@ -241,8 +241,8 @@ export abstract class Either<L, R> {
       );
 
     // This is a Left instance
-    } else {
-
+    }
+    else {
       // Due to only this is Left, returns this
       if (either.isRight()) {
         return Either.left<L, R>(

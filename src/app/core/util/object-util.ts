@@ -285,7 +285,9 @@ export class ObjectUtil {
     }
     if (ObjectUtil.containsFunction(a, 'equals', 1)) {
       // @ts-ignore
-      return a['equals'](b);
+      return a.equals(
+        b
+      );
     }
     return _.isEqual(
       a,
@@ -343,6 +345,70 @@ export class ObjectUtil {
         .apply();
     }
     return defaultValue;
+  }
+
+
+  /**
+   * Returns the key used for hashing related with provided `input`.
+   *
+   * @apiNote
+   *    To return the hashing of `input`, the order of the options to use is:
+   *    <ol>
+   *      <li>Internal `hash` function of the object if it defines one</li>
+   *      <li>A custom hash value based on its JSON representation</li>
+   *    </ol>
+   *
+   * <pre>
+   * Example:
+   *
+   *   class User {
+   *     public id: number;
+   *     public name: string;
+   *
+   *     constructor(id: number, name: string) {
+   *       this.id = id;
+   *       this.name = name;
+   *     }
+   *
+   *     hash = (): number =>
+   *       this.id;
+   *   }
+   *
+   *   // Will return 11
+   *   ObjectUtil.hash(
+   *     new User(11, 'user1')
+   *   );
+   *
+   *   // Will return 34386722
+   *   ObjectUtil.hash(
+   *     'abc'
+   *   );
+   * </pre>
+   *
+   * @param input
+   *    Input to get its hash value
+   *
+   * @return hash value of `input`
+   *
+   * @throws {TypeError} if `input` does not define a `hash` function and there was an error getting its JSON representation
+   */
+  static hash = <T>(input: NullableOrUndefined<T>): number => {
+    if (ObjectUtil.isNullOrUndefined(input)) {
+      return 0;
+    }
+    if (ObjectUtil.containsFunction(input, 'hash', 0)) {
+      // @ts-ignore
+      return input.hash();
+    }
+    // Use the JSON representation of the value
+    const jsonOfInput = JSON.stringify(
+      input
+    );
+    let h = 0
+    for (let i = 0; i < jsonOfInput.length; i++) {
+      h = ((h << 5) - h + jsonOfInput.charCodeAt(i)) | 0;
+    }
+    return h;
   }
 
 

@@ -2,7 +2,6 @@ import { EqualityFunction, HashFunction } from '@app-core/type/collection';
 import { AbstractSet, ImmutableSet } from '@app-core/type/collection/set';
 import { NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil, SetUtil } from '@app-core/util';
-import _ from 'lodash';
 
 /**
  *    Immutable {@link Set} based on hash function to locate internal elements. This {@link Set} never change, that is,
@@ -10,7 +9,7 @@ import _ from 'lodash';
  * a new {@link Set} and leave the old one unchanged.
  *
  *    It makes no guarantees as to the iteration order of the set; in particular, it does not guarantee that the order
- * will remain constant over time. This class permits the null element.
+ * will remain constant over time. This class permits the `null` element.
  */
 export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
@@ -18,8 +17,8 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   private _size: number = 0;
 
 
-  private constructor(private readonly hash: HashFunction<T> = this.defaultHash,
-                      private readonly equals: EqualityFunction<T> = this.defaultEquals,
+  private constructor(private readonly hash: HashFunction<T> = ObjectUtil.hash,
+                      private readonly equals: EqualityFunction<T> = ObjectUtil.equals,
                       values?: Iterable<T>) {
     if (values) {
       for (const v of values) {
@@ -170,7 +169,8 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
       newHashTable.delete(
         hashValue
       );
-    } else {
+    }
+    else {
       const newBucket = [
         ...valuesWithSameHash.slice(0, posOfValue),
         ...valuesWithSameHash.slice(posOfValue + 1)
@@ -595,70 +595,6 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     clonedSet.hashTable = hashTable;
     clonedSet._size = size;
     return clonedSet;
-  }
-
-
-  /**
-   *    Returns `true` if `a` is equals to `b`, `false` otherwise. It is used by default when no one was provided as
-   * {@link equals} property in the constructor.
-   *
-   * @apiNote
-   *    To compare 2 different values, the order of the options to use is:
-   *    <ol>
-   *      <li>Internal `equals` function of the object if it defines one</li>
-   *      <li>`_.isEqual` function included in Lodash library</li>
-   *    </ol>
-   *
-   * @param a
-   *    First value to compare
-   * @param b
-   *    First value to compare
-   *
-   * @return `true` if `a` is equals to `b`,
-   *         `false` otherwise.
-   */
-  private defaultEquals(a: T,
-                        b: T): boolean {
-    if (ObjectUtil.containsFunction(a, 'equals', 1)) {
-      // @ts-ignore
-      return a.equals(
-        b
-      );
-    }
-    return _.isEqual(
-      a,
-      b
-    );
-  }
-
-
-  /**
-   *    Returns the key used for hashing related with provided `value`. It is used by default when no one was provided
-   * as {@link hash} property in the constructor.
-   *
-   * @apiNote
-   *    To return the hashing of `value`, the order of the options to use is:
-   *    <ol>
-   *      <li>Internal `hash` function of the object if it defines one</li>
-   *      <li><li>A custom hash value based on its JSON representation</li></li>
-   *    </ol>
-   *
-   * @return hash value of this object
-   *
-   * @throws {TypeError} if object `value` does not define a `hash` function and there was an error getting its JSON representation
-   */
-  private defaultHash(value: T): number {
-    if (ObjectUtil.containsFunction(value, 'hash', 0)) {
-      // @ts-ignore
-      return value.hash();
-    }
-    // Use the JSON representation of the value
-    const jsonOfValue = JSON.stringify(value);
-    let h = 0
-    for (let i = 0; i < jsonOfValue.length; i++) {
-      h = ((h << 5) - h + jsonOfValue.charCodeAt(i)) | 0;
-    }
-    return h;
   }
 
 

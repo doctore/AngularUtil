@@ -342,6 +342,48 @@ describe('ObjectUtil', () => {
 
 
 
+  describe('hash', () => {
+
+    it('when input is null or undefined then 0 is returned', () => {
+      expect(ObjectUtil.hash(null)).toBe(0);
+      expect(ObjectUtil.hash(undefined)).toBe(0);
+    });
+
+
+    it('when input is not an object then a custom hash value based on its JSON representation is returned', () => {
+      expect(ObjectUtil.hash(123)).toBe(48690);
+      expect(ObjectUtil.hash('abc')).toBe(34386722);
+      expect(ObjectUtil.hash(true)).toBe(3569038);
+    });
+
+
+    it('when input is an object that defines hash method then the result of such method is returned', () => {
+      const role = { id: 10, name: 'role name' } as Role;
+
+      const user1 = new User(10, 'user1', [role]);
+      const user2 = new User(11, 'user2', [role]);
+      const user3 = new User(12, 'user3', [role]);
+
+      expect(ObjectUtil.hash(user1)).toBe(user1.id);
+      expect(ObjectUtil.hash(user2)).toBe(user2.id);
+      expect(ObjectUtil.hash(user3)).toBe(user3.id);
+    });
+
+
+    it('when input is an object that does not define hash method then a custom hash value based on its JSON representation is returned', () => {
+      const role1 = { id: 10, name: 'name1' } as Role;
+      const role2 = { id: 11, name: 'name2' } as Role;
+      const role3 = { id: 12, name: 'name3' } as Role;
+
+      expect(ObjectUtil.hash(role1)).toBe(-2053073999);
+      expect(ObjectUtil.hash(role2)).toBe(-699763341);
+      expect(ObjectUtil.hash(role3)).toBe(653547317);
+    });
+
+  });
+
+
+
   describe('isNullOrUndefined', () => {
 
     it('when valueToVerify is null or undefined then true is returned', () => {
@@ -482,6 +524,10 @@ class User {
     ObjectUtil.isNullOrUndefined(other)
       ? false
       : this.id === other.id;
+
+  hash = (): number =>
+    this.id;
+
 }
 
 

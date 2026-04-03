@@ -1,17 +1,19 @@
 import { ObjectUtil } from '@app-core/util';
 import { Nullable } from '@app-core/type';
+import { FPredicate2 } from '@app-core/type/predicate';
+import { FFunction1 } from '@app-core/type/function';
 
 /**
  * Given a value T, returns the key used for hashing.
  */
-export type HashFunction<T> = (value: T) => number;
+export type HashFunction<T> = FFunction1<T, number>;
 
 
 
 /**
  * Determines whether two values are considered equal.
  */
-export type EqualityFunction<T> = (a: T, b: T) => boolean;
+export type EqualityFunction<T> = FPredicate2<T, T>;
 
 
 

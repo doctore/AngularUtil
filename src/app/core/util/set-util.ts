@@ -653,7 +653,8 @@ export class SetUtil {
       for (const current of sourceSet!) {
         if (!foundFirstElement) {
           result = current;
-        } else {
+        }
+        else {
           result = finalAccumulator.apply(
             // @ts-ignore
             result,

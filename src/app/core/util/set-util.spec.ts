@@ -120,7 +120,7 @@ describe('SetUtil', () => {
 
   describe('count', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set then 0 is returned', () => {
+    it('when given sourceSet is null, undefined or empty then 0 is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -223,7 +223,7 @@ describe('SetUtil', () => {
 
   describe('filter', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or empty then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -379,7 +379,7 @@ describe('SetUtil', () => {
 
   describe('filterNot', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set then empty Set is returned', () => {
+    it('when given sourceSet is null, undefined or empty then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -535,7 +535,7 @@ describe('SetUtil', () => {
 
   describe('foldLeft', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set then initialValue is returned', () => {
+    it('when given sourceSet is null, undefined or empty then initialValue is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -637,7 +637,7 @@ describe('SetUtil', () => {
 
   describe('groupBy', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+    it('when given sourceSet is null, undefined or empty and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -812,7 +812,7 @@ describe('SetUtil', () => {
 
   describe('groupByMultiKey', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+    it('when given sourceSet is null, undefined or empty and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1031,7 +1031,7 @@ describe('SetUtil', () => {
 
   describe('isEmpty', () => {
 
-    it('when given setToVerify is null, undefined or an empty Set then true is returned', () => {
+    it('when given setToVerify is null, undefined or empty then true is returned', () => {
       const expectedResult = true;
 
       expect(SetUtil.isEmpty()).toEqual(expectedResult);
@@ -1227,7 +1227,7 @@ describe('SetUtil', () => {
 
   describe('max', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then undefined is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is not provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1251,7 +1251,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then undefined is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1356,7 +1356,7 @@ describe('SetUtil', () => {
 
   describe('maxOptional', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then empty Optional is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is not provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1380,7 +1380,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then empty Optional is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1494,7 +1494,7 @@ describe('SetUtil', () => {
 
   describe('min', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then undefined is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is not provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1518,7 +1518,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then undefined is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1623,7 +1623,7 @@ describe('SetUtil', () => {
 
   describe('minOptional', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is not provided then empty Optional is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is not provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1647,7 +1647,7 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given sourceSet is null, undefined or an empty Set and comparator is provided then empty Optional is returned', () => {
+    it('when given sourceSet is null, undefined or empty and comparator is provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -1760,7 +1760,7 @@ describe('SetUtil', () => {
 
   describe('reduce', () => {
 
-    it('when given sourceSet is null, undefined or an empty Set then undefined is returned', () => {
+    it('when given sourceSet is null, undefined or empty then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
@@ -2534,12 +2534,14 @@ const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
     const keys: string[] = [];
     if (0 == n % 2) {
       keys.push("even");
-    } else {
+    }
+    else {
       keys.push("odd");
     }
     if (5 > n) {
       keys.push("smaller5");
-    } else {
+    }
+    else {
       keys.push("greaterEqual5");
     }
     return keys;
@@ -2550,12 +2552,14 @@ const oddEvenAndCompareWith5Raw = (n: number) => {
   const keys: string[] = [];
   if (0 == n % 2) {
     keys.push("even");
-  } else {
+  }
+  else {
     keys.push("odd");
   }
   if (5 > n) {
     keys.push("smaller5");
-  } else {
+  }
+  else {
     keys.push("greaterEqual5");
   }
   return keys;

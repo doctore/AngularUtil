@@ -272,8 +272,8 @@ export abstract class Validation<E, T> {
       );
 
     // This is an Invalid instance
-    } else {
-
+    }
+    else {
       // Due to only this is Invalid, return only its errors
       if (validation.isValid()) {
         return Validation.invalid<E, T>(

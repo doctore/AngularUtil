@@ -1,15 +1,14 @@
 import { EqualityFunction, HashFunction } from '@app-core/type/collection';
-import {AbstractSet, MutableSet} from '@app-core/type/collection/set';
+import { AbstractSet, MutableSet } from '@app-core/type/collection/set';
 import { NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil, SetUtil } from '@app-core/util';
-import _ from 'lodash';
 
 /**
  *    Mutable {@link Set} based on hash function to locate internal elements. This {@link Set} can be updated, reduced
  * or extended in place. This means you can change, add, or remove elements of a {@link Set} as a side effect.
  *
  *    It makes no guarantees as to the iteration order of the set; in particular, it does not guarantee that the order
- * will remain constant over time. This class permits the null element.
+ * will remain constant over time. This class permits the `null` element.
  */
 export class MutableHashSet<T> implements MutableSet<T> {
 
@@ -17,8 +16,8 @@ export class MutableHashSet<T> implements MutableSet<T> {
   private _size = 0;
 
 
-  private constructor(private readonly hash: HashFunction<T> = this.defaultHash,
-                      private readonly equals: EqualityFunction<T> = this.defaultEquals,
+  private constructor(private readonly hash: HashFunction<T> = ObjectUtil.hash,
+                      private readonly equals: EqualityFunction<T> = ObjectUtil.equals,
                       values?: Iterable<T>) {
     if (values) {
       for (const v of values) {
@@ -473,70 +472,6 @@ export class MutableHashSet<T> implements MutableSet<T> {
         }
       }
     };
-  }
-
-
-  /**
-   *    Returns `true` if `a` is equals to `b`, `false` otherwise. It is used by default when no one was provided as
-   * {@link equals} property in the constructor.
-   *
-   * @apiNote
-   *    To compare 2 different values, the order of the options to use is:
-   *    <ol>
-   *      <li>Internal `equals` function of the object if it defines one</li>
-   *      <li>`_.isEqual` function included in Lodash library</li>
-   *    </ol>
-   *
-   * @param a
-   *    First value to compare
-   * @param b
-   *    First value to compare
-   *
-   * @return `true` if `a` is equals to `b`,
-   *         `false` otherwise.
-   */
-  private defaultEquals(a: T,
-                        b: T): boolean {
-    if (ObjectUtil.containsFunction(a, 'equals', 1)) {
-      // @ts-ignore
-      return a.equals(
-        b
-      );
-    }
-    return _.isEqual(
-      a,
-      b
-    );
-  }
-
-
-  /**
-   *    Returns the key used for hashing related with provided `value`. It is used by default when no one was provided
-   * as {@link hash} property in the constructor.
-   *
-   * @apiNote
-   *    To return the hashing of `value`, the order of the options to use is:
-   *    <ol>
-   *      <li>Internal `hash` function of the object if it defines one</li>
-   *      <li>A custom hash value based on its JSON representation</li>
-   *    </ol>
-   *
-   * @return hash value of this object
-   *
-   * @throws {TypeError} if object `value` does not define a `hash` function and there was an error getting its JSON representation
-   */
-  private defaultHash(value: T): number {
-    if (ObjectUtil.containsFunction(value, 'hash', 0)) {
-      // @ts-ignore
-      return value.hash();
-    }
-    // Use the JSON representation of the value
-    const jsonOfValue = JSON.stringify(value);
-    let h = 0
-    for (let i = 0; i < jsonOfValue.length; i++) {
-      h = ((h << 5) - h + jsonOfValue.charCodeAt(i)) | 0;
-    }
-    return h;
   }
 
 }

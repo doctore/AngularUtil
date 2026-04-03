@@ -1327,7 +1327,8 @@ export class StringUtil {
       const currentChar = sourceString![i];
       if (finalFilterPredicate.apply(currentChar)) {
         result += currentChar;
-      } else {
+      }
+      else {
         return result;
       }
     }

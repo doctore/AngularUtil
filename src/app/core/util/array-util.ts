@@ -329,6 +329,98 @@ export class ArrayUtil {
 
 
   /**
+   *    Deletes from the given `sourceArray` the elements equals to `itemToDelete`, based on the provided {@link TPredicate2}
+   * `equalsFunction`.
+   *
+   * <pre>
+   *    delete(                                                                              Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user2 v2'}],        [{id: 1, name: 'user1'}]
+   *      {id: 2, name: 'user2'},
+   *      (u1: User, u2: User) => u1.id == u2.id
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to search
+   * @param itemToDelete
+   *    Element to remove in `sourceArray`
+   * @param equalsFunction
+   *    {@link TPredicate2} used to compare `itemToDelete` with the current element in `sourceArray`. If it is `null` or
+   *    `undefined` then {@link ObjectUtil#equals} will be used.
+   *
+   * @return new array containing the elements of `sourceArray` that are not equals to provided `itemToDelete`
+   */
+  static delete = <T>(sourceArray: NullableOrUndefined<T[]>,
+                      itemToDelete: T,
+                      equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): T[] => {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    const finalEqualsFunction = equalsFunction
+      ? Predicate2.of(equalsFunction)
+      : Predicate2.of(
+          ObjectUtil.equals
+        );
+    const result: T[] = [];
+    for (const current of sourceArray!) {
+      if (!finalEqualsFunction.apply(current, itemToDelete)) {
+        result.push(
+          current
+        );
+      }
+    }
+    return result;
+  }
+
+
+  /**
+   *    Deletes from the given `sourceArray` the first element equals to `itemToDelete`, based on the provided
+   * {@link TPredicate2} `equalsFunction`.
+   *
+   * <pre>
+   *    deleteFirst(                                                                         Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user2 v2'}],        [{id: 1, name: 'user1'}, {id: 2, name: 'user2 v2'}]
+   *      {id: 2, name: 'user2 v2'},
+   *      (u1: User, u2: User) => u1.id == u2.id
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to search
+   * @param itemToDelete
+   *    Element to remove in `sourceArray`
+   * @param equalsFunction
+   *    {@link TPredicate2} used to compare `itemToDelete` with the current element in `sourceArray`. If it is `null` or
+   *    `undefined` then {@link ObjectUtil#equals} will be used.
+   *
+   * @return new array containing the elements of `sourceArray` without the first element equals to provided `itemToDelete` (if exists)
+   */
+  static deleteFirst = <T>(sourceArray: NullableOrUndefined<T[]>,
+                           itemToDelete: T,
+                           equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): T[] => {
+    if (this.isEmpty(sourceArray)) {
+      return [];
+    }
+    const finalEqualsFunction = equalsFunction
+      ? Predicate2.of(equalsFunction)
+      : Predicate2.of(
+          ObjectUtil.equals
+        );
+    for (let i = 0; i < sourceArray!.length; i++) {
+      if (finalEqualsFunction.apply(sourceArray![i], itemToDelete)) {
+        return [
+          ...sourceArray!.slice(0, i),
+          ...sourceArray!.slice(i + 1)
+        ];
+      }
+    }
+    return sourceArray!.slice(
+      0
+    );
+  }
+
+
+  /**
    *    Returns an array removing the longest prefix of elements included in `sourceArray` that satisfy the
    * {@link TPredicate1} `filterPredicate`.
    *
@@ -434,7 +526,7 @@ export class ArrayUtil {
    *
    * @return `undefined` if `sourceArray` has no elements, `filterPredicate` is `null` or `undefined`
    *         or no one verifies provided `filterPredicate`.
-   *         Otherwise, the first element that verifies `filterPredicate`.
+   *         Otherwise, the first element that verifies `filterPredicate`
    */
   static filterFirst = <T>(sourceArray: NullableOrUndefined<T[]>,
                            filterPredicate: NullableOrUndefined<TPredicate1<T>>): OrUndefined<T> => {
@@ -471,7 +563,7 @@ export class ArrayUtil {
    *
    * @return `-1` if `sourceArray` has no elements, `filterPredicate` is `null` or `undefined`
    *         or no one verifies provided `filterPredicate`.
-   *         Otherwise, the first position of the element that verifies `filterPredicate`.
+   *         Otherwise, the first position of the element that verifies `filterPredicate`
    */
   static filterFirstIndex = <T>(sourceArray: NullableOrUndefined<T[]>,
                                 filterPredicate: NullableOrUndefined<TPredicate1<T>>): number => {
@@ -507,7 +599,7 @@ export class ArrayUtil {
    *
    * @return `undefined` if `sourceArray` has no elements, `filterPredicate` is `null` or `undefined`
    *         or no one verifies provided `filterPredicate`.
-   *         Otherwise, the last element that verifies `filterPredicate`.
+   *         Otherwise, the last element that verifies `filterPredicate`
    */
   static filterLast = <T>(sourceArray: NullableOrUndefined<T[]>,
                           filterPredicate: NullableOrUndefined<TPredicate1<T>>): OrUndefined<T> => {
@@ -561,8 +653,8 @@ export class ArrayUtil {
 
 
   /**
-   *    Returns from the given `sourceArray` the first element equals to `item`, based on the provided {@link TPredicate2}
-   * `equalsFunction`.
+   *    Returns from the given `sourceArray` the first element equals to `itemToFind`, based on the provided
+   * {@link TPredicate2} `equalsFunction`.
    *
    * <pre>
    *    find(                                                                              Result:
@@ -574,18 +666,18 @@ export class ArrayUtil {
    *
    * @param sourceArray
    *    Array to search
-   * @param item
+   * @param itemToFind
    *    Element to compare and search in `sourceArray`
    * @param equalsFunction
-   *    {@link TPredicate2} used to compare `item` with the current element in `sourceArray`. If it is `null` or `undefined`
-   *    then {@link _.isEqual} will be used.
+   *    {@link TPredicate2} used to compare `itemToFind` with the current element in `sourceArray`. If it is `null`
+   *    or `undefined` then {@link ObjectUtil#equals} will be used.
    *
    * @return `undefined` if `sourceArray` has no elements or no one verifies provided `equalsFunction`.
-   *         Otherwise, the first element that verifies `equalsFunction` using `item` and the current element
-   *         of `sourceArray` as parameters.
+   *         Otherwise, the first element that verifies `equalsFunction` using `itemToFind` and the current element
+   *         of `sourceArray` as parameters
    */
   static find = <T>(sourceArray: NullableOrUndefined<T[]>,
-                    item: T,
+                    itemToFind: T,
                     equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): OrUndefined<T> => {
     if (this.isEmpty(sourceArray)) {
       return undefined;
@@ -593,10 +685,10 @@ export class ArrayUtil {
     const finalEqualsFunction = equalsFunction
       ? Predicate2.of(equalsFunction)
       : Predicate2.of(
-          (a: T, b: T) => _.isEqual(a, b)
+          ObjectUtil.equals
         );
     for (const current of sourceArray!) {
-      if (finalEqualsFunction.apply(current, item)) {
+      if (finalEqualsFunction.apply(current, itemToFind)) {
         return current;
       }
     }
@@ -605,7 +697,7 @@ export class ArrayUtil {
 
 
   /**
-   *    Returns from the given `sourceArray` the first position of the element equals to `item`, based on the provided
+   *    Returns from the given `sourceArray` the first position of the element equals to `itemToFind`, based on the provided
    * {@link TPredicate2} `equalsFunction`, -1 if no one verifies it.
    *
    * <pre>
@@ -618,18 +710,18 @@ export class ArrayUtil {
    *
    * @param sourceArray
    *    Array to search
-   * @param item
+   * @param itemToFind
    *    Element to compare and search in `sourceArray`
    * @param equalsFunction
-   *    {@link TPredicate2} used to compare `item` with the current element in `sourceArray`. If it is `null` or `undefined`
-   *    then {@link _.isEqual} will be used.
+   *    {@link TPredicate2} used to compare `itemToFind` with the current element in `sourceArray`. If it is `null`
+   *    or `undefined` then {@link ObjectUtil#equals} will be used.
    *
    * @return `-1` if `sourceArray` has no elements or no one verifies provided `equalsFunction`.
-   *         Otherwise, the first position of the element that verifies `equalsFunction` using `item` and the current
-   *         element of `sourceArray` as parameters.
+   *         Otherwise, the first position of the element that verifies `equalsFunction` using `itemToFind` and
+   *         the current element of `sourceArray` as parameters.
    */
   static findIndex = <T>(sourceArray: NullableOrUndefined<T[]>,
-                         item: T,
+                         itemToFind: T,
                          equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): number => {
     if (this.isEmpty(sourceArray)) {
       return -1;
@@ -637,21 +729,21 @@ export class ArrayUtil {
     const finalEqualsFunction = equalsFunction
       ? Predicate2.of(equalsFunction)
       : Predicate2.of(
-          (a: T, b: T) => _.isEqual(a, b)
+          ObjectUtil.equals
         );
     return sourceArray!.findIndex(
       (obj: T) =>
         finalEqualsFunction.apply(
           obj,
-          item
+          itemToFind
         )
     );
   }
 
 
   /**
-   *    Returns from the given `sourceArray` the last element equals to `item`, based on the provided {@link TPredicate2}
-   * `equalsFunction`.
+   *    Returns from the given `sourceArray` the last element equals to `itemToFind`, based on the provided
+   * {@link TPredicate2}`equalsFunction`.
    *
    * <pre>
    *    find(                                                                              Result:
@@ -663,18 +755,18 @@ export class ArrayUtil {
    *
    * @param sourceArray
    *    Array to search
-   * @param item
+   * @param itemToFind
    *    Element to compare and search in `sourceArray`
    * @param equalsFunction
-   *    {@link TPredicate2} used to compare `item` with the current element in `sourceArray`. If it is `null` or `undefined`
-   *    then {@link _.isEqual} will be used.
+   *    {@link TPredicate2} used to compare `itemToFind` with the current element in `sourceArray`. If it is `null`
+   *    or `undefined` then {@link ObjectUtil#equals} will be used.
    *
    * @return `undefined` if `sourceArray` has no elements or no one verifies provided `equalsFunction`.
-   *         Otherwise, the last element that verifies `equalsFunction` using `item` and the current element
+   *         Otherwise, the last element that verifies `equalsFunction` using `itemToFind` and the current element
    *         of `sourceArray` as parameters.
    */
   static findLast = <T>(sourceArray: NullableOrUndefined<T[]>,
-                        item: T,
+                        itemToFind: T,
                         equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): OrUndefined<T> => {
     if (this.isEmpty(sourceArray)) {
       return undefined;
@@ -682,11 +774,11 @@ export class ArrayUtil {
     const finalEqualsFunction = equalsFunction
       ? Predicate2.of(equalsFunction)
       : Predicate2.of(
-          (a: T, b: T) => _.isEqual(a, b)
+          ObjectUtil.equals
         );
     for (let i = sourceArray!.length - 1; i >= 0; i--) {
       const currentElement = sourceArray![i];
-      if (finalEqualsFunction.apply(currentElement, item)) {
+      if (finalEqualsFunction.apply(currentElement, itemToFind)) {
         return currentElement;
       }
     }
@@ -695,8 +787,8 @@ export class ArrayUtil {
 
 
   /**
-   *     Returns an {@link Optional} containing the first element of the given `sourceArray` equals to `item`, based on
-   *  the provided {@link TPredicate2} `equalsFunction`. {@link Optional#empty} otherwise.
+   *     Returns an {@link Optional} containing the first element of the given `sourceArray` equals to `itemToFind`,
+   *  based on the provided {@link TPredicate2} `equalsFunction`. {@link Optional#empty} otherwise.
    *
    * <pre>
    *    find(                                                                              Result:
@@ -708,24 +800,24 @@ export class ArrayUtil {
    *
    * @param sourceArray
    *    Array to search
-   * @param item
+   * @param itemToFind
    *    Element to compare and search in `sourceArray`
    * @param equalsFunction
-   *    {@link TPredicate2} used to compare `item` with the current element in `sourceArray`. If it is `null` or `undefined`
-   *    then {@link _.isEqual} will be used.
+   *    {@link TPredicate2} used to compare `itemToFind` with the current element in `sourceArray`. If it is `null`
+   *    or `undefined` then {@link ObjectUtil#equals} will be used.
    *
-   * @return {@link Optional#empty} if `sourceArray` has no elements, `item` is `null` or `undefined`, or no one verifies
-   *         provided `equalsFunction`.
-   *         Otherwise, {@link Optional} containing the first element that verifies `equalsFunction` using `item` and the
-   *         current element of `sourceArray` as parameters.
+   * @return {@link Optional#empty} if `sourceArray` has no elements, `itemToFind` is `null` or `undefined`, or no one
+   *         verifies provided `equalsFunction`.
+   *         Otherwise, {@link Optional} containing the first element that verifies `equalsFunction` using `itemToFind`
+   *         and the current element of `sourceArray` as parameters.
    */
   static findOptional = <T>(sourceArray: NullableOrUndefined<T[]>,
-                            item: T,
+                            itemToFind: T,
                             equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): Optional<T> =>
     Optional.ofNullable(
       this.find(
         sourceArray,
-        item,
+        itemToFind,
         equalsFunction
       )
     );
@@ -760,7 +852,8 @@ export class ArrayUtil {
             recursiveResult
           );
         }
-      } else {
+      }
+      else {
         result.push(
           current
         );
@@ -1805,7 +1898,8 @@ export class ArrayUtil {
       result.push(
         sourceArray!
       );
-    } else {
+    }
+    else {
       for (let i = 0; i < sourceArray!.length - size + 1; i++) {
         result.push(
           sourceArray!.slice(
@@ -1945,7 +2039,8 @@ export class ArrayUtil {
         result.push(
           item
         );
-      } else {
+      }
+      else {
         return result;
       }
     }
