@@ -54,7 +54,9 @@ There are new collections used to store, search, sort and organize data more eas
 
 * [Set](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set) stores a collection of unique elements.
   - [MutableHashSet](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set/mutable-hash-set.type.ts): unordered collection of unique elements based on hash function to locate internal elements. This Set can be updated, reduced or extended in place.
+  - [MutableLinkedHashSet](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set/mutable-linked-hash-set.type.ts): collection of unique elements based on hash function to locate internal elements that maintain insertion order. This Set can be updated, reduced or extended in place.
   - [ImmutableHashSet](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set/immutable-hash-set.type.ts): unordered collection of unique elements based on hash function to locate internal elements. This Set never change, that is, all the operations updating it will return a new Set and leave the old one unchanged.
+  - [ImmutableLinkedHashSet](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set/immutable-linked-hash-set.type.ts): collection of unique elements based on hash function to locate internal elements that maintain insertion order. This Set never change, that is, all the operations updating it will return a new Set and leave the old one unchanged.
 
 
 ### Services
