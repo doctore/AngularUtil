@@ -2612,33 +2612,26 @@ function verifyMaps(actualMap: Map<unknown, unknown>,
 const areAllRolePropertiesEqualsFPredicate: FPredicate2<Role, Role> =
   (r1: Role, r2: Role) => r1.id == r2.id && r1.name == r2.name;
 
-
 const areAllUserPropertiesEqualsFPredicate: FPredicate2<User, User> =
   (u1: User, u2: User) => u1.id == u2.id && u1.name == u2.name;
-
 
 const areRolesEqualsByIdRaw =
   (r1: Role, r2: Role) => r1.id == r2.id;
 
-
 const areRolesEqualsPredicate: Predicate2<Role, Role> =
   Predicate2.of((r1: Role, r2: Role) => r1 === r2);
-
 
 const areUsersEqualsByIdRaw =
   (u1: User, u2: User) => u1.id == u2.id;
 
-
 const areUsersEqualsPredicate: Predicate2<User, User> =
   Predicate2.of((u1: User, u2: User) => u1 === u2);
-
 
 const areKeyValueEvenRaw =
   (k: number,
    v: number) =>
     0 == k % 2 &&
     0 == v % 2;
-
 
 const areKeyValueEvenPredicate: Predicate2<number, number> =
   Predicate2.of(
@@ -2648,11 +2641,9 @@ const areKeyValueEvenPredicate: Predicate2<number, number> =
       0 == v % 2
   );
 
-
 const isEvenRaw =
   (n: number) =>
     0 == n % 2;
-
 
 const isKeyAndRoleIdOddPredicate: Predicate2<number, Role> =
   Predicate2.of(
@@ -2662,54 +2653,45 @@ const isKeyAndRoleIdOddPredicate: Predicate2<number, Role> =
       1 == role.id % 2
   );
 
-
 const isKeyAndUserIdEvenRaw =
   (k: number,
    user: User) =>
     0 == k % 2 &&
     0 == user.id % 2;
 
-
 const isKeyEvenRaw =
   (k: number,
    v: string) =>
     1 == k % 2;
-
 
 const isKeyOddAndValueLongerThan1 =
   (k: number, v: string) =>
     1 == k % 2 &&
     1 < v.length;
 
-
 const isKeyOddRaw =
   (k: number, v: string) =>
     1 == k % 2;
-
 
 const isKeyOddFPredicate: FPredicate2<number, number> =
   (k: number,
    v: number) =>
     1 == k % 2;
 
-
 const isValueEvenRaw =
   (k: string, v: number) =>
     1 == v % 2;
-
 
 const keyAndValueAsStringFFunction: FFunction2<number, string, string> =
   (k: number,
    v: string) =>
     k + '-' + v;
 
-
 const keyAndValueAsStringForOddKeysPP: PartialFunction<[number, string], string> =
   PartialFunction.of(
     ([k, v]: [number, string]) => 1 == k % 2,
     ([k, v]: [number, string]) => k + '-' + v
   );
-
 
 const keyAndValueAsStringFunction: Function2<number, string, string> =
   Function2.of(
@@ -2718,17 +2700,14 @@ const keyAndValueAsStringFunction: Function2<number, string, string> =
       k + '-' + v
   );
 
-
 const keyAndValueAsStringRaw =
   (k: number, v: string) =>
     k + '-' + v;
-
 
 const keyAndValueLengthRaw =
   (k: number,
    v: string): [number, number] =>
     [k, v.length];
-
 
 const keyAndValuePlus1ForOddPP: PartialFunction<[string, number], [string, number]> =
   PartialFunction.of(
@@ -2736,30 +2715,25 @@ const keyAndValuePlus1ForOddPP: PartialFunction<[string, number], [string, numbe
     ([k, v]: [string, number]) => [k, 1 + v]
   );
 
-
 const keyMod3Raw =
   (k: number,
    v: string) =>
     k % 3;
-
 
 const keyMod3FFunction: FFunction2<number, string, number> =
   (k: number,
    v: string) =>
     k % 3;
 
-
 const keyLowerThan10Raw =
   (k: number,
    v: string) =>
     10 > k;
 
-
 const keyValueMultiply2FFunction: FFunction2<string, number, [string, number]> =
   (k: string,
    v: number): [string, number] =>
     [k, 2 * v];
-
 
 const keyValueMultiply2Function: Function2<string, number, [string, number]> =
   Function2.of(
@@ -2767,18 +2741,15 @@ const keyValueMultiply2Function: Function2<string, number, [string, number]> =
      v: number) =>
       [k, 2 * v]);
 
-
 const keyValueMultiply2Raw =
   (k: string,
    v: number): [string, number] =>
     [k, 2 * v];
 
-
 const keyValuePlus1Raw =
   (k: string,
    v: number): [string, number] =>
     [k, 1 + v];
-
 
 const mod3AsKeyAndPlus1AsValueForLowerThan10PP: PartialFunction<[number, string], [number, number]> =
   PartialFunction.of(
@@ -2786,36 +2757,30 @@ const mod3AsKeyAndPlus1AsValueForLowerThan10PP: PartialFunction<[number, string]
     ([k, v]: [number, string]) => [k % 3, v.length + 1]
   );
 
-
 const sameKeyRaw =
   (k: number,
    v: string) =>
     k;
-
 
 const sumValuesRaw =
   (n1: number,
    n2: number) =>
     n1 + n2;
 
-
 const sumValuesFBinaryOperator: FBinaryOperator<number> =
   (n1: number,
    n2: number) =>
     n1 + n2;
-
 
 const valueLengthPlus1Raw =
   (k: number,
    v: string) =>
     v.length + 1;
 
-
 const valueLengthPlus1FFunction: FFunction2<number, string, number> =
   (k: number,
    v: string) =>
     v.length + 1;
-
 
 const valueLengthRaw =
   (k: number,

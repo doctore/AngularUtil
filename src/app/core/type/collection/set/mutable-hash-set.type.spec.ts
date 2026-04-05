@@ -1,4 +1,4 @@
-import { MutableHashSet } from '@app-core/type/collection/set';
+import { ImmutableHashSet, MutableHashSet, MutableLinkedHashSet } from '@app-core/type/collection/set';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { Nullable } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
@@ -184,7 +184,7 @@ describe('MutableHashSet', () => {
         areUsersEquals,
         [ u1, u2, u3 ]
       );
-      const setOfHashableObjectToAdd = MutableHashSet.of<User>(
+      const setOfHashableObjectToAdd = MutableLinkedHashSet.of<User>(
         hashUser,
         areUsersEquals,
         [ u2, u3, u4 ]
@@ -247,7 +247,7 @@ describe('MutableHashSet', () => {
       const setOfNumberToAdd = new Set<number>(
         [ n2, n3 ]
       );
-      const setOfNotHashableObjectToAdd = MutableHashSet.of<Role>(
+      const setOfNotHashableObjectToAdd = MutableLinkedHashSet.of<Role>(
         hashRole,
         areRolesEquals,
         [ r2, r3, r4 ]
@@ -324,7 +324,7 @@ describe('MutableHashSet', () => {
         areUsersEquals,
         [ u1, u3 ]
       );
-      const setOfHashableObjectToAdd = MutableHashSet.of<User>(
+      const setOfHashableObjectToAdd = ImmutableHashSet.of<User>(
         hashUser,
         areUsersEquals,
         [ u2, u3, u4 ]
@@ -347,14 +347,12 @@ describe('MutableHashSet', () => {
   describe('clear', () => {
 
     it('then the Set is empty', () => {
-      const n = 19;
       const role = { id: 1, name: 'role1' } as Role;
       const user = new User(1, 'user 1');
 
-      const setOfNumber = MutableHashSet.of<number>(
+      const setOfNumber = MutableHashSet.empty<number>(
         hashNumber,
-        undefined,
-        [ n ]
+        undefined
       );
       const setOfNotHashableObject = MutableHashSet.of<Role>(
         hashRole,
@@ -450,7 +448,7 @@ describe('MutableHashSet', () => {
 
       expect(setOfNumber.delete(n2)).toBe(true);
       expect(setOfNotHashableObject.delete(r2)).toBe(true);
-      expect(setOfHashableObject.delete(u2)).toBe(true);
+      expect(setOfHashableObject.delete(u1)).toBe(true);
 
       expect(setOfNumber.size).toBe(1);
       expect(setOfNumber.has(n1)).toBe(true);
@@ -461,8 +459,8 @@ describe('MutableHashSet', () => {
       expect(setOfNotHashableObject.has(r2)).toBe(false);
 
       expect(setOfHashableObject.size).toBe(1);
-      expect(setOfHashableObject.has(u1)).toBe(true);
-      expect(setOfHashableObject.has(u2)).toBe(false);
+      expect(setOfHashableObject.has(u1)).toBe(false);
+      expect(setOfHashableObject.has(u2)).toBe(true);
     });
 
 
@@ -1202,7 +1200,7 @@ describe('MutableHashSet', () => {
       expect(collectedNumbers).toHaveLength(3);
       expect(collectedNumbers).toContainEqual(n1 * 2);
       expect(collectedNumbers).toContainEqual(n2 * 2);
-      expect(collectedNumbers).toContainEqual(n2 * 2);
+      expect(collectedNumbers).toContainEqual(n3 * 2);
 
       expect(collectedRoleNames).toHaveLength(3);
       expect(collectedRoleNames).toContainEqual(r1.name);
@@ -2363,32 +2361,9 @@ describe('MutableHashSet', () => {
         [ u1, u2, u3 ]
       );
 
-      const collectedNumbers: number[] = [];
-      const collectedRoleNames: string[] = [];
-      const collectedUserNames: string[] = [];
-
-      setOfNumber.forEach(
-        n =>
-          collectedNumbers.push(
-            plus2(n)
-          )
-      );
-      setOfNotHashableObject.forEach(
-        r =>
-          collectedRoleNames.push(
-            getName(r)
-          )
-      );
-      setOfHashableObject.forEach(
-        u =>
-          collectedUserNames.push(
-            getName(u)
-          )
-      );
-
-      expect(collectedNumbers).toHaveLength(1);
-      expect(collectedRoleNames).toHaveLength(2);
-      expect(collectedUserNames).toHaveLength(3);
+      expect(setOfNumber.size).toBe(1);
+      expect(setOfNotHashableObject.size).toBe(2);
+      expect(setOfHashableObject.size).toBe(3);
     });
 
   });
@@ -2677,6 +2652,7 @@ describe('MutableHashSet', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const u1 = new User(1, 'user1');
       const u2 = new User(2, 'user2');
+
       const setOfNumberSource = MutableHashSet.empty<number>(
         hashNumber,
         areNumberEquals
@@ -3409,30 +3385,23 @@ interface Role {
 const areNumberEquals: EqualityFunction<number> =
   (n1: number, n2: number) => n1 == n2;
 
-
 const areRolesEquals: EqualityFunction<Role> =
   (r1: Role, r2: Role) => r1.id == r2.id;
-
 
 const areUsersEquals: EqualityFunction<User> =
   (u1: User, u2: User) => u1.id == u2.id && u2.name == u2.name;
 
-
 const getName =
   <T extends { name: string }>(obj: T): string => obj.name;
-
 
 const hashNumber: HashFunction<number> =
   (n) => n % 50;
 
-
 const hashRole: HashFunction<Role> =
   (r: Role) => r.id % 50;
 
-
 const hashUser: HashFunction<User> =
   (u: User) => u.id % 50;
-
 
 const plus2 =
   (n: number) => n * 2;

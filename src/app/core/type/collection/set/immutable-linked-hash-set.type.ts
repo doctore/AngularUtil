@@ -1,20 +1,20 @@
-import { EqualityFunction, HashFunction } from '@app-core/type/collection';
 import { AbstractSet, ImmutableSet } from '@app-core/type/collection/set';
+import { ArrayUtil, ObjectUtil, SetUtil } from '@app-core/util';
+import { EqualityFunction, HashFunction } from '@app-core/type/collection';
 import { NullableOrUndefined } from '@app-core/type';
-import { ObjectUtil, SetUtil } from '@app-core/util';
 
 /**
  *    Immutable {@link Set} based on hash function to locate internal elements. This {@link Set} never change, that is,
  * there are operations that simulate additions, removals, or updates, but those operations will in each case return
  * a new {@link Set} and leave the old one unchanged.
  *
- *    It makes no guarantees as to the iteration order of the set; in particular, it does not guarantee that the order
- * will remain constant over time. This class permits the `null` element.
+ *    Unlike {@link ImmutableHashSet}, this implementation does guarantee the iteration order of the set; in particular,
+ * it does guarantee that the order will remain constant over time. This class permits the `null` element.
  */
-export class ImmutableHashSet<T> implements ImmutableSet<T> {
+export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
 
   private readonly hashTable: Map<number, T[]> = new Map<number, T[]>();
-  private _size: number = 0;
+  private order: T[] = [];
 
 
   private constructor(private readonly hash: HashFunction<T> = ObjectUtil.hash,
@@ -33,39 +33,39 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   /**
-   * Returns an empty {@link ImmutableHashSet} instance.
+   * Returns an empty {@link ImmutableLinkedHashSet} instance.
    *
    * @param hash
    *    {@link HashFunction} to locate internal elements
    * @param equals
    *    {@link EqualityFunction} to determine whether two values are considered equal
    *
-   * @return an empty {@link ImmutableHashSet}
+   * @return an empty {@link ImmutableLinkedHashSet}
    */
   static empty = <T>(hash?: HashFunction<T>,
-                     equals?: EqualityFunction<T>): ImmutableHashSet<T> =>
-    new ImmutableHashSet<T>(
+                     equals?: EqualityFunction<T>): ImmutableLinkedHashSet<T> =>
+    new ImmutableLinkedHashSet<T>(
       hash,
       equals
     );
 
 
   /**
-   * Returns an {@link ImmutableHashSet} containing provided `values`.
+   * Returns an {@link ImmutableLinkedHashSet} containing provided `values`.
    *
    * @param hash
    *    {@link HashFunction} to locate internal elements
    * @param equals
    *    {@link EqualityFunction} to determine whether two values are considered equal
    * @param values
-   *    {@link Iterable} with the elements to add in the returned {@link ImmutableHashSet}
+   *    {@link Iterable} with the elements to add in the returned {@link ImmutableLinkedHashSet}
    *
-   * @return a {@link ImmutableHashSet} with the provided `values`
+   * @return a {@link ImmutableLinkedHashSet} with the provided `values`
    */
   static of = <T>(hash?: HashFunction<T>,
                   equals?: EqualityFunction<T>,
-                  values?: Iterable<T>): ImmutableHashSet<T> =>
-    new ImmutableHashSet<T>(
+                  values?: Iterable<T>): ImmutableLinkedHashSet<T> =>
+    new ImmutableLinkedHashSet<T>(
       hash,
       equals,
       values
@@ -98,15 +98,19 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     newValuesWithSameHash.push(
       value
     );
+    const newOrder = this.cloneOrder();
+    newOrder.push(
+      value
+    );
     // @ts-ignore
-    return this.cloneImmutableHashSet(
+    return this.cloneImmutableLinkedHashSet(
       this.hash,
       this.equals,
       newHashTable.set(
         hashValue,
         newValuesWithSameHash
       ),
-      this.size + 1
+      newOrder
     );
   }
 
@@ -115,11 +119,11 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     if (ObjectUtil.isNullOrUndefined(values)) {
       return this;
     }
-    const result = this.cloneImmutableHashSet(
+    const result = this.cloneImmutableLinkedHashSet(
       this.hash,
       this.equals,
       this.cloneHashTable(),
-      this.size
+      this.cloneOrder()
     );
     for (const v of values) {
       result.addInternal(
@@ -133,7 +137,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
   clear(): this {
     // @ts-ignore
-    return ImmutableHashSet.empty(
+    return ImmutableLinkedHashSet.empty(
       this.hash,
       this.equals,
     );
@@ -165,8 +169,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
       newHashTable.delete(
         hashValue
       );
-    }
-    else {
+    } else {
       const newBucket = [
         ...valuesWithSameHash.slice(0, posOfValue),
         ...valuesWithSameHash.slice(posOfValue + 1)
@@ -176,12 +179,18 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
         newBucket
       );
     }
+    // Remove from order list
+    const newOrder = ArrayUtil.delete(
+      this.order,
+      value,
+      this.equals
+    );
     // @ts-ignore
-    return this.cloneImmutableHashSet(
+    return this.cloneImmutableLinkedHashSet(
       this.hash,
       this.equals,
       newHashTable,
-      this.size - 1
+      newOrder
     );
   }
 
@@ -190,11 +199,11 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     if (ObjectUtil.isNullOrUndefined(values)) {
       return this;
     }
-    const result = this.cloneImmutableHashSet(
+    const result = this.cloneImmutableLinkedHashSet(
       this.hash,
       this.equals,
       this.cloneHashTable(),
-      this.size
+      this.cloneOrder()
     );
     for (const v of values) {
       result.deleteInternal(
@@ -207,13 +216,13 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   difference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    let result = ImmutableHashSet.empty<T>(
+    let result = ImmutableLinkedHashSet.empty<T>(
       this.hash,
       this.equals
     );
     let otherSet = SetUtil.isReadonlySetLike(other)
       ? other
-      : ImmutableHashSet.of<T>(
+      : ImmutableLinkedHashSet.of<T>(
           this.hash,
           this.equals,
           ObjectUtil.nonNullOrUndefined(other)
@@ -239,15 +248,11 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  *entries(): IterableIterator<[T, T]> {
-    for (const valuesWithSameHash of this.hashTable.values()) {
-      for (let i = 0; i < valuesWithSameHash.length; i++) {
-        yield [
-          valuesWithSameHash[i],
-          valuesWithSameHash[i]
-        ];
-      }
-    }
+  entries(): IterableIterator<[T, T]> {
+    return this.order.map(
+      v =>
+        [v, v] as [T, T]
+    )[Symbol.iterator]();
   }
 
 
@@ -271,7 +276,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   /**
-   * Returns the hash function to locate internal elements stored in the current {@link ImmutableHashSet}.
+   * Returns the hash function to locate internal elements stored in the current {@link ImmutableLinkedHashSet}.
    *
    * @return {@link HashFunction}
    */
@@ -281,17 +286,17 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   /**
-   * Returns the number of elements stored in this {@link ImmutableHashSet}.
+   * Returns the number of elements stored in this {@link ImmutableLinkedHashSet}.
    *
-   * @return number of elements inside {@link ImmutableHashSet}
+   * @return number of elements inside {@link ImmutableLinkedHashSet}
    */
   get size(): number {
-    return this._size;
+    return this.order.length;
   }
 
 
   get [Symbol.toStringTag](): string {
-    return "ImmutableHashSet"
+    return "ImmutableLinkedHashSet"
   }
 
 
@@ -315,14 +320,14 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   intersection(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    const result = ImmutableHashSet.empty<T>(
+    const result = ImmutableLinkedHashSet.empty<T>(
       this.hash,
       this.equals
     );
     if (ObjectUtil.nonNullOrUndefined(other)) {
       const otherSet = SetUtil.isReadonlySetLike(other)
         ? other
-        : ImmutableHashSet.of<T>(
+        : ImmutableLinkedHashSet.of<T>(
             this.hash,
             this.equals,
             other
@@ -381,7 +386,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
       otherSet = other;
     }
     else {
-      otherSet = ImmutableHashSet.of<T>(
+      otherSet = ImmutableLinkedHashSet.of<T>(
         this.hash,
         this.equals,
         other
@@ -432,7 +437,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     if (ObjectUtil.isNullOrUndefined(other)) {
       return this;
     }
-    const result = ImmutableHashSet.of<T>(
+    const result = ImmutableLinkedHashSet.of<T>(
       this.hash,
       this.equals,
       this
@@ -464,7 +469,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   union(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    const result = ImmutableHashSet.of<T>(
+    const result = ImmutableLinkedHashSet.of<T>(
       this.hash,
       this.equals,
       this
@@ -486,41 +491,12 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   values(): IterableIterator<T> {
-    const valuesWithSameHash = this.hashTable.values();
-    let currentBucket: T[] | undefined;
-    let index = 0;
-
-    return {
-      [Symbol.iterator]() {
-        return this;
-      },
-
-      next(): IteratorResult<T> {
-        while (true) {
-          if (currentBucket !== undefined && index < currentBucket.length) {
-            return {
-              value: currentBucket[index++],
-              done: false
-            };
-          }
-          const nextBucket = valuesWithSameHash.next();
-          if (nextBucket.done) {
-            return {
-              value: undefined as any,
-              done: true
-            };
-          }
-          currentBucket = nextBucket.value;
-          index = 0;
-        }
-      }
-    };
+    return this.order[Symbol.iterator]();
   }
 
 
-
   /**
-   * Appends the given `value` in this {@link ImmutableHashSet} if it does not exist.
+   * Appends the given `value` in this {@link ImmutableLinkedHashSet} if it does not exist.
    *
    * @param value
    *    New element to add
@@ -540,25 +516,27 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
         hashValue,
         [value]
       );
-      this._size++;
-      return true;
     }
-    // Check if value exists inside valuesWithSameHash
-    for (const existing of valuesWithSameHash) {
-      if (this.equals(existing, value)) {
-        return false;
+    else {
+      // Check if value exists inside valuesWithSameHash
+      for (const existing of valuesWithSameHash) {
+        if (this.equals(existing, value)) {
+          return false;
+        }
       }
+      valuesWithSameHash.push(
+        value
+      );
     }
-    valuesWithSameHash.push(
+    this.order.push(
       value
     );
-    this._size++;
     return true;
   }
 
 
   /**
-   * Creates a copy of the internal property {@link ImmutableHashSet#hashTable}.
+   * Creates a copy of the internal property {@link ImmutableLinkedHashSet#hashTable}.
    *
    * @return new {@link Map} containing all elements included in `this.hashTable`
    */
@@ -575,30 +553,42 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   /**
-   * Creates a copy of this {@link ImmutableHashSet}.
+   * Creates a copy of this {@link ImmutableLinkedHashSet}.
    *
    * @param hash
    *    {@link HashFunction} used to know how to locate stored elements
    * @param equals
    *    {@link EqualityFunction} to identify if two elements are equals or not
    * @param hashTable
-   *    {@link Map} source of internal property {@link ImmutableHashSet#hashTable}
-   * @param size
-   *    Source of internal property {@link ImmutableHashSet#_size}
+   *    {@link Map} source of internal property {@link ImmutableLinkedHashSet#hashTable}
+   * @param order
+   *    Source of internal property {@link ImmutableLinkedHashSet#order}
    *
-   * @return {@link ImmutableHashSet}
+   * @return {@link ImmutableLinkedHashSet}
    */
-  private cloneImmutableHashSet(hash: HashFunction<T>,
-                                equals: EqualityFunction<T>,
-                                hashTable: Map<number, T[]>,
-                                size: number): ImmutableHashSet<T> {
-    const clonedSet = new ImmutableHashSet<T>(
+  private cloneImmutableLinkedHashSet(hash: HashFunction<T>,
+                                      equals: EqualityFunction<T>,
+                                      hashTable: Map<number, T[]>,
+                                      order: T[]): ImmutableLinkedHashSet<T> {
+    const clonedSet = new ImmutableLinkedHashSet<T>(
       hash,
       equals,
       hashTable
     );
-    clonedSet._size = size;
+    clonedSet.order = order;
     return clonedSet;
+  }
+
+
+  /**
+   * Creates a copy of the internal property {@link ImmutableLinkedHashSet#order}.
+   *
+   * @return new array containing all elements included in `this.order`
+   */
+  private cloneOrder(): T[] {
+    return this.order.slice(
+      0
+    );
   }
 
 
@@ -636,11 +626,20 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
       posOfValue,
       1
     );
-    this._size--;
     if (0 === valuesWithSameHash.length) {
       this.hashTable.delete(
         hashValue
       );
+    }
+    // Remove from order list
+    for (let i = 0; i < this.order.length; i++) {
+      if (this.equals(this.order[i], value)) {
+        this.order.splice(
+          i,
+          1
+        );
+        break;
+      }
     }
     return true;
   }

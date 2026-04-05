@@ -2922,36 +2922,28 @@ function verifyMaps(actualMap: Map<unknown, unknown>,
 const areAllRolePropertiesEqualsFPredicate: FPredicate2<Role, Role> =
   (r1: Role, r2: Role) => r1.id == r2.id && r1.name == r2.name;
 
-
 const areAllUserPropertiesEqualsFPredicate: FPredicate2<User, User> =
   (u1: User, u2: User) => u1.id == u2.id && u1.name == u2.name;
-
 
 const areRolesEqualsByIdRaw =
   (r1: Role, r2: Role) => r1.id == r2.id;
 
-
 const areRolesEqualsPredicate: Predicate2<Role, Role> =
   Predicate2.of((r1: Role, r2: Role) => r1 === r2);
-
 
 const areUsersEqualsByIdRaw =
   (u1: User, u2: User) => u1.id == u2.id;
 
-
 const areUsersEqualsPredicate: Predicate2<User, User> =
   Predicate2.of((u1: User, u2: User) => u1 === u2);
-
 
 const isEvenRaw =
   (n: number) =>
     0 == n % 2;
 
-
 const isEvenFPredicate: FPredicate1<number> =
   (n: number) =>
     0 == n % 2;
-
 
 const isEvenPredicate: Predicate1<number> =
   Predicate1.of(
@@ -2959,41 +2951,32 @@ const isEvenPredicate: Predicate1<number> =
       0 == n % 2
   );
 
-
 const isOddRaw =
   (n: number) =>
     1 == n % 2;
-
 
 const isOddFPredicate: FPredicate1<number> =
   (n: number) =>
     1 == n % 2;
 
-
 const isRoleIdEvenPredicate: Predicate1<Role> =
   Predicate1.of((role: Role) => 0 == role.id % 2);
-
 
 const isRoleIdEvenRaw =
   (role: Role) => 0 == role.id % 2;
 
-
 const isRoleIdOddPredicate: Predicate1<Role> =
   Predicate1.of((role: Role) => 1 == role.id % 2);
-
 
 const isRoleIdOddRaw =
   (role: Role) => 1 == role.id % 2;
 
-
 const isUserIdOddRaw =
   (user: User) => 1 == user.id % 2;
-
 
 const lessThan10Raw =
   (n: number) =>
     10 > n;
-
 
 const mod3AsKeyAndPlus1AsValueForLowerThan10PP: PartialFunction<number, [number, number]> =
   PartialFunction.of(
@@ -3001,23 +2984,19 @@ const mod3AsKeyAndPlus1AsValueForLowerThan10PP: PartialFunction<number, [number,
     (n: number) => [n % 3, n + 1]
   );
 
-
 const mod3FFunction: FFunction1<number, number> =
   (n: number) =>
     n % 3;
 
-
 const mod3Raw =
   (n: number) =>
     n % 3;
-
 
 const multiply2AndStringForEvenPP: PartialFunction<number, string> =
   PartialFunction.of(
     (n: number) => 0 == n % 2,
     (n: number) => '' + (2 * n)
   );
-
 
 const multiply2Function: Function1<number, number> =
   Function1.of(
@@ -3029,13 +3008,11 @@ const multiply2Raw =
   (n: number) =>
     2 * n;
 
-
 const numberAsKeyAndPlus1AsValueForOddPP: PartialFunction<number, [number, number]> =
   PartialFunction.of(
     (n: number) => 1 == n % 2,
     (n: number) => [n, 1 + n]
   );
-
 
 const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
   (n: number) => {
@@ -3055,7 +3032,6 @@ const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
     return keys;
   };
 
-
 const oddEvenAndCompareWith5Raw = (n: number) => {
   const keys: string[] = [];
   if (0 == n % 2) {
@@ -3073,18 +3049,15 @@ const oddEvenAndCompareWith5Raw = (n: number) => {
   return keys;
 };
 
-
 const plus1Function: Function1<number, number> =
   Function1.of(
     (n: number) =>
       1 + n
   );
 
-
 const plus1FFunction: FFunction1<number, number> =
   (n: number) =>
     1 + n;
-
 
 const plus1ForOddPP: PartialFunction<number, number> =
   PartialFunction.of(
@@ -3092,27 +3065,22 @@ const plus1ForOddPP: PartialFunction<number, number> =
     (n: number) => 1 + n
   );
 
-
 const plus1Raw =
   (n: number) =>
     1 + n;
-
 
 const sameNumberRaw =
   (n: number) =>
     n;
 
-
 const sameNumberFFunction: FFunction1<number, number> =
   (n: number) =>
     n;
-
 
 const sumValuesRaw =
   (n1: number,
    n2: number) =>
     n1 + n2;
-
 
 const sumValuesBinaryOperator: BinaryOperator<number> =
     BinaryOperator.of(

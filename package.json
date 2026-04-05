@@ -1,6 +1,6 @@
 {
   "name": "angular-util",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "scripts": {
     "ng": "ng",
     "build": "ng build",

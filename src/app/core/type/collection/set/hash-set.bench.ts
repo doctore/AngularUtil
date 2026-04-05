@@ -472,9 +472,9 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
  MutableHashSet add: mediumNumberOfItemsConsecutiveIds - noCollisionHash                  4,019.82  0.2208   1.9326  0.2488  0.2435   0.3780   1.3171   1.6317  ±1.90%     2010
  MutableHashSet add: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash              8,075.93  0.1135   0.5252  0.1238  0.1259   0.1517   0.1827   0.2760  ±0.34%     4038
  MutableHashSet add: mediumNumberOfItemsConsecutiveIds - highCollisionHash                3,317.94  0.2820   0.8479  0.3014  0.3011   0.3710   0.4041   0.6659  ±0.42%     1659
- ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - noCollisionHash                  1.8624  520.41   559.26  536.93  554.84   559.26   559.26   559.26  ±2.18%       10
- ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash              7.0977  139.84   141.91  140.89  141.44   141.91   141.91   141.91  ±0.31%       10
- ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - highCollisionHash                125.35  7.7341   8.7440  7.9775  8.0265   8.7440   8.7440   8.7440  ±0.55%       63
+ ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - noCollisionHash                  1.9018  519.14   546.99  525.81  528.64   546.99   546.99   546.99  ±1.44%       10
+ ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash              7.8124  125.54   134.17  128.00  130.65   134.17   134.17   134.17  ±1.79%       10
+ ImmutableHashSet add: mediumNumberOfItemsConsecutiveIds - highCollisionHash               59.0000 15.3000  19.4779 16.9492 18.7098  19.4779  19.4779  19.4779  ±3.41%       30
 
  Native Set add: mediumNumberOfItemsNoConsecutiveIds                                      5,268.40  0.1578   3.5212  0.1898  0.1905   0.2654   0.4404   3.0325  ±3.06%     2635
  MutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash                4,057.56  0.2195   1.8915  0.2465  0.2409   0.3622   1.2588   1.5597  ±1.82%     2029
@@ -482,7 +482,7 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
  MutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash              3,233.49  0.2881   0.8881  0.3093  0.3084   0.4014   0.4758   0.8000  ±0.46%     1617
  ImmutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash                1.9131  517.26   531.19  522.72  525.82   531.19   531.19   531.19  ±0.56%       10
  ImmutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash            7.6373  129.89   132.25  130.94  131.34   132.25   132.25   132.25  ±0.47%       10
- ImmutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash              132.51  7.3695   8.1151  7.5465  7.5479   8.1151   8.1151   8.1151  ±0.51%       67
+ ImmutableHashSet add: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash             56.7878  15.2402 19.0224 17.6094 18.5839  19.0224  19.0224  19.0224  ±3.18%       29
 */
 
 
@@ -655,24 +655,24 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 /*
  MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - noCollisionHash                375,294.63  0.0020   0.1540  0.0027  0.0027   0.0038   0.0047   0.0061  ±0.25%   187648
  MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash            367,266.90  0.0021   1.6231  0.0027  0.0028   0.0045   0.0051   0.0074  ±0.69%   183634
- MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - highCollisionHash              383,358.64  0.0020   0.4679  0.0026  0.0026   0.0049   0.0056   0.0123  ±0.33%   191680
- ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - noCollisionHash              338,923.71  0.0022   0.3466  0.0030  0.0030   0.0050   0.0058   0.0079  ±0.28%   169462
- ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash          330,477.29  0.0023   2.1506  0.0030  0.0030   0.0052   0.0057   0.0078  ±0.89%   165239
- ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - highCollisionHash            371,415.88  0.0022   0.4129  0.0027  0.0027   0.0043   0.0050   0.0060  ±0.33%   185708
+ MutableHashSet addAll: lowNumberOfItemsConsecutiveIds - highCollisionHash              399,705.60  0.0020   0.2899  0.0025  0.0025   0.0038   0.0047   0.0057  ±0.30%   199853
+ ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - noCollisionHash              354,249.39  0.0020   6.0376  0.0028  0.0027   0.0053   0.0075   0.0233  ±2.39%   177125
+ ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash          356,169.36  0.0022   0.3437  0.0028  0.0028   0.0043   0.0052   0.0068  ±0.36%   178085
+ ImmutableHashSet addAll: lowNumberOfItemsConsecutiveIds - highCollisionHash            384,773.20  0.0021   0.1968  0.0026  0.0026   0.0044   0.0050   0.0068  ±0.34%   192387
 
  MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash               3,789.86  0.2286   2.8039  0.2639  0.2535   0.4745   1.4394   2.1163  ±2.22%     1895
- MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash           7,537.20  0.1212   0.3922  0.1327  0.1344   0.1665   0.2112   0.3285  ±0.34%     3769
- MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash             3,020.59  0.3113   0.6112  0.3311  0.3312   0.3945   0.4180   0.5710  ±0.30%     1511
- ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash             3,800.10  0.2301   1.9862  0.2632  0.2583   0.3990   1.3836   1.7503  ±1.91%     1901
- ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash         7,175.84  0.1233   0.7370  0.1394  0.1411   0.1722   0.2122   0.3415  ±0.39%     3588
- ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash           2,972.77  0.3088   1.0104  0.3364  0.3360   0.4212   0.4499   0.7307  ±0.40%     1487
+ MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash           8,036.67  0.1152   0.5877  0.1244  0.1264   0.1536   0.2724   0.3383  ±0.42%     4019
+ MutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash             3,143.36  0.3013   0.9316  0.3181  0.3167   0.3837   0.4407   0.6162  ±0.40%     1572
+ ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash             3,887.18  0.2259   3.5404  0.2573  0.2525   0.3690   1.2856   1.5195  ±2.08%     1944
+ ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash         7,351.33  0.1234   0.7474  0.1360  0.1371   0.1819   0.2095   0.4569  ±0.51%     3676
+ ImmutableHashSet addAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash           3,047.94  0.3022   1.0942  0.3281  0.3323   0.4493   0.5004   0.9264  ±0.58%     1524
 
  MutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash             3,843.03  0.2277   1.8769  0.2602  0.2509   0.3824   1.3578   1.7071  ±1.88%     1922
  MutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash         7,661.47  0.1163   0.6424  0.1305  0.1320   0.1701   0.1950   0.3467  ±0.39%     3831
  MutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash           3,131.71  0.2969   0.9201  0.3193  0.3196   0.3970   0.4302   0.7055  ±0.38%     1566
- ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash           3,826.83  0.2263   1.9638  0.2613  0.2533   0.3872   1.4138   1.8238  ±1.93%     1914
- ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       7,231.16  0.1263   0.5222  0.1383  0.1398   0.1801   0.2018   0.3436  ±0.36%     3616
- ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash         3,041.59  0.3056   0.7893  0.3288  0.3280   0.4120   0.4467   0.7750  ±0.38%     1521
+ ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash           3,952.02  0.2261   1.8733  0.2530  0.2447   0.3937   1.3552   1.7092  ±1.84%     1977
+ ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       7,387.71  0.1185   0.5511  0.1354  0.1401   0.1497   0.1680   0.2687  ±0.33%     3694
+ ImmutableHashSet addAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash         3,095.63  0.2998   1.7091  0.3230  0.3202   0.4444   0.6823   1.5990  ±0.94%     1548
 */
 
 
@@ -921,13 +921,13 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
 
 /*
- Native Set has: lowNumberOfItemsConsecutiveIds                                         515,982.26  0.0014   0.2439  0.0019  0.0020   0.0032   0.0039   0.0058  ±0.25%   257992
- MutableHashSet has: lowNumberOfItemsConsecutiveIds - noCollisionHash                   295,132.65  0.0027   0.3822  0.0034  0.0034   0.0050   0.0059   0.0080  ±0.31%   147567
- MutableHashSet has: lowNumberOfItemsConsecutiveIds - mediumCollisionHash               243,829.49  0.0030   6.9548  0.0041  0.0039   0.0085   0.0229   0.0265  ±2.76%   121915
- MutableHashSet has: lowNumberOfItemsConsecutiveIds - highCollisionHash                 278,813.47  0.0030   0.3629  0.0036  0.0036   0.0058   0.0064   0.0090  ±0.33%   139407
- ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - noCollisionHash                 294,509.30  0.0026   0.3103  0.0034  0.0034   0.0053   0.0059   0.0080  ±0.40%   147255
- ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - mediumCollisionHash             262,821.66  0.0030   0.2930  0.0038  0.0039   0.0062   0.0071   0.0093  ±0.36%   131411
- ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - highCollisionHash               259,731.96  0.0030   5.9264  0.0039  0.0036   0.0104   0.0210   0.0254  ±2.36%   129866
+ Native Set has: lowNumberOfItemsConsecutiveIds                                         554,173.80  0.0013   0.3049  0.0018  0.0019   0.0025   0.0027   0.0048  ±0.28%   277087
+ MutableHashSet has: lowNumberOfItemsConsecutiveIds - noCollisionHash                   299,928.53  0.0026   0.7035  0.0033  0.0035   0.0052   0.0068   0.0085  ±0.40%   149965
+ MutableHashSet has: lowNumberOfItemsConsecutiveIds - mediumCollisionHash               282,575.94  0.0029   0.2908  0.0035  0.0036   0.0050   0.0057   0.0082  ±0.40%   141288
+ MutableHashSet has: lowNumberOfItemsConsecutiveIds - highCollisionHash                 266,313.39  0.0028   9.0349  0.0038  0.0035   0.0103   0.0186   0.0230  ±3.56%   133157
+ ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - noCollisionHash                 300,775.34  0.0026   0.4101  0.0033  0.0034   0.0054   0.0059   0.0079  ±0.34%   150388
+ ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - mediumCollisionHash             262,681.76  0.0030   0.3840  0.0038  0.0039   0.0059   0.0066   0.0085  ±0.38%   131341
+ ImmutableHashSet has: lowNumberOfItemsConsecutiveIds - highCollisionHash               301,449.03  0.0028   0.1932  0.0033  0.0034   0.0044   0.0053   0.0079  ±0.26%   150725
 
  Native Set has: mediumNumberOfItemsConsecutiveIds                                        4,949.43  0.1716   3.7221  0.2020  0.2027   0.2394   0.2861   3.2421  ±3.17%     2475
  MutableHashSet has: mediumNumberOfItemsConsecutiveIds - noCollisionHash                  2,861.41  0.3099   2.1159  0.3495  0.3512   0.4888   1.6676   1.9180  ±1.87%     1431
@@ -1204,17 +1204,17 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
  MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash               1,937.09  0.4557   1.7259  0.5162  0.5136   1.2213   1.3892   1.7259  ±1.35%      969
  MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash           3,012.93  0.3122   0.7624  0.3319  0.3336   0.4819   0.5421   0.7251  ±0.42%     1507
  MutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash             1,940.37  0.4898   0.9438  0.5154  0.5155   0.6916   0.7461   0.9438  ±0.42%      971
- ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash               1.8153  549.40   552.00  550.88  551.53   552.00   552.00   552.00  ±0.12%       10
- ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash           7.3457  132.85   141.71  136.13  141.06   141.71   141.71   141.71  ±1.92%       10
- ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash             118.84  8.1532   9.1314  8.4145  8.4697   9.1314   9.1314   9.1314  ±0.71%       60
+ ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - noCollisionHash               1.9067  518.64   534.72  524.47  527.46   534.72   534.72   534.72  ±0.71%       10
+ ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash           7.5471  131.10   134.29  132.50  133.50   134.29   134.29   134.29  ±0.60%       10
+ ImmutableHashSet delete: mediumNumberOfItemsConsecutiveIds - highCollisionHash            61.2204 15.7591  19.6439 16.3344  16.3934 19.6439  19.6439  19.6439  ±1.48%       31
 
  Native Set delete: mediumNumberOfItemsNoConsecutiveIds                                   3,383.69  0.2604   2.4160  0.2955  0.3008   0.3961   1.6419   2.1736  ±2.11%     1692
  MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash             2,097.07  0.4413   1.6935  0.4769  0.4638   1.1269   1.1862   1.6566  ±1.25%     1049
  MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash         3,031.99  0.3120   0.7414  0.3298  0.3319   0.4660   0.5139   0.7232  ±0.39%     1516
  MutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash           1,984.15  0.4807   0.8219  0.5040  0.5037   0.6974   0.7467   0.8219  ±0.38%      993
  ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash             1.9107  518.81   531.21  523.37  525.44   531.21   531.21   531.21  ±0.60%       10
- ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash         7.5593  130.97   134.09  132.29  133.27   134.09   134.09   134.09  ±0.56%       10
- ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash           113.94  8.1933  21.3700  8.7766  8.4322  21.3700  21.3700  21.3700  ±6.39%       57
+ ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash         8.0179  123.88   125.31  124.72  125.20   125.31   125.31   125.31  ±0.28%       10
+ ImmutableHashSet delete: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash          60.8004 15.6356  19.7097 16.4472 16.1409  19.7097  19.7097  19.7097  ±2.91%       31
 */
 
 
@@ -1406,23 +1406,23 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
  MutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - noCollisionHash             147,257.90  0.0056   0.2644  0.0068  0.0069   0.0099   0.0108   0.0137  ±0.38%    73629
  MutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash         144,574.33  0.0057   0.2860  0.0069  0.0070   0.0100   0.0111   0.0147  ±0.36%    72288
  MutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - highCollisionHash           159,022.66  0.0054   0.3260  0.0063  0.0064   0.0090   0.0099   0.0136  ±0.37%    79512
- ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - noCollisionHash            84,602.94  0.0101   2.1145  0.0118  0.0118   0.0157   0.0172   0.1100  ±0.88%    42302
- ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash        80,116.54  0.0107   0.5372  0.0125  0.0124   0.0190   0.0241   0.0990  ±0.42%    40059
- ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - highCollisionHash         101,317.31  0.0083   0.4078  0.0099  0.0097   0.0167   0.0200   0.0305  ±0.35%    50659
+ ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - noCollisionHash           107,993.95  0.0077   2.2302  0.0093  0.0093   0.0129   0.0156   0.0481  ±0.92%    53997
+ ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - mediumCollisionHash        99,999.93  0.0082   0.4879  0.0100  0.0101   0.0132   0.0140   0.0186  ±0.34%    50001
+ ImmutableHashSet deleteAll: lowNumberOfItemsConsecutiveIds - highCollisionHash         128,060.13  0.0068   0.1638  0.0078  0.0079   0.0104   0.0114   0.0176  ±0.27%    64031
 
  MutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash            1,963.25  0.4509   3.4792  0.5094  0.5027   1.8219   1.8789   3.4792  ±2.32%      982
  MutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash        2,819.60  0.3165   5.5673  0.3547  0.3455   0.5332   0.5801   0.6631  ±2.16%     1410
  MutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash          1,961.01  0.4841   0.8572  0.5099  0.5095   0.6595   0.7440   0.8572  ±0.40%      981
- ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash          1,079.49  0.8285   2.8373  0.9264  0.8573   2.4130   2.5354   2.8373  ±2.91%      540
- ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash      2,376.85  0.3854   2.6510  0.4207  0.4235   0.7643   0.8480   0.9737  ±1.14%     1189
+ ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - noCollisionHash          1,297.05  0.6990   2.6249  0.7710  0.7296   2.3453   2.3882   2.6249  ±2.56%      649
+ ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - mediumCollisionHash      2,579.32  0.3494   2.5159  0.3877  0.3775   0.6101   0.8056   2.1439  ±1.41%     1290
  ImmutableHashSet deleteAll: mediumNumberOfItemsConsecutiveIds - highCollisionHash        1,889.82  0.5018   0.9562  0.5291  0.5316   0.6729   0.7353   0.9562  ±0.39%      945
 
  MutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash          2,028.45  0.4480   2.5030  0.4930  0.4878   1.4197   1.5904   2.0626  ±1.83%     1015
  MutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash      2,945.19  0.3160   0.6374  0.3395  0.3405   0.4644   0.5584   0.6143  ±0.40%     1473
  MutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash        1,981.64  0.4751   1.0100  0.5046  0.5076   0.6587   0.7170   1.0100  ±0.42%      991
- ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash        1,020.47  0.8359   3.9054  0.9799  0.9091   2.4297   3.3309   3.9054  ±3.16%      511
- ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash    2,295.78  0.3850   6.5428  0.4356  0.4208   0.7879   0.8263   0.9906  ±2.66%     1148
- ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash      1,895.83  0.4953   0.9788  0.5275  0.5284   0.7448   0.8189   0.9788  ±0.50%      948
+ ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash        1,307.39  0.6991   2.1303  0.7649  0.7476   1.8873   1.9896   2.1303  ±1.96%      654
+ ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash    2,624.19  0.3507   0.7781  0.3811  0.3864   0.5517   0.6004   0.7245  ±0.48%     1313
+ ImmutableHashSet deleteAll: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash      1,927.52  0.4960   0.8762  0.5188  0.5178   0.6690   0.7783   0.8762  ±0.37%      964
 */
 
 
@@ -1710,13 +1710,12 @@ describe("Benchmark: Native Set vs MutableHashSet vs ImmutableHashSet", () => {
 
  Native Set for...of: mediumNumberOfItemsNoConsecutiveIds                                 4,868.34  0.1710   3.9968  0.2054  0.2024   0.4014   0.4867   3.3210  ±3.21%     2435
  MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash           3,364.52  0.2587   1.7277  0.2972  0.2857   1.2096   1.4185   1.7064  ±2.03%     1683
- MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       6,437.20  0.1406   0.6539  0.1553  0.1590   0.2180   0.2726   0.3558  ±0.43%     3219
- MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash         2,920.75  0.3184   0.9186  0.3424  0.3428   0.4816   0.5147   0.6550  ±0.42%     1461
+ MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash       6,821.72  0.1340   0.5179  0.1466  0.1518   0.2052   0.2632   0.2926  ±0.39%     3411
+ MutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash         3,009.05  0.3036   0.6890  0.3323  0.3353   0.4159   0.4798   0.6337  ±0.35%     1505
  ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - noCollisionHash         3,509.83  0.2507   2.7160  0.2849  0.2776   1.1627   1.2586   1.9017  ±2.06%     1755
- ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash     6,757.54  0.1343   0.5442  0.1480  0.1541   0.2105   0.2569   0.2954  ±0.35%     3379
- ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash       2,930.98  0.3164   0.5793  0.3412  0.3449   0.4387   0.5106   0.5491  ±0.30%     1466
+ ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - mediumCollisionHash     6,861.96  0.1333   0.5311  0.1457  0.1522   0.1802   0.2455   0.2898  ±0.34%     3431
+ ImmutableHashSet for...of: mediumNumberOfItemsNoConsecutiveIds - highCollisionHash       3,045.14  0.3040   0.8583  0.3284  0.3312   0.4565   0.4892   0.6843  ±0.42%     1523
 */
-
 
 });
 

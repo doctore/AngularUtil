@@ -1,7 +1,7 @@
 import { ObjectUtil, SetUtil } from '@app-core/util';
 import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
-import { ImmutableHashSet, MutableHashSet, TSet } from '@app-core/type/collection/set';
+import { ImmutableHashSet, ImmutableLinkedHashSet, MutableHashSet, MutableLinkedHashSet, TSet } from '@app-core/type/collection/set';
 import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
 import { Comparator, FComparator } from '@app-core/type/comparator';
 import { FFunction1, FFunction2, Function1, Function2 } from '@app-core/type/function';
@@ -40,78 +40,116 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or an empty mutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
 
       expect(SetUtil.copy(null)).toEqual(nativeSet);
       expect(SetUtil.copy(undefined)).toEqual(nativeSet);
       expect(SetUtil.copy(mutableHashSet)).toEqual(mutableHashSet);
+      expect(SetUtil.copy(mutableLinkedHashSet)).toEqual(mutableLinkedHashSet);
     });
 
 
     it('when given sourceSet is null, undefined or an empty immutable one then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       expect(SetUtil.copy(null)).toEqual(nativeSet);
       expect(SetUtil.copy(undefined)).toEqual(nativeSet);
       expect(SetUtil.copy(immutableHashSet)).toEqual(immutableHashSet);
+      expect(SetUtil.copy(immutableLinkedHashSet)).toEqual(immutableLinkedHashSet);
     });
 
 
     it('when given sourceSet is a non-empty native one then a copy is returned', () => {
-      const sourceSet = new Set<number>(
+      const nativeSet = new Set<number>(
         [ 1, 2, 3, 6 ]
       );
 
-      const result = SetUtil.copy(sourceSet);
+      const result = SetUtil.copy(nativeSet);
 
       verifySets(
         result,
-        sourceSet
+        nativeSet
       );
-      sourceSet.clear();
-      expect(sourceSet.size).toEqual(0);
+      nativeSet.clear();
+      expect(nativeSet.size).toEqual(0);
       expect(result).toBeInstanceOf(Set);
       expect(result.size).toEqual(4);
     });
 
 
     it('when given sourceSet is a non-empty mutable one then a copy is returned', () => {
-      const sourceSet = MutableHashSet.of(
+      const mutableHashSet = MutableHashSet.of(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of(
         numberHash,
         areNumberEquals,
         [ 1, 2, 3, 6 ]
       );
 
-      const result = SetUtil.copy(sourceSet);
+      const resultHashSet = SetUtil.copy(mutableHashSet);
+      const resultLinkedHashSet = SetUtil.copy(mutableLinkedHashSet);
 
       verifySets(
-        result,
-        sourceSet
+        resultHashSet,
+        mutableHashSet
       );
-      sourceSet.clear();
-      expect(sourceSet.size).toEqual(0);
-      expect(result).toBeInstanceOf(MutableHashSet);
-      expect(result.size).toEqual(4);
+      verifySets(
+        resultLinkedHashSet,
+        mutableLinkedHashSet
+      );
+
+      mutableHashSet.clear();
+      mutableLinkedHashSet.clear();
+
+      expect(mutableHashSet.size).toEqual(0);
+      expect(resultHashSet).toBeInstanceOf(MutableHashSet);
+      expect(resultHashSet.size).toEqual(4);
+
+      expect(mutableLinkedHashSet.size).toEqual(0);
+      expect(resultLinkedHashSet).toBeInstanceOf(MutableLinkedHashSet);
+      expect(resultLinkedHashSet.size).toEqual(4);
     });
 
 
     it('when given sourceSet is an non-empty immutable one then a copy is returned', () => {
-      let sourceSet = ImmutableHashSet.of(
+      let immutableHashSet = ImmutableHashSet.of(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+      let immutableLinkedHashSet = ImmutableLinkedHashSet.of(
         numberHash,
         areNumberEquals,
         [ 1, 2, 3, 6 ]
       );
 
-      const result = SetUtil.copy(sourceSet);
+      const resultHashSet = SetUtil.copy(immutableHashSet);
+      const resultLinkedHashSet = SetUtil.copy(immutableLinkedHashSet);
 
       verifySets(
-        result,
-        sourceSet
+        resultHashSet,
+        immutableHashSet
       );
-      sourceSet = sourceSet.clear();
-      expect(sourceSet.size).toEqual(0);
-      expect(result).toBeInstanceOf(ImmutableHashSet);
-      expect(result.size).toEqual(4);
+      verifySets(
+        resultLinkedHashSet,
+        immutableLinkedHashSet
+      );
+
+      immutableHashSet = immutableHashSet.clear();
+      immutableLinkedHashSet = immutableLinkedHashSet.clear();
+
+      expect(immutableHashSet.size).toEqual(0);
+      expect(resultHashSet).toBeInstanceOf(ImmutableHashSet);
+      expect(resultHashSet.size).toEqual(4);
+
+      expect(immutableLinkedHashSet.size).toEqual(0);
+      expect(resultLinkedHashSet).toBeInstanceOf(ImmutableLinkedHashSet);
+      expect(resultLinkedHashSet.size).toEqual(4);
     });
 
   });
@@ -123,13 +161,18 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty then 0 is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       expect(SetUtil.count(null, isEvenFPredicate)).toEqual(0);
       expect(SetUtil.count(undefined, isEvenPredicate)).toEqual(0);
       expect(SetUtil.count(nativeSet, isEvenRaw)).toEqual(0);
+
       expect(SetUtil.count(mutableHashSet, isEvenRaw)).toEqual(0);
+      expect(SetUtil.count(mutableLinkedHashSet, isEvenRaw)).toEqual(0);
       expect(SetUtil.count(immutableHashSet, isEvenRaw)).toEqual(0);
+      expect(SetUtil.count(immutableLinkedHashSet, isEvenRaw)).toEqual(0);
     });
 
 
@@ -138,12 +181,12 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = new Set<User>(
+      const nativeSet = new Set<User>(
         [ u1, u2, u3 ]
       );
 
-      expect(SetUtil.count(sourceSet, null)).toEqual(sourceSet.size);
-      expect(SetUtil.count(sourceSet, undefined)).toEqual(sourceSet.size);
+      expect(SetUtil.count(nativeSet, null)).toEqual(nativeSet.size);
+      expect(SetUtil.count(nativeSet, undefined)).toEqual(nativeSet.size);
     });
 
 
@@ -152,14 +195,21 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = MutableHashSet.of<User>(
-        roleHash,
-        areRolesEquals,
+      const mutableHashSet = MutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<User>(
+        undefined,
+        undefined,
         [ u1, u2, u3 ]
       );
 
-      expect(SetUtil.count(sourceSet, null)).toEqual(sourceSet.size);
-      expect(SetUtil.count(sourceSet, undefined)).toEqual(sourceSet.size);
+      expect(SetUtil.count(mutableHashSet, null)).toEqual(mutableHashSet.size);
+      expect(SetUtil.count(mutableHashSet, undefined)).toEqual(mutableHashSet.size);
+      expect(SetUtil.count(mutableLinkedHashSet, null)).toEqual(mutableLinkedHashSet.size);
+      expect(SetUtil.count(mutableLinkedHashSet, undefined)).toEqual(mutableLinkedHashSet.size);
     });
 
 
@@ -168,14 +218,21 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = ImmutableHashSet.of<User>(
-        roleHash,
-        areRolesEquals,
+      const immutableHashSet = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<User>(
+        undefined,
+        undefined,
         [ u1, u2, u3 ]
       );
 
-      expect(SetUtil.count(sourceSet, null)).toEqual(sourceSet.size);
-      expect(SetUtil.count(sourceSet, undefined)).toEqual(sourceSet.size);
+      expect(SetUtil.count(immutableHashSet, null)).toEqual(immutableHashSet.size);
+      expect(SetUtil.count(immutableHashSet, undefined)).toEqual(immutableHashSet.size);
+      expect(SetUtil.count(immutableLinkedHashSet, null)).toEqual(immutableLinkedHashSet.size);
+      expect(SetUtil.count(immutableLinkedHashSet, undefined)).toEqual(immutableLinkedHashSet.size);
     });
 
 
@@ -184,11 +241,11 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = new Set<Role>(
+      const nativeSet = new Set<Role>(
         [ r1, r2, r3 ]
       );
 
-      expect(SetUtil.count(sourceSet, isRoleIdOddRaw)).toEqual(2);
+      expect(SetUtil.count(nativeSet, isRoleIdOddRaw)).toEqual(2);
     });
 
 
@@ -197,11 +254,19 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = new Set<Role>(
+      const mutableHashSet = MutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
         [ r1, r2, r3 ]
       );
 
-      expect(SetUtil.count(sourceSet, isRoleIdOddFPredicate)).toEqual(2);
+      expect(SetUtil.count(mutableHashSet, isRoleIdOddFPredicate)).toEqual(2);
+      expect(SetUtil.count(mutableLinkedHashSet, isRoleIdOddFPredicate)).toEqual(2);
     });
 
 
@@ -210,11 +275,19 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = new Set<Role>(
+      const immutableHashSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
         [ r1, r2, r3 ]
       );
 
-      expect(SetUtil.count(sourceSet, isRoleIdOddPredicate)).toEqual(2);
+      expect(SetUtil.count(immutableHashSet, isRoleIdOddPredicate)).toEqual(2);
+      expect(SetUtil.count(immutableLinkedHashSet, isRoleIdOddPredicate)).toEqual(2);
     });
 
   });
@@ -226,13 +299,18 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       expect(SetUtil.filter(null, isEvenFPredicate)).toEqual(nativeSet);
       expect(SetUtil.filter(undefined, isEvenPredicate)).toEqual(nativeSet);
       expect(SetUtil.filter(nativeSet, isEvenRaw)).toEqual(nativeSet);
+
       expect(SetUtil.filter(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
+      expect(SetUtil.filter(mutableLinkedHashSet, isEvenRaw)).toEqual(mutableLinkedHashSet);
       expect(SetUtil.filter(immutableHashSet, isEvenRaw)).toEqual(immutableHashSet);
+      expect(SetUtil.filter(immutableLinkedHashSet, isEvenRaw)).toEqual(immutableLinkedHashSet);
     });
 
 
@@ -241,17 +319,17 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = new Set<Role>(
+      const nativeSet = new Set<Role>(
         [ r1, r2, r3 ]
       );
 
       verifySets(
-        SetUtil.filter(sourceSet, null),
-        sourceSet
+        SetUtil.filter(nativeSet, null),
+        nativeSet
       );
       verifySets(
-        SetUtil.filter(sourceSet, undefined),
-        sourceSet
+        SetUtil.filter(nativeSet, undefined),
+        nativeSet
       );
     });
 
@@ -261,19 +339,32 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = MutableHashSet.of<Role>(
+      const mutableHashSet = MutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<Role>(
         roleHash,
         areRolesEquals,
         [ r1, r2, r3 ]
       );
 
       verifySets(
-        SetUtil.filter(sourceSet, null),
-        sourceSet
+        SetUtil.filter(mutableHashSet, null),
+        mutableHashSet
       );
       verifySets(
-        SetUtil.filter(sourceSet, undefined),
-        sourceSet
+        SetUtil.filter(mutableHashSet, undefined),
+        mutableHashSet
+      );
+      verifySets(
+        SetUtil.filter(mutableLinkedHashSet, null),
+        mutableLinkedHashSet
+      );
+      verifySets(
+        SetUtil.filter(mutableLinkedHashSet, undefined),
+        mutableLinkedHashSet
       );
     });
 
@@ -283,19 +374,32 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = ImmutableHashSet.of<Role>(
+      const immutableHashSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<Role>(
         roleHash,
         areRolesEquals,
         [ r1, r2, r3 ]
       );
 
       verifySets(
-        SetUtil.filter(sourceSet, null),
-        sourceSet
+        SetUtil.filter(immutableHashSet, null),
+        immutableHashSet
       );
       verifySets(
-        SetUtil.filter(sourceSet, undefined),
-        sourceSet
+        SetUtil.filter(immutableHashSet, undefined),
+        immutableHashSet
+      );
+      verifySets(
+        SetUtil.filter(immutableLinkedHashSet, null),
+        immutableLinkedHashSet
+      );
+      verifySets(
+        SetUtil.filter(immutableLinkedHashSet, undefined),
+        immutableLinkedHashSet
       );
     });
 
@@ -305,14 +409,14 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = new Set<User>(
+      const nativeSet = new Set<User>(
         [ u1, u2, u3 ]
       );
       const expectedResult = new Set<User>(
         [ u1, u3 ]
       );
 
-      const result = SetUtil.filter(sourceSet, isUserIdOddRaw);
+      const result = SetUtil.filter(nativeSet, isUserIdOddRaw);
 
       verifySets(
         result,
@@ -327,24 +431,42 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = MutableHashSet.of(
+      const mutableHashSet = MutableHashSet.of(
         undefined,
         undefined,
         [ u1, u2, u3 ]
       );
-      const expectedResult = MutableHashSet.of(
+      const mutableLinkedHashSet = MutableLinkedHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+
+      const expectedResultHashSet = MutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u3 ]
+      );
+      const expectedResultLinkedHashSet = MutableLinkedHashSet.of(
         undefined,
         undefined,
         [ u1, u3 ]
       );
 
-      const result = SetUtil.filter(sourceSet, isUserIdOddFPredicate);
+      const resultHashSet = SetUtil.filter(mutableHashSet, isUserIdOddFPredicate);
+      const resultLinkedHashSet = SetUtil.filter(mutableLinkedHashSet, isUserIdOddFPredicate);
 
       verifySets(
-        result,
-        expectedResult
+        resultHashSet,
+        expectedResultHashSet
       );
-      expect(result).toBeInstanceOf(MutableHashSet);
+      expect(resultHashSet).toBeInstanceOf(MutableHashSet);
+
+      verifySets(
+        resultLinkedHashSet,
+        expectedResultLinkedHashSet
+      );
+      expect(resultLinkedHashSet).toBeInstanceOf(MutableLinkedHashSet);
     });
 
 
@@ -353,24 +475,42 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = ImmutableHashSet.of(
+      const immutableHashSet = ImmutableHashSet.of(
         undefined,
         undefined,
         [ u1, u2, u3 ]
       );
-      const expectedResult = ImmutableHashSet.of(
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+
+      const expectedResultHashSet = ImmutableHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u3 ]
+      );
+      const expectedResultLinkedHashSet = ImmutableLinkedHashSet.of(
         undefined,
         undefined,
         [ u1, u3 ]
       );
 
-      const result = SetUtil.filter(sourceSet, isUserIdOddPredicate);
+      const resultHashSet = SetUtil.filter(immutableHashSet, isUserIdOddPredicate);
+      const resultLinkedHashSet = SetUtil.filter(immutableLinkedHashSet, isUserIdOddPredicate);
 
       verifySets(
-        result,
-        expectedResult
+        resultHashSet,
+        expectedResultHashSet
       );
-      expect(result).toBeInstanceOf(ImmutableHashSet);
+      expect(resultHashSet).toBeInstanceOf(ImmutableHashSet);
+
+      verifySets(
+        resultLinkedHashSet,
+        expectedResultLinkedHashSet
+      );
+      expect(resultLinkedHashSet).toBeInstanceOf(ImmutableLinkedHashSet);
     });
 
   });
@@ -382,13 +522,18 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty then empty Set is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       expect(SetUtil.filterNot(null, isEvenFPredicate)).toEqual(nativeSet);
       expect(SetUtil.filterNot(undefined, isEvenPredicate)).toEqual(nativeSet);
       expect(SetUtil.filterNot(nativeSet, isEvenRaw)).toEqual(nativeSet);
+
       expect(SetUtil.filterNot(mutableHashSet, isEvenRaw)).toEqual(mutableHashSet);
+      expect(SetUtil.filterNot(mutableLinkedHashSet, isEvenRaw)).toEqual(mutableLinkedHashSet);
       expect(SetUtil.filterNot(immutableHashSet, isEvenRaw)).toEqual(immutableHashSet);
+      expect(SetUtil.filterNot(immutableLinkedHashSet, isEvenRaw)).toEqual(immutableLinkedHashSet);
     });
 
 
@@ -397,17 +542,17 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = new Set<Role>(
+      const nativeSet = new Set<Role>(
         [ r1, r2, r3 ]
       );
 
       verifySets(
-        SetUtil.filterNot(sourceSet, null),
-        sourceSet
+        SetUtil.filterNot(nativeSet, null),
+        nativeSet
       );
       verifySets(
-        SetUtil.filterNot(sourceSet, undefined),
-        sourceSet
+        SetUtil.filterNot(nativeSet, undefined),
+        nativeSet
       );
     });
 
@@ -417,19 +562,32 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = MutableHashSet.of<Role>(
+      const mutableHashSet = MutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<Role>(
         roleHash,
         areRolesEquals,
         [ r1, r2, r3 ]
       );
 
       verifySets(
-        SetUtil.filterNot(sourceSet, null),
-        sourceSet
+        SetUtil.filterNot(mutableHashSet, null),
+        mutableHashSet
       );
       verifySets(
-        SetUtil.filterNot(sourceSet, undefined),
-        sourceSet
+        SetUtil.filterNot(mutableHashSet, undefined),
+        mutableHashSet
+      );
+      verifySets(
+        SetUtil.filterNot(mutableLinkedHashSet, null),
+        mutableLinkedHashSet
+      );
+      verifySets(
+        SetUtil.filterNot(mutableLinkedHashSet, undefined),
+        mutableLinkedHashSet
       );
     });
 
@@ -439,19 +597,32 @@ describe('SetUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const sourceSet = ImmutableHashSet.of<Role>(
+      const immutableHashSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<Role>(
         roleHash,
         areRolesEquals,
         [ r1, r2, r3 ]
       );
 
       verifySets(
-        SetUtil.filterNot(sourceSet, null),
-        sourceSet
+        SetUtil.filterNot(immutableHashSet, null),
+        immutableHashSet
       );
       verifySets(
-        SetUtil.filterNot(sourceSet, undefined),
-        sourceSet
+        SetUtil.filterNot(immutableHashSet, undefined),
+        immutableHashSet
+      );
+      verifySets(
+        SetUtil.filterNot(immutableLinkedHashSet, null),
+        immutableLinkedHashSet
+      );
+      verifySets(
+        SetUtil.filterNot(immutableLinkedHashSet, undefined),
+        immutableLinkedHashSet
       );
     });
 
@@ -461,14 +632,14 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = new Set<User>(
+      const nativeSet = new Set<User>(
         [ u1, u2, u3 ]
       );
       const expectedResult = new Set<User>(
         [ u2 ]
       );
 
-      const result = SetUtil.filterNot(sourceSet, isUserIdOddRaw);
+      const result = SetUtil.filterNot(nativeSet, isUserIdOddRaw);
 
       verifySets(
         result,
@@ -483,24 +654,42 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = MutableHashSet.of(
+      const mutableHashSet = MutableHashSet.of(
         undefined,
         undefined,
         [ u1, u2, u3 ]
       );
-      const expectedResult = MutableHashSet.of(
+      const mutableLinkedHashSet = MutableLinkedHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+
+      const expectedResultHashSet = MutableHashSet.of(
+        undefined,
+        undefined,
+        [ u2 ]
+      );
+      const expectedResultLinkedHashSet = MutableLinkedHashSet.of(
         undefined,
         undefined,
         [ u2 ]
       );
 
-      const result = SetUtil.filterNot(sourceSet, isUserIdOddFPredicate);
+      const resultHashSet = SetUtil.filterNot(mutableHashSet, isUserIdOddFPredicate);
+      const resultLinkedHashSet = SetUtil.filterNot(mutableLinkedHashSet, isUserIdOddFPredicate);
 
       verifySets(
-        result,
-        expectedResult
+        resultHashSet,
+        expectedResultHashSet
       );
-      expect(result).toBeInstanceOf(MutableHashSet);
+      expect(resultHashSet).toBeInstanceOf(MutableHashSet);
+
+      verifySets(
+        resultLinkedHashSet,
+        expectedResultLinkedHashSet
+      );
+      expect(resultLinkedHashSet).toBeInstanceOf(MutableLinkedHashSet);
     });
 
 
@@ -509,24 +698,42 @@ describe('SetUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const sourceSet = ImmutableHashSet.of(
+      const immutableHashSet = ImmutableHashSet.of(
         undefined,
         undefined,
         [ u1, u2, u3 ]
       );
-      const expectedResult = ImmutableHashSet.of(
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of(
+        undefined,
+        undefined,
+        [ u1, u2, u3 ]
+      );
+
+      const expectedResultHashSet = ImmutableHashSet.of(
+        undefined,
+        undefined,
+        [ u2 ]
+      );
+      const expectedResultLinkedHashSet = ImmutableLinkedHashSet.of(
         undefined,
         undefined,
         [ u2 ]
       );
 
-      const result = SetUtil.filterNot(sourceSet, isUserIdOddPredicate);
+      const resultHashSet = SetUtil.filterNot(immutableHashSet, isUserIdOddPredicate);
+      const resultLinkedHashSet = SetUtil.filterNot(immutableLinkedHashSet, isUserIdOddPredicate);
 
       verifySets(
-        result,
-        expectedResult
+        resultHashSet,
+        expectedResultHashSet
       );
-      expect(result).toBeInstanceOf(ImmutableHashSet);
+      expect(resultHashSet).toBeInstanceOf(ImmutableHashSet);
+
+      verifySets(
+        resultLinkedHashSet,
+        expectedResultLinkedHashSet
+      );
+      expect(resultLinkedHashSet).toBeInstanceOf(ImmutableLinkedHashSet);
     });
 
   });
@@ -538,7 +745,9 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty then initialValue is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
       const initialValue = 19;
 
       const accumulator =
@@ -547,8 +756,11 @@ describe('SetUtil', () => {
       expect(SetUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
       expect(SetUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
       expect(SetUtil.foldLeft(nativeSet, initialValue, accumulator)).toEqual(initialValue);
+
       expect(SetUtil.foldLeft(mutableHashSet, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(mutableLinkedHashSet, initialValue, accumulator)).toEqual(initialValue);
       expect(SetUtil.foldLeft(immutableHashSet, initialValue, accumulator)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(immutableLinkedHashSet, initialValue, accumulator)).toEqual(initialValue);
     });
 
 
@@ -569,10 +781,17 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
       const initialValue = 19;
 
       expect(SetUtil.foldLeft(mutableHashSet, initialValue, null)).toEqual(initialValue);
       expect(SetUtil.foldLeft(mutableHashSet, initialValue, undefined)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(mutableLinkedHashSet, initialValue, null)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(mutableLinkedHashSet, initialValue, undefined)).toEqual(initialValue);
     });
 
 
@@ -582,10 +801,17 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
       const initialValue = 19;
 
       expect(SetUtil.foldLeft(immutableHashSet, initialValue, null)).toEqual(initialValue);
       expect(SetUtil.foldLeft(immutableHashSet, initialValue, undefined)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(immutableLinkedHashSet, initialValue, null)).toEqual(initialValue);
+      expect(SetUtil.foldLeft(immutableLinkedHashSet, initialValue, undefined)).toEqual(initialValue);
     });
 
 
@@ -608,17 +834,28 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 2, 3, 4 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
       const initialValue = 10;
 
       const accumulator: FFunction2<number, number, number> =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
       expect(SetUtil.foldLeft(mutableHashSet, initialValue, accumulator)).toEqual(240);
+      expect(SetUtil.foldLeft(mutableLinkedHashSet, initialValue, accumulator)).toEqual(240);
     });
 
 
     it('when given sourceSet is a non-empty immutable one and accumulator is provided then initialValue applying accumulator is returned', () => {
       const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
         numberHash,
         areNumberEquals,
         [ 2, 3, 4 ]
@@ -629,6 +866,7 @@ describe('SetUtil', () => {
         Function2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
 
       expect(SetUtil.foldLeft(immutableHashSet, initialValue, accumulator)).toEqual(240);
+      expect(SetUtil.foldLeft(immutableLinkedHashSet, initialValue, accumulator)).toEqual(240);
     });
 
   });
@@ -640,30 +878,25 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
 
       expect(SetUtil.groupBy(null, plus1Raw, isEvenRaw)).toEqual(expectedResult);
       expect(SetUtil.groupBy(undefined, plus1FFunction, isEvenFPredicate)).toEqual(expectedResult);
       expect(SetUtil.groupBy(nativeSet, plus1Raw, isEvenRaw)).toEqual(expectedResult);
+
       expect(SetUtil.groupBy(mutableHashSet, plus1FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupBy(mutableLinkedHashSet, plus1FFunction, isEvenFPredicate)).toEqual(expectedResult);
       expect(SetUtil.groupBy(immutableHashSet, plus1Function, isEvenPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupBy(immutableLinkedHashSet, plus1Function, isEvenPredicate)).toEqual(expectedResult);
     });
 
 
-    it('when given sourceSet is not empty but discriminatorKey is null or undefined then an error is thrown', () => {
+    it('when given sourceSet is not empty native one but discriminatorKey is null or undefined then an error is thrown', () => {
       const nativeSet = new Set<number>(
-        [1, 2]
-      );
-      const mutableHashSet = MutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
-        [1, 2]
-      );
-      const immutableHashSet = ImmutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
         [1, 2]
       );
 
@@ -671,14 +904,52 @@ describe('SetUtil', () => {
       expect(() => SetUtil.groupBy(nativeSet, null, isEvenRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.groupBy(nativeSet, undefined, isEvenRaw)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty mutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+
       // @ts-ignore
       expect(() => SetUtil.groupBy(mutableHashSet, null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.groupBy(mutableHashSet, undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
       // @ts-ignore
+      expect(() => SetUtil.groupBy(mutableLinkedHashSet, null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(mutableLinkedHashSet, undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty immutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+
+      // @ts-ignore
       expect(() => SetUtil.groupBy(immutableHashSet, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.groupBy(immutableHashSet, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(immutableLinkedHashSet, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupBy(immutableLinkedHashSet, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -686,6 +957,7 @@ describe('SetUtil', () => {
       const nativeSet = new Set<number>(
         [ 1, 2, 3, 6, 4 ]
       );
+
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(2, [ 1 ]);
       expectedResult.set(3, [ 2 ]);
@@ -711,6 +983,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 4 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(2, [ 1 ]);
       expectedResult.set(3, [ 2 ]);
@@ -727,6 +1005,15 @@ describe('SetUtil', () => {
         SetUtil.groupBy(mutableHashSet, plus1FFunction, undefined),
         expectedResult
       );
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupBy(mutableLinkedHashSet, plus1Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupBy(mutableLinkedHashSet, plus1FFunction, undefined),
+        expectedResult
+      );
     });
 
 
@@ -736,6 +1023,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 4 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(2, [ 1 ]);
       expectedResult.set(3, [ 2 ]);
@@ -750,6 +1043,15 @@ describe('SetUtil', () => {
       );
       verifyMaps(
         SetUtil.groupBy(immutableHashSet, plus1FFunction, undefined),
+        expectedResult
+      );
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupBy(immutableLinkedHashSet, plus1Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupBy(immutableLinkedHashSet, plus1FFunction, undefined),
         expectedResult
       );
     });
@@ -777,6 +1079,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 4 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(3, [ 2 ]);
       expectedResult.set(7, [ 6 ]);
@@ -784,6 +1092,10 @@ describe('SetUtil', () => {
 
       verifyMaps(
         SetUtil.groupBy(mutableHashSet, plus1FFunction, isEvenFPredicate),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupBy(mutableLinkedHashSet, plus1FFunction, isEvenFPredicate),
         expectedResult
       );
     });
@@ -795,6 +1107,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 4 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
       expectedResult.set(3, [ 2 ]);
       expectedResult.set(7, [ 6 ]);
@@ -802,6 +1120,10 @@ describe('SetUtil', () => {
 
       verifyMaps(
         SetUtil.groupBy(immutableHashSet, plus1Function, isEvenPredicate),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupBy(immutableLinkedHashSet, plus1Function, isEvenPredicate),
         expectedResult
       );
     });
@@ -815,30 +1137,25 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       const expectedResult: Map<number, number[]> = new Map<number, number[]>;
 
       expect(SetUtil.groupByMultiKey(null, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
       expect(SetUtil.groupByMultiKey(undefined, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
       expect(SetUtil.groupByMultiKey(nativeSet, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
+
       expect(SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupByMultiKey(mutableLinkedHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
       expect(SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupByMultiKey(immutableLinkedHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate)).toEqual(expectedResult);
     });
 
 
-    it('when given sourceSet is not empty but discriminatorKey is null or undefined then an error is thrown', () => {
+    it('when given sourceSet is not empty native one but discriminatorKey is null or undefined then an error is thrown', () => {
       const nativeSet = new Set<number>(
-        [1, 2]
-      );
-      const mutableHashSet = MutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
-        [1, 2]
-      );
-      const immutableHashSet = ImmutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
         [1, 2]
       );
 
@@ -846,14 +1163,52 @@ describe('SetUtil', () => {
       expect(() => SetUtil.groupByMultiKey(nativeSet, null, isEvenRaw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.groupByMultiKey(nativeSet, undefined, isEvenRaw)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty mutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+
       // @ts-ignore
       expect(() => SetUtil.groupByMultiKey(mutableHashSet, null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.groupByMultiKey(mutableHashSet, undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
       // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(mutableLinkedHashSet, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(mutableLinkedHashSet, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty immutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [1, 2]
+      );
+
+      // @ts-ignore
       expect(() => SetUtil.groupByMultiKey(immutableHashSet, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.groupByMultiKey(immutableHashSet, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(immutableLinkedHashSet, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.groupByMultiKey(immutableLinkedHashSet, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -885,6 +1240,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 11, 12 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
       expectedResult.set("even", [ 2, 6, 12 ]);
       expectedResult.set("odd", [ 1, 3, 11 ]);
@@ -900,6 +1261,15 @@ describe('SetUtil', () => {
         SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5FFunction, undefined),
         expectedResult
       );
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupByMultiKey(mutableLinkedHashSet, oddEvenAndCompareWith5Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupByMultiKey(mutableLinkedHashSet, oddEvenAndCompareWith5FFunction, undefined),
+        expectedResult
+      );
     });
 
 
@@ -909,6 +1279,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 11, 12 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
       expectedResult.set("even", [ 2, 6, 12 ]);
       expectedResult.set("odd", [ 1, 3, 11 ]);
@@ -922,6 +1298,15 @@ describe('SetUtil', () => {
       );
       verifyMaps(
         SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5FFunction, undefined),
+        expectedResult
+      );
+      verifyMaps(
+        // @ts-ignore
+        SetUtil.groupByMultiKey(immutableLinkedHashSet, oddEvenAndCompareWith5Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupByMultiKey(immutableLinkedHashSet, oddEvenAndCompareWith5FFunction, undefined),
         expectedResult
       );
     });
@@ -949,6 +1334,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 11, 12 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
       expectedResult.set("even", [ 2, 6, 12 ]);
       expectedResult.set("smaller5", [ 2 ]);
@@ -956,6 +1347,10 @@ describe('SetUtil', () => {
 
       verifyMaps(
         SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupByMultiKey(mutableLinkedHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate),
         expectedResult
       );
     });
@@ -967,6 +1362,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6, 11, 12 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6, 11, 12 ]
+      );
+
       const expectedResult: Map<string, number[]> = new Map<string, number[]>;
       expectedResult.set("even", [ 2, 6, 12 ]);
       expectedResult.set("smaller5", [ 2 ]);
@@ -974,6 +1375,10 @@ describe('SetUtil', () => {
 
       verifyMaps(
         SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.groupByMultiKey(immutableLinkedHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate),
         expectedResult
       );
     });
@@ -1008,21 +1413,39 @@ describe('SetUtil', () => {
     });
 
 
-    it('when given input is an AbstractSet then true will be returned', () => {
+    it('when given input is an MutableSet then true will be returned', () => {
       const mutableHashSet = MutableHashSet.of<number>(
         numberHash,
         areNumberEquals,
         [ 1, 3 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 3 ]
+      );
+
+      const expectedResult = true;
+
+      expect(SetUtil.isAbstractSet(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(mutableLinkedHashSet)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is an ImmutableSet then true will be returned', () => {
       const immutableHashSet = ImmutableHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<Role>(
         roleHash,
         areRolesEquals
       );
 
       const expectedResult = true;
 
-      expect(SetUtil.isAbstractSet(mutableHashSet)).toEqual(expectedResult);
       expect(SetUtil.isAbstractSet(immutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(immutableLinkedHashSet)).toEqual(expectedResult);
     });
 
   });
@@ -1051,7 +1474,17 @@ describe('SetUtil', () => {
         areStringEquals,
         [ 'a', 'b', 'c' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'b', 'c' ]
+      );
       const immutableHashSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ role ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<Role>(
         roleHash,
         areRolesEquals,
         [ role ]
@@ -1061,7 +1494,9 @@ describe('SetUtil', () => {
 
       expect(SetUtil.isEmpty(nativeSet)).toEqual(expectedResult);
       expect(SetUtil.isEmpty(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isEmpty(mutableLinkedHashSet)).toEqual(expectedResult);
       expect(SetUtil.isEmpty(immutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isEmpty(immutableLinkedHashSet)).toEqual(expectedResult);
     });
 
   });
@@ -1088,6 +1523,11 @@ describe('SetUtil', () => {
         areStringEquals,
         [ 'a', 'b', 'c' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'b', 'c' ]
+      );
 
       const expectedResult = false;
 
@@ -1096,21 +1536,38 @@ describe('SetUtil', () => {
       expect(SetUtil.isImmutableSet({})).toEqual(expectedResult);
       expect(SetUtil.isImmutableSet(user)).toEqual(expectedResult);
       expect(SetUtil.isImmutableSet(nativeSet)).toEqual(expectedResult);
+
       expect(SetUtil.isImmutableSet(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(mutableLinkedHashSet)).toEqual(expectedResult);
     });
 
 
     it('when given input is an ImmutableSet then true will be returned', () => {
-      const setOfNumber = ImmutableHashSet.of<number>(
+      const hashSetOfNumber = ImmutableHashSet.of<number>(
         numberHash,
         areNumberEquals,
         [ 1, 3 ]
       );
-      const setOfNotHashableObject = ImmutableHashSet.empty<Role>(
+      const hashSetOfNotHashableObject = ImmutableHashSet.empty<Role>(
         roleHash,
         areRolesEquals
       );
-      const setOfHashableObject = ImmutableHashSet.of<User>(
+      const hashSetOfHashableObject = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ new User(1, 'user1') ]
+      );
+
+      const linkedHashSetOfNumber = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 3 ]
+      );
+      const linkedHashSetOfNotHashableObject = ImmutableLinkedHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+      const linkedHashSetOfHashableObject = ImmutableLinkedHashSet.of<User>(
         undefined,
         undefined,
         [ new User(1, 'user1') ]
@@ -1118,9 +1575,13 @@ describe('SetUtil', () => {
 
       const expectedResult = true;
 
-      expect(SetUtil.isImmutableSet(setOfNumber)).toEqual(expectedResult);
-      expect(SetUtil.isImmutableSet(setOfNotHashableObject)).toEqual(expectedResult);
-      expect(SetUtil.isImmutableSet(setOfHashableObject)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(hashSetOfNumber)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(hashSetOfNotHashableObject)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(hashSetOfHashableObject)).toEqual(expectedResult);
+
+      expect(SetUtil.isImmutableSet(linkedHashSetOfNumber)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(linkedHashSetOfNotHashableObject)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(linkedHashSetOfHashableObject)).toEqual(expectedResult);
     });
 
   });
@@ -1159,7 +1620,16 @@ describe('SetUtil', () => {
         areStringEquals,
         [ 'a', 'b', 'c' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'b', 'c' ]
+      );
       const immutableHashSet = ImmutableHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<Role>(
         roleHash,
         areRolesEquals
       );
@@ -1169,7 +1639,9 @@ describe('SetUtil', () => {
       expect(SetUtil.isReadonlySetLike(new Set<string>)).toEqual(expectedResult);
       expect(SetUtil.isReadonlySetLike(nativeSet)).toEqual(expectedResult);
       expect(SetUtil.isReadonlySetLike(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isReadonlySetLike(mutableLinkedHashSet)).toEqual(expectedResult);
       expect(SetUtil.isReadonlySetLike(immutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isReadonlySetLike(immutableLinkedHashSet)).toEqual(expectedResult);
     });
 
   });
@@ -1208,7 +1680,16 @@ describe('SetUtil', () => {
         areStringEquals,
         [ 'a', 'b', 'c' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'b', 'c' ]
+      );
       const immutableHashSet = ImmutableHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<Role>(
         roleHash,
         areRolesEquals
       );
@@ -1218,7 +1699,9 @@ describe('SetUtil', () => {
       expect(SetUtil.isTSet(new Set<string>)).toEqual(expectedResult);
       expect(SetUtil.isTSet(nativeSet)).toEqual(expectedResult);
       expect(SetUtil.isTSet(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isTSet(mutableLinkedHashSet)).toEqual(expectedResult);
       expect(SetUtil.isTSet(immutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isTSet(immutableLinkedHashSet)).toEqual(expectedResult);
     });
 
   });
@@ -1230,7 +1713,9 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty and comparator is not provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       // @ts-ignore
       expect(SetUtil.max(null, null)).toBe(undefined);
@@ -1245,16 +1730,26 @@ describe('SetUtil', () => {
       // @ts-ignore
       expect(SetUtil.max(mutableHashSet, undefined)).toBe(undefined);
       // @ts-ignore
+      expect(SetUtil.max(mutableLinkedHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(mutableLinkedHashSet, undefined)).toBe(undefined);
+      // @ts-ignore
       expect(SetUtil.max(immutableHashSet, null)).toBe(undefined);
       // @ts-ignore
       expect(SetUtil.max(immutableHashSet, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(immutableLinkedHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.max(immutableLinkedHashSet, undefined)).toBe(undefined);
     });
 
 
     it('when given sourceSet is null, undefined or empty and comparator is provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       const comparator: FComparator<number> =
         (a: number, b: number) => a - b;
@@ -1262,23 +1757,16 @@ describe('SetUtil', () => {
       expect(SetUtil.max(null, comparator)).toBe(undefined);
       expect(SetUtil.max(undefined, comparator)).toBe(undefined);
       expect(SetUtil.max(nativeSet, comparator)).toBe(undefined);
+
       expect(SetUtil.max(mutableHashSet, comparator)).toBe(undefined);
+      expect(SetUtil.max(mutableLinkedHashSet, comparator)).toBe(undefined);
       expect(SetUtil.max(immutableHashSet, comparator)).toBe(undefined);
+      expect(SetUtil.max(immutableLinkedHashSet, comparator)).toBe(undefined);
     });
 
 
-    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+    it('when given sourceSet is not empty native one but comparator is null or undefined then an error is thrown', () => {
       const nativeSet = new Set<number>(
-        [ 1, 2 ]
-      );
-      const mutableHashSet = MutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
-        [ 1, 2 ]
-      );
-      const immutableHashSet = ImmutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
         [ 1, 2 ]
       );
 
@@ -1286,14 +1774,52 @@ describe('SetUtil', () => {
       expect(() => SetUtil.max(nativeSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.max(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty mutable one but comparator is null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
       // @ts-ignore
       expect(() => SetUtil.max(mutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.max(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
+      expect(() => SetUtil.max(mutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(mutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty immutable but comparator is null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
       expect(() => SetUtil.max(immutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.max(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(immutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.max(immutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1314,11 +1840,17 @@ describe('SetUtil', () => {
 
 
     it('when given sourceSet is a non-empty mutable one and comparator is provided then its largest value is returned', () => {
-      const mutableSet = MutableHashSet.of<string>(
+      const mutableHashSet = MutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: FComparator<NullableOrUndefined<string>> =
         (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
         {
@@ -1327,16 +1859,23 @@ describe('SetUtil', () => {
           return s1Length - s2Length;
         };
 
-      expect(SetUtil.max(mutableSet, stringComparator)).toEqual('abc');
+      expect(SetUtil.max(mutableHashSet, stringComparator)).toEqual('abc');
+      expect(SetUtil.max(mutableLinkedHashSet, stringComparator)).toEqual('abc');
     });
 
 
     it('when given sourceSet is a non-empty immutable one and comparator is provided then its largest value is returned', () => {
-      const immutableSet = ImmutableHashSet.of<string>(
+      const immutableHashSet = ImmutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: Comparator<NullableOrUndefined<string>> =
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
@@ -1347,7 +1886,8 @@ describe('SetUtil', () => {
           }
         );
 
-      expect(SetUtil.max(immutableSet, stringComparator)).toEqual('abc');
+      expect(SetUtil.max(immutableHashSet, stringComparator)).toEqual('abc');
+      expect(SetUtil.max(immutableLinkedHashSet, stringComparator)).toEqual('abc');
     });
 
   });
@@ -1359,7 +1899,9 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty and comparator is not provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       // @ts-ignore
       expect(SetUtil.maxOptional(null, null).isPresent()).toBe(false);
@@ -1374,16 +1916,26 @@ describe('SetUtil', () => {
       // @ts-ignore
       expect(SetUtil.maxOptional(mutableHashSet, undefined).isPresent()).toBe(false);
       // @ts-ignore
+      expect(SetUtil.maxOptional(mutableLinkedHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(mutableLinkedHashSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
       expect(SetUtil.maxOptional(immutableHashSet, null).isPresent()).toBe(false);
       // @ts-ignore
       expect(SetUtil.maxOptional(immutableHashSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(immutableLinkedHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.maxOptional(immutableLinkedHashSet, undefined).isPresent()).toBe(false);
     });
 
 
     it('when given sourceSet is null, undefined or empty and comparator is provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       const comparator: FComparator<number> =
         (a: number, b: number) => a - b;
@@ -1391,23 +1943,16 @@ describe('SetUtil', () => {
       expect(SetUtil.maxOptional(null, comparator).isPresent()).toBe(false);
       expect(SetUtil.maxOptional(undefined, comparator).isPresent()).toBe(false);
       expect(SetUtil.maxOptional(nativeSet, comparator).isPresent()).toBe(false);
+
       expect(SetUtil.maxOptional(mutableHashSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.maxOptional(mutableLinkedHashSet, comparator).isPresent()).toBe(false);
       expect(SetUtil.maxOptional(immutableHashSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.maxOptional(immutableLinkedHashSet, comparator).isPresent()).toBe(false);
     });
 
 
-    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+    it('when given sourceSet is not empty native one but comparator is null or undefined then an error is thrown', () => {
       const nativeSet = new Set<number>(
-        [ 1, 2 ]
-      );
-      const mutableHashSet = MutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
-        [ 1, 2 ]
-      );
-      const immutableHashSet = ImmutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
         [ 1, 2 ]
       );
 
@@ -1415,14 +1960,52 @@ describe('SetUtil', () => {
       expect(() => SetUtil.maxOptional(nativeSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.maxOptional(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty mutable but comparator is null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
       // @ts-ignore
       expect(() => SetUtil.maxOptional(mutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.maxOptional(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
+      expect(() => SetUtil.maxOptional(mutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(mutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty immutable one but comparator is null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
       expect(() => SetUtil.maxOptional(immutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.maxOptional(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(immutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.maxOptional(immutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1446,11 +2029,17 @@ describe('SetUtil', () => {
 
 
     it('when given sourceSet is a non-empty mutable one and comparator is provided then an Optional with its largest value is returned', () => {
-      const mutableSet = MutableHashSet.of<string>(
+      const mutableHashSet = MutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: FComparator<NullableOrUndefined<string>> =
         (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
         {
@@ -1459,19 +2048,29 @@ describe('SetUtil', () => {
           return s1Length - s2Length;
         };
 
-      const result = SetUtil.maxOptional(mutableSet, stringComparator);
+      const resultHashSet = SetUtil.maxOptional(mutableHashSet, stringComparator);
+      const resultLinkedHashSet = SetUtil.maxOptional(mutableLinkedHashSet, stringComparator);
 
-      expect(result.isPresent()).toBe(true);
-      expect(result.get()).toEqual('abc');
+      expect(resultHashSet.isPresent()).toBe(true);
+      expect(resultHashSet.get()).toEqual('abc');
+
+      expect(resultLinkedHashSet.isPresent()).toBe(true);
+      expect(resultLinkedHashSet.get()).toEqual('abc');
     });
 
 
     it('when given sourceSet is a non-empty immutable one and comparator is provided then an Optional with its largest value is returned', () => {
-      const immutableSet = ImmutableHashSet.of<string>(
+      const immutableHashSet = ImmutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: Comparator<NullableOrUndefined<string>> =
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
@@ -1482,10 +2081,14 @@ describe('SetUtil', () => {
           }
         );
 
-      const result = SetUtil.maxOptional(immutableSet, stringComparator);
+      const resultHashSet = SetUtil.maxOptional(immutableHashSet, stringComparator);
+      const resultLinkedHashSet = SetUtil.maxOptional(immutableLinkedHashSet, stringComparator);
 
-      expect(result.isPresent()).toBe(true);
-      expect(result.get()).toEqual('abc');
+      expect(resultHashSet.isPresent()).toBe(true);
+      expect(resultHashSet.get()).toEqual('abc');
+
+      expect(resultLinkedHashSet.isPresent()).toBe(true);
+      expect(resultLinkedHashSet.get()).toEqual('abc');
     });
 
   });
@@ -1497,7 +2100,9 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty and comparator is not provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       // @ts-ignore
       expect(SetUtil.min(null, null)).toBe(undefined);
@@ -1512,16 +2117,26 @@ describe('SetUtil', () => {
       // @ts-ignore
       expect(SetUtil.min(mutableHashSet, undefined)).toBe(undefined);
       // @ts-ignore
+      expect(SetUtil.min(mutableLinkedHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(mutableLinkedHashSet, undefined)).toBe(undefined);
+      // @ts-ignore
       expect(SetUtil.min(immutableHashSet, null)).toBe(undefined);
       // @ts-ignore
       expect(SetUtil.min(immutableHashSet, undefined)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(immutableLinkedHashSet, null)).toBe(undefined);
+      // @ts-ignore
+      expect(SetUtil.min(immutableLinkedHashSet, undefined)).toBe(undefined);
     });
 
 
     it('when given sourceSet is null, undefined or empty and comparator is provided then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       const comparator: FComparator<number> =
         (a: number, b: number) => a - b;
@@ -1529,23 +2144,16 @@ describe('SetUtil', () => {
       expect(SetUtil.min(null, comparator)).toBe(undefined);
       expect(SetUtil.min(undefined, comparator)).toBe(undefined);
       expect(SetUtil.min(nativeSet, comparator)).toBe(undefined);
+
       expect(SetUtil.min(mutableHashSet, comparator)).toBe(undefined);
+      expect(SetUtil.min(mutableLinkedHashSet, comparator)).toBe(undefined);
       expect(SetUtil.min(immutableHashSet, comparator)).toBe(undefined);
+      expect(SetUtil.min(immutableLinkedHashSet, comparator)).toBe(undefined);
     });
 
 
-    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+    it('when given sourceSet is not empty native one but comparator is null or undefined then an error is thrown', () => {
       const nativeSet = new Set<number>(
-        [ 1, 2 ]
-      );
-      const mutableHashSet = MutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
-        [ 1, 2 ]
-      );
-      const immutableHashSet = ImmutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
         [ 1, 2 ]
       );
 
@@ -1553,14 +2161,52 @@ describe('SetUtil', () => {
       expect(() => SetUtil.min(nativeSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.min(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty mutable one but comparator is null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
       // @ts-ignore
       expect(() => SetUtil.min(mutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.min(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
+      expect(() => SetUtil.min(mutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(mutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty immutable one but comparator is null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
       expect(() => SetUtil.min(immutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.min(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(immutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.min(immutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1568,6 +2214,7 @@ describe('SetUtil', () => {
       const nativeSet = new Set<NullableOrUndefined<string>>(
         [ 'a', 'ab', null, undefined, 'abc', 'zz' ]
       );
+
       const stringComparator =
         (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
         {
@@ -1581,11 +2228,17 @@ describe('SetUtil', () => {
 
 
     it('when given sourceSet is a non-empty mutable one and comparator is provided then its smallest value is returned', () => {
-      const mutableSet = MutableHashSet.of<string>(
+      const mutableHashSet = MutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: FComparator<NullableOrUndefined<string>> =
         (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
         {
@@ -1594,16 +2247,23 @@ describe('SetUtil', () => {
           return s1Length - s2Length;
         };
 
-      expect(SetUtil.min(mutableSet, stringComparator)).toEqual('a');
+      expect(SetUtil.min(mutableHashSet, stringComparator)).toEqual('a');
+      expect(SetUtil.min(mutableLinkedHashSet, stringComparator)).toEqual('a');
     });
 
 
     it('when given sourceSet is a non-empty immutable one and comparator is provided then its smallest value is returned', () => {
-      const immutableSet = ImmutableHashSet.of<string>(
+      const immutableHashSet = ImmutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: Comparator<NullableOrUndefined<string>> =
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
@@ -1614,7 +2274,8 @@ describe('SetUtil', () => {
           }
         );
 
-      expect(SetUtil.min(immutableSet, stringComparator)).toEqual('a');
+      expect(SetUtil.min(immutableHashSet, stringComparator)).toEqual('a');
+      expect(SetUtil.min(immutableLinkedHashSet, stringComparator)).toEqual('a');
     });
 
   });
@@ -1626,7 +2287,9 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty and comparator is not provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       // @ts-ignore
       expect(SetUtil.minOptional(null, null).isPresent()).toBe(false);
@@ -1641,16 +2304,26 @@ describe('SetUtil', () => {
       // @ts-ignore
       expect(SetUtil.minOptional(mutableHashSet, undefined).isPresent()).toBe(false);
       // @ts-ignore
+      expect(SetUtil.minOptional(mutableLinkedHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(mutableLinkedHashSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
       expect(SetUtil.minOptional(immutableHashSet, null).isPresent()).toBe(false);
       // @ts-ignore
       expect(SetUtil.minOptional(immutableHashSet, undefined).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(immutableLinkedHashSet, null).isPresent()).toBe(false);
+      // @ts-ignore
+      expect(SetUtil.minOptional(immutableLinkedHashSet, undefined).isPresent()).toBe(false);
     });
 
 
     it('when given sourceSet is null, undefined or empty and comparator is provided then empty Optional is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       const comparator: FComparator<number> =
         (a: number, b: number) => a - b;
@@ -1658,23 +2331,16 @@ describe('SetUtil', () => {
       expect(SetUtil.minOptional(null, comparator).isPresent()).toBe(false);
       expect(SetUtil.minOptional(undefined, comparator).isPresent()).toBe(false);
       expect(SetUtil.minOptional(nativeSet, comparator).isPresent()).toBe(false);
+
       expect(SetUtil.minOptional(mutableHashSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.minOptional(mutableLinkedHashSet, comparator).isPresent()).toBe(false);
       expect(SetUtil.minOptional(immutableHashSet, comparator).isPresent()).toBe(false);
+      expect(SetUtil.minOptional(immutableLinkedHashSet, comparator).isPresent()).toBe(false);
     });
 
 
-    it('when given sourceSet is not empty but comparator is null or undefined then an error is thrown', () => {
+    it('when given sourceSet is not empty native one but comparator is null or undefined then an error is thrown', () => {
       const nativeSet = new Set<number>(
-        [ 1, 2 ]
-      );
-      const mutableHashSet = MutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
-        [ 1, 2 ]
-      );
-      const immutableHashSet = ImmutableHashSet.of<number>(
-        numberHash,
-        areNumberEquals,
         [ 1, 2 ]
       );
 
@@ -1682,14 +2348,52 @@ describe('SetUtil', () => {
       expect(() => SetUtil.minOptional(nativeSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.minOptional(nativeSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty mutable one but comparator is null or undefined then an error is thrown', () => {
+      const mutableHashSet = MutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
       // @ts-ignore
       expect(() => SetUtil.minOptional(mutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.minOptional(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
       // @ts-ignore
+      expect(() => SetUtil.minOptional(mutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(mutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is not empty immutable one but comparator is null or undefined then an error is thrown', () => {
+      const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2 ]
+      );
+
+      // @ts-ignore
       expect(() => SetUtil.minOptional(immutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.minOptional(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(immutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.minOptional(immutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1697,6 +2401,7 @@ describe('SetUtil', () => {
       const nativeSet = new Set<NullableOrUndefined<string>>(
         [ 'a', 'ab', null, undefined, 'abc', 'zz' ]
       );
+
       const stringComparator =
         (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
         {
@@ -1712,11 +2417,17 @@ describe('SetUtil', () => {
 
 
     it('when given sourceSet is a non-empty mutable one and comparator is provided then an Optional with its smallest value is returned', () => {
-      const mutableSet = MutableHashSet.of<string>(
+      const mutableHashSet = MutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: FComparator<NullableOrUndefined<string>> =
         (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
         {
@@ -1725,19 +2436,29 @@ describe('SetUtil', () => {
           return s1Length - s2Length;
         };
 
-      const result = SetUtil.minOptional(mutableSet, stringComparator);
+      const resultHashSet = SetUtil.minOptional(mutableHashSet, stringComparator);
+      const resultLinkedHashSet = SetUtil.minOptional(mutableLinkedHashSet, stringComparator);
 
-      expect(result.isPresent()).toBe(true);
-      expect(result.get()).toEqual('a');
+      expect(resultHashSet.isPresent()).toBe(true);
+      expect(resultHashSet.get()).toEqual('a');
+
+      expect(resultLinkedHashSet.isPresent()).toBe(true);
+      expect(resultLinkedHashSet.get()).toEqual('a');
     });
 
 
     it('when given sourceSet is a non-empty immutable one and comparator is provided then an Optional with its smallest value is returned', () => {
-      const immutableSet = ImmutableHashSet.of<string>(
+      const immutableHashSet = ImmutableHashSet.of<string>(
         stringHash,
         areStringEquals,
         [ 'a', 'ab', 'abc', 'zz' ]
       );
+      const immutableLinkedHashSet = ImmutableHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'ab', 'abc', 'zz' ]
+      );
+
       const stringComparator: Comparator<NullableOrUndefined<string>> =
         Comparator.of(
           (s1: NullableOrUndefined<string>, s2: NullableOrUndefined<string>) =>
@@ -1748,10 +2469,14 @@ describe('SetUtil', () => {
           }
         );
 
-      const result = SetUtil.minOptional(immutableSet, stringComparator);
+      const resultHashSet = SetUtil.minOptional(immutableHashSet, stringComparator);
+      const resultLinkedHashSet = SetUtil.minOptional(immutableLinkedHashSet, stringComparator);
 
-      expect(result.isPresent()).toBe(true);
-      expect(result.get()).toEqual('a');
+      expect(resultHashSet.isPresent()).toBe(true);
+      expect(resultHashSet.get()).toEqual('a');
+
+      expect(resultLinkedHashSet.isPresent()).toBe(true);
+      expect(resultLinkedHashSet.get()).toEqual('a');
     });
 
   });
@@ -1763,7 +2488,9 @@ describe('SetUtil', () => {
     it('when given sourceSet is null, undefined or empty then undefined is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
 
       const accumulator =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
@@ -1771,8 +2498,11 @@ describe('SetUtil', () => {
       expect(SetUtil.reduce(null, accumulator)).toBe(undefined);
       expect(SetUtil.reduce(undefined, accumulator)).toBe(undefined);
       expect(SetUtil.reduce(nativeSet, accumulator)).toBe(undefined);
+
       expect(SetUtil.reduce(mutableHashSet, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(mutableLinkedHashSet, accumulator)).toBe(undefined);
       expect(SetUtil.reduce(immutableHashSet, accumulator)).toBe(undefined);
+      expect(SetUtil.reduce(immutableLinkedHashSet, accumulator)).toBe(undefined);
     });
 
 
@@ -1794,11 +2524,20 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 2 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2 ]
+      );
 
       // @ts-ignore
       expect(() => SetUtil.reduce(mutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.reduce(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.reduce(mutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.reduce(mutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1808,11 +2547,20 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 2 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2 ]
+      );
 
       // @ts-ignore
       expect(() => SetUtil.reduce(immutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.reduce(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.reduce(immutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.reduce(immutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -1834,11 +2582,17 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 2, 3, 4 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
 
       const accumulator: FBinaryOperator<number> =
         (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
 
       expect(SetUtil.reduce(mutableHashSet, accumulator)).toEqual(24);
+      expect(SetUtil.reduce(mutableLinkedHashSet, accumulator)).toEqual(24);
     });
 
 
@@ -1848,11 +2602,17 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 2, 3, 4 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 2, 3, 4 ]
+      );
 
       const accumulator: BinaryOperator<number> =
         BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
 
       expect(SetUtil.reduce(immutableHashSet, accumulator)).toEqual(24);
+      expect(SetUtil.reduce(immutableLinkedHashSet, accumulator)).toEqual(24);
     });
 
   });
@@ -1880,6 +2640,8 @@ describe('SetUtil', () => {
 
     it('when given sourceSet is null, undefined or an empty mutable one then empty array is returned', () => {
       const mutableHashSet = MutableHashSet.empty<number>();
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>();
+
       const comparator: FComparator<number> =
         (a, b) => a - b;
 
@@ -1888,15 +2650,19 @@ describe('SetUtil', () => {
       expect(SetUtil.sort(null)).toEqual(expectedResult);
       expect(SetUtil.sort(undefined)).toEqual(expectedResult);
       expect(SetUtil.sort(mutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.sort(mutableLinkedHashSet)).toEqual(expectedResult);
 
       expect(SetUtil.sort(null, comparator)).toEqual(expectedResult);
       expect(SetUtil.sort(undefined, comparator)).toEqual(expectedResult);
       expect(SetUtil.sort(mutableHashSet, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(mutableLinkedHashSet, comparator)).toEqual(expectedResult);
     });
 
 
     it('when given sourceSet is null, undefined or an empty immutable one then empty array is returned', () => {
       const immutableHashSet = ImmutableHashSet.empty<number>();
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>();
+
       const comparator: Comparator<number> =
         Comparator.of((a, b) => a - b);
 
@@ -1905,10 +2671,12 @@ describe('SetUtil', () => {
       expect(SetUtil.sort(null)).toEqual(expectedResult);
       expect(SetUtil.sort(undefined)).toEqual(expectedResult);
       expect(SetUtil.sort(immutableHashSet)).toEqual(expectedResult);
+      expect(SetUtil.sort(immutableLinkedHashSet)).toEqual(expectedResult);
 
       expect(SetUtil.sort(null, comparator)).toEqual(expectedResult);
       expect(SetUtil.sort(undefined, comparator)).toEqual(expectedResult);
       expect(SetUtil.sort(immutableHashSet, comparator)).toEqual(expectedResult);
+      expect(SetUtil.sort(immutableLinkedHashSet, comparator)).toEqual(expectedResult);
     });
 
 
@@ -1940,6 +2708,11 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 10, 21, 2 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 10, 21, 2 ]
+      );
 
       const expectedResult = [ 1, 10, 2, 21 ];
 
@@ -1955,11 +2728,28 @@ describe('SetUtil', () => {
         SetUtil.sort(mutableHashSet, null),
         expectedResult
       );
+      verifyArrays(
+        SetUtil.sort(mutableLinkedHashSet),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(mutableLinkedHashSet, undefined),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(mutableLinkedHashSet, null),
+        expectedResult
+      );
     });
 
 
     it('when given sourceSet is an non-empty immutable one but comparator is null or undefined then default sort is applied', () => {
       const immutableHashSet = ImmutableHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 10, 21, 2 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
         numberHash,
         areNumberEquals,
         [ 1, 10, 21, 2 ]
@@ -1977,6 +2767,18 @@ describe('SetUtil', () => {
       );
       verifyArrays(
         SetUtil.sort(immutableHashSet, null),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(immutableLinkedHashSet),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(immutableLinkedHashSet, undefined),
+        expectedResult
+      );
+      verifyArrays(
+        SetUtil.sort(immutableLinkedHashSet, null),
         expectedResult
       );
     });
@@ -2010,11 +2812,21 @@ describe('SetUtil', () => {
         areRolesEquals,
         [ r2, r3, r1 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r2, r3, r1 ]
+      );
+
       const comparator: FComparator<Role> =
         (a, b) => b.id - a.id;
 
       verifyArrays(
         SetUtil.sort(mutableHashSet, comparator),
+        [ r3, r2, r1 ]
+      );
+      verifyArrays(
+        SetUtil.sort(mutableLinkedHashSet, comparator),
         [ r3, r2, r1 ]
       );
     });
@@ -2030,11 +2842,21 @@ describe('SetUtil', () => {
         undefined,
         [ u3, u1, u2 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<User>(
+        undefined,
+        undefined,
+        [ u3, u1, u2 ]
+      );
+
       const comparator: Comparator<User> =
         Comparator.of((a, b) => a.id - b.id);
 
       verifyArrays(
         SetUtil.sort(immutableHashSet, comparator),
+        [ u1, u2, u3 ]
+      );
+      verifyArrays(
+        SetUtil.sort(immutableLinkedHashSet, comparator),
         [ u1, u2, u3 ]
       );
     });
@@ -2051,18 +2873,28 @@ describe('SetUtil', () => {
         stringHash,
         areStringEquals
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<string>(
+        stringHash,
+        areStringEquals
+      );
       const immutableHashSet = ImmutableHashSet.empty<Role>(
+        roleHash,
+        areRolesEquals
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<Role>(
         roleHash,
         areRolesEquals
       );
 
       expect(SetUtil.toArray(nativeSet)).toEqual([]);
       expect(SetUtil.toArray(mutableHashSet)).toEqual([]);
+      expect(SetUtil.toArray(mutableLinkedHashSet)).toEqual([]);
       expect(SetUtil.toArray(immutableHashSet)).toEqual([]);
+      expect(SetUtil.toArray(immutableLinkedHashSet)).toEqual([]);
     });
 
 
-    it('when given sourceSet is an AbstractSet with elements then an array containing them is returned', () => {
+    it('when given sourceSet is a MutableSet with elements then an array containing them is returned', () => {
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
@@ -2072,10 +2904,10 @@ describe('SetUtil', () => {
         areStringEquals,
         [ 'a', 'b', 'c' ]
       );
-      const immutableHashSet = ImmutableHashSet.of<Role>(
-        roleHash,
-        areRolesEquals,
-        [ r1, r2, r3 ]
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<string>(
+        stringHash,
+        areStringEquals,
+        [ 'a', 'b', 'c' ]
       );
 
       verifyArraysRegardlessOfOrder(
@@ -2083,7 +2915,34 @@ describe('SetUtil', () => {
         [ 'a', 'b', 'c' ]
       );
       verifyArraysRegardlessOfOrder(
+        SetUtil.toArray(mutableLinkedHashSet),
+        [ 'a', 'b', 'c' ]
+      );
+    });
+
+
+    it('when given sourceSet is an ImmutableSet with elements then an array containing them is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const immutableHashSet = ImmutableHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<Role>(
+        roleHash,
+        areRolesEquals,
+        [ r1, r2, r3 ]
+      );
+
+      verifyArraysRegardlessOfOrder(
         SetUtil.toArray(immutableHashSet),
+        [ r1, r2, r3 ]
+      );
+      verifyArraysRegardlessOfOrder(
+        SetUtil.toArray(immutableLinkedHashSet),
         [ r1, r2, r3 ]
       );
     });
@@ -2137,6 +2996,11 @@ describe('SetUtil', () => {
         numberHash,
         areNumberEquals
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.empty<number>(
+        numberHash,
+        areNumberEquals
+      );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
 
       expect(SetUtil.toMap(null, sameNumberRaw)).toEqual(expectedResult);
@@ -2144,9 +3008,13 @@ describe('SetUtil', () => {
 
       expect(SetUtil.toMap(mutableHashSet, sameNumberRaw)).toEqual(expectedResult);
       expect(SetUtil.toMap(mutableHashSet, sameNumberFFunction)).toEqual(expectedResult);
-
       expect(SetUtil.toMap(mutableHashSet, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
       expect(SetUtil.toMap(mutableHashSet, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(mutableLinkedHashSet, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(mutableLinkedHashSet, sameNumberFFunction)).toEqual(expectedResult);
+      expect(SetUtil.toMap(mutableLinkedHashSet, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(mutableLinkedHashSet, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
     });
 
 
@@ -2155,6 +3023,11 @@ describe('SetUtil', () => {
         numberHash,
         areNumberEquals
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.empty<number>(
+        numberHash,
+        areNumberEquals
+      );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
 
       expect(SetUtil.toMap(null, sameNumberRaw)).toEqual(expectedResult);
@@ -2162,9 +3035,13 @@ describe('SetUtil', () => {
 
       expect(SetUtil.toMap(immutableHashSet, sameNumberRaw)).toEqual(expectedResult);
       expect(SetUtil.toMap(immutableHashSet, sameNumberFFunction)).toEqual(expectedResult);
-
       expect(SetUtil.toMap(immutableHashSet, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
       expect(SetUtil.toMap(immutableHashSet, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
+
+      expect(SetUtil.toMap(immutableLinkedHashSet, sameNumberRaw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(immutableLinkedHashSet, sameNumberFFunction)).toEqual(expectedResult);
+      expect(SetUtil.toMap(immutableLinkedHashSet, sameNumberRaw, plus1Raw)).toEqual(expectedResult);
+      expect(SetUtil.toMap(immutableLinkedHashSet, sameNumberFFunction, plus1FFunction)).toEqual(expectedResult);
     });
 
 
@@ -2177,7 +3054,6 @@ describe('SetUtil', () => {
       expect(() => SetUtil.toMap(nativeSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.toMap(nativeSet, undefined)).toThrowError(IllegalArgumentError);
-
       // @ts-ignore
       expect(() => SetUtil.toMap(nativeSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
@@ -2191,16 +3067,29 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
 
       // @ts-ignore
       expect(() => SetUtil.toMap(mutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.toMap(mutableHashSet, undefined)).toThrowError(IllegalArgumentError);
-
       // @ts-ignore
       expect(() => SetUtil.toMap(mutableHashSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.toMap(mutableHashSet, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableLinkedHashSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(mutableLinkedHashSet, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -2210,16 +3099,29 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1 ]
+      );
 
       // @ts-ignore
       expect(() => SetUtil.toMap(immutableHashSet, null)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.toMap(immutableHashSet, undefined)).toThrowError(IllegalArgumentError);
-
       // @ts-ignore
       expect(() => SetUtil.toMap(immutableHashSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
       // @ts-ignore
       expect(() => SetUtil.toMap(immutableHashSet, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
+
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableLinkedHashSet, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableLinkedHashSet, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableLinkedHashSet, null, plus1Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => SetUtil.toMap(immutableLinkedHashSet, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
     });
 
 
@@ -2227,6 +3129,7 @@ describe('SetUtil', () => {
       const nativeSet = new Set<number>(
         [ 1, 2, 3, 6 ]
       );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 1);
       expectedResult.set(2, 2);
@@ -2250,6 +3153,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 1);
       expectedResult.set(2, 2);
@@ -2264,6 +3173,14 @@ describe('SetUtil', () => {
         SetUtil.toMap(mutableHashSet, sameNumberFFunction),
         expectedResult
       );
+      verifyMaps(
+        SetUtil.toMap(mutableLinkedHashSet, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableLinkedHashSet, sameNumberFFunction),
+        expectedResult
+      );
     });
 
 
@@ -2273,6 +3190,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 1);
       expectedResult.set(2, 2);
@@ -2287,6 +3210,14 @@ describe('SetUtil', () => {
         SetUtil.toMap(immutableHashSet, sameNumberFFunction),
         expectedResult
       );
+      verifyMaps(
+        SetUtil.toMap(immutableLinkedHashSet, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableLinkedHashSet, sameNumberFFunction),
+        expectedResult
+      );
     });
 
 
@@ -2294,6 +3225,7 @@ describe('SetUtil', () => {
       const nativeSet = new Set<number>(
         [ 1, 2, 3, 6 ]
       );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 2);
       expectedResult.set(2, 3);
@@ -2325,6 +3257,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6 ]
       );
+      const mutableLinkedHashSet = MutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 2);
       expectedResult.set(2, 3);
@@ -2347,6 +3285,23 @@ describe('SetUtil', () => {
         SetUtil.toMap(mutableHashSet, sameNumberFFunction, plus1Function),
         expectedResult
       );
+
+      verifyMaps(
+        SetUtil.toMap(mutableLinkedHashSet, sameNumberRaw, plus1Raw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableLinkedHashSet, sameNumberRaw, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableLinkedHashSet, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(mutableLinkedHashSet, sameNumberFFunction, plus1Function),
+        expectedResult
+      );
     });
 
 
@@ -2356,6 +3311,12 @@ describe('SetUtil', () => {
         areNumberEquals,
         [ 1, 2, 3, 6 ]
       );
+      const immutableLinkedHashSet = ImmutableLinkedHashSet.of<number>(
+        numberHash,
+        areNumberEquals,
+        [ 1, 2, 3, 6 ]
+      );
+
       const expectedResult: Map<number, number> = new Map<number, number>;
       expectedResult.set(1, 2);
       expectedResult.set(2, 3);
@@ -2376,6 +3337,23 @@ describe('SetUtil', () => {
       );
       verifyMaps(
         SetUtil.toMap(immutableHashSet, sameNumberFFunction, plus1Function),
+        expectedResult
+      );
+
+      verifyMaps(
+        SetUtil.toMap(immutableLinkedHashSet, sameNumberRaw, plus1Raw),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableLinkedHashSet, sameNumberRaw, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableLinkedHashSet, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        SetUtil.toMap(immutableLinkedHashSet, sameNumberFFunction, plus1Function),
         expectedResult
       );
     });
@@ -2475,19 +3453,15 @@ function verifySets(actualSet: TSet<any>,
 const areNumberEquals: EqualityFunction<number> =
   (n1: number, n2: number) => n1 == n2;
 
-
 const areRolesEquals: EqualityFunction<Role> =
   (r1: Role, r2: Role) => r1.id == r2.id;
-
 
 const areStringEquals: EqualityFunction<string> =
   (s1: string, s2: string) => s1 == s2;
 
-
 const isEvenFPredicate: FPredicate1<number> =
   (n: number) =>
     0 == n % 2;
-
 
 const isEvenPredicate: Predicate1<number> =
   Predicate1.of(
@@ -2495,39 +3469,30 @@ const isEvenPredicate: Predicate1<number> =
       0 == n % 2
   );
 
-
 const isEvenRaw =
   (n: number) =>
     0 == n % 2;
 
-
 const isRoleIdOddFPredicate: FPredicate1<Role> =
   (role: Role) => 1 == role.id % 2;
-
 
 const isRoleIdOddPredicate: Predicate1<Role> =
   Predicate1.of((role: Role) => 1 == role.id % 2);
 
-
 const isRoleIdOddRaw =
   (role: Role) => 1 == role.id % 2;
-
 
 const isUserIdOddFPredicate: FPredicate1<User> =
   (user: User) => 1 == user.id % 2;
 
-
 const isUserIdOddPredicate: Predicate1<User> =
   Predicate1.of((user: User) => 1 == user.id % 2);
-
 
 const isUserIdOddRaw =
   (user: User) => 1 == user.id % 2;
 
-
 const numberHash: HashFunction<number> =
   (n: number) => n % 50;
-
 
 const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
   (n: number) => {
@@ -2547,7 +3512,6 @@ const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
     return keys;
   };
 
-
 const oddEvenAndCompareWith5Raw = (n: number) => {
   const keys: string[] = [];
   if (0 == n % 2) {
@@ -2565,16 +3529,13 @@ const oddEvenAndCompareWith5Raw = (n: number) => {
   return keys;
 };
 
-
 const plus1Raw =
   (n: number) =>
     1 + n;
 
-
 const plus1FFunction: FFunction1<number, number> =
   (n: number) =>
     1 + n;
-
 
 const plus1Function: Function1<number, number> =
   Function1.of(
@@ -2582,20 +3543,16 @@ const plus1Function: Function1<number, number> =
       1 + n
   );
 
-
 const roleHash: HashFunction<Role> =
   (r: Role) => r.id % 50;
-
 
 const sameNumberRaw =
   (n: number) =>
     n;
 
-
 const sameNumberFFunction: FFunction1<number, number> =
   (n: number) =>
     n;
-
 
 const stringHash: HashFunction<string> =
   (s: string) => (s.length + s.charCodeAt(0)) % 50;

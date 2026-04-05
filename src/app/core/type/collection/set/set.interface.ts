@@ -55,9 +55,9 @@ export interface AbstractSet<T> extends ReadonlySetLike<T>, Disposable {
 
 
   /**
-   * Returns an {@link Iterator} of [T, T] pairs for every value in this {@link AbstractSet}.
+   * Returns an {@link IterableIterator} of [T, T] pairs for every value in this {@link AbstractSet}.
    */
-  entries(): Iterator<[T, T]>;
+  entries(): IterableIterator<[T, T]>;
 
 
   /**

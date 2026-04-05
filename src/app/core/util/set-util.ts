@@ -1,5 +1,13 @@
 import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/type';
-import { AbstractSet, ImmutableHashSet, ImmutableSet, MutableHashSet, TSet } from '@app-core/type/collection/set';
+import {
+  AbstractSet,
+  ImmutableHashSet,
+  ImmutableLinkedHashSet,
+  ImmutableSet,
+  MutableHashSet,
+  MutableLinkedHashSet,
+  TSet
+} from '@app-core/type/collection/set';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 import { Comparator, TComparator } from '@app-core/type/comparator';
 import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
@@ -375,8 +383,13 @@ export class SetUtil {
 
 
   /**
-   *    Verifies if the given `input` is classified as {@link AbstractSet} object, which includes implementations like: {@link MutableHashSet}
-   * or {@link ImmutableHashSet}.
+   * Verifies if the given `input` is classified as {@link AbstractSet} object, which includes implementations like:
+   * <ul>
+   *   <li>{@link MutableHashSet}</li>
+   *   <li>{@link MutableLinkedHashSet}</li>
+   *   <li>{@link ImmutableHashSet}</li>
+   *   <li>{@link ImmutableLinkedHashSet}</li>
+   * </ul>
    *
    * @param input
    *    Object to verify
@@ -386,11 +399,17 @@ export class SetUtil {
    */
   static isAbstractSet = (input?: any): input is AbstractSet<any> =>
     input instanceof MutableHashSet ||
-    input instanceof ImmutableHashSet;
+    input instanceof MutableLinkedHashSet ||
+    input instanceof ImmutableHashSet ||
+    input instanceof ImmutableLinkedHashSet;
 
 
   /**
-   * Verifies if the given `input` is classified as {@link ImmutableSet} object (including new ones like: {@link ImmutableHashSet}).
+   * Verifies if the given `input` is classified as {@link ImmutableSet} object, which includes implementations like:
+   * <ul>
+   *   <li>{@link ImmutableHashSet}</li>
+   *   <li>{@link ImmutableLinkedHashSet}</li>
+   * </ul>
    *
    * @param input
    *    Object to verify
@@ -399,7 +418,8 @@ export class SetUtil {
    *         `false` otherwise
    */
   static isImmutableSet = (input?: any): input is ImmutableSet<any> =>
-    input instanceof ImmutableHashSet;
+    input instanceof ImmutableHashSet ||
+    input instanceof ImmutableLinkedHashSet;
 
 
   /**
@@ -808,8 +828,20 @@ export class SetUtil {
         input.getEquals()
       );
     }
+    if (input instanceof ImmutableLinkedHashSet) {
+      return ImmutableLinkedHashSet.empty<T>(
+        input.getHash(),
+        input.getEquals()
+      );
+    }
     if (input instanceof MutableHashSet) {
       return MutableHashSet.empty<T>(
+        input.getHash(),
+        input.getEquals()
+      );
+    }
+    if (input instanceof MutableLinkedHashSet) {
+      return MutableLinkedHashSet.empty<T>(
         input.getHash(),
         input.getEquals()
       );
@@ -834,8 +866,22 @@ export class SetUtil {
         input
       );
     }
+    if (input instanceof ImmutableLinkedHashSet) {
+      return ImmutableLinkedHashSet.of<T>(
+        input.getHash(),
+        input.getEquals(),
+        input
+      );
+    }
     if (input instanceof MutableHashSet) {
       return MutableHashSet.of<T>(
+        input.getHash(),
+        input.getEquals(),
+        input
+      );
+    }
+    if (input instanceof MutableLinkedHashSet) {
+      return MutableLinkedHashSet.of<T>(
         input.getHash(),
         input.getEquals(),
         input

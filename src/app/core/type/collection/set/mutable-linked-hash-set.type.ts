@@ -1,19 +1,19 @@
 import { EqualityFunction, HashFunction } from '@app-core/type/collection';
 import { AbstractSet, MutableSet } from '@app-core/type/collection/set';
+import { ArrayUtil, ObjectUtil, SetUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/type';
-import { ObjectUtil, SetUtil } from '@app-core/util';
 
 /**
  *    Mutable {@link Set} based on hash function to locate internal elements. This {@link Set} can be updated, reduced
  * or extended in place. This means you can change, add, or remove elements of a {@link Set} as a side effect.
  *
- *    It makes no guarantees as to the iteration order of the set; in particular, it does not guarantee that the order
- * will remain constant over time. This class permits the `null` element.
+ *    Unlike {@link MutableHashSet}, this implementation does guarantee the iteration order of the set; in particular,
+ * it does guarantee that the order will remain constant over time. This class permits the `null` element.
  */
-export class MutableHashSet<T> implements MutableSet<T> {
+export class MutableLinkedHashSet<T> implements MutableSet<T> {
 
   private readonly hashTable: Map<number, T[]> = new Map<number, T[]>();
-  private _size = 0;
+  private order: T[] = [];
 
 
   private constructor(private readonly hash: HashFunction<T> = ObjectUtil.hash,
@@ -30,39 +30,39 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   /**
-   * Returns an empty {@link MutableHashSet} instance.
+   * Returns an empty {@link MutableLinkedHashSet} instance.
    *
    * @param hash
    *    {@link HashFunction} to locate internal elements
    * @param equals
    *    {@link EqualityFunction} to determine whether two values are considered equal
    *
-   * @return an empty {@link MutableHashSet}
+   * @return an empty {@link MutableLinkedHashSet}
    */
   static empty = <T>(hash?: HashFunction<T>,
-                     equals?: EqualityFunction<T>): MutableHashSet<T> =>
-    new MutableHashSet<T>(
+                     equals?: EqualityFunction<T>): MutableLinkedHashSet<T> =>
+    new MutableLinkedHashSet<T>(
       hash,
       equals
     );
 
 
   /**
-   * Returns an {@link MutableHashSet} containing provided `values`.
+   * Returns an {@link MutableLinkedHashSet} containing provided `values`.
    *
    * @param hash
    *    {@link HashFunction} to locate internal elements
    * @param equals
    *    {@link EqualityFunction} to determine whether two values are considered equal
    * @param values
-   *    {@link Iterable} with the elements to add in the returned {@link MutableHashSet}
+   *    {@link Iterable} with the elements to add in the returned {@link MutableLinkedHashSet}
    *
-   * @return a {@link MutableHashSet} with the provided `values`
+   * @return a {@link MutableLinkedHashSet} with the provided `values`
    */
   static of = <T>(hash?: HashFunction<T>,
                   equals?: EqualityFunction<T>,
-                  values?: Iterable<T>): MutableHashSet<T> =>
-    new MutableHashSet<T>(
+                  values?: Iterable<T>): MutableLinkedHashSet<T> =>
+    new MutableLinkedHashSet<T>(
       hash,
       equals,
       values
@@ -81,19 +81,21 @@ export class MutableHashSet<T> implements MutableSet<T> {
         hashValue,
         [value]
       );
-      this._size++;
-      return this;
     }
     // Check if value exists inside valuesWithSameHash
-    for (const existing of valuesWithSameHash) {
-      if (this.equals(existing, value)) {
-        return this;
+    else {
+      for (const existing of valuesWithSameHash) {
+        if (this.equals(existing, value)) {
+          return this;
+        }
       }
+      valuesWithSameHash.push(
+        value
+      );
     }
-    valuesWithSameHash.push(
+    this.order.push(
       value
     );
-    this._size++;
     return this;
   }
 
@@ -114,7 +116,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
   clear(): void {
     this.hashTable.clear();
-    this._size = 0;
+    this.order = [];
   }
 
 
@@ -143,12 +145,17 @@ export class MutableHashSet<T> implements MutableSet<T> {
       posOfValue,
       1
     );
-    this._size--;
     if (0 === valuesWithSameHash.length) {
       this.hashTable.delete(
         hashValue
       );
     }
+    // Remove from order list
+    this.order = ArrayUtil.delete(
+      this.order,
+      value,
+      this.equals
+    )
     return true;
   }
 
@@ -168,13 +175,13 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   difference(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    const result = MutableHashSet.empty<T>(
+    const result = MutableLinkedHashSet.empty<T>(
       this.hash,
       this.equals
     );
     let otherSet = SetUtil.isReadonlySetLike(other)
       ? other
-      : MutableHashSet.of<T>(
+      : MutableLinkedHashSet.of<T>(
           this.hash,
           this.equals,
           ObjectUtil.nonNullOrUndefined(other)
@@ -200,15 +207,11 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  *entries(): IterableIterator<[T, T]> {
-    for (const valuesWithSameHash of this.hashTable.values()) {
-      for (let i = 0; i < valuesWithSameHash.length; i++) {
-        yield [
-          valuesWithSameHash[i],
-          valuesWithSameHash[i]
-        ];
-      }
-    }
+  entries(): IterableIterator<[T, T]> {
+    return this.order.map(
+      v =>
+        [v, v] as [T, T]
+    )[Symbol.iterator]();
   }
 
 
@@ -232,7 +235,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   /**
-   * Returns the hash function to locate internal elements stored in the current {@link MutableHashSet}.
+   * Returns the hash function to locate internal elements stored in the current {@link MutableLinkedHashSet}.
    *
    * @return {@link HashFunction}
    */
@@ -242,17 +245,17 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   /**
-   * Returns the number of elements stored in this {@link MutableHashSet}.
+   * Returns the number of elements stored in this {@link MutableLinkedHashSet}.
    *
-   * @return number of elements inside {@link MutableHashSet}
+   * @return number of elements inside {@link MutableLinkedHashSet}
    */
   get size(): number {
-    return this._size;
+    return this.order.length;
   }
 
 
   get [Symbol.toStringTag](): string {
-    return "MutableHashSet"
+    return "MutableLinkedHashSet"
   }
 
 
@@ -276,14 +279,14 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   intersection(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    const result = MutableHashSet.empty<T>(
+    const result = MutableLinkedHashSet.empty<T>(
       this.hash,
       this.equals
     );
     if (ObjectUtil.nonNullOrUndefined(other)) {
       const otherSet = SetUtil.isReadonlySetLike(other)
         ? other
-        : MutableHashSet.of<T>(
+        : MutableLinkedHashSet.of<T>(
             this.hash,
             this.equals,
             other
@@ -342,7 +345,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
       otherSet = other;
     }
     else {
-      otherSet = MutableHashSet.of<T>(
+      otherSet = MutableLinkedHashSet.of<T>(
         this.hash,
         this.equals,
         other
@@ -393,7 +396,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
     if (ObjectUtil.isNullOrUndefined(other)) {
       return this;
     }
-    const result = MutableHashSet.of<T>(
+    const result = MutableLinkedHashSet.of<T>(
       this.hash,
       this.equals,
       this
@@ -425,7 +428,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   union(other: NullableOrUndefined<Iterable<T>> | NullableOrUndefined<ReadonlySetLike<T>>): this {
-    const result = MutableHashSet.of<T>(
+    const result = MutableLinkedHashSet.of<T>(
       this.hash,
       this.equals,
       this
@@ -447,35 +450,7 @@ export class MutableHashSet<T> implements MutableSet<T> {
 
 
   values(): IterableIterator<T> {
-    const valuesWithSameHash = this.hashTable.values();
-    let currentBucket: T[] | undefined;
-    let index = 0;
-
-    return {
-      [Symbol.iterator]() {
-        return this;
-      },
-
-      next(): IteratorResult<T> {
-        while (true) {
-          if (currentBucket !== undefined && index < currentBucket.length) {
-            return {
-              value: currentBucket[index++],
-              done: false
-            };
-          }
-          const nextBucket = valuesWithSameHash.next();
-          if (nextBucket.done) {
-            return {
-              value: undefined as any,
-              done: true
-            };
-          }
-          currentBucket = nextBucket.value;
-          index = 0;
-        }
-      }
-    };
+    return this.order[Symbol.iterator]();
   }
 
 }
