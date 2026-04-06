@@ -423,7 +423,7 @@ export class MutableLinkedHashSet<T> implements MutableSet<T> {
 
 
   toArray(): T[] {
-    return [...this.values()];
+    return [...this.order];
   }
 
 

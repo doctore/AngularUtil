@@ -717,13 +717,15 @@ export class SetUtil {
     if (this.isEmpty(sourceSet)) {
       return [];
     }
-    const clonedSourceSetAsArray = [...sourceSet!.values()];
+    const clonedSourceSetAsArray = SetUtil.toArray(
+      sourceSet
+    );
     return comparator
-      ? clonedSourceSetAsArray!.sort(
+      ? clonedSourceSetAsArray.sort(
           Comparator.of(comparator)
             .getComparator()
         )
-      : clonedSourceSetAsArray!.sort();
+      : clonedSourceSetAsArray.sort();
   }
 
 

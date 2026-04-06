@@ -464,7 +464,7 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
 
 
   toArray(): T[] {
-    return [...this.values()];
+    return [...this.order];
   }
 
 
