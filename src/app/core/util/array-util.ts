@@ -158,7 +158,7 @@ export class ArrayUtil {
   /**
    *    Searches the specified `sourceArray` for the specified `itemToSearch` using the binary search algorithm.
    * Prior to making this call, `sourceArray` must be sorted into ascending order according to the specified
-   * {@link Comparator} or the implementation of {@link Comparable} interface.
+   * {@link Comparator}.
    * <p>
    *    If `sourceArray` contains multiple elements equal to the specified `itemToSearch`, there is no guarantee which
    * one will be found.
