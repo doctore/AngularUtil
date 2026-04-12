@@ -1,6 +1,6 @@
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
 import { NullableOrUndefined } from '@app-core/type';
-import { Comparator, FComparator } from '@app-core/type/comparator';
+import { Comparable, Comparator, FComparator } from '@app-core/type/comparator';
 import { FFunction1, FFunction2, Function1, Function2, PartialFunction } from '@app-core/type/function';
 import { BinaryOperator, FBinaryOperator } from '@app-core/type/function/operator';
 import { FPredicate1, FPredicate2, Predicate1, Predicate2 } from '@app-core/type/predicate';
@@ -113,6 +113,301 @@ describe('ArrayUtil', () => {
       verifyArrays(
         ArrayUtil.applyOrElse(sourceArray, plus1Raw, multiply2Raw, isOddRaw),
         expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('binarySearch', () => {
+
+    it('when sourceArray is null, undefined or empty then the tuple [false, 0] is returned', () => {
+      const user = new User(1, 'user1');
+      const role = { id: 1, name: 'role1' } as Role;
+
+      const expectedResult: [boolean, number] = [false, 0];
+
+      expect(
+        ArrayUtil.binarySearch(
+          undefined,
+          // @ts-ignore
+          undefined
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          null,
+          // @ts-ignore
+          null
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          [],
+          // @ts-ignore
+          null
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          undefined,
+          user
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          null,
+          user
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          [],
+          user
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          undefined,
+          role,
+          roleAscRawComparator
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          null,
+          role,
+          roleAscRawComparator
+        )
+      ).toEqual(
+        expectedResult
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          [],
+          role,
+          roleDescFComparator
+        )
+      ).toEqual(
+        expectedResult
+      );
+    });
+
+
+    it('when sourceArray is not empty and itemToSearch implement Comparable but it does not exists in sourceArray, then the tuple [false, index that it should be inserted] is returned', () => {
+      // @ts-ignore
+      const emptyUser = new User(null, null);
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+      const u4 = new User(4, 'user4');
+
+      const orderedArray: User[] = [
+        u1,
+        u3
+      ];
+
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          // @ts-ignore
+          undefined
+        )
+      ).toEqual(
+        [false, 0]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          // @ts-ignore
+          null
+        )
+      ).toEqual(
+        [false, 0]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          emptyUser
+        )
+      ).toEqual(
+        [false, 0]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          u2
+        )
+      ).toEqual(
+        [false, 1]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          u4
+        )
+      ).toEqual(
+        [false, 2]
+      );
+    });
+
+
+    it('when sourceArray is not empty and itemToSearch does not implements Comparable but it does not exists in sourceArray, then the tuple [false, index that it should be inserted] is returned', () => {
+      // @ts-ignore
+      const emptyRole = { id: null, name: null } as Role;
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+      const r4 = { id: 4, name: 'role4' } as Role;
+
+      const orderedArray: Role[] = [
+        r3,
+        r1
+      ];
+
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          emptyRole,
+          roleDescFComparator
+        )
+      ).toEqual(
+        [false, 2]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          r2,
+          roleDescFComparator
+        )
+      ).toEqual(
+        [false, 1]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          r4,
+          roleDescFComparator
+        )
+      ).toEqual(
+        [false, 0]
+      );
+    });
+
+
+    it('when sourceArray is not empty and itemToSearch implement Comparable and it exists in sourceArray, then the tuple [true, index of its position] is returned', () => {
+      // @ts-ignore
+      const emptyUser = new User(null, null);
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const orderedArray: User[] = [
+        emptyUser,
+        u1,
+        u2,
+        u3
+      ];
+
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          emptyUser
+        )
+      ).toEqual(
+        [true, 0]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          u1
+        )
+      ).toEqual(
+        [true, 1]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          u2
+        )
+      ).toEqual(
+        [true, 2]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          u3
+        )
+      ).toEqual(
+        [true, 3]
+      );
+    });
+
+
+    it('when sourceArray is not empty and itemToSearch does not implements Comparable and it exists in sourceArray, then the tuple [true, index of its position] is returned', () => {
+      // @ts-ignore
+      const emptyRole = { id: null, name: null } as Role;
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const orderedArray: Role[] = [
+        r3,
+        r2,
+        r1,
+        emptyRole
+      ];
+
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          emptyRole,
+          roleDescFComparator
+        )
+      ).toEqual(
+        [true, 3]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          r1,
+          roleDescFComparator
+        )
+      ).toEqual(
+        [true, 2]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          r2,
+          roleDescFComparator
+        )
+      ).toEqual(
+        [true, 1]
+      );
+      expect(
+        ArrayUtil.binarySearch(
+          orderedArray,
+          r3,
+          roleDescFComparator
+        )
+      ).toEqual(
+        [true, 0]
       );
     });
 
@@ -2268,11 +2563,8 @@ describe('ArrayUtil', () => {
       const r2 = { id: 2, name: 'role2' } as Role;
       const r3 = { id: 3, name: 'role3' } as Role;
 
-      const comparator =
-        (r1: Role, r2: Role) => r1.id - r2.id;
-
       verifyArrays(
-        ArrayUtil.sort([ r1, r3, r2 ], comparator),
+        ArrayUtil.sort([ r1, r3, r2 ], roleAscRawComparator),
         [ r1, r2, r3 ]
       );
     });
@@ -2283,11 +2575,8 @@ describe('ArrayUtil', () => {
       const u2 = new User(2, 'user2');
       const u3 = new User(3, 'user3');
 
-      const comparator: FComparator<User> =
-        (u1: User, u2: User) => u2.id - u1.id;
-
       verifyArrays(
-        ArrayUtil.sort([ u3, u1, u2 ], comparator),
+        ArrayUtil.sort([ u3, u1, u2 ], userDescFComparator),
         [ u3, u2, u1 ]
       );
     });
@@ -2841,7 +3130,7 @@ describe('ArrayUtil', () => {
 
 
 // Used only for testing purpose
-class User {
+class User implements Comparable<User> {
   private _id: number;
   private _name: string;
 
@@ -2864,10 +3153,27 @@ class User {
     this._name = name;
   }
 
+  compareTo(other: User): number {
+    if (ObjectUtil.isNullOrUndefined(other)) {
+      return 1;
+    }
+    if (!this.id && !other.id) {
+      return 0;
+    }
+    if (!this.id) {
+      return -1;
+    }
+    if (!other.id) {
+      return 1;
+    }
+    return this.id - other.id;
+  }
+
   equals = (other?: User | null): boolean =>
     ObjectUtil.isNullOrUndefined(other)
       ? false
       : this.id === other.id;
+
 }
 
 
@@ -3069,6 +3375,13 @@ const plus1Raw =
   (n: number) =>
     1 + n;
 
+const roleAscRawComparator =
+  (r1: Role, r2: Role) => r1.id - r2.id;
+
+const roleDescFComparator: FComparator<Role> =
+  (r1: Role, r2: Role) => r2.id - r1.id;
+
+
 const sameNumberRaw =
   (n: number) =>
     n;
@@ -3088,3 +3401,6 @@ const sumValuesBinaryOperator: BinaryOperator<number> =
        n2: number) =>
         n1 + n2
     );
+
+const userDescFComparator: FComparator<User> =
+  (u1: User, u2: User) => u2.id - u1.id;

@@ -1,4 +1,6 @@
 import { AssertUtil, ObjectUtil } from '@app-core/util';
+import { Comparable } from '@app-core/type/comparator';
+import {NullableOrUndefined} from '@app-core/type';
 
 /**
  * Union type of {@link FComparator} and {@link Comparator}
@@ -62,16 +64,49 @@ export class Comparator<T> {
   /**
    * Returns a null-undefined-friendly {@link Comparator} that considers `null` and `undefined` to be less than `non-null`.
    *
+   * @return {@link Comparator} that considers `null` and `undefined` the smallest values
+   *
    * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static nullOrUndefinedFirst = <T>(func: TComparator<T>): Comparator<T> =>
     new Comparator<T>((a: T, b: T) => {
-      const finalComparator = Comparator.of(func);
+      const finalComparator = Comparator.of(
+        func
+      );
+      const isANullOrUndefined = ObjectUtil.isNullOrUndefined(
+        a
+      );
+      const isBNullOrUndefined = ObjectUtil.isNullOrUndefined(
+        b
+      );
+      if (!isANullOrUndefined && !isBNullOrUndefined) {
+        return finalComparator.compare(
+          a,
+          b
+        );
+      }
+      return isANullOrUndefined
+        ? isBNullOrUndefined
+          ? 0
+          : -1
+        : 1;
+    });
+
+
+  /**
+   *    Returns a null-undefined-friendly {@link Comparator} that considers `null` and `undefined` to be less than `non-null`,
+   * based on provided elements which class implements the {@link Comparable} interface.
+   *
+   * @return {@link Comparator} that considers `null` and `undefined` the smallest values
+   */
+  static nullOrUndefinedFirstOfComparable = <T extends Comparable<T>>(): Comparator<NullableOrUndefined<T>> =>
+    new Comparator<NullableOrUndefined<T>>((a: NullableOrUndefined<T>, b: NullableOrUndefined<T>) => {
       const isANullOrUndefined = ObjectUtil.isNullOrUndefined(a);
       const isBNullOrUndefined = ObjectUtil.isNullOrUndefined(b);
-
       if (!isANullOrUndefined && !isBNullOrUndefined) {
-        return finalComparator.compare(a, b);
+        return a.compareTo(
+          b
+        );
       }
       return isANullOrUndefined
         ? isBNullOrUndefined
@@ -84,16 +119,51 @@ export class Comparator<T> {
   /**
    * Returns a null-undefined-friendly {@link Comparator} that considers `null` and `undefined` to be greater than `non-null`.
    *
+   * @return {@link Comparator} that considers `null` and `undefined` the greatest values
+   *
    * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
    */
   static nullOrUndefinedLast = <T>(func: TComparator<T>): Comparator<T> =>
     new Comparator<T>((a: T, b: T) => {
-      const finalComparator = Comparator.of(func);
+      const finalComparator = Comparator.of(
+        func
+      );
+      const isANullOrUndefined = ObjectUtil.isNullOrUndefined(
+        a
+      );
+      const isBNullOrUndefined = ObjectUtil.isNullOrUndefined(
+        b
+      );
+      if (!isANullOrUndefined && !isBNullOrUndefined) {
+        return finalComparator.compare(
+          a,
+          b
+        );
+      }
+      return isANullOrUndefined
+        ? isBNullOrUndefined
+          ? 0
+          : 1
+        : -1;
+    });
+
+
+  /**
+   *    Returns a null-undefined-friendly {@link Comparator} that considers `null` and `undefined` to be greater than `non-null`,
+   * based on provided elements which class implements the {@link Comparable} interface.
+   *
+   * @return {@link Comparator} that considers `null` and `undefined` the greatest values
+   *
+   * @throws {IllegalArgumentError} if `func` is `null` or `undefined`
+   */
+  static nullOrUndefinedLastOfComparable = <T extends Comparable<T>>(): Comparator<NullableOrUndefined<T>> =>
+    new Comparator<NullableOrUndefined<T>>((a: NullableOrUndefined<T>, b: NullableOrUndefined<T>) => {
       const isANullOrUndefined = ObjectUtil.isNullOrUndefined(a);
       const isBNullOrUndefined = ObjectUtil.isNullOrUndefined(b);
-
       if (!isANullOrUndefined && !isBNullOrUndefined) {
-        return finalComparator.compare(a, b);
+        return a.compareTo(
+          b
+        );
       }
       return isANullOrUndefined
         ? isBNullOrUndefined

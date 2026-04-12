@@ -1,7 +1,8 @@
-import { Comparator, FComparator, isFComparator } from '@app-core/type/comparator';
+import { Comparable, Comparator, FComparator, isFComparator } from '@app-core/type/comparator';
 import { NullableOrUndefined } from '@app-core/type';
 import { Function3 } from '@app-core/type/function';
 import { IllegalArgumentError } from '@app-core/error';
+import { ObjectUtil } from '@app-core/util';
 
 /**
  * To invoke only this test:
@@ -76,6 +77,47 @@ describe('Comparator', () => {
 
 
 
+  describe('nullOrUndefinedFirstOfComparable', () => {
+
+    it('when both parameters are null or undefined then 0 will be returned', () => {
+      const comparator: Comparator<NullableOrUndefined<User>> =
+        Comparator.nullOrUndefinedFirstOfComparable<User>();
+
+      expect(comparator.compare(null, null)).toEqual(0);
+      expect(comparator.compare(null, undefined)).toEqual(0);
+      expect(comparator.compare(undefined, null)).toEqual(0);
+      expect(comparator.compare(undefined, undefined)).toEqual(0);
+    });
+
+
+    it('when one of the parameters is null or undefined then it will be less than the other one', () => {
+      const user = new User(1, 'user1');
+      const comparator: Comparator<NullableOrUndefined<User>> =
+        Comparator.nullOrUndefinedFirstOfComparable<User>();
+
+      expect(comparator.compare(null, user)).toEqual(-1);
+      expect(comparator.compare(undefined, user)).toEqual(-1);
+
+      expect(comparator.compare(user, null)).toEqual(1);
+      expect(comparator.compare(user, undefined)).toEqual(1);
+    });
+
+
+    it('when no one of the parameters is null or undefined then expected comparison result is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const comparator: Comparator<NullableOrUndefined<User>> =
+        Comparator.nullOrUndefinedFirstOfComparable<User>();
+
+      expect(comparator.compare(u1, u1)).toEqual(0);
+      expect(comparator.compare(u1, u2)).toBeLessThan(0);
+      expect(comparator.compare(u2, u1)).toBeGreaterThan(0);
+    });
+
+  });
+
+
+
   describe('nullOrUndefinedLast', () => {
 
     it('when both parameters are null or undefined then 0 will be returned', () => {
@@ -109,6 +151,47 @@ describe('Comparator', () => {
       expect(comparator.compare(11, 11)).toEqual(0);
       expect(comparator.compare(-4, 19)).toBeLessThan(0);
       expect(comparator.compare(22, -6)).toBeGreaterThan(0);
+    });
+
+  });
+
+
+
+  describe('nullOrUndefinedLastOfComparable', () => {
+
+    it('when both parameters are null or undefined then 0 will be returned', () => {
+      const comparator: Comparator<NullableOrUndefined<User>> =
+        Comparator.nullOrUndefinedLastOfComparable<User>();
+
+      expect(comparator.compare(null, null)).toEqual(0);
+      expect(comparator.compare(null, undefined)).toEqual(0);
+      expect(comparator.compare(undefined, null)).toEqual(0);
+      expect(comparator.compare(undefined, undefined)).toEqual(0);
+    });
+
+
+    it('when one of the parameters is null or undefined then it will be greater than the other one', () => {
+      const user = new User(1, 'user1');
+      const comparator: Comparator<NullableOrUndefined<User>> =
+        Comparator.nullOrUndefinedLastOfComparable<User>();
+
+      expect(comparator.compare(null, user)).toEqual(1);
+      expect(comparator.compare(undefined, user)).toEqual(1);
+
+      expect(comparator.compare(user, null)).toEqual(-1);
+      expect(comparator.compare(user, undefined)).toEqual(-1);
+    });
+
+
+    it('when no one of the parameters is null or undefined then expected comparison result is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const comparator: Comparator<NullableOrUndefined<User>> =
+        Comparator.nullOrUndefinedLastOfComparable<User>();
+
+      expect(comparator.compare(u1, u1)).toEqual(0);
+      expect(comparator.compare(u1, u2)).toBeLessThan(0);
+      expect(comparator.compare(u2, u1)).toBeGreaterThan(0);
     });
 
   });
@@ -238,3 +321,52 @@ describe('Comparator', () => {
   });
 
 });
+
+
+
+// Used only for testing purpose
+class User implements Comparable<User> {
+  private _id: number;
+  private _name: string;
+
+  constructor(id: number, name: string) {
+    this._id = id;
+    this._name = name;
+  }
+
+  get id(): number {
+    return this._id;
+  }
+  set id(id: number) {
+    this._id = id;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+  set name(name: string) {
+    this._name = name;
+  }
+
+  compareTo(other: User): number {
+    if (ObjectUtil.isNullOrUndefined(other)) {
+      return 1;
+    }
+    if (!this.id && !other.id) {
+      return 0;
+    }
+    if (!this.id) {
+      return -1;
+    }
+    if (!other.id) {
+      return 1;
+    }
+    return this.id - other.id;
+  }
+
+  equals = (other?: User | null): boolean =>
+    ObjectUtil.isNullOrUndefined(other)
+      ? false
+      : this.id === other.id;
+
+}

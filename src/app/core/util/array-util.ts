@@ -1,4 +1,4 @@
-import { Comparator, TComparator } from '@app-core/type/comparator';
+import { Comparable, Comparator, TComparator } from '@app-core/type/comparator';
 import {
   FFunction1,
   FFunction2,
@@ -130,6 +130,112 @@ export class ArrayUtil {
       }
     }
     return result;
+  }
+
+
+  /**
+   *    Searches the specified `sourceArray` for the specified `itemToSearch` using the binary search algorithm.
+   * Prior to making this call, `sourceArray` must be sorted into ascending order according to the developed
+   * {@link Comparable} inside the instances of `T` class prior to making this call.
+   * <p>
+   *    If `sourceArray` contains multiple elements equal to the specified `itemToSearch`, there is no guarantee which
+   * one will be found.
+   *
+   * @param sourceArray
+   *    The array to be searched
+   * @param itemToSearch
+   *    The value to be searched for
+   *
+   * @return if `itemToSearch` is contained in `sourceArray` a Tuple with `true` as first element and the index of
+   *         `itemToSearch` as second one. Otherwise, a Tuple with `false` as first element and inside the second one,
+   *         the index of the first element greater than `sourceArray`, that is, the position inside `sourceArray`
+   *         on which `itemToSearch` should be inserted
+   */
+  static binarySearch<T extends Comparable<T>>(sourceArray: NullableOrUndefined<T[]>,
+                                               itemToSearch: T): [boolean, number];
+
+
+  /**
+   *    Searches the specified `sourceArray` for the specified `itemToSearch` using the binary search algorithm.
+   * Prior to making this call, `sourceArray` must be sorted into ascending order according to the specified
+   * {@link Comparator} or the implementation of {@link Comparable} interface.
+   * <p>
+   *    If `sourceArray` contains multiple elements equal to the specified `itemToSearch`, there is no guarantee which
+   * one will be found.
+   *
+   * @param sourceArray
+   *    The array to be searched
+   * @param itemToSearch
+   *    The value to be searched for
+   * @param comparator
+   *    When provided, the {@link Comparator} by which `sourceArray` is ordered.
+   *
+   * @return if `itemToSearch` is contained in `sourceArray` a Tuple with `true` as first element and the index of
+   *         `itemToSearch` as second one. Otherwise, a Tuple with `false` as first element and inside the second one,
+   *         the index of the first element greater than `sourceArray`, that is, the position inside `sourceArray`
+   *         on which `itemToSearch` should be inserted
+   */
+  static binarySearch<T>(sourceArray: NullableOrUndefined<T[]>,
+                         itemToSearch: T,
+                         comparator: TComparator<T>): [boolean, number];
+
+
+  static binarySearch<T>(sourceArray: NullableOrUndefined<T[]>,
+                         itemToSearch: T,
+                         comparator?: TComparator<T>): [boolean, number] {
+    if (ArrayUtil.isEmpty(sourceArray)) {
+      return [
+        false,
+        0
+      ];
+    }
+    const finalComparator = comparator
+      ? Comparator.of<T>(
+          comparator
+        )
+      : undefined;
+
+    let low = 0;
+    let high = sourceArray!.length - 1;
+    while (low <= high) {
+      const mid = (low + high) >>> 1;
+      const midVal = sourceArray![mid];
+      let cmp;
+      if (finalComparator) {
+        cmp = finalComparator.compare(
+          midVal,
+          itemToSearch
+        );
+      }
+      else {
+        cmp = ObjectUtil.nonNullOrUndefined(midVal)
+          ? (midVal as unknown as Comparable<T>).compareTo(
+              itemToSearch
+            )
+          : ObjectUtil.isNullOrUndefined(itemToSearch)
+             ? 0
+             : 1;
+      }
+      if (cmp < 0) {
+        low = mid + 1;
+      }
+      else if (cmp > 0) {
+        high = mid - 1;
+      }
+      else {
+        // itemToSearch found
+        return [
+          true,
+          mid
+        ];
+      }
+
+    }
+    // itemToSearch not found
+    return [
+      false,
+      low
+    ];
   }
 
 
