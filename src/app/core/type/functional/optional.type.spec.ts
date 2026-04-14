@@ -389,6 +389,34 @@ describe('Optional', () => {
 
 
 
+  describe('getOrNull', () => {
+
+    it('when the Optional is empty then null is returned', () => {
+      const getOrNullEmptyResult = Optional.empty().getOrNull();
+      const getOrNullOfUndefinedResult = Optional.ofNullable(undefined).getOrNull();
+      const getOrNullOfNullableResult = Optional.ofNullable(null).getOrNull();
+
+      expect(getOrNullEmptyResult).toBeNull();
+      expect(getOrNullOfUndefinedResult).toBeNull();
+      expect(getOrNullOfNullableResult).toBeNull();
+    });
+
+
+    it('when the Optional is not empty then the internal value is returned', () => {
+      const intValue = 11;
+      const stringValue = 'abd';
+
+      const getOrNullIntResult = Optional.of(intValue).getOrNull();
+      const getOrNullStringResult = Optional.ofNullable(stringValue).getOrNull();
+
+      expect(getOrNullIntResult).toEqual(intValue);
+      expect(getOrNullStringResult).toEqual(stringValue);
+    });
+
+  });
+
+
+
   describe('ifPresent', () => {
 
     it('when the Optional is empty then action is not invoked', () => {

@@ -232,6 +232,18 @@ export class Optional<T> {
 
 
   /**
+   *    Returns the {@link Optional}'s value if it is non-empty, `null` otherwise. Although the use of `null` is discouraged,
+   * code written to use {@link Optional} must often interface with code that expects and returns `null`.
+   *
+   * @return the {@link Optional}'s value if non-`null`, otherwise `null`
+   */
+  getOrNull = (): Nullable<T> =>
+    this.isPresent()
+      ? this.value
+      : null;
+
+
+  /**
    *    If the {@link Optional} is non-empty, performs the given {@link TConsumer1} using internal value
    * as input parameter, does nothing otherwise.
    *

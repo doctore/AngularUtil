@@ -229,7 +229,6 @@ export class ArrayUtil {
           mid
         ];
       }
-
     }
     // itemToSearch not found
     return [
