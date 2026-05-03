@@ -69,6 +69,7 @@ There are new collections used to store, search, sort and organize data more eas
 
 * [ArrayUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/array-util.ts)
 * [AssertUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/assert-util.ts)
+* [EnumUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/enum-util.ts)
 * [JsonUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/json-util.ts)
 * [MapUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/map-util.ts)
 * [NumberUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/number-util.ts)

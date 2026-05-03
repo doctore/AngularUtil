@@ -22,7 +22,9 @@ export type EqualityFunction<T> = FPredicate2<T, T>;
  * without external hash/equals functions, values implementing this interface will use these methods instead.
  *
  * @see MutableHashSet
+ * @see MutableLinkedHashSet
  * @see ImmutableHashSet
+ * @see ImmutableLinkedHashSet
  */
 export interface Hashable {
 

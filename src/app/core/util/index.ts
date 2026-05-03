@@ -1,5 +1,6 @@
 export * from './array-util';
 export * from './assert-util';
+export * from './enum-util';
 export * from './json-util';
 export * from './map-util';
 export * from './number-util';
