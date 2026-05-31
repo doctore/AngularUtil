@@ -11,7 +11,7 @@ import {
 import { BinaryOperator, FBinaryOperator, isFBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
 import { Optional } from '@app-core/type/functional';
 import { Predicate1, Predicate2, TPredicate1, TPredicate2 } from '@app-core/type/predicate';
-import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/type';
+import { Nullable, NullableOrUndefined, OrUndefined, UnzipTuple, ZipTuple } from '@app-core/type';
 import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import _ from 'lodash';
 
@@ -2428,6 +2428,84 @@ export class ArrayUtil {
         },
         new Map<string, T>()
       ).values()
+    );
+  }
+
+
+  /**
+   *    Converts given `sourceArrays` into another matrix by joining the elements of the same position up to the
+   * minimum length of the arrays contained in `sourceArrays`.
+   *
+   * @apiNote
+   *    Provided `sourceArrays` must be a matrix, that is, a two-dimensional array of NxM elements.
+   *
+   * <pre>
+   *    unzip(                                      Result:
+   *       [['d', 6], ['h', 7], ['y', 11]]           [ ['d', 'h', 'y'], [6, 7, 11] ]
+   *    )
+   * </pre>
+   *
+   * @param sourceArrays
+   *    Matrix with the elements to join based on their position
+   *
+   * @return matrix containing internal elements of `sourceArrays` based on their position
+   */
+  static unzip = <T extends unknown[]>(sourceArrays: NullableOrUndefined<T>[]): UnzipTuple<T> => {
+    if (this.isEmpty(sourceArrays)) {
+      return [] as unknown as UnzipTuple<T>;
+    }
+    const result = sourceArrays[0]!
+      .map(() =>
+        []
+      ) as UnzipTuple<T>;
+
+    for (const currentArray of sourceArrays) {
+      currentArray!.forEach((value, i) => {
+        result[i].push(value);
+      });
+    }
+    return result;
+  }
+
+
+  /**
+   *    Converts given `sourceArrays` into a matrix where the first element in each passed array is paired together,
+   * and then the second element in each passed array are paired together, etc. up to the minimum length of `sourceArrays`.
+   *
+   * <pre>
+   *    zip(                           Result:
+   *       ['d', 'h', 'y'],             [['d', 6], ['h', 7], ['y', 11]]
+   *       [6, 7, 11]
+   *    )
+   *    zip(                           Result:
+   *       [4, 9, 14],                  [[4, 23], [9, 8]]
+   *       [23, 8]
+   *    )
+   * </pre>
+   *
+   * @param sourceArrays
+   *    Arrays with the elements to join based on their position
+   *
+   * @return matrix containing elements of `sourceArrays` based on their position
+   */
+  static zip = <T extends unknown[]>(...sourceArrays: NullableOrUndefined<T>[]): ZipTuple<T>[] => {
+    if (this.isEmpty(sourceArrays) ||
+      (1 == sourceArrays.length && !sourceArrays[0])) {
+      return [];
+    }
+    const length = Math.min(
+      ...sourceArrays
+        .map(a =>
+          a!.length
+        )
+    );
+    return Array.from(
+      { length },
+      (_, i) =>
+        sourceArrays
+          .map(a =>
+            a![i]
+          ) as ZipTuple<T>
     );
   }
 

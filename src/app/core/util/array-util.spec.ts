@@ -2935,6 +2935,7 @@ describe('ArrayUtil', () => {
   });
 
 
+
   describe('uniqueByProperties', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
@@ -3125,6 +3126,80 @@ describe('ArrayUtil', () => {
 
   });
 
+
+
+  describe('unzip', () => {
+
+    it('when given sourceArrays has no elements then empty array is returned', () => {
+      // @ts-ignore
+      expect(ArrayUtil.unzip(null)).toEqual([]);
+      // @ts-ignore
+      expect(ArrayUtil.unzip(undefined)).toEqual([]);
+      expect(ArrayUtil.unzip([])).toEqual([]);
+    });
+
+
+    it('when given sourceArrays has elements then unzipped array is returned', () => {
+      const sourceArrays1 = [
+        [1],
+        [2]
+      ];
+      const sourceArrays2 = [
+        [1, "a", true],
+        [2, "b", false]
+      ];
+
+      const expectedResult1 = [ [1, 2] ];
+      const expectedResult2 = [ [1, 2], ["a", "b"], [true, false] ];
+
+      verifyMatrix(
+        ArrayUtil.unzip(sourceArrays1),
+        expectedResult1
+      );
+      verifyMatrix(
+        ArrayUtil.unzip(sourceArrays2),
+        expectedResult2
+      );
+    });
+
+  });
+
+
+
+  describe('zip', () => {
+
+    it('when given sourceArrays has no elements then empty array is returned', () => {
+      expect(ArrayUtil.zip(null)).toEqual([]);
+      expect(ArrayUtil.zip(undefined)).toEqual([]);
+      expect(ArrayUtil.zip([])).toEqual([]);
+    });
+
+
+    it('when given sourceArrays has elements of different length then zipped array is returned based on the minimum length of sourceArrays', () => {
+      verifyMatrix(
+        ArrayUtil.zip([1, 2, 3], [true, false]),
+        [ [1, true], [2, false] ]
+      );
+      verifyMatrix(
+        ArrayUtil.zip([1, 2, 3], ["a", "b", "c"], [true, false]),
+        [ [1, "a", true], [2, "b", false] ]
+      );
+    });
+
+
+    it('when given sourceArrays has elements of the same length then zipped array is returned', () => {
+      verifyMatrix(
+        ArrayUtil.zip([1, 2, 3], ["a", "b", "c"]),
+        [ [1, "a"], [2, "b"], [3, "c"] ]
+      );
+      verifyMatrix(
+        ArrayUtil.zip([1, 2], ["a", "b"], [true, false]),
+        [ [1, "a", true], [2, "b", false] ]
+      );
+    });
+
+  });
+
 });
 
 
@@ -3199,15 +3274,10 @@ function verifyMatrix(actualMatrix: unknown[][],
   expect(expectedMatrix.length).toEqual(actualMatrix.length);
   if (0 < expectedMatrix.length) {
     for (let i = 0; i < expectedMatrix.length; i++) {
-      const currentActualArray = actualMatrix[i],
-            currentExpectedArray = expectedMatrix[i];
-
-      expect(currentExpectedArray.length).toEqual(currentActualArray.length);
-      if (0 < currentExpectedArray.length) {
-        for (let j = 0; j < currentExpectedArray.length; j++) {
-          expect(currentExpectedArray[j]).toEqual(currentActualArray[j]);
-        }
-      }
+      verifyArrays(
+        actualMatrix[i],
+        expectedMatrix[i]
+      );
     }
   }
 }
