@@ -9,7 +9,7 @@ export type TComparator<T> = FComparator<T> | Comparator<T>;
 
 
 /**
- * Represents the function approach of a function that accepts two arguments of the same type and returns a `number` value.
+ * Arrow function that accepts two arguments of the same type and returns a `number` value.
  *
  * @typeParam<T>
  *   Type of the inputs of {@link FComparator}
