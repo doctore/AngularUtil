@@ -78,6 +78,82 @@ describe('ObjectUtil', () => {
 
 
 
+  describe('compare', () => {
+
+    it('when both values are null or undefined then 0 is returned', () => {
+      expect(ObjectUtil.compare(undefined, undefined)).toBe(0);
+      expect(ObjectUtil.compare(null, null)).toBe(0);
+    });
+
+
+    it('when one value is null and the other is undefined then 0 is returned', () => {
+      expect(ObjectUtil.compare(null, undefined)).toBe(0);
+      expect(ObjectUtil.compare(undefined, null)).toBe(0);
+    });
+
+
+    it('when comparing native values then expected result is returned', () => {
+      expect(ObjectUtil.compare(1, 2)).toBe(-1);
+      expect(ObjectUtil.compare(2, 1)).toBe(1);
+      expect(ObjectUtil.compare(1, 1)).toBe(0);
+
+      expect(ObjectUtil.compare('1', '2')).toBe(-1);
+      expect(ObjectUtil.compare('2', '1')).toBe(1);
+      expect(ObjectUtil.compare('1', '1')).toBe(0);
+
+      expect(ObjectUtil.compare(true, false)).toBe(1);
+      expect(ObjectUtil.compare(false, true)).toBe(-1);
+      expect(ObjectUtil.compare(true, true)).toBe(0);
+      expect(ObjectUtil.compare(false, false)).toBe(0);
+
+      expect(ObjectUtil.compare(new Date("2026-06-22T14:30:00Z"), new Date("2026-06-20T10:30:00Z"))).toBe(187200000);
+      expect(ObjectUtil.compare(new Date("2026-06-20T10:30:00Z"), new Date("2026-06-22T14:30:00Z"))).toBe(-187200000);
+      expect(ObjectUtil.compare(new Date("2026-06-22T14:30:00Z"), new Date("2026-06-22T14:30:00Z"))).toBe(0);
+    });
+
+
+    it('when comparing arrays then expected result is returned', () => {
+      expect(ObjectUtil.compare([1, 2], [2, 1])).toBe(-1);
+      expect(ObjectUtil.compare([2, 1], [1, 2])).toBe(1);
+      expect(ObjectUtil.compare([1, 5, 7, 9], [1, 5, 7, 9])).toBe(0);
+
+      expect(ObjectUtil.compare(['1', '2'], ['2', '1'])).toBe(-1);
+      expect(ObjectUtil.compare(['2', '1'], ['1', '2'])).toBe(1);
+      expect(ObjectUtil.compare(['1', '5', '7', '9'], ['1', '5', '7', '9'])).toBe(0);
+    });
+
+
+    it('when comparing objects with compareTo method then the result of such method is returned', () => {
+      const role = { id: 10, name: 'role name' } as Role;
+
+      const user1 = new User(10, 'user1', [role]);
+      const user2 = new User(11, 'user2', [role]);
+      const user3 = new User(10, 'user3', [role]);
+
+      expect(ObjectUtil.compare(user1, user2)).toBe(-1);
+      expect(ObjectUtil.compare(user2, user1)).toBe(1);
+
+      expect(ObjectUtil.compare(user1, user3)).toBe(0);
+      expect(ObjectUtil.compare(user3, user1)).toBe(0);
+    });
+
+
+    it('when comparing objects without compareTo method then verifies their equivalence based on their own', () => {
+      const role1 = { id: 10, name: 'name1' } as Role;
+      const role2 = { id: 11, name: 'name2' } as Role;
+      const role3 = { id: 10, name: 'name1' } as Role;
+
+      expect(ObjectUtil.compare(role1, role2)).toBe(-1);
+      expect(ObjectUtil.compare(role2, role1)).toBe(1);
+
+      expect(ObjectUtil.compare(role1, role3)).toBe(0);
+      expect(ObjectUtil.compare(role3, role1)).toBe(0);
+    });
+
+  });
+
+
+
   describe('containsFunction', () => {
 
     it('when given inputToVerify are null or undefined then false is returned', () => {
@@ -251,6 +327,7 @@ describe('ObjectUtil', () => {
       expect(ObjectUtil.equals(true, false)).toBe(false);
       expect(ObjectUtil.equals(false, true)).toBe(false);
       expect(ObjectUtil.equals(true, true)).toBe(true);
+      expect(ObjectUtil.equals(false, false)).toBe(true);
     });
 
 
@@ -527,6 +604,11 @@ class User {
 
   hash = (): number =>
     this.id;
+
+  compareTo = (other?: User | null): number =>
+    ObjectUtil.isNullOrUndefined(other)
+      ? 1
+      : this.id - other.id;
 
 }
 

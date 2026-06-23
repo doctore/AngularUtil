@@ -88,6 +88,105 @@ export class ObjectUtil {
 
 
   /**
+   *    Compares its two arguments for order. Returns a negative integer, zero, or a positive integer as `a` is less than,
+   * equal to, or greater than `b`. That is:
+   * <p>
+   *    Returned `number` specifies the order of provided parameters `(a, b)` and should verify the formula:
+   * <p>
+   *      > 0    sort `a` after `b`, e.g. [b, a]      (`b` is less than `a`)
+   * <p>
+   *      < 0    sort `a` before `b`, e.g. [a, b]     (`b` is greater than `a`)
+   * <p>
+   *        0    keep original order of `a` and `b`   (`b` is equals to `a`)
+   *
+   * @apiNote
+   *    Comparing {@link Object} objects tries to find if the instance has defined the `compareTo` method, using it
+   * if exists. Otherwise, are compared by their String representation.
+   *
+   * <pre>
+   * Example:
+   *
+   *   class User {
+   *     public id: number;
+   *     public name: string;
+   *
+   *     constructor(id: number, name: string) {
+   *       this.id = id;
+   *       this.name = name;
+   *     }
+   *
+   *     compareTo = (other?: User | null): number =>
+   *       ObjectUtil.isNullOrUndefined(other)
+   *         ? 1
+   *         : this.id - other.id;
+   *   }
+   *
+   *   // Will return 0
+   *   ObjectUtil.compare(
+   *      new User(10, 'user1'),
+   *      new User(10, 'user2')
+   *   );
+   *
+   *  // Will return -1
+   *  ObjectUtil.compare(
+   *      new User(10, 'user1'),
+   *      new User(11, 'user1')
+   *   );
+   * </pre>
+   *
+   * @param a
+   *    First value to be compared
+   * @param b
+   *    First value to be compared
+   *
+   * @return a negative integer, zero, or a positive integer as `a` is less than, equal to, or greater than `b`
+   *
+   * @throws {TypeError} if `a` does not define a `compareTo` function and there was an error getting the JSON representation
+   *         of `a` and/or `b`
+   */
+  static compare = <T>(a: NullableOrUndefined<T>,
+                       b: NullableOrUndefined<T>): number => {
+    if (a === b ||
+       (this.isNullOrUndefined(a) && (this.isNullOrUndefined(b)))) {
+      return 0;
+    }
+    if (this.isNullOrUndefined(a)) {
+      return -1;
+    }
+    if (this.isNullOrUndefined(b)) {
+      return 1;
+    }
+    if (typeof a === "number" && typeof b === "number") {
+      return a - b;
+    }
+    if (typeof a === "string" && typeof b === "string") {
+      return a.localeCompare(b);
+    }
+    if (typeof a === "boolean" && typeof b === "boolean") {
+      return Number(a) - Number(b);
+    }
+    if (a instanceof Date && b instanceof Date) {
+      return a.getTime() - b.getTime();
+    }
+    if (ObjectUtil.containsFunction(a, 'compareTo', 1)) {
+      // @ts-ignore
+      return a.compareTo(
+        b
+      );
+    }
+    const jsonOfA = JSON.stringify(
+      a
+    );
+    const jsonOfB = JSON.stringify(
+      b
+    );
+    return jsonOfA.localeCompare(
+      jsonOfB
+    );
+  }
+
+
+  /**
    *    Verifies if the given `inputToVerify` is an object that contains the function `functionToSearch` with
    * `numberOfParameters` of parameters.
    *
@@ -152,7 +251,7 @@ export class ObjectUtil {
    *    Array of the property to copy in the returned object
    *
    * @return new object containing the property-value pairs that match with `propertiesToCopy`, included in `sourceObject`,
-   *         `undefined` if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements.
+   *         `undefined` if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements
    */
   static copyProperties = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
                                                  propertiesToCopy: NullableOrUndefined<K[]>): OrUndefined<Pick<T, K>> => {
@@ -204,7 +303,7 @@ export class ObjectUtil {
    *    Array of the property to copy in the returned object
    *
    * @return {@link Optional} new object containing the property-value pairs that match with `propertiesToCopy`, included in `sourceObject`,
-   *         {@link Optional#empty} if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements.
+   *         {@link Optional#empty} if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements
    */
   static copyPropertiesOptional = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
                                                          propertiesToCopy: NullableOrUndefined<K[]>): Optional<Pick<T, K>> => {
@@ -275,7 +374,7 @@ export class ObjectUtil {
    *    First value to compare
    *
    * @return `true` if `a` is equals to `b`,
-   *         `false` otherwise.
+   *         `false` otherwise
    */
   static equals = <T>(a: NullableOrUndefined<T>,
                       b: NullableOrUndefined<T>): boolean => {
