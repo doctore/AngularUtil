@@ -8,7 +8,7 @@ export type TBinaryOperator<T> = FBinaryOperator<T> | BinaryOperator<T>;
 
 
 /**
- * Represents the function approach of a function that accepts two arguments and produces a result of the same type.
+ * Arrow function that accepts two arguments and produces a result of the same type.
  *
  * @typeParam<T>
  *   Type of the inputs and result of {@link FBinaryOperator}

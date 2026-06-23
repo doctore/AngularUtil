@@ -8,7 +8,7 @@ export type TUnaryOperator<T> = FUnaryOperator<T> | UnaryOperator<T>;
 
 
 /**
- * Represents the function approach of a function that accepts one argument and produces a result of the same type.
+ * Arrow function that accepts one argument and produces a result of the same type.
  *
  * @typeParam<T>
  *   Type of the input and result of {@link FUnaryOperator}
