@@ -7,7 +7,7 @@ export type TFunction0<R> = FFunction0<R> | Function0<R>;
 
 
 /**
- * Represents the function approach of a function that does not accept arguments and produces a result.
+ * Arrow function that does not accept arguments and produces a result.
  *
  * @typeParam <R>
  *   Type of the result of the {@link FFunction0}

@@ -7,7 +7,7 @@ export type TFunction1<T, R> = FFunction1<T, R> | Function1<T, R>;
 
 
 /**
- * Represents the function approach of a function that accepts one argument and produces a result.
+ * Arrow function that accepts one argument and produces a result.
  *
  * @typeParam<T>
  *   Type of the input to the {@link FFunction1}

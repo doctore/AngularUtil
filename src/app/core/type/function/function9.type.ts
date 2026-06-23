@@ -8,7 +8,7 @@ export type TFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> = FFunction9<T1, T
 
 
 /**
- * Represents the function approach of a function that accepts nine arguments and produces a result.
+ * Arrow function that accepts nine arguments and produces a result.
  *
  * @typeParam <T1>
  *   Type of the first input to the {@link FFunction9}

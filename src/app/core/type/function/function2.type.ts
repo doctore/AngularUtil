@@ -8,7 +8,7 @@ export type TFunction2<T1, T2, R> = FFunction2<T1, T2, R> | Function2<T1, T2, R>
 
 
 /**
- * Represents the function approach of a function that accepts two arguments and produces a result.
+ * Arrow function that accepts two arguments and produces a result.
  *
  * @typeParam <T1>
  *   Type of the first input to the {@link FFunction2}

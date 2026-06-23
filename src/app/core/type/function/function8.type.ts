@@ -8,7 +8,7 @@ export type TFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> = FFunction8<T1, T2, T
 
 
 /**
- * Represents the function approach of a function that accepts eight arguments and produces a result.
+ * Arrow function that accepts eight arguments and produces a result.
  *
  * @typeParam <T1>
  *   Type of the first input to the {@link FFunction8}
