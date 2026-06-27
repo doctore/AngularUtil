@@ -193,29 +193,19 @@ export class ArrayUtil {
       ? Comparator.of<T>(
           comparator
         )
-      : undefined;
+      : Comparator.of<T>(
+          ObjectUtil.compare
+        );
 
     let low = 0;
     let high = sourceArray!.length - 1;
     while (low <= high) {
       const mid = (low + high) >>> 1;
       const midVal = sourceArray![mid];
-      let cmp;
-      if (finalComparator) {
-        cmp = finalComparator.compare(
-          midVal,
-          itemToSearch
-        );
-      }
-      else {
-        cmp = ObjectUtil.nonNullOrUndefined(midVal)
-          ? (midVal as unknown as Comparable<T>).compareTo(
-              itemToSearch
-            )
-          : ObjectUtil.isNullOrUndefined(itemToSearch)
-             ? 0
-             : 1;
-      }
+      const cmp = finalComparator.compare(
+        midVal,
+        itemToSearch
+      );
       if (cmp < 0) {
         low = mid + 1;
       }
