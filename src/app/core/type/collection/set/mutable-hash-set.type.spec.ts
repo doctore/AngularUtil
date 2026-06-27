@@ -1119,6 +1119,58 @@ describe('MutableHashSet', () => {
 
 
 
+  describe('getEquals', () => {
+
+    it('then a EqualityFunction is returned', () => {
+      const role = { id: 1, name: 'role1' } as Role;
+
+      const setWithoutProvidedEquals = MutableHashSet.empty<number>(
+        hashNumber,
+        undefined
+      );
+      const setWithProvidedEquals = MutableHashSet.of<Role>(
+        hashRole,
+        areRolesEquals,
+        [ role ]
+      );
+
+      expect(setWithoutProvidedEquals.getEquals()).not.toBeUndefined();
+      expectTypeOf(setWithoutProvidedEquals.getEquals()).toEqualTypeOf<EqualityFunction<number>>();
+
+      expect(setWithProvidedEquals.getEquals()).not.toBeUndefined();
+      expectTypeOf(setWithProvidedEquals.getEquals()).toEqualTypeOf<EqualityFunction<Role>>();
+    });
+
+  });
+
+
+
+  describe('getHash', () => {
+
+    it('then a HashFunction is returned', () => {
+      const role = { id: 1, name: 'role1' } as Role;
+
+      const setWithoutProvidedHash = MutableHashSet.empty<number>(
+        hashNumber,
+        undefined
+      );
+      const setWithProvidedHash = MutableHashSet.of<Role>(
+        hashRole,
+        areRolesEquals,
+        [ role ]
+      );
+
+      expect(setWithoutProvidedHash.getHash()).not.toBeUndefined();
+      expectTypeOf(setWithoutProvidedHash.getHash()).toEqualTypeOf<HashFunction<number>>();
+
+      expect(setWithProvidedHash.getHash()).not.toBeUndefined();
+      expectTypeOf(setWithProvidedHash.getHash()).toEqualTypeOf<HashFunction<Role>>();
+    });
+
+  });
+
+
+
   describe('forEach', () => {
 
     it('when provided Set is empty then the function is not invoked', () => {
@@ -3287,7 +3339,7 @@ describe('MutableHashSet', () => {
     });
 
 
-    it('when provided Set is not empty then returns correct keys', () => {
+    it('when provided Set is not empty then returns correct values', () => {
       const n = 19;
       const r1 = { id: 1, name: 'role1' } as Role;
       const r2 = { id: 2, name: 'role2' } as Role;
@@ -3369,9 +3421,8 @@ class User implements Hashable {
       ? false
       : this._id === other.id;
 
-  hash(): number {
-    return this._id % 50;
-  }
+  hash = (): number =>
+    this._id % 50;
 
 }
 

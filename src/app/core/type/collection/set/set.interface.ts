@@ -68,8 +68,8 @@ export interface AbstractSet<T> extends ReadonlySetLike<T>, Disposable {
    * @param thisArg
    *    This {@link AbstractSet}
    */
-  forEach(callbackFn: (value: T, value2: T, set: AbstractSet<T>) => void,
-          thisArg?: any): void
+  forEach(callbackFn: (value: T, value2: T, set: this) => void,
+          thisArg?: unknown): void
 
 
   /**
@@ -156,14 +156,6 @@ export interface AbstractSet<T> extends ReadonlySetLike<T>, Disposable {
 
 
   /**
-   * Returns all the elements within this {@link AbstractSet} into an array.
-   *
-   * @return array of `T`
-   */
-  toArray(): T[];
-
-
-  /**
    *    Takes an {@link Iterable} or {@link ReadonlySetLike} and returns a new {@link AbstractSet} which are in either
    * or both of this {@link AbstractSet} and the given `other`.
    *
@@ -188,15 +180,23 @@ export interface AbstractSet<T> extends ReadonlySetLike<T>, Disposable {
 
 
   /**
-   * Returns an {@link IterableIterator} of values in this {@link AbstractSet}.
-   */
-  values(): IterableIterator<T>;
-
-
-  /**
    * Returns the value for the property containing a string that represents the type of this object.
    */
   readonly [Symbol.toStringTag]: string;
+
+
+  /**
+   * Returns all the elements within this {@link AbstractSet} into an array.
+   *
+   * @return array of `T`
+   */
+  toArray(): T[];
+
+
+  /**
+   * Returns an {@link IterableIterator} of values in this {@link AbstractSet}.
+   */
+  values(): IterableIterator<T>;
 
 }
 

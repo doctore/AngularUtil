@@ -1,5 +1,5 @@
 import { EqualityFunction, HashFunction } from '@app-core/type/collection';
-import { AbstractSet, MutableSet } from '@app-core/type/collection/set';
+import { MutableSet } from '@app-core/type/collection/set';
 import { NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil, SetUtil } from '@app-core/util';
 
@@ -212,14 +212,13 @@ export class MutableHashSet<T> implements MutableSet<T> {
   }
 
 
-  forEach(callbackFn: (value: T, value2: T, set: AbstractSet<T>) => void,
+  forEach(callbackFn: (value: T, value2: T, set: this) => void,
           thisArg?: any): void {
     for (const v of this.values()) {
       callbackFn.call(
         thisArg,
         v,
         v,
-        // @ts-ignore
         this
       );
     }
