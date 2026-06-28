@@ -102,7 +102,6 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
     newOrder.push(
       value
     );
-    // @ts-ignore
     return this.cloneImmutableLinkedHashSet(
       this.hash,
       this.equals,
@@ -111,7 +110,7 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
         newValuesWithSameHash
       ),
       newOrder
-    );
+    ) as this;
   }
 
 
@@ -136,11 +135,10 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
 
 
   clear(): this {
-    // @ts-ignore
     return ImmutableLinkedHashSet.empty(
       this.hash,
       this.equals
-    );
+    ) as this;
   }
 
 
@@ -185,13 +183,12 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
       value,
       this.equals
     );
-    // @ts-ignore
     return this.cloneImmutableLinkedHashSet(
       this.hash,
       this.equals,
       newHashTable,
       newOrder
-    );
+    ) as this;
   }
 
 
@@ -263,7 +260,6 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
         thisArg,
         v,
         v,
-        // @ts-ignore
         this
       );
     }

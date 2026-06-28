@@ -98,7 +98,6 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     newValuesWithSameHash.push(
       value
     );
-    // @ts-ignore
     return this.cloneImmutableHashSet(
       this.hash,
       this.equals,
@@ -107,7 +106,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
         newValuesWithSameHash
       ),
       this.size + 1
-    );
+    ) as this;
   }
 
 
@@ -132,11 +131,10 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
 
 
   clear(): this {
-    // @ts-ignore
     return ImmutableHashSet.empty(
       this.hash,
       this.equals
-    );
+    ) as this;
   }
 
 
@@ -176,13 +174,12 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
         newBucket
       );
     }
-    // @ts-ignore
     return this.cloneImmutableHashSet(
       this.hash,
       this.equals,
       newHashTable,
       this.size - 1
-    );
+    ) as this;
   }
 
 

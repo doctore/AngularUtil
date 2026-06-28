@@ -222,7 +222,6 @@ export class MutableLinkedHashSet<T> implements MutableSet<T> {
         thisArg,
         v,
         v,
-        // @ts-ignore
         this
       );
     }
