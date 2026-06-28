@@ -1,4 +1,4 @@
-import { AbstractSet, ImmutableSet } from '@app-core/type/collection/set';
+import { ImmutableSet } from '@app-core/type/collection/set';
 import { ArrayUtil, ObjectUtil, SetUtil } from '@app-core/util';
 import { EqualityFunction, HashFunction } from '@app-core/type/collection';
 import { NullableOrUndefined } from '@app-core/type';
@@ -139,7 +139,7 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
     // @ts-ignore
     return ImmutableLinkedHashSet.empty(
       this.hash,
-      this.equals,
+      this.equals
     );
   }
 
@@ -256,7 +256,7 @@ export class ImmutableLinkedHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  forEach(callbackFn: (value: T, value2: T, set: AbstractSet<T>) => void,
+  forEach(callbackFn: (value: T, value2: T, set: this) => void,
           thisArg?: any): void {
     for (const v of this.values()) {
       callbackFn.call(

@@ -1,5 +1,5 @@
 import { EqualityFunction, HashFunction } from '@app-core/type/collection';
-import { AbstractSet, ImmutableSet } from '@app-core/type/collection/set';
+import { ImmutableSet } from '@app-core/type/collection/set';
 import { NullableOrUndefined } from '@app-core/type';
 import { ObjectUtil, SetUtil } from '@app-core/util';
 
@@ -135,7 +135,7 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
     // @ts-ignore
     return ImmutableHashSet.empty(
       this.hash,
-      this.equals,
+      this.equals
     );
   }
 
@@ -251,14 +251,13 @@ export class ImmutableHashSet<T> implements ImmutableSet<T> {
   }
 
 
-  forEach(callbackFn: (value: T, value2: T, set: AbstractSet<T>) => void,
+  forEach(callbackFn: (value: T, value2: T, set: this) => void,
           thisArg?: any): void {
     for (const v of this.values()) {
       callbackFn.call(
         thisArg,
         v,
         v,
-        // @ts-ignore
         this
       );
     }
