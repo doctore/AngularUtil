@@ -396,8 +396,8 @@ describe('MutableLinkedHashSet', () => {
       const u4 = new User(u2.id, 'user4');
 
       const setOfHashableObject = MutableLinkedHashSet.of<User>(
-        hashUser,
-        areUsersEquals,
+        undefined,
+        undefined,
         [ u1, u3 ]
       );
       const setOfHashableObjectToAdd = ImmutableHashSet.of<User>(

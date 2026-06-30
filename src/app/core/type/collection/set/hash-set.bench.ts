@@ -2960,10 +2960,13 @@ const mediumNumberOfItemsNoConsecutiveIds: Item[] = Array.from(
     })
 );
 
+
 const noCollisionHash =
   (i: Item) => i.id;
+
 const mediumCollisionHash =
   (i: Item) => i.id % 1000;
+
 const highCollisionHash =
   (i: Item) => i.id % 50;
 

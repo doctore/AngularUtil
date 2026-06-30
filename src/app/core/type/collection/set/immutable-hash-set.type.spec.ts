@@ -2,6 +2,7 @@ import { ImmutableHashSet, ImmutableLinkedHashSet } from '@app-core/type/collect
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { Nullable } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
+import {ImmutablePriorityQueue} from '@app-core/type/collection/queue';
 
 /**
  * To invoke only this test:
@@ -324,8 +325,8 @@ describe('ImmutableHashSet', () => {
       const u4 = new User(u2.id, 'user4');
 
       const setOfHashableObject = ImmutableHashSet.of<User>(
-        hashUser,
-        areUsersEquals,
+        undefined,
+        undefined,
         [ u1, u3 ]
       );
       const setOfHashableObjectToAdd = ImmutableHashSet.of<User>(
