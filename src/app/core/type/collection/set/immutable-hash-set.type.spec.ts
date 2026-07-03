@@ -2,7 +2,6 @@ import { ImmutableHashSet, ImmutableLinkedHashSet } from '@app-core/type/collect
 import { EqualityFunction, Hashable, HashFunction } from '@app-core/type/collection';
 import { Nullable } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
-import {ImmutablePriorityQueue} from '@app-core/type/collection/queue';
 
 /**
  * To invoke only this test:
