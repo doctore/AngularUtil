@@ -58,6 +58,10 @@ There are new collections used to store, search, sort and organize data more eas
   - [ImmutableHashSet](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set/immutable-hash-set.type.ts): unordered collection of unique elements based on hash function to locate internal elements. This Set never change, that is, all the operations updating it will return a new Set and leave the old one unchanged.
   - [ImmutableLinkedHashSet](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set/immutable-linked-hash-set.type.ts): collection of unique elements based on hash function to locate internal elements that maintains insertion order. This Set never change, that is, all the operations updating it will return a new Set and leave the old one unchanged.
 
+* [Queue](https://github.com/doctore/AngularUtil/tree/main/src/app/core/type/collection/queue) stores a collection designed for holding elements prior to processing.
+  - [MutablePriorityQueue](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/set/mutable-hash-set.type.ts): collection based on comparison function to order internal elements. This Queue can be updated, reduced or extended in place.
+  - [ImmutablePriorityQueue](https://github.com/doctore/AngularUtil/blob/main/src/app/core/type/collection/queue/immutable-priority-queue.type.ts): collection based on comparison function to order internal elements. This Queue never change, that is, all the operations updating it will return a new Queue and leave the old one unchanged.
+
 
 ### Services
 
@@ -138,6 +142,9 @@ To execute benchmarks with the [Vitest](https://vitest.dev/) benchmark runner, u
 ```bash
 vitest bench
 ```
+
+When the results are not displayed in the console, [this script](https://github.com/doctore/AngularUtil/blob/main/print-vitest-bench.mjs) can be used to generate a formatted output.
+
 
 
 ### Running end-to-end tests
