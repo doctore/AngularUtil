@@ -1,4 +1,4 @@
-import { FComparator } from '@app-core/type/comparator';
+import { Comparator } from '@app-core/type/comparator';
 import { NullableOrUndefined, OrUndefined } from '@app-core/type';
 
 /**
@@ -44,9 +44,9 @@ export interface AbstractQueue<T> extends Iterable<T>, Disposable {
   /**
    * Returns the function which imposes a total ordering on this {@link AbstractQueue}.
    *
-   * @return {@link FComparator}
+   * @return {@link Comparator}
    */
-  getComparator(): FComparator<T>;
+  getComparator(): Comparator<T>;
 
 
   /**

@@ -500,6 +500,7 @@ const mutablePriorityQueue_MediumNumberOfItemsNoConsecutiveIds = MutablePriority
   itemIdComparator,
   mediumNumberOfItemsNoConsecutiveIds
 );
+
 const immutablePriorityQueue_LowNumberOfItemsConsecutiveIds = ImmutablePriorityQueue.of<Item>(
   itemIdComparator,
   lowNumberOfItemsConsecutiveIds

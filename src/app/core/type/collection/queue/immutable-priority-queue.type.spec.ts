@@ -1,6 +1,6 @@
 import { Nullable } from '@app-core/type';
 import { ObjectUtil } from '@app-core/util';
-import { Comparable, FComparator } from '@app-core/type/comparator';
+import { Comparable, Comparator, FComparator } from '@app-core/type/comparator';
 import { ImmutablePriorityQueue, MutablePriorityQueue } from '@app-core/type/collection/queue';
 
 /**
@@ -51,7 +51,7 @@ describe('ImmutablePriorityQueue', () => {
 
     it('when the Queue is empty then undefined is returned as first element of the Pair and the same Queue as second one', () => {
       const queueOfNumber = ImmutablePriorityQueue.empty<number>(
-        reverseNumberComparator
+        reverseNumberFComparator
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.empty<Role>(
         roleIdComparator
@@ -86,7 +86,7 @@ describe('ImmutablePriorityQueue', () => {
       const u2 = new User(51, 'user51');
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n3, n1, n2 ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -94,7 +94,7 @@ describe('ImmutablePriorityQueue', () => {
         [ r2, r1 ]
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u1, u2 ]
       );
 
@@ -149,7 +149,7 @@ describe('ImmutablePriorityQueue', () => {
 
     it('when the Queue is empty then empty array is returned as first element of the Pair and the same Queue as second one', () => {
       const queueOfNumber = ImmutablePriorityQueue.empty<number>(
-        reverseNumberComparator
+        reverseNumberFComparator
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.empty<Role>(
         roleIdComparator
@@ -184,7 +184,7 @@ describe('ImmutablePriorityQueue', () => {
       const u2 = new User(51, 'user51');
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n3, n1, n2 ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -192,7 +192,7 @@ describe('ImmutablePriorityQueue', () => {
         [ r2, r1 ]
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u1, u2 ]
       );
 
@@ -283,13 +283,13 @@ describe('ImmutablePriorityQueue', () => {
 
     it('when comparator function is provided then empty Queue is returned', () => {
       const queueOfNumber = ImmutablePriorityQueue.empty<number>(
-        reverseNumberComparator
+        reverseNumberFComparator
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.empty<Role>(
         roleIdComparator
       );
       const queueOfComparableObject = ImmutablePriorityQueue.empty<User>(
-        reverseUserIdComparator
+        reverseUserIdFComparator
       );
 
       expect(queueOfNumber).not.toBeNull();
@@ -313,13 +313,13 @@ describe('ImmutablePriorityQueue', () => {
 
     it('using provided comparator function, when a value is added then the Queue stores it', () => {
       const queueOfNumber = ImmutablePriorityQueue.empty<number>(
-        reverseNumberComparator
+        reverseNumberFComparator
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.empty<Role>(
         roleIdComparator
       );
       const queueOfComparableObject = ImmutablePriorityQueue.empty<User>(
-        reverseUserIdComparator
+        reverseUserIdFComparator
       );
 
       const n1 = 19;
@@ -394,13 +394,13 @@ describe('ImmutablePriorityQueue', () => {
 
     it('using provided comparator function, when source Queue is empty but values are not defined or empty then false is returned', () => {
       const queueOfNumber = ImmutablePriorityQueue.empty<number>(
-        reverseNumberComparator
+        reverseNumberFComparator
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.empty<Role>(
         roleIdComparator
       );
       const queueOfComparableObject = ImmutablePriorityQueue.empty<User>(
-        reverseUserIdComparator
+        reverseUserIdFComparator
       );
 
       const queueOfNumberResult = queueOfNumber.enqueueAll(queueOfNumber);
@@ -432,7 +432,7 @@ describe('ImmutablePriorityQueue', () => {
       const u4 = new User(u2.id, u2.name);
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n1 ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -440,7 +440,7 @@ describe('ImmutablePriorityQueue', () => {
         [ r1, r3 ]
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u1 ]
       );
       const setOfNumberToAdd = new Set<number>(
@@ -511,7 +511,7 @@ describe('ImmutablePriorityQueue', () => {
         [ u3, u1 ]
       );
       const queueOfComparableObjectToAdd = MutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u2, u3, u4 ]
       );
 
@@ -573,7 +573,7 @@ describe('ImmutablePriorityQueue', () => {
       const u3 = new User(51, 'user51');
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n2, n3, n4, n1 ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -653,7 +653,7 @@ describe('ImmutablePriorityQueue', () => {
       const u3 = new User(51, 'user51');
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n3, n1, n2 ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -722,10 +722,10 @@ describe('ImmutablePriorityQueue', () => {
       );
 
       expect(queueWithoutProvidedComparator.getComparator()).not.toBeUndefined();
-      expectTypeOf(queueWithoutProvidedComparator.getComparator()).toEqualTypeOf<FComparator<number>>();
+      expectTypeOf(queueWithoutProvidedComparator.getComparator()).toEqualTypeOf<Comparator<number>>();
 
       expect(queueWithProvidedComparator.getComparator()).not.toBeUndefined();
-      expectTypeOf(queueWithProvidedComparator.getComparator()).toEqualTypeOf<FComparator<Role>>();
+      expectTypeOf(queueWithProvidedComparator.getComparator()).toEqualTypeOf<Comparator<Role>>();
     });
 
   });
@@ -773,7 +773,7 @@ describe('ImmutablePriorityQueue', () => {
         [ r1 ]
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u1 ]
       );
 
@@ -810,7 +810,7 @@ describe('ImmutablePriorityQueue', () => {
         [ r1, r2, r3 ]
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u1, u2, u3 ]
       );
 
@@ -904,7 +904,7 @@ describe('ImmutablePriorityQueue', () => {
         [ r1, r2 ]
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u1, u2, u3 ]
       );
 
@@ -927,7 +927,7 @@ describe('ImmutablePriorityQueue', () => {
         roleIdComparator
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator
+        reverseUserIdFComparator
       );
 
       expect(queueOfNumber).not.toBeNull();
@@ -964,7 +964,7 @@ describe('ImmutablePriorityQueue', () => {
         [ r1, r2, r3, r2, r1 ]
       );
       const queueOfComparableObject = ImmutablePriorityQueue.of<User>(
-        reverseUserIdComparator,
+        reverseUserIdFComparator,
         [ u3, u1, u2 ]
       );
 
@@ -1039,7 +1039,7 @@ describe('ImmutablePriorityQueue', () => {
       const u3 = new User(51, 'user51');
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -1094,7 +1094,7 @@ describe('ImmutablePriorityQueue', () => {
       const u3 = new User(51, 'user51');
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -1269,7 +1269,7 @@ describe('ImmutablePriorityQueue', () => {
       const u3 = new User(51, 'user51');
 
       const queueOfNumber = ImmutablePriorityQueue.of<number>(
-        reverseNumberComparator,
+        reverseNumberFComparator,
         [ n2, n3, n4, n1 ]
       );
       const queueOfNotComparableObject = ImmutablePriorityQueue.of<Role>(
@@ -1526,17 +1526,23 @@ function verifyArrays(actualArray: unknown[],
 const getName =
   <T extends { name: string }>(obj: T): string => obj.name;
 
-const numberComparator: FComparator<number> =
-  (n1: number, n2: number) => n1 - n2;
+const numberComparator: Comparator<number> =
+  Comparator.of(
+    (n1: number, n2: number) =>
+      n1 - n2
+  );
 
 const plus2 =
   (n: number) => n * 2;
 
-const reverseNumberComparator: FComparator<number> =
+const reverseNumberFComparator: FComparator<number> =
   (n1: number, n2: number) => n2 - n1;
 
-const reverseUserIdComparator: FComparator<User> =
+const reverseUserIdFComparator: FComparator<User> =
   (u1: User, u2: User) => u2.id - u1.id;
 
-const roleIdComparator: FComparator<Role> =
-  (r1: Role, r2: Role) => r1.id - r2.id;
+const roleIdComparator: Comparator<Role> =
+  Comparator.of(
+    (r1: Role, r2: Role) =>
+      r1.id - r2.id
+  );

@@ -1,0 +1,455 @@
+import { ObjectUtil, QueueUtil } from '@app-core/util';
+import { Comparable, Comparator, FComparator } from '@app-core/type/comparator';
+import { Nullable } from '@app-core/type';
+import { AbstractQueue, ImmutablePriorityQueue, MutablePriorityQueue } from '@app-core/type/collection/queue';
+import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
+import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
+
+/**
+ * To invoke only this test:
+ *
+ *    ng test --include src/app/core/util/queue-util.spec.ts
+ */
+describe('QueueUtil', () => {
+
+
+  describe('constructor', () => {
+
+    it('when trying to create a new instance then an error is thrown', () => {
+      expect(() => new QueueUtil()).toThrowError(SyntaxError);
+    });
+
+  });
+
+
+
+  describe('copy', () => {
+
+    it('when given sourceQueue is null, undefined or an empty mutable one then empty Queue is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+
+      const nullResult = QueueUtil.copy(null);
+      const undefinedResult = QueueUtil.copy(undefined);
+      const mutablePriorityQueueResult = QueueUtil.copy(mutablePriorityQueue);
+
+      expect(nullResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(nullResult.size).toEqual(0);
+      expect(undefinedResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(undefinedResult.size).toEqual(0);
+      expect(mutablePriorityQueueResult).toEqual(mutablePriorityQueue);
+    });
+
+
+    it('when given sourceQueue is null, undefined or an empty immutable one then empty Queue is returned', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const nullResult = QueueUtil.copy(null);
+      const undefinedResult = QueueUtil.copy(undefined);
+      const immutablePriorityQueueResult = QueueUtil.copy(immutablePriorityQueue);
+
+      expect(nullResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(nullResult.size).toEqual(0);
+      expect(undefinedResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(undefinedResult.size).toEqual(0);
+      expect(immutablePriorityQueueResult).toEqual(immutablePriorityQueue);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one then a copy is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 6, 2, 3 ]
+      );
+
+      const resultPriorityQueue = QueueUtil.copy(mutablePriorityQueue);
+
+      verifyQueues(
+        resultPriorityQueue,
+        mutablePriorityQueue
+      );
+
+      mutablePriorityQueue.clear();
+
+      expect(mutablePriorityQueue.size).toEqual(0);
+      expect(resultPriorityQueue).toBeInstanceOf(MutablePriorityQueue);
+      expect(resultPriorityQueue.size).toEqual(4);
+    });
+
+
+    it('when given sourceQueue is an non-empty immutable one then a copy is returned', () => {
+      let immutablePriorityQueue = ImmutablePriorityQueue.of(
+        reverseNumberComparator,
+        [ 1, 2, 3, 6 ]
+      );
+
+      const resultPriorityQueue = QueueUtil.copy(immutablePriorityQueue);
+
+      verifyQueues(
+        resultPriorityQueue,
+        immutablePriorityQueue
+      );
+
+      immutablePriorityQueue = immutablePriorityQueue.clear();
+
+      expect(immutablePriorityQueue.size).toEqual(0);
+      expect(resultPriorityQueue).toBeInstanceOf(ImmutablePriorityQueue);
+      expect(resultPriorityQueue.size).toEqual(4);
+    });
+
+  });
+
+
+
+  describe('count', () => {
+
+    it('when given sourceQueue is null, undefined or empty then 0 is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      expect(QueueUtil.count(null, isEvenFPredicate)).toEqual(0);
+      expect(QueueUtil.count(undefined, isEvenPredicate)).toEqual(0);
+
+      expect(QueueUtil.count(mutablePriorityQueue, isEvenRaw)).toEqual(0);
+      expect(QueueUtil.count(immutablePriorityQueue, isEvenRaw)).toEqual(0);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one but filterPredicate is null or undefined then size of sourceQueue is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const mutablePriorityQueue = MutablePriorityQueue.of<User>(
+        reverseUserIdFComparator,
+        [ u1, u2, u3 ]
+      );
+
+      expect(QueueUtil.count(mutablePriorityQueue, null)).toEqual(mutablePriorityQueue.size);
+      expect(QueueUtil.count(mutablePriorityQueue, undefined)).toEqual(mutablePriorityQueue.size);
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one but filterPredicate is null or undefined then size of sourceQueue is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<User>(
+        undefined,
+        [ u1, u2, u3 ]
+      );
+
+      expect(QueueUtil.count(immutablePriorityQueue, null)).toEqual(immutablePriorityQueue.size);
+      expect(QueueUtil.count(immutablePriorityQueue, undefined)).toEqual(immutablePriorityQueue.size);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const mutablePriorityQueue = MutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r1, r2, r3 ]
+      );
+
+      expect(QueueUtil.count(mutablePriorityQueue, isRoleIdOddFPredicate)).toEqual(2);
+    });
+
+
+    it('when given sourceQueue is an non-empty immutable one and filterPredicate is provided then the number of elements matching filterPredicate is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r1, r2, r3 ]
+      );
+
+      expect(QueueUtil.count(immutablePriorityQueue, isRoleIdOddPredicate)).toEqual(2);
+    });
+
+  });
+
+
+
+
+
+  describe('isAbstractQueue', () => {
+
+    it('when given input is null or undefined then false will be returned', () => {
+      const expectedResult = false;
+
+      expect(QueueUtil.isAbstractQueue()).toEqual(expectedResult);
+      expect(QueueUtil.isAbstractQueue(undefined)).toEqual(expectedResult);
+      expect(QueueUtil.isAbstractQueue(null)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is not an AbstractQueue then false will be returned', () => {
+      const user = new User(1, 'user1');
+      const nativeSet = new Set<number>(
+        [ 1 ]
+      );
+      const mutableHashSet = MutableHashSet.of<string>(
+        undefined,
+        undefined,
+        [ 'a', 'b', 'c' ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ new User(1, 'user1') ]
+      );
+
+      const expectedResult = false;
+
+      expect(QueueUtil.isAbstractQueue(12)).toEqual(expectedResult);
+      expect(QueueUtil.isAbstractQueue("abc")).toEqual(expectedResult);
+      expect(QueueUtil.isAbstractQueue({})).toEqual(expectedResult);
+      expect(QueueUtil.isAbstractQueue(user)).toEqual(expectedResult);
+
+      expect(QueueUtil.isAbstractQueue(nativeSet)).toEqual(expectedResult);
+      expect(QueueUtil.isAbstractQueue(mutableHashSet)).toEqual(expectedResult);
+      expect(QueueUtil.isAbstractQueue(immutableHashSet)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is an MutableQueue then true will be returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of<number>(
+        reverseNumberComparator,
+        [ 1, 3 ]
+      );
+
+      const expectedResult = true;
+
+      expect(QueueUtil.isAbstractQueue(mutablePriorityQueue)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is an ImmutableQueue then true will be returned', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<Role>(
+        roleIdComparator
+      );
+
+      const expectedResult = true;
+
+      expect(QueueUtil.isAbstractQueue(immutablePriorityQueue)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
+  describe('isEmpty', () => {
+
+    it('when given queueToVerify is null, undefined or empty then true is returned', () => {
+      const expectedResult = true;
+
+      expect(QueueUtil.isEmpty()).toEqual(expectedResult);
+      expect(QueueUtil.isEmpty(undefined)).toEqual(expectedResult);
+      expect(QueueUtil.isEmpty(null)).toEqual(expectedResult);
+
+      expect(QueueUtil.isEmpty(MutablePriorityQueue.empty<number>())).toEqual(expectedResult);
+      expect(QueueUtil.isEmpty(ImmutablePriorityQueue.empty<number>())).toEqual(expectedResult);
+    });
+
+
+    it('when given queueToVerify contains elements then false is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of<string>(
+        stringFComparator,
+        [ 'a', 'b', 'c' ]
+      );
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<string>(
+        stringFComparator,
+        [ 'a', 'b', 'c' ]
+      );
+
+      const expectedResult = false;
+
+      expect(QueueUtil.isEmpty(mutablePriorityQueue)).toEqual(expectedResult);
+      expect(QueueUtil.isEmpty(immutablePriorityQueue)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
+  describe('isImmutableQueue', () => {
+
+    it('when given input is null or undefined then false will be returned', () => {
+      const expectedResult = false;
+
+      expect(QueueUtil.isImmutableQueue()).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(undefined)).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(null)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is not an ImmutableQueue then false will be returned', () => {
+      const user = new User(1, 'user1');
+      const nativeSet = new Set<number>(
+        [ 1 ]
+      );
+      const mutablePriorityQueue = MutablePriorityQueue.of<string>(
+        stringFComparator,
+        [ 'a', 'b', 'c' ]
+      );
+      const mutableHashSet = MutableHashSet.of<string>(
+        undefined,
+        undefined,
+        [ 'a', 'b', 'c' ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ new User(1, 'user1') ]
+      );
+
+      const expectedResult = false;
+
+      expect(QueueUtil.isImmutableQueue(12)).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue("abc")).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue({})).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(user)).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(nativeSet)).toEqual(expectedResult);
+
+      expect(QueueUtil.isImmutableQueue(mutablePriorityQueue)).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(mutableHashSet)).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(immutableHashSet)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is an ImmutableQueue then true will be returned', () => {
+      const immutablePriorityQueueOfNumber = ImmutablePriorityQueue.of<number>(
+        reverseNumberComparator,
+        [ 1, 3 ]
+      );
+      const immutablePriorityQueueOfNotComparableObject = ImmutablePriorityQueue.empty<Role>(
+        roleIdComparator
+      );
+      const immutablePriorityQueueOfComparableObject = ImmutablePriorityQueue.of<User>(
+        undefined,
+        [ new User(1, 'user1') ]
+      );
+
+      const expectedResult = true;
+
+      expect(QueueUtil.isImmutableQueue(immutablePriorityQueueOfNumber)).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(immutablePriorityQueueOfNotComparableObject)).toEqual(expectedResult);
+      expect(QueueUtil.isImmutableQueue(immutablePriorityQueueOfComparableObject)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
+});
+
+
+
+
+// Used only for testing purpose
+class User implements Comparable<User> {
+  private _id: number;
+  private _name: string;
+
+  constructor(id: number, name: string) {
+    this._id = id;
+    this._name = name;
+  }
+
+  get id(): number {
+    return this._id;
+  }
+  set id(id: number) {
+    this._id = id;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+  set name(name: string) {
+    this._name = name;
+  }
+
+  compareTo = (other?: Nullable<User>): number =>
+    ObjectUtil.isNullOrUndefined(other)
+      ? 1
+      : this.id - other.id;
+
+}
+
+
+interface Role {
+  id: number;
+  name: string;
+}
+
+
+function verifyArrays(actualArray: unknown[],
+                      expectedArray: unknown[]) {
+  expect(expectedArray.length).toEqual(actualArray.length);
+  if (0 < expectedArray.length) {
+    for (let i = 0; i < expectedArray.length; i++) {
+      expect(expectedArray[i]).toEqual(actualArray[i]);
+    }
+  }
+}
+
+
+function verifyQueues(actualQueue: AbstractQueue<any>,
+                      expectedQueue: AbstractQueue<any>) {
+  expect(expectedQueue.size).toEqual(actualQueue.size);
+  if (0 < expectedQueue.size) {
+    const actualQueueToArray = actualQueue.toArray();
+    const expectedQueueToArray = expectedQueue.toArray();
+    for (let i = 0; i < expectedQueueToArray.length; i++) {
+      expect(expectedQueueToArray[i]).toEqual(actualQueueToArray[i]);
+    }
+  }
+}
+
+
+const isEvenFPredicate: FPredicate1<number> =
+  (n: number) =>
+    0 == n % 2;
+
+const isEvenPredicate: Predicate1<number> =
+  Predicate1.of(
+    (n: number) =>
+      0 == n % 2
+  );
+
+const isEvenRaw =
+  (n: number) =>
+    0 == n % 2;
+
+const isRoleIdOddFPredicate: FPredicate1<Role> =
+  (role: Role) => 1 == role.id % 2;
+
+const isRoleIdOddPredicate: Predicate1<Role> =
+  Predicate1.of((role: Role) => 1 == role.id % 2);
+
+const numberFComparator: FComparator<number> =
+  (n1: number, n2: number) => n1 - n2;
+
+const reverseNumberComparator: Comparator<number> =
+  Comparator.of(
+    (n1: number, n2: number) =>
+      n2 - n1
+  );
+
+const reverseUserIdFComparator: FComparator<User> =
+  (u1: User, u2: User) => u2.id - u1.id;
+
+const roleIdComparator: Comparator<Role> =
+  Comparator.of(
+    (r1: Role, r2: Role) =>
+      r1.id - r2.id
+  );
+
+const stringFComparator: FComparator<string> =
+  (s1: string, s2: string) => s1.localeCompare(s2);

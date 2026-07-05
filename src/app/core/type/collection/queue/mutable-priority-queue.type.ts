@@ -1,6 +1,6 @@
 import { MutableQueue } from '@app-core/type/collection/queue';
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
-import { FComparator } from '@app-core/type/comparator';
+import { Comparator, FComparator, TComparator } from '@app-core/type/comparator';
 import { NullableOrUndefined, OrUndefined } from '@app-core/type';
 
 /**
@@ -9,18 +9,23 @@ import { NullableOrUndefined, OrUndefined } from '@app-core/type';
  */
 export class MutablePriorityQueue<T> implements MutableQueue<T> {
 
+  private readonly comparator: Comparator<T>;
   private readonly data: T[] = [];
 
 
-  private constructor(private readonly comparator: FComparator<T> = ObjectUtil.compare,
+  private constructor(comparator: TComparator<T> = Comparator.of(ObjectUtil.compare),
                       values?: Iterable<T>) {
     this.data = values
       ? Array.from(
           values
         )
       : [];
+
+    this.comparator = Comparator.of(
+      comparator
+    );
     this.data.sort(
-      this.comparator
+      this.comparator.getComparator()
     );
   }
 
@@ -33,7 +38,7 @@ export class MutablePriorityQueue<T> implements MutableQueue<T> {
    *
    * @return an empty {@link MutablePriorityQueue}
    */
-  static empty = <T>(comparator?: FComparator<T>): MutablePriorityQueue<T> =>
+  static empty = <T>(comparator?: TComparator<T>): MutablePriorityQueue<T> =>
     new MutablePriorityQueue<T>(
       comparator
     );
@@ -49,7 +54,7 @@ export class MutablePriorityQueue<T> implements MutableQueue<T> {
    *
    * @return a {@link MutablePriorityQueue} with the provided `values`
    */
-  static of = <T>(comparator?: FComparator<T>,
+  static of = <T>(comparator?: TComparator<T>,
                   values?: Iterable<T>): MutablePriorityQueue<T> =>
     new MutablePriorityQueue<T>(
       comparator,
@@ -104,7 +109,7 @@ export class MutablePriorityQueue<T> implements MutableQueue<T> {
       ...valuesToEnqueue
     );
     this.data.sort(
-      this.comparator
+      this.comparator.getComparator()
     );
     return true;
   }
@@ -130,7 +135,7 @@ export class MutablePriorityQueue<T> implements MutableQueue<T> {
   }
 
 
-  getComparator(): FComparator<T> {
+  getComparator(): Comparator<T> {
     return this.comparator;
   }
 

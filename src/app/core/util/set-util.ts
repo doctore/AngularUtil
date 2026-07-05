@@ -11,11 +11,9 @@ import {
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 import { Comparator, TComparator } from '@app-core/type/comparator';
 import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
-import { AssertUtil } from './assert-util';
+import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
 import { Optional } from '@app-core/type/functional';
-import { MapUtil } from './map-util';
-import { ObjectUtil } from './object-util';
 
 /**
  * Helper functions to manage {@link Set} and {@link AbstractSet} (both included in the {@link TSet} type).
@@ -370,19 +368,6 @@ export class SetUtil {
 
 
   /**
-   * Verifies if the given `setToVerify` contains at least one element.
-   *
-   * @param setToVerify
-   *    {@link ReadonlySetLike} to verify
-   *
-   * @return `true` if `setToVerify` is `undefined`, `null` or empty.
-   *         `false` otherwise.
-   */
-  static isEmpty = (setToVerify?: Nullable<ReadonlySetLike<unknown>>): boolean =>
-    !setToVerify || 0 == setToVerify.size
-
-
-  /**
    * Verifies if the given `input` is classified as {@link AbstractSet} object, which includes implementations like:
    * <ul>
    *   <li>{@link MutableHashSet}</li>
@@ -402,6 +387,19 @@ export class SetUtil {
     input instanceof MutableLinkedHashSet ||
     input instanceof ImmutableHashSet ||
     input instanceof ImmutableLinkedHashSet;
+
+
+  /**
+   * Verifies if the given `setToVerify` contains at least one element.
+   *
+   * @param setToVerify
+   *    {@link ReadonlySetLike} to verify
+   *
+   * @return `true` if `setToVerify` is `undefined`, `null` or empty.
+   *         `false` otherwise.
+   */
+  static isEmpty = (setToVerify?: Nullable<ReadonlySetLike<unknown>>): boolean =>
+    !setToVerify || 0 == setToVerify.size
 
 
   /**

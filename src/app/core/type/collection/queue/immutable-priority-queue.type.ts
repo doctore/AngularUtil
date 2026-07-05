@@ -1,6 +1,6 @@
 import { ImmutableQueue } from '@app-core/type/collection/queue';
 import { ArrayUtil, ObjectUtil } from '@app-core/util';
-import { FComparator } from '@app-core/type/comparator';
+import { Comparator, TComparator } from '@app-core/type/comparator';
 import { NullableOrUndefined, OrUndefined } from '@app-core/type';
 
 /**
@@ -10,18 +10,23 @@ import { NullableOrUndefined, OrUndefined } from '@app-core/type';
  */
 export class ImmutablePriorityQueue<T> implements ImmutableQueue<T> {
 
+  private readonly comparator: Comparator<T>;
   private readonly data: T[] = [];
 
 
-  private constructor(private readonly comparator: FComparator<T> = ObjectUtil.compare,
+  private constructor(comparator: TComparator<T> = Comparator.of(ObjectUtil.compare),
                       values?: Iterable<T>) {
     this.data = values
       ? Array.from(
           values
         )
       : [];
+
+    this.comparator = Comparator.of(
+      comparator
+    );
     this.data.sort(
-      this.comparator
+      this.comparator.getComparator()
     );
   }
 
@@ -34,7 +39,7 @@ export class ImmutablePriorityQueue<T> implements ImmutableQueue<T> {
    *
    * @return an empty {@link ImmutablePriorityQueue}
    */
-  static empty = <T>(comparator?: FComparator<T>): ImmutablePriorityQueue<T> =>
+  static empty = <T>(comparator?: TComparator<T>): ImmutablePriorityQueue<T> =>
     new ImmutablePriorityQueue<T>(
       comparator
     );
@@ -50,7 +55,7 @@ export class ImmutablePriorityQueue<T> implements ImmutableQueue<T> {
    *
    * @return a {@link ImmutablePriorityQueue} with the provided `values`
    */
-  static of = <T>(comparator?: FComparator<T>,
+  static of = <T>(comparator?: TComparator<T>,
                   values?: Iterable<T>): ImmutablePriorityQueue<T> =>
     new ImmutablePriorityQueue<T>(
       comparator,
@@ -120,7 +125,7 @@ export class ImmutablePriorityQueue<T> implements ImmutableQueue<T> {
         this.data
       )
       .sort(
-        this.comparator
+        this.comparator.getComparator()
       )
     ) as this;
   }
@@ -146,7 +151,7 @@ export class ImmutablePriorityQueue<T> implements ImmutableQueue<T> {
   }
 
 
-  getComparator(): FComparator<T> {
+  getComparator(): Comparator<T> {
     return this.comparator;
   }
 

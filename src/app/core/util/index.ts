@@ -5,5 +5,6 @@ export * from './json-util';
 export * from './map-util';
 export * from './number-util';
 export * from './object-util';
+export * from './queue-util';
 export * from './set-util';
 export * from './string-util';

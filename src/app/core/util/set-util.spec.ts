@@ -7,6 +7,7 @@ import { Comparator, FComparator } from '@app-core/type/comparator';
 import { FFunction1, FFunction2, Function1, Function2 } from '@app-core/type/function';
 import { IllegalArgumentError } from '@app-core/error';
 import { BinaryOperator, FBinaryOperator } from '@app-core/type/function/operator';
+import { ImmutablePriorityQueue, MutablePriorityQueue } from '@app-core/type/collection/queue';
 
 /**
  * To invoke only this test:
@@ -1403,6 +1404,12 @@ describe('SetUtil', () => {
       const nativeSet = new Set<number>(
         [ 1 ]
       );
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<number>(
+        undefined,
+        [ 4, 2 ]
+      );
+
       const expectedResult = false;
 
       expect(SetUtil.isAbstractSet(12)).toEqual(expectedResult);
@@ -1410,6 +1417,8 @@ describe('SetUtil', () => {
       expect(SetUtil.isAbstractSet({})).toEqual(expectedResult);
       expect(SetUtil.isAbstractSet(user)).toEqual(expectedResult);
       expect(SetUtil.isAbstractSet(nativeSet)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(mutablePriorityQueue)).toEqual(expectedResult);
+      expect(SetUtil.isAbstractSet(immutablePriorityQueue)).toEqual(expectedResult);
     });
 
 
@@ -1461,6 +1470,11 @@ describe('SetUtil', () => {
       expect(SetUtil.isEmpty(undefined)).toEqual(expectedResult);
       expect(SetUtil.isEmpty(null)).toEqual(expectedResult);
       expect(SetUtil.isEmpty(new Set<number>())).toEqual(expectedResult);
+
+      expect(SetUtil.isEmpty(MutableHashSet.empty<number>())).toEqual(expectedResult);
+      expect(SetUtil.isEmpty(MutableLinkedHashSet.empty<number>())).toEqual(expectedResult);
+      expect(SetUtil.isEmpty(ImmutableHashSet.empty<number>())).toEqual(expectedResult);
+      expect(SetUtil.isEmpty(ImmutableLinkedHashSet.empty<number>())).toEqual(expectedResult);
     });
 
 
@@ -1528,6 +1542,11 @@ describe('SetUtil', () => {
         areStringEquals,
         [ 'a', 'b', 'c' ]
       );
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<number>(
+        undefined,
+        [ 4, 2 ]
+      );
 
       const expectedResult = false;
 
@@ -1539,6 +1558,8 @@ describe('SetUtil', () => {
 
       expect(SetUtil.isImmutableSet(mutableHashSet)).toEqual(expectedResult);
       expect(SetUtil.isImmutableSet(mutableLinkedHashSet)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(mutablePriorityQueue)).toEqual(expectedResult);
+      expect(SetUtil.isImmutableSet(immutablePriorityQueue)).toEqual(expectedResult);
     });
 
 

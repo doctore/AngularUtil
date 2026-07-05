@@ -78,6 +78,7 @@ There are new collections used to store, search, sort and organize data more eas
 * [MapUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/map-util.ts)
 * [NumberUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/number-util.ts)
 * [ObjectUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/object-util.ts)
+* [QueueUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/queue-util.ts)
 * [SetUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/set-util.ts)
 * [StringUtil](https://github.com/doctore/AngularUtil/blob/main/src/app/core/util/string-util.ts)
 <br><br>
