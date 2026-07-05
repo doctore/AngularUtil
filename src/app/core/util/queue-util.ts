@@ -4,7 +4,7 @@ import {
   ImmutableQueue,
   MutablePriorityQueue
 } from '@app-core/type/collection/queue';
-import { AssertUtil, ObjectUtil } from '@app-core/util';
+import { ObjectUtil } from '@app-core/util';
 import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 
@@ -75,8 +75,96 @@ export class QueueUtil {
   }
 
 
+  /**
+   *    Returns a new {@link AbstractQueue} using `sourceQueue` as source, adding from the result the elements that verify
+   * the given {@link TPredicate1} `filterPredicate`.
+   *
+   * <pre>
+   *    filter(                                                                            Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    of `sourceQueue` will be returned
+   *
+   * @return empty {@link AbstractQueue} if `sourceQueue` has no elements or no one verifies provided `filterPredicate`,
+   *         otherwise a new {@link AbstractQueue} with the elements of `sourceQueue` which verify `filterPredicate`
+   */
+  static filter = <T>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                      filterPredicate: NullableOrUndefined<TPredicate1<T>>): AbstractQueue<T> => {
+    if (!sourceQueue || !filterPredicate) {
+      return this.copy(
+        sourceQueue
+      );
+    }
+    const finalFilterPredicate = Predicate1.of(
+      filterPredicate
+    );
+    const result = this.createEmptyQueue(
+      sourceQueue
+    );
+    if (this.isImmutableQueue(result)) {
+      const elementsToAdd: T[] = [];
+      for (const current of sourceQueue) {
+        if (finalFilterPredicate.apply(current)) {
+          elementsToAdd.push(
+            current
+          );
+        }
+      }
+      return result.enqueueAll(
+        elementsToAdd
+      );
+    }
+    else {
+      for (const current of sourceQueue) {
+        if (finalFilterPredicate.apply(current)) {
+          result.enqueue(
+            current
+          );
+        }
+      }
+    }
+    return result;
+  }
 
 
+  /**
+   *    Returns a new {@link AbstractQueue} using `sourceQueue` as source, removing from the result the elements that verify the
+   * given {@link TPredicate1} `filterPredicate`.
+   *
+   * <pre>
+   *    filterNot(                                                                         Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{id: 2, name: 'user2'}]
+   *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} to filter
+   * @param filterPredicate
+   *    {@link TPredicate1} used to find given elements to filter. If it is `null` or `undefined` then all elements
+   *    of `sourceQueue` will be returned
+   *
+   * @return empty {@link AbstractQueue} if `sourceQueue` has no elements,
+   *         otherwise a new {@link AbstractQueue} with the elements of `sourceQueue` which do not verify `filterPredicate`
+   */
+  static filterNot = <T>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                         filterPredicate: NullableOrUndefined<TPredicate1<T>>): AbstractQueue<T> => {
+    const finalFilterPredicate = !filterPredicate
+      ? null
+      : Predicate1.of(filterPredicate).not();
+
+    return this.filter(
+      sourceQueue,
+      finalFilterPredicate
+    );
+  }
 
 
   /**
@@ -129,6 +217,29 @@ export class QueueUtil {
 
 
 
+
+
+  /**
+   * Returns an empty {@link AbstractQueue} based on the type of provided `input`.
+   *
+   * @param input
+   *    Source {@link AbstractQueue} used to know the type of the returned instance
+   *
+   * @return {@link AbstractQueue} whose type is based on the provided `input`
+   */
+  private static createEmptyQueue<T>(input?: AbstractQueue<T>): AbstractQueue<T> {
+    if (input instanceof ImmutablePriorityQueue) {
+      return ImmutablePriorityQueue.empty<T>(
+        input.getComparator()
+      );
+    }
+    if (input instanceof MutablePriorityQueue) {
+      return MutablePriorityQueue.empty<T>(
+        input.getComparator()
+      );
+    }
+    return MutablePriorityQueue.empty<T>();
+  }
 
 
   /**

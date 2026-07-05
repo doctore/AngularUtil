@@ -25,32 +25,21 @@ describe('QueueUtil', () => {
 
   describe('copy', () => {
 
-    it('when given sourceQueue is null, undefined or an empty mutable one then empty Queue is returned', () => {
+    it('when given sourceQueue is null, undefined or empty then empty Queue is returned', () => {
       const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
-
-      const nullResult = QueueUtil.copy(null);
-      const undefinedResult = QueueUtil.copy(undefined);
-      const mutablePriorityQueueResult = QueueUtil.copy(mutablePriorityQueue);
-
-      expect(nullResult).toBeInstanceOf(MutablePriorityQueue);
-      expect(nullResult.size).toEqual(0);
-      expect(undefinedResult).toBeInstanceOf(MutablePriorityQueue);
-      expect(undefinedResult.size).toEqual(0);
-      expect(mutablePriorityQueueResult).toEqual(mutablePriorityQueue);
-    });
-
-
-    it('when given sourceQueue is null, undefined or an empty immutable one then empty Queue is returned', () => {
       const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
 
       const nullResult = QueueUtil.copy(null);
       const undefinedResult = QueueUtil.copy(undefined);
+      const mutablePriorityQueueResult = QueueUtil.copy(mutablePriorityQueue);
       const immutablePriorityQueueResult = QueueUtil.copy(immutablePriorityQueue);
 
       expect(nullResult).toBeInstanceOf(MutablePriorityQueue);
       expect(nullResult.size).toEqual(0);
       expect(undefinedResult).toBeInstanceOf(MutablePriorityQueue);
       expect(undefinedResult.size).toEqual(0);
+
+      expect(mutablePriorityQueueResult).toEqual(mutablePriorityQueue);
       expect(immutablePriorityQueueResult).toEqual(immutablePriorityQueue);
     });
 
@@ -174,6 +163,220 @@ describe('QueueUtil', () => {
   });
 
 
+
+  describe('filter', () => {
+
+    it('when given sourceQueue is null, undefined or empty then empty Queue is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const nullResult = QueueUtil.filter(null, isEvenFPredicate);
+      const undefinedResult = QueueUtil.filter(undefined, isEvenPredicate);
+      const mutablePriorityQueueResult = QueueUtil.filter(mutablePriorityQueue, isEvenRaw);
+      const immutablePriorityQueueResult = QueueUtil.filter(immutablePriorityQueue, isEvenRaw);
+
+      expect(nullResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(nullResult.size).toEqual(0);
+      expect(undefinedResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(undefinedResult.size).toEqual(0);
+
+      expect(mutablePriorityQueueResult).toEqual(mutablePriorityQueue);
+      expect(immutablePriorityQueueResult).toEqual(immutablePriorityQueue);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one but filterPredicate is null or undefined then a copy of sourceQueue is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const mutablePriorityQueue = MutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r3, r2, r1 ]
+      );
+
+      verifyQueues(
+        QueueUtil.filter(mutablePriorityQueue, null),
+        mutablePriorityQueue
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one but filterPredicate is null or undefined then a copy of sourceQueue is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r1, r2, r3 ]
+      );
+
+      verifyQueues(
+        QueueUtil.filter(immutablePriorityQueue, null),
+        immutablePriorityQueue
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and filterPredicate is provided then filtered Queue is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        undefined,
+        [ u2, u1, u3 ]
+      );
+
+      const expectedResultPriorityQueue = MutablePriorityQueue.of(
+        undefined,
+        [ u1, u3 ]
+      );
+
+      const resultPriorityQueue = QueueUtil.filter(mutablePriorityQueue, isUserIdOddFPredicate);
+
+      verifyQueues(
+        resultPriorityQueue,
+        expectedResultPriorityQueue
+      );
+      expect(resultPriorityQueue).toBeInstanceOf(MutablePriorityQueue);
+    });
+
+
+    it('when given sourceQueue is an non-empty immutable one and filterPredicate is provided then filtered Queue is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        undefined,
+        [ u3, u1, u2 ]
+      );
+
+      const expectedResultPriorityQueue = ImmutablePriorityQueue.of(
+        undefined,
+        [ u1, u3 ]
+      );
+
+      const resultPriorityQueue = QueueUtil.filter(immutablePriorityQueue, isUserIdOddPredicate);
+
+      verifyQueues(
+        resultPriorityQueue,
+        expectedResultPriorityQueue
+      );
+      expect(resultPriorityQueue).toBeInstanceOf(ImmutablePriorityQueue);
+    });
+
+  });
+
+
+
+  describe('filterNot', () => {
+
+    it('when given sourceQueue is null, undefined or empty then empty Queue is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const nullResult = QueueUtil.filterNot(null, isEvenFPredicate);
+      const undefinedResult = QueueUtil.filterNot(undefined, isEvenPredicate);
+      const mutablePriorityQueueResult = QueueUtil.filterNot(mutablePriorityQueue, isEvenRaw);
+      const immutablePriorityQueueResult = QueueUtil.filterNot(immutablePriorityQueue, isEvenRaw);
+
+      expect(nullResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(nullResult.size).toEqual(0);
+      expect(undefinedResult).toBeInstanceOf(MutablePriorityQueue);
+      expect(undefinedResult.size).toEqual(0);
+
+      expect(mutablePriorityQueueResult).toEqual(mutablePriorityQueue);
+      expect(immutablePriorityQueueResult).toEqual(immutablePriorityQueue);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one but filterPredicate is null or undefined then a copy of sourceQueue is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const mutablePriorityQueue = MutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r3, r2, r1 ]
+      );
+
+      verifyQueues(
+        QueueUtil.filterNot(mutablePriorityQueue, null),
+        mutablePriorityQueue
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one but filterPredicate is null or undefined then a copy of sourceQueue is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r1, r2, r3 ]
+      );
+
+      verifyQueues(
+        QueueUtil.filterNot(immutablePriorityQueue, null),
+        immutablePriorityQueue
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and filterPredicate is provided then filtered Queue is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        undefined,
+        [ u2, u1, u3 ]
+      );
+
+      const expectedResultPriorityQueue = MutablePriorityQueue.of(
+        undefined,
+        [ u2 ]
+      );
+
+      const resultPriorityQueue = QueueUtil.filterNot(mutablePriorityQueue, isUserIdOddFPredicate);
+
+      verifyQueues(
+        resultPriorityQueue,
+        expectedResultPriorityQueue
+      );
+      expect(resultPriorityQueue).toBeInstanceOf(MutablePriorityQueue);
+    });
+
+
+    it('when given sourceQueue is an non-empty immutable one and filterPredicate is provided then filtered Queue is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        undefined,
+        [ u3, u1, u2 ]
+      );
+
+      const expectedResultPriorityQueue = ImmutablePriorityQueue.of(
+        undefined,
+        [ u2 ]
+      );
+
+      const resultPriorityQueue = QueueUtil.filterNot(immutablePriorityQueue, isUserIdOddPredicate);
+
+      verifyQueues(
+        resultPriorityQueue,
+        expectedResultPriorityQueue
+      );
+      expect(resultPriorityQueue).toBeInstanceOf(ImmutablePriorityQueue);
+    });
+
+  });
 
 
 
@@ -344,8 +547,6 @@ describe('QueueUtil', () => {
 
   });
 
-
-
 });
 
 
@@ -432,6 +633,12 @@ const isRoleIdOddFPredicate: FPredicate1<Role> =
 
 const isRoleIdOddPredicate: Predicate1<Role> =
   Predicate1.of((role: Role) => 1 == role.id % 2);
+
+const isUserIdOddFPredicate: FPredicate1<User> =
+  (user: User) => 1 == user.id % 2;
+
+const isUserIdOddPredicate: Predicate1<User> =
+  Predicate1.of((user: User) => 1 == user.id % 2);
 
 const numberFComparator: FComparator<number> =
   (n1: number, n2: number) => n1 - n2;
