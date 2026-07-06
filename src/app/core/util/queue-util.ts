@@ -4,9 +4,10 @@ import {
   ImmutableQueue,
   MutablePriorityQueue
 } from '@app-core/type/collection/queue';
-import { ObjectUtil } from '@app-core/util';
+import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
 import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
+import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
 
 /**
  * Helper functions to manage {@link AbstractQueue}.
@@ -168,6 +169,121 @@ export class QueueUtil {
 
 
   /**
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all elements
+   * of `sourceQueue`, going left to right.
+   *
+   * @apiNote
+   *    If `sourceQueue` or `accumulator` are `null` or `undefined` then `initialValue` is returned. This method might
+   * return different results when the provided `sourceQueue` does not guarantee the {@link AbstractQueue} iteration order.
+   *
+   * <pre>
+   *    foldLeft(                                          Result:
+   *      [5, 7, 9],                                        315
+   *      1,
+   *      (n1: number, n2: number) => n1 * n2
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} with elements to combine
+   * @param initialValue
+   *    The initial value to start with
+   * @param accumulator
+   *    A {@link TFunction2} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements of `sourceQueue`, going
+   *         left to right with the start value `initialValue` on the left.
+   */
+  static foldLeft<T, R>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                        initialValue: R,
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R;
+
+
+  static foldLeft<T, R>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                        initialValue: R,
+                        accumulator: NullableOrUndefined<FFunction2<R, T, R>>): R;
+
+
+  static foldLeft<T, R>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                        initialValue: R,
+                        accumulator: NullableOrUndefined<TFunction2<R, T, R>>): R {
+    if (this.isEmpty(sourceQueue) || !accumulator) {
+      return initialValue
+    }
+    const finalAccumulator = Function2.of(
+      accumulator
+    );
+    let result: R = initialValue;
+    for (const current of sourceQueue!) {
+      result = finalAccumulator.apply(
+        result,
+        current
+      );
+    }
+    return result;
+  }
+
+
+  /**
+   *    Partitions given `sourceQueue` into a {@link Map}, applying `discriminatorKey` if the current element verifies
+   * `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * <pre>
+   *    groupBy(                                           Result:
+   *      [1, 2, 3, 6],                                     [(2, [1])
+   *      (n: number) => 1 + n,                              (4, [3])
+   *      (n: number) => 1 == n % 2
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} with the elements to filter and group
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceQueue`. If it is `null` or `undefined` then all elements will be used
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceQueue` that verifies
+   *        `filterPredicate`
+   *
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceQueue`
+   */
+  static groupBy = <T, K>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                          discriminatorKey: TFunction1<T, K>,
+                          filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
+    const result: Map<K, T[]> = new Map<K, T[]>();
+    if (!this.isEmpty(sourceQueue)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
+      const finalDiscriminatorKey = Function1.of(
+        discriminatorKey
+      );
+      const finalFilterPredicate = !filterPredicate
+        ? Predicate1.alwaysTrue<T>()
+        : Predicate1.of(filterPredicate);
+
+      for (const current of sourceQueue!) {
+        if (finalFilterPredicate.apply(current)) {
+          const discriminatorKeyResult = finalDiscriminatorKey.apply(
+            current
+          );
+          MapUtil.setIfAbsent(
+            result,
+            discriminatorKeyResult,
+            []
+          );
+          result.get(discriminatorKeyResult)!
+            .push(current);
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Verifies if the given `input` is classified as {@link AbstractQueue} object, which includes implementations like:
    * <ul>
    *   <li>{@link MutablePriorityQueue}</li>
@@ -212,11 +328,6 @@ export class QueueUtil {
    */
   static isImmutableQueue = (input?: any): input is ImmutableQueue<any> =>
     input instanceof ImmutablePriorityQueue;
-
-
-
-
-
 
 
   /**

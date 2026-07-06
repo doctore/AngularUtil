@@ -175,8 +175,8 @@ export class SetUtil {
 
 
   /**
-   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all
-   * elements of `sourceSet`, going left to right.
+   *    Using the given value `initialValue` as initial one, applies the provided {@link TFunction2} to all elements
+   * of `sourceSet`, going left to right.
    *
    * @apiNote
    *    If `sourceSet` or `accumulator` are `null` or `undefined` then `initialValue` is returned. This method might
@@ -220,7 +220,7 @@ export class SetUtil {
       accumulator
     );
     let result: R = initialValue;
-    for (const current of  sourceSet!) {
+    for (const current of sourceSet!) {
       result = finalAccumulator.apply(
         result,
         current

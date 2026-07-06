@@ -232,6 +232,84 @@ describe('Comparator', () => {
 
 
 
+  describe('default', () => {
+
+    it('then internal comparator is not null', () => {
+      const comparator = Comparator.default();
+
+      expect(comparator).not.toBeUndefined();
+      expect(comparator.getComparator()).not.toBeUndefined();
+    });
+
+
+    it('when comparing native values then expected result is returned', () => {
+      const comparator = Comparator.default();
+
+      expect(comparator.compare(1, 2)).toBe(-1);
+      expect(comparator.compare(2, 1)).toBe(1);
+      expect(comparator.compare(1, 1)).toBe(0);
+
+      expect(comparator.compare('1', '2')).toBe(-1);
+      expect(comparator.compare('2', '1')).toBe(1);
+      expect(comparator.compare('1', '1')).toBe(0);
+
+      expect(comparator.compare(true, false)).toBe(1);
+      expect(comparator.compare(false, true)).toBe(-1);
+      expect(comparator.compare(true, true)).toBe(0);
+      expect(comparator.compare(false, false)).toBe(0);
+
+      expect(comparator.compare(new Date("2026-06-22T14:30:00Z"), new Date("2026-06-20T10:30:00Z"))).toBe(187200000);
+      expect(comparator.compare(new Date("2026-06-20T10:30:00Z"), new Date("2026-06-22T14:30:00Z"))).toBe(-187200000);
+      expect(comparator.compare(new Date("2026-06-22T14:30:00Z"), new Date("2026-06-22T14:30:00Z"))).toBe(0);
+    });
+
+
+    it('when comparing arrays then expected result is returned', () => {
+      const comparator = Comparator.default();
+
+      expect(comparator.compare([1, 2], [2, 1])).toBe(-1);
+      expect(comparator.compare([2, 1], [1, 2])).toBe(1);
+      expect(comparator.compare([1, 5, 7, 9], [1, 5, 7, 9])).toBe(0);
+
+      expect(comparator.compare(['1', '2'], ['2', '1'])).toBe(-1);
+      expect(comparator.compare(['2', '1'], ['1', '2'])).toBe(1);
+      expect(comparator.compare(['1', '5', '7', '9'], ['1', '5', '7', '9'])).toBe(0);
+    });
+
+
+    it('when comparing objects with compareTo method then the result of such method is returned', () => {
+      const user1 = new User(10, 'user1');
+      const user2 = new User(11, 'user2');
+      const user3 = new User(10, 'user3');
+
+      const comparator = Comparator.default();
+
+      expect(comparator.compare(user1, user2)).toBe(-1);
+      expect(comparator.compare(user2, user1)).toBe(1);
+
+      expect(comparator.compare(user1, user3)).toBe(0);
+      expect(comparator.compare(user3, user1)).toBe(0);
+    });
+
+
+    it('when comparing objects without compareTo method then verifies their equivalence based on their own', () => {
+      const role1 = { id: 10, name: 'name1' } as Role;
+      const role2 = { id: 11, name: 'name2' } as Role;
+      const role3 = { id: 10, name: 'name1' } as Role;
+
+      const comparator = Comparator.default();
+
+      expect(comparator.compare(role1, role2)).toBe(-1);
+      expect(comparator.compare(role2, role1)).toBe(1);
+
+      expect(comparator.compare(role1, role3)).toBe(0);
+      expect(comparator.compare(role3, role1)).toBe(0);
+    });
+
+  });
+
+
+
   describe('of', () => {
 
     it('when null or undefined func is given then an error is thrown', () => {
@@ -369,4 +447,10 @@ class User implements Comparable<User> {
       ? false
       : this.id === other.id;
 
+}
+
+
+interface Role {
+  id: number;
+  name: string;
 }

@@ -1,9 +1,11 @@
 import { ObjectUtil, QueueUtil } from '@app-core/util';
 import { Comparable, Comparator, FComparator } from '@app-core/type/comparator';
-import { Nullable } from '@app-core/type';
+import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { AbstractQueue, ImmutablePriorityQueue, MutablePriorityQueue } from '@app-core/type/collection/queue';
 import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
 import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
+import { FFunction1, FFunction2, Function1, Function2 } from '@app-core/type/function';
+import { IllegalArgumentError } from '@app-core/error';
 
 /**
  * To invoke only this test:
@@ -380,6 +382,210 @@ describe('QueueUtil', () => {
 
 
 
+  describe('foldLeft', () => {
+
+    it('when given sourceQueue is null, undefined or empty then initialValue is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+      const initialValue = 19;
+
+      const accumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(QueueUtil.foldLeft(null, initialValue, accumulator)).toEqual(initialValue);
+      expect(QueueUtil.foldLeft(undefined, initialValue, accumulator)).toEqual(initialValue);
+
+      expect(QueueUtil.foldLeft(mutablePriorityQueue, initialValue, accumulator)).toEqual(initialValue);
+      expect(QueueUtil.foldLeft(immutablePriorityQueue, initialValue, accumulator)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one but when accumulator is null or undefined then initialValue is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 1 ]
+      );
+      const initialValue = 19;
+
+      expect(QueueUtil.foldLeft(mutablePriorityQueue, initialValue, null)).toEqual(initialValue);
+      expect(QueueUtil.foldLeft(mutablePriorityQueue, initialValue, undefined)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one but when accumulator is null or undefined then initialValue is returned', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 1 ]
+      );
+      const initialValue = 19;
+
+      expect(QueueUtil.foldLeft(immutablePriorityQueue, initialValue, null)).toEqual(initialValue);
+      expect(QueueUtil.foldLeft(immutablePriorityQueue, initialValue, undefined)).toEqual(initialValue);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and accumulator is provided then initialValue applying accumulator is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+      const initialValue = 10;
+
+      const accumulator: FFunction2<number, number, number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(QueueUtil.foldLeft(mutablePriorityQueue, initialValue, accumulator)).toEqual(240);
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one and accumulator is provided then initialValue applying accumulator is returned', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+      const initialValue = 10;
+
+      const accumulator: Function2<number, number, number> =
+        Function2.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
+
+      expect(QueueUtil.foldLeft(immutablePriorityQueue, initialValue, accumulator)).toEqual(240);
+    });
+
+  });
+
+
+
+  describe('groupBy', () => {
+
+    it('when given sourceQueue is null, undefined or empty and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(QueueUtil.groupBy(null, plus1Raw, isEvenRaw)).toEqual(expectedResult);
+      expect(QueueUtil.groupBy(undefined, plus1FFunction, isEvenFPredicate)).toEqual(expectedResult);
+
+      expect(QueueUtil.groupBy(mutablePriorityQueue, plus1FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(QueueUtil.groupBy(immutablePriorityQueue, plus1Function, isEvenPredicate)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceQueue is not empty mutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.groupBy(mutablePriorityQueue, null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.groupBy(mutablePriorityQueue, undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceQueue is not empty immutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.groupBy(immutablePriorityQueue, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.groupBy(immutablePriorityQueue, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(2, [ 1 ]);
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(4, [ 3 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        QueueUtil.groupBy(mutablePriorityQueue, plus1Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.groupBy(mutablePriorityQueue, plus1FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(2, [ 1 ]);
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(4, [ 3 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        QueueUtil.groupBy(immutablePriorityQueue, plus1Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.groupBy(immutablePriorityQueue, plus1FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        QueueUtil.groupBy(mutablePriorityQueue, plus1FFunction, isEvenFPredicate),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 2, 3, 6, 4 ]
+      );
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+      expectedResult.set(3, [ 2 ]);
+      expectedResult.set(7, [ 6 ]);
+      expectedResult.set(5, [ 4 ]);
+
+      verifyMaps(
+        QueueUtil.groupBy(immutablePriorityQueue, plus1Function, isEvenPredicate),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
   describe('isAbstractQueue', () => {
 
     it('when given input is null or undefined then false will be returned', () => {
@@ -601,6 +807,18 @@ function verifyArrays(actualArray: unknown[],
 }
 
 
+function verifyMaps(actualMap: Map<unknown, unknown>,
+                    expectedMap: Map<unknown, unknown>) {
+  expect(actualMap.size).toEqual(expectedMap.size);
+  if (0 < expectedMap.size) {
+    for (let [key, value] of actualMap!) {
+      expect(expectedMap.has(key)).toBe(true);
+      expect(expectedMap.get(key)).toEqual(value);
+    }
+  }
+}
+
+
 function verifyQueues(actualQueue: AbstractQueue<any>,
                       expectedQueue: AbstractQueue<any>) {
   expect(expectedQueue.size).toEqual(actualQueue.size);
@@ -642,6 +860,20 @@ const isUserIdOddPredicate: Predicate1<User> =
 
 const numberFComparator: FComparator<number> =
   (n1: number, n2: number) => n1 - n2;
+
+const plus1Raw =
+  (n: number) =>
+    1 + n;
+
+const plus1FFunction: FFunction1<number, number> =
+  (n: number) =>
+    1 + n;
+
+const plus1Function: Function1<number, number> =
+  Function1.of(
+    (n: number) =>
+      1 + n
+  );
 
 const reverseNumberComparator: Comparator<number> =
   Comparator.of(

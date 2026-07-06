@@ -1,7 +1,7 @@
 import { bench, describe } from 'vitest';
 import { FComparator } from '@app-core/type/comparator';
 import { ImmutablePriorityQueue, MutablePriorityQueue } from '@app-core/type/collection/queue';
-import {QueueUtil, SetUtil} from '@app-core/util';
+import { QueueUtil } from '@app-core/util';
 
 /**
  * Benchmarks for comparing the performance of the {@link SetUtil} methods.
@@ -165,6 +165,55 @@ describe("Benchmark: QueueUtil", () => {
  ImmutablePriorityQueue filter: mediumNumberOfItemsNoConsecutiveIds       9,732.94   0.0885   0.5446   0.1027   0.1072   0.1403   0.2115   0.3383    ±0.48%       4867
 */
 
+
+
+  /**
+   * groupBy comparison:
+   */
+  bench("MutablePriorityQueue groupBy: lowNumberOfItemsConsecutiveIds", () => {
+    QueueUtil.groupBy(mutablePriorityQueue_LowNumberOfItemsConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+
+  bench("MutablePriorityQueue groupBy: mediumNumberOfItemsConsecutiveId", () => {
+    QueueUtil.groupBy(mutablePriorityQueue_MediumNumberOfItemsConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+
+  bench("MutablePriorityQueue groupBy: mediumNumberOfItemsNoConsecutiveIds", () => {
+    QueueUtil.groupBy(mutablePriorityQueue_MediumNumberOfItemsNoConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutablePriorityQueue groupBy: lowNumberOfItemsConsecutiveIds", () => {
+    QueueUtil.groupBy(immutablePriorityQueue_LowNumberOfItemsConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutablePriorityQueue groupBy: mediumNumberOfItemsConsecutiveId", () => {
+    QueueUtil.groupBy(immutablePriorityQueue_MediumNumberOfItemsConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+
+  bench("ImmutablePriorityQueue groupBy: mediumNumberOfItemsNoConsecutiveIds", () => {
+    QueueUtil.groupBy(immutablePriorityQueue_MediumNumberOfItemsNoConsecutiveIds, getItemId, isItemIdEven);
+  });
+
+
+/*
+ name                                                                           hz |    min |    max |   mean |    p75 |    p99 |   p995 |   p999 |     rme |  samples
+-----------------------------------------------------------------------------------+--------+--------+--------+--------+--------+--------+--------+---------+-----------
+ MutablePriorityQueue groupBy: lowNumberOfItemsConsecutiveIds           181,238.92   0.0043   0.5429   0.0055   0.0056   0.0088   0.0110   0.0164    ±0.33%      90620
+ MutablePriorityQueue groupBy: mediumNumberOfItemsConsecutiveId           3,742.90   0.2351   1.3821   0.2672   0.2667   0.5240   0.5507   0.6709    ±0.79%       1872
+ MutablePriorityQueue groupBy: mediumNumberOfItemsNoConsecutiveIds        3,763.17   0.2446   0.7936   0.2657   0.2673   0.5075   0.5419   0.6979    ±0.59%       1882
+
+ ImmutablePriorityQueue groupBy: lowNumberOfItemsConsecutiveIds         164,322.20   0.0048   0.2839   0.0061   0.0061   0.0093   0.0107   0.0142    ±0.30%      82162
+ ImmutablePriorityQueue groupBy: mediumNumberOfItemsConsecutiveId         3,229.84   0.2804   0.6845   0.3096   0.3081   0.5466   0.5791   0.6594    ±0.56%       1615
+ ImmutablePriorityQueue groupBy: mediumNumberOfItemsNoConsecutiveIds      3,244.80   0.2843   0.6625   0.3082   0.3095   0.5641   0.6064   0.6397    ±0.57%       1623
+*/
+
+
+
 });
 
 
@@ -202,6 +251,9 @@ const mediumNumberOfItemsNoConsecutiveIds: Item[] = Array.from(
     })
 );
 
+
+const getItemId =
+  (item: Item) => item.id;
 
 const isItemIdEven =
   (item: Item) => 0 == item.id % 2;

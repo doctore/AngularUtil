@@ -1,6 +1,6 @@
 import { AssertUtil, ObjectUtil } from '@app-core/util';
 import { Comparable } from '@app-core/type/comparator';
-import {NullableOrUndefined} from '@app-core/type';
+import { NullableOrUndefined } from '@app-core/type';
 
 /**
  * Union type of {@link FComparator} and {@link Comparator}
@@ -187,6 +187,18 @@ export class Comparator<T> {
     undefined !== (input as Comparator<T>).compare &&
     undefined !== (input as Comparator<T>).getComparator &&
     isFComparator((input as Comparator<T>).getComparator());
+
+
+  /**
+   * Returns a {@link Comparator} using {@link ObjectUtil#compare} as internal comparator.
+   *
+   * @return {@link Comparator}
+   */
+  static default<T>(): Comparator<T> {
+    return new Comparator(
+      ObjectUtil.compare
+    );
+  }
 
 
   static of<T>(func: FComparator<T>): Comparator<T>;
