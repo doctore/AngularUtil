@@ -6,6 +6,7 @@ import { FPredicate1, Predicate1 } from '@app-core/type/predicate';
 import { ImmutableHashSet, MutableHashSet } from '@app-core/type/collection/set';
 import { FFunction1, FFunction2, Function1, Function2 } from '@app-core/type/function';
 import { IllegalArgumentError } from '@app-core/error';
+import { BinaryOperator, FBinaryOperator } from '@app-core/type/function/operator';
 
 /**
  * To invoke only this test:
@@ -547,7 +548,7 @@ describe('QueueUtil', () => {
     });
 
 
-    it('when given sourceSet is a non-empty mutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+    it('when given sourceQueue is a non-empty mutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
       const mutablePriorityQueue = MutablePriorityQueue.of(
         numberFComparator,
         [ 1, 2, 3, 6, 4 ]
@@ -565,7 +566,7 @@ describe('QueueUtil', () => {
     });
 
 
-    it('when given sourceSet is a non-empty immutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+    it('when given sourceQueue is a non-empty immutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
       const immutablePriorityQueue = ImmutablePriorityQueue.of(
         numberFComparator,
         [ 1, 2, 3, 6, 4 ]
@@ -578,6 +579,135 @@ describe('QueueUtil', () => {
 
       verifyMaps(
         QueueUtil.groupBy(immutablePriorityQueue, plus1Function, isEvenPredicate),
+        expectedResult
+      );
+    });
+
+  });
+
+
+
+  describe('groupByMultiKey', () => {
+
+    it('when given sourceQueue is null, undefined or empty and discriminatorKey and filterPredicate are provided then empty Map is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const expectedResult: Map<number, number[]> = new Map<number, number[]>;
+
+      expect(QueueUtil.groupByMultiKey(null, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
+      expect(QueueUtil.groupByMultiKey(undefined, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
+
+      expect(QueueUtil.groupByMultiKey(mutablePriorityQueue, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(QueueUtil.groupByMultiKey(immutablePriorityQueue, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceQueue is not empty mutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.groupByMultiKey(mutablePriorityQueue, null, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.groupByMultiKey(mutablePriorityQueue, undefined, isEvenFPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceQueue is not empty immutable one but discriminatorKey is null or undefined then an error is thrown', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.groupByMultiKey(immutablePriorityQueue, null, isEvenPredicate)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.groupByMultiKey(immutablePriorityQueue, undefined, isEvenPredicate)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 2, 6, 3, 12, 11 ]
+      );
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("odd", [ 1, 3, 11 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6, 11, 12 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        QueueUtil.groupByMultiKey(mutablePriorityQueue, oddEvenAndCompareWith5Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.groupByMultiKey(mutablePriorityQueue, oddEvenAndCompareWith5FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one and discriminatorKey is provided but filterPredicate is null or undefined then all elements will be grouped using discriminatorKey', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 2, 6, 3, 12, 11 ]
+      );
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("odd", [ 1, 3, 11 ]);
+      expectedResult.set("smaller5", [ 1, 2, 3 ]);
+      expectedResult.set("greaterEqual5", [ 6, 11, 12 ]);
+
+      verifyMaps(
+        // @ts-ignore
+        QueueUtil.groupByMultiKey(immutablePriorityQueue, oddEvenAndCompareWith5Raw, null),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.groupByMultiKey(immutablePriorityQueue, oddEvenAndCompareWith5FFunction, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 1, 3, 11, 6, 12 ]
+      );
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("smaller5", [ 2 ]);
+      expectedResult.set("greaterEqual5", [ 6, 12 ]);
+
+      verifyMaps(
+        QueueUtil.groupByMultiKey(mutablePriorityQueue, oddEvenAndCompareWith5FFunction, isEvenFPredicate),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 1, 3, 11, 6, 12 ]
+      );
+
+      const expectedResult: Map<string, number[]> = new Map<string, number[]>;
+      expectedResult.set("even", [ 2, 6, 12 ]);
+      expectedResult.set("smaller5", [ 2 ]);
+      expectedResult.set("greaterEqual5", [ 6, 12 ]);
+
+      verifyMaps(
+        QueueUtil.groupByMultiKey(immutablePriorityQueue, oddEvenAndCompareWith5Raw, isEvenPredicate),
         expectedResult
       );
     });
@@ -753,6 +883,79 @@ describe('QueueUtil', () => {
 
   });
 
+
+
+  describe('reduce', () => {
+
+    it('when given sourceQueue is null, undefined or empty then initialValue is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const accumulator =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(QueueUtil.reduce(null, accumulator)).toBe(undefined);
+      expect(QueueUtil.reduce(undefined, accumulator)).toBe(undefined);
+
+      expect(QueueUtil.reduce(mutablePriorityQueue, accumulator)).toBe(undefined);
+      expect(QueueUtil.reduce(immutablePriorityQueue, accumulator)).toBe(undefined);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one but accumulator is null or undefined then an error is thrown', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.reduce(mutablePriorityQueue, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.reduce(mutablePriorityQueue, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one but accumulator is null or undefined then an error is thrown', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 4, 3 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.reduce(immutablePriorityQueue, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.reduce(immutablePriorityQueue, undefined)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceSet is a non-empty mutable one and accumulator is provided then accumulator is applied to contained elements', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 3, 4 ]
+      );
+
+      const accumulator: FBinaryOperator<number> =
+        (n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!;
+
+      expect(QueueUtil.reduce(mutablePriorityQueue, accumulator)).toEqual(24);
+    });
+
+
+    it('when given sourceSet is a non-empty immutable one and accumulator is provided then accumulator is applied to contained elements', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 3, 4 ]
+      );
+
+      const accumulator: BinaryOperator<number> =
+        BinaryOperator.of((n1: NullableOrUndefined<number>, n2: NullableOrUndefined<number>) => n1! * n2!);
+
+      expect(QueueUtil.reduce(immutablePriorityQueue, accumulator)).toEqual(24);
+    });
+
+  });
+
+
 });
 
 
@@ -860,6 +1063,41 @@ const isUserIdOddPredicate: Predicate1<User> =
 
 const numberFComparator: FComparator<number> =
   (n1: number, n2: number) => n1 - n2;
+
+const oddEvenAndCompareWith5FFunction: FFunction1<number, string[]> =
+  (n: number) => {
+    const keys: string[] = [];
+    if (0 == n % 2) {
+      keys.push("even");
+    }
+    else {
+      keys.push("odd");
+    }
+    if (5 > n) {
+      keys.push("smaller5");
+    }
+    else {
+      keys.push("greaterEqual5");
+    }
+    return keys;
+  };
+
+const oddEvenAndCompareWith5Raw = (n: number) => {
+  const keys: string[] = [];
+  if (0 == n % 2) {
+    keys.push("even");
+  }
+  else {
+    keys.push("odd");
+  }
+  if (5 > n) {
+    keys.push("smaller5");
+  }
+  else {
+    keys.push("greaterEqual5");
+  }
+  return keys;
+};
 
 const plus1Raw =
   (n: number) =>

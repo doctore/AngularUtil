@@ -5,9 +5,10 @@ import {
   MutablePriorityQueue
 } from '@app-core/type/collection/queue';
 import { AssertUtil, MapUtil, ObjectUtil } from '@app-core/util';
-import { Nullable, NullableOrUndefined } from '@app-core/type';
+import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/type';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
+import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
 
 /**
  * Helper functions to manage {@link AbstractQueue}.
@@ -173,8 +174,7 @@ export class QueueUtil {
    * of `sourceQueue`, going left to right.
    *
    * @apiNote
-   *    If `sourceQueue` or `accumulator` are `null` or `undefined` then `initialValue` is returned. This method might
-   * return different results when the provided `sourceQueue` does not guarantee the {@link AbstractQueue} iteration order.
+   *    If `sourceQueue` or `accumulator` are `null` or `undefined` then `initialValue` is returned.
    *
    * <pre>
    *    foldLeft(                                          Result:
@@ -284,6 +284,84 @@ export class QueueUtil {
 
 
   /**
+   *    Partitions given `sourceQueue` into a {@link Map}, applying `discriminatorKey` if the current element verifies
+   * `filterPredicate`. All values with the same `key` will be added in an array.
+   *
+   * @apiNote
+   *    This method is similar to {@link QueueUtil#groupBy} but `discriminatorKey` returns an array of related key values.
+   *
+   * <pre>
+   *    groupByMultiKey(                                  Result:
+   *      [1, 2, 3, 6, 11, 12],                            [('even',  [2, 6])
+   *      (n: number) => {                                  ('odd',   [1, 3])
+   *        const keys: string[] = [];                      ('smaller5', [1, 2, 3])
+   *        if (0 == n % 2) {                               ('greaterEqual5', [6])]
+   *          keys.push('even');
+   *        } else {
+   *          keys.push('odd');
+   *        }
+   *        if (5 > n) {
+   *          keys.push('smaller5');
+   *        } else {
+   *          keys.push('greaterEqual5');
+   *        }
+   *        return keys;
+   *      },
+   *      (n: number) => 10 > n
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} with the elements to filter and group
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param filterPredicate
+   *    {@link TPredicate1} to filter elements of `sourceQueue`. If it is `null` or `undefined` then all elements will be used
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` to each element of `sourceQueue` that
+   *         verifies `filterPredicate`, to generate the keys of the returned one
+   *
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceQueue`
+   */
+  static groupByMultiKey = <T, K>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                                  discriminatorKey: TFunction1<T, K[]>,
+                                  filterPredicate?: TPredicate1<T>): Map<K, T[]> => {
+    const result: Map<K, T[]> = new Map<K, T[]>();
+    if (!this.isEmpty(sourceQueue)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
+      const finalDiscriminatorKey = Function1.of(
+        discriminatorKey
+      );
+      const finalFilterPredicate = !filterPredicate
+        ? Predicate1.alwaysTrue<T>()
+        : Predicate1.of(filterPredicate);
+
+      for (const current of sourceQueue!) {
+        if (finalFilterPredicate.apply(current)) {
+          const discriminatorKeyResult = ObjectUtil.getOrElse(
+            finalDiscriminatorKey.apply(current),
+            []
+          );
+          for (let key of discriminatorKeyResult!) {
+            MapUtil.setIfAbsent(
+              result,
+              key,
+              []
+            );
+            result.get(key)!
+              .push(current);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Verifies if the given `input` is classified as {@link AbstractQueue} object, which includes implementations like:
    * <ul>
    *   <li>{@link MutablePriorityQueue}</li>
@@ -328,6 +406,68 @@ export class QueueUtil {
    */
   static isImmutableQueue = (input?: any): input is ImmutableQueue<any> =>
     input instanceof ImmutablePriorityQueue;
+
+
+  /**
+   *    Performs a reduction on the elements of `sourceQueue`, using an associative accumulation {@link TBinaryOperator},
+   * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
+   *
+   * @apiNote
+   *    This method is similar to {@link QueueUtil#foldLeft} but `accumulator` works with the same type that `sourceQueue`
+   * and only uses contained elements of provided {@link AbstractQueue}.
+   *
+   * <pre>
+   *    reduce(                                            Result:
+   *      [5, 7, 9]                                         315
+   *      (n1: number, n2: number) => n1 * n2
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} with elements to combine
+   * @param accumulator
+   *    A {@link TBinaryOperator} which combines elements
+   *
+   * @return result of inserting `accumulator` between consecutive elements `sourceQueue`, going left (head) to right (tail)
+   *
+   * @throws {IllegalArgumentError} if `accumulator` is `null` or `undefined` and `sourceQueue` is not empty
+   */
+  static reduce<T>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T>;
+
+
+  static reduce<T>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                   accumulator: FBinaryOperator<T>): OrUndefined<T>;
+
+
+  static reduce<T>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                   accumulator: TBinaryOperator<T>): OrUndefined<T> {
+    let result: OrUndefined<T>;
+    if (!this.isEmpty(sourceQueue)) {
+      AssertUtil.notNullOrUndefined(
+        accumulator,
+        'accumulator must be not null and not undefined'
+      );
+      const finalAccumulator = BinaryOperator.of(
+        accumulator
+      );
+      let foundFirstElement = false;
+      for (const current of sourceQueue!) {
+        if (!foundFirstElement) {
+          result = current;
+        }
+        else {
+          result = finalAccumulator.apply(
+            // @ts-ignore
+            result,
+            current
+          );
+        }
+        foundFirstElement = true;
+      }
+    }
+    return result;
+  }
 
 
   /**

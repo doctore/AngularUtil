@@ -1149,7 +1149,7 @@ describe('SetUtil', () => {
       expect(SetUtil.groupByMultiKey(nativeSet, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
 
       expect(SetUtil.groupByMultiKey(mutableHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
-      expect(SetUtil.groupByMultiKey(mutableLinkedHashSet, oddEvenAndCompareWith5FFunction, isEvenFPredicate)).toEqual(expectedResult);
+      expect(SetUtil.groupByMultiKey(mutableLinkedHashSet, oddEvenAndCompareWith5Raw, isEvenRaw)).toEqual(expectedResult);
       expect(SetUtil.groupByMultiKey(immutableHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate)).toEqual(expectedResult);
       expect(SetUtil.groupByMultiKey(immutableLinkedHashSet, oddEvenAndCompareWith5FFunction, isEvenPredicate)).toEqual(expectedResult);
     });
