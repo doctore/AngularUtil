@@ -471,6 +471,88 @@ export class QueueUtil {
 
 
   /**
+   * Returns an array containing the elements of provided `sourceQueue`.
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} to convert
+   *
+   * @return an array which contains all the elements of `sourceQueue`
+   */
+  static toArray = <T>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>): T[] => {
+    if (this.isEmpty(sourceQueue)) {
+      return [];
+    }
+    return sourceQueue!.toArray();
+  }
+
+
+  /**
+   * Converts the given `sourceQueue` into a {@link Map} using provided `discriminatorKey` and `valueMapper`.
+   *
+   * @apiNote
+   *   <ul>
+   *     <li>If several elements return the same key, the last one will be the final value.</li>
+   *     <li>If `valueMapper` is `null` or `undefined` then {@link Function1#identity} will be applied.</li>
+   *   </ul>
+   *
+   * <pre>
+   *    toMap(                                   Result:
+   *      [1, 2, 3],                              [('1', 1),
+   *      (n: number) => '' + n                    ('2', 2),
+   *    )                                          ('3', 3)]
+   *
+   *    toMap(                                   Result:
+   *      [1, 2, 3],                              [('1', 2),
+   *      (n: number) => '' + n,                   ('2', 3),
+   *      (n: number) => 1 + n                     ('3', 4)]
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} with the elements to transform and include in the returned {@link Map}
+   * @param discriminatorKey
+   *    The discriminator {@link TFunction1} to get the key values of returned {@link Map}
+   * @param valueMapper
+   *    {@link TFunction1} to transform elements of `sourceArray` into values of the returned {@link Map}
+   *
+   * @return new {@link Map} from applying the given `discriminatorKey` and `valueMapper` to each element of `sourceQueue`
+   *
+   * @throws {IllegalArgumentError} if `discriminatorKey` is `null` or `undefined` with a not empty `sourceQueue`
+   */
+  static toMap<T, K, V>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                        discriminatorKey: TFunction1<T, K>,
+                        valueMapper?: TFunction1<T, V>): Map<K, V> {
+    const result: Map<K, V> = new Map<K, V>();
+    if (!this.isEmpty(sourceQueue)) {
+      AssertUtil.notNullOrUndefined(
+        discriminatorKey,
+        'discriminatorKey must be not null and not undefined'
+      );
+      const finalValueMapper = valueMapper
+        ? valueMapper
+        : Function1.identity();
+
+      const finalDiscriminatorKeyAndValueMapper = Function1.of(
+        (t: T) => [
+          Function1.of(discriminatorKey).apply(t),
+          Function1.of(finalValueMapper).apply(t)
+        ]
+      );
+      for (const current of sourceQueue!) {
+        const pairKeyValue: [K, V] = <[K, V]>finalDiscriminatorKeyAndValueMapper.apply(
+          current
+        );
+        result.set(
+          pairKeyValue[0],
+          pairKeyValue[1]
+        );
+      }
+    }
+    return result;
+  }
+
+
+  /**
    * Returns an empty {@link AbstractQueue} based on the type of provided `input`.
    *
    * @param input

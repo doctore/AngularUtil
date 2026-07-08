@@ -415,7 +415,7 @@ describe('QueueUtil', () => {
 
     it('when given sourceQueue is a non-empty immutable one but when accumulator is null or undefined then initialValue is returned', () => {
       const immutablePriorityQueue = ImmutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 1 ]
       );
       const initialValue = 19;
@@ -427,7 +427,7 @@ describe('QueueUtil', () => {
 
     it('when given sourceQueue is a non-empty mutable one and accumulator is provided then initialValue applying accumulator is returned', () => {
       const mutablePriorityQueue = MutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 2, 4, 3 ]
       );
       const initialValue = 10;
@@ -474,7 +474,7 @@ describe('QueueUtil', () => {
 
     it('when given sourceQueue is not empty mutable one but discriminatorKey is null or undefined then an error is thrown', () => {
       const mutablePriorityQueue = MutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 2, 4, 3 ]
       );
 
@@ -568,7 +568,7 @@ describe('QueueUtil', () => {
 
     it('when given sourceQueue is a non-empty immutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
       const immutablePriorityQueue = ImmutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 1, 2, 3, 6, 4 ]
       );
 
@@ -605,7 +605,7 @@ describe('QueueUtil', () => {
 
     it('when given sourceQueue is not empty mutable one but discriminatorKey is null or undefined then an error is thrown', () => {
       const mutablePriorityQueue = MutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 2, 4, 3 ]
       );
 
@@ -679,7 +679,7 @@ describe('QueueUtil', () => {
 
     it('when given sourceQueue is a non-empty mutable one and discriminatorKey and filterPredicate are provided then a new filtered and grouped Map is returned', () => {
       const mutablePriorityQueue = MutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 2, 1, 3, 11, 6, 12 ]
       );
 
@@ -917,7 +917,7 @@ describe('QueueUtil', () => {
 
     it('when given sourceQueue is a non-empty immutable one but accumulator is null or undefined then an error is thrown', () => {
       const immutablePriorityQueue = ImmutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 2, 4, 3 ]
       );
 
@@ -928,9 +928,9 @@ describe('QueueUtil', () => {
     });
 
 
-    it('when given sourceSet is a non-empty mutable one and accumulator is provided then accumulator is applied to contained elements', () => {
+    it('when given sourceQueue is a non-empty mutable one and accumulator is provided then accumulator is applied to contained elements', () => {
       const mutablePriorityQueue = MutablePriorityQueue.of(
-        numberFComparator,
+        numberComparator,
         [ 2, 3, 4 ]
       );
 
@@ -941,7 +941,7 @@ describe('QueueUtil', () => {
     });
 
 
-    it('when given sourceSet is a non-empty immutable one and accumulator is provided then accumulator is applied to contained elements', () => {
+    it('when given sourceQueue is a non-empty immutable one and accumulator is provided then accumulator is applied to contained elements', () => {
       const immutablePriorityQueue = ImmutablePriorityQueue.of(
         numberFComparator,
         [ 2, 3, 4 ]
@@ -955,6 +955,213 @@ describe('QueueUtil', () => {
 
   });
 
+
+
+  describe('toArray', () => {
+
+    it('when given sourceQueue is null, undefined or empty then an empty array is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      expect(QueueUtil.toArray(null)).toEqual([]);
+      expect(QueueUtil.toArray(undefined)).toEqual([]);
+
+      expect(QueueUtil.toArray(mutablePriorityQueue)).toEqual([]);
+      expect(QueueUtil.toArray(immutablePriorityQueue)).toEqual([]);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one then an array containing them is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of<number>(
+        reverseNumberComparator,
+        [ 1, 3, 2 ]
+      );
+
+      verifyArrays(
+        QueueUtil.toArray(mutablePriorityQueue),
+        [ 3, 2, 1 ]
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one then an array containing them is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r3, r1, r2 ]
+      );
+
+      verifyArrays(
+        QueueUtil.toArray(immutablePriorityQueue),
+        [ r1, r2, r3 ]
+      );
+    });
+
+  });
+
+
+
+  describe('toMap', () => {
+
+    it('when given sourceQueue is null, undefined or empty then empty Map is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+
+      expect(QueueUtil.toMap(null, sameNumberRaw)).toEqual(expectedResult);
+      expect(QueueUtil.toMap(undefined, sameNumberRaw)).toEqual(expectedResult);
+
+      expect(QueueUtil.toMap(mutablePriorityQueue, sameNumberRaw)).toEqual(expectedResult);
+      expect(QueueUtil.toMap(immutablePriorityQueue, sameNumberFFunction)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 2, 3, 4 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(mutablePriorityQueue, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(mutablePriorityQueue, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(mutablePriorityQueue, null, plus1Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(mutablePriorityQueue, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one but discriminatorKey or valueMapper are null or undefined then an error is thrown', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberComparator,
+        [ 2, 3, 4 ]
+      );
+
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(immutablePriorityQueue, null)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(immutablePriorityQueue, undefined)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(immutablePriorityQueue, null, plus1Raw)).toThrowError(IllegalArgumentError);
+      // @ts-ignore
+      expect(() => QueueUtil.toMap(immutablePriorityQueue, undefined, plus1FFunction)).toThrowError(IllegalArgumentError);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and only discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 3, 2, 6 ]
+      );
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 1);
+      expectedResult.set(2, 2);
+      expectedResult.set(3, 3);
+      expectedResult.set(6, 6);
+
+      verifyMaps(
+        QueueUtil.toMap(mutablePriorityQueue, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(mutablePriorityQueue, sameNumberFFunction),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one and only discriminatorKey is provided then all elements will be split using discriminatorKey', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberComparator,
+        [ 1, 3, 2, 6 ]
+      );
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 1);
+      expectedResult.set(2, 2);
+      expectedResult.set(3, 3);
+      expectedResult.set(6, 6);
+
+      verifyMaps(
+        QueueUtil.toMap(immutablePriorityQueue, sameNumberRaw),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(immutablePriorityQueue, sameNumberFFunction),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one and discriminatorKey and valueMapper are provided then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberFComparator,
+        [ 1, 3, 2, 6 ]
+      );
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 2);
+      expectedResult.set(2, 3);
+      expectedResult.set(3, 4);
+      expectedResult.set(6, 7);
+
+      verifyMaps(
+        QueueUtil.toMap(mutablePriorityQueue, sameNumberRaw, plus1Raw),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(mutablePriorityQueue, sameNumberRaw, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(mutablePriorityQueue, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(mutablePriorityQueue, sameNumberFFunction, plus1Function),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one and discriminatorKey and valueMapper are provided then all elements will be transformed using discriminatorKey and valueMapper', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberComparator,
+        [ 1, 3, 2, 6 ]
+      );
+
+      const expectedResult: Map<number, number> = new Map<number, number>;
+      expectedResult.set(1, 2);
+      expectedResult.set(2, 3);
+      expectedResult.set(3, 4);
+      expectedResult.set(6, 7);
+
+      verifyMaps(
+        QueueUtil.toMap(immutablePriorityQueue, sameNumberRaw, plus1Raw),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(immutablePriorityQueue, sameNumberRaw, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(immutablePriorityQueue, sameNumberFFunction, plus1FFunction),
+        expectedResult
+      );
+      verifyMaps(
+        QueueUtil.toMap(immutablePriorityQueue, sameNumberFFunction, plus1Function),
+        expectedResult
+      );
+    });
+
+  });
 
 });
 
@@ -1061,6 +1268,12 @@ const isUserIdOddFPredicate: FPredicate1<User> =
 const isUserIdOddPredicate: Predicate1<User> =
   Predicate1.of((user: User) => 1 == user.id % 2);
 
+const numberComparator: Comparator<number> =
+  Comparator.of(
+    (n1: number, n2: number) =>
+      n1 - n2
+  );
+
 const numberFComparator: FComparator<number> =
   (n1: number, n2: number) => n1 - n2;
 
@@ -1127,6 +1340,14 @@ const roleIdComparator: Comparator<Role> =
     (r1: Role, r2: Role) =>
       r1.id - r2.id
   );
+
+const sameNumberRaw =
+  (n: number) =>
+    n;
+
+const sameNumberFFunction: FFunction1<number, number> =
+  (n: number) =>
+    n;
 
 const stringFComparator: FComparator<string> =
   (s1: string, s2: string) => s1.localeCompare(s2);

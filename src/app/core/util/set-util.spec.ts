@@ -2888,7 +2888,7 @@ describe('SetUtil', () => {
 
   describe('toArray', () => {
 
-    it('when given sourceSet is empty then an empty array is returned', () => {
+    it('when given sourceSet is null, undefined or empty then an empty array is returned', () => {
       const nativeSet = new Set<number>();
       const mutableHashSet = MutableHashSet.empty<string>(
         stringHash,
@@ -2907,9 +2907,13 @@ describe('SetUtil', () => {
         areRolesEquals
       );
 
+      expect(SetUtil.toArray(null)).toEqual([]);
+      expect(SetUtil.toArray(undefined)).toEqual([]);
       expect(SetUtil.toArray(nativeSet)).toEqual([]);
+
       expect(SetUtil.toArray(mutableHashSet)).toEqual([]);
       expect(SetUtil.toArray(mutableLinkedHashSet)).toEqual([]);
+
       expect(SetUtil.toArray(immutableHashSet)).toEqual([]);
       expect(SetUtil.toArray(immutableLinkedHashSet)).toEqual([]);
     });
