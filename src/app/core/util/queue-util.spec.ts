@@ -957,6 +957,114 @@ describe('QueueUtil', () => {
 
 
 
+  describe('sort', () => {
+
+    it('when given sourceQueue is null, undefined or empty then empty array is returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.empty<number>();
+      const immutablePriorityQueue = ImmutablePriorityQueue.empty<number>();
+
+      const comparator =
+        (a: number, b: number) => a - b;
+
+      const expectedResult: number[] = [];
+
+      expect(QueueUtil.sort(null, comparator)).toEqual(expectedResult);
+      expect(QueueUtil.sort(undefined, comparator)).toEqual(expectedResult);
+
+      expect(QueueUtil.sort(mutablePriorityQueue, comparator)).toEqual(expectedResult);
+      expect(QueueUtil.sort(immutablePriorityQueue, comparator)).toEqual(expectedResult);
+    });
+
+
+    it('when given sourceQueue is a non-empty mutable one but comparator is null or undefined then default sort is applied', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of(
+        numberComparator,
+        [ 1, 10, 21, 2 ]
+      );
+
+      const expectedResult = [ 1, 10, 2, 21 ];
+
+      verifyArrays(
+        QueueUtil.sort(mutablePriorityQueue),
+        expectedResult
+      );
+      verifyArrays(
+        QueueUtil.sort(mutablePriorityQueue, null),
+        expectedResult
+      );
+      verifyArrays(
+        QueueUtil.sort(mutablePriorityQueue, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a non-empty immutable one but comparator is null or undefined then default sort is applied', () => {
+      const immutablePriorityQueue = ImmutablePriorityQueue.of(
+        numberComparator,
+        [ 1, 10, 21, 2 ]
+      );
+
+      const expectedResult = [ 1, 10, 2, 21 ];
+
+      verifyArrays(
+        QueueUtil.sort(immutablePriorityQueue),
+        expectedResult
+      );
+      verifyArrays(
+        QueueUtil.sort(immutablePriorityQueue, null),
+        expectedResult
+      );
+      verifyArrays(
+        QueueUtil.sort(immutablePriorityQueue, undefined),
+        expectedResult
+      );
+    });
+
+
+    it('when given sourceQueue is a not empty mutable one and comparator is provided then the sorted array using comparator is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 3, name: 'role3' } as Role;
+
+      const mutablePriorityQueue = MutablePriorityQueue.of<Role>(
+        roleIdComparator,
+        [ r2, r3, r1 ]
+      );
+
+      const comparator: FComparator<Role> =
+        (a, b) => b.id - a.id;
+
+      verifyArrays(
+        QueueUtil.sort(mutablePriorityQueue, comparator),
+        [ r3, r2, r1 ]
+      );
+    });
+
+
+    it('when given sourceQueue is a not empty immutable one and comparator is provided then the sorted array using comparator is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(3, 'user3');
+
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<User>(
+        reverseUserIdFComparator,
+        [ u3, u1, u2 ]
+      );
+
+      const comparator: Comparator<User> =
+        Comparator.of((a, b) => a.id - b.id);
+
+      verifyArrays(
+        QueueUtil.sort(immutablePriorityQueue, comparator),
+        [ u1, u2, u3 ]
+      );
+    });
+
+  });
+
+
+
   describe('toArray', () => {
 
     it('when given sourceQueue is null, undefined or empty then an empty array is returned', () => {

@@ -214,6 +214,51 @@ describe("Benchmark: QueueUtil", () => {
 
 
 
+  /**
+   * sort comparison:
+   */
+  bench("MutablePriorityQueue sort: lowNumberOfItemsConsecutiveIds", () => {
+    QueueUtil.sort(mutablePriorityQueue_LowNumberOfItemsConsecutiveIds, itemsComparator);
+  });
+
+
+  bench("MutablePriorityQueue sort: mediumNumberOfItemsConsecutiveId", () => {
+    QueueUtil.sort(mutablePriorityQueue_MediumNumberOfItemsConsecutiveIds, itemsComparator);
+  });
+
+
+  bench("MutablePriorityQueue sort: mediumNumberOfItemsNoConsecutiveIds", () => {
+    QueueUtil.sort(mutablePriorityQueue_MediumNumberOfItemsNoConsecutiveIds, itemsComparator);
+  });
+
+
+  bench("ImmutablePriorityQueue sort: lowNumberOfItemsConsecutiveIds", () => {
+    QueueUtil.sort(immutablePriorityQueue_LowNumberOfItemsConsecutiveIds, itemsComparator);
+  });
+
+
+  bench("ImmutablePriorityQueue sort: mediumNumberOfItemsConsecutiveId", () => {
+    QueueUtil.sort(immutablePriorityQueue_MediumNumberOfItemsConsecutiveIds, itemsComparator);
+  });
+
+
+  bench("ImmutablePriorityQueue sort: mediumNumberOfItemsNoConsecutiveIds", () => {
+    QueueUtil.sort(immutablePriorityQueue_MediumNumberOfItemsNoConsecutiveIds, itemsComparator);
+  });
+
+
+/*
+ name                                                                           hz |    min |    max |   mean |    p75 |    p99 |   p995 |   p999 |     rme |  samples
+-----------------------------------------------------------------------------------+--------+--------+--------+--------+--------+--------+--------+---------+-----------
+ MutablePriorityQueue sort: lowNumberOfItemsConsecutiveIds              792,730.91   0.0009   0.5973   0.0013   0.0013   0.0019   0.0024   0.0040    ±0.32%     396366
+ MutablePriorityQueue sort: mediumNumberOfItemsConsecutiveId             17,405.10   0.0485   3.5673   0.0575   0.0580   0.0730   0.0890   0.2401    ±1.43%       8703
+ MutablePriorityQueue sort: mediumNumberOfItemsNoConsecutiveIds          17,470.96   0.0463   0.3383   0.0572   0.0581   0.0738   0.0817   0.2031    ±0.29%       8736
+
+ ImmutablePriorityQueue sort: lowNumberOfItemsConsecutiveIds            790,252.13   0.0010   0.2678   0.0013   0.0013   0.0020   0.0024   0.0041    ±0.29%     395127
+ ImmutablePriorityQueue sort: mediumNumberOfItemsConsecutiveId           17,544.23   0.0479   0.3068   0.0570   0.0580   0.0729   0.0772   0.1913    ±0.27%       8773
+ ImmutablePriorityQueue sort: mediumNumberOfItemsNoConsecutiveIds        17,580.93   0.0463   0.4335   0.0569   0.0579   0.0642   0.0722   0.1701    ±0.25%       8791
+*/
+
 });
 
 
@@ -260,6 +305,9 @@ const isItemIdEven =
 
 const itemIdComparator: FComparator<Item> =
   (i1: Item, i2: Item) => i1.id - i2.id;
+
+const itemsComparator =
+  (a: Item, b: Item) => a.id - b.id;
 
 
 const mutablePriorityQueue_LowNumberOfItemsConsecutiveIds = MutablePriorityQueue.of<Item>(

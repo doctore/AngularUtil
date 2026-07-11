@@ -9,6 +9,7 @@ import { Nullable, NullableOrUndefined, OrUndefined } from '@app-core/type';
 import { Predicate1, TPredicate1 } from '@app-core/type/predicate';
 import { FFunction2, Function1, Function2, TFunction1, TFunction2 } from '@app-core/type/function';
 import { BinaryOperator, FBinaryOperator, TBinaryOperator } from '@app-core/type/function/operator';
+import { Comparator, TComparator } from '@app-core/type/comparator';
 
 /**
  * Helper functions to manage {@link AbstractQueue}.
@@ -467,6 +468,47 @@ export class QueueUtil {
       }
     }
     return result;
+  }
+
+
+  /**
+   * Sorts the given `sourceQueue` using `comparator` if provided or default ordination otherwise.
+   *
+   * @apiNote
+   *    The default sort order is ascending, built upon converting the elements into strings, then comparing their
+   * sequences of UTF-16 code units values.
+   *
+   * <pre>
+   *    sort(                                              Result:
+   *      [1, 10, 21, 2]                                    [1, 10, 2, 21]
+   *    )
+   *    sort(                                              Result:
+   *      [1, 10, 21, 2],                                   [1, 2, 10, 21]
+   *      (a: number, b: number) => a - b
+   *    )
+   * </pre>
+   *
+   * @param sourceQueue
+   *    {@link AbstractQueue} to sort
+   * @param comparator
+   *    {@link TComparator} used to determine the order of the elements
+   *
+   * @return new sorted array
+   */
+  static sort = <T>(sourceQueue: NullableOrUndefined<AbstractQueue<T>>,
+                    comparator?: Nullable<TComparator<T>>): T[] => {
+    if (this.isEmpty(sourceQueue)) {
+      return [];
+    }
+    const clonedSourceQueueAsArray = QueueUtil.toArray(
+      sourceQueue
+    );
+    return comparator
+      ? clonedSourceQueueAsArray.sort(
+          Comparator.of(comparator)
+            .getComparator()
+        )
+      : clonedSourceQueueAsArray.sort();
   }
 
 
