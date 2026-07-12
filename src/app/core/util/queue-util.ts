@@ -410,6 +410,24 @@ export class QueueUtil {
 
 
   /**
+   * Verifies if the given `input` is classified as priority queue object, which includes implementations like:
+   * <ul>
+   *   <li>{@link MutablePriorityQueue}</li>
+   *   <li>{@link ImmutablePriorityQueue}</li>
+   * </ul>
+   *
+   * @param input
+   *    Object to verify
+   *
+   * @return `true` if `input` is a priority queue object,
+   *         `false` otherwise
+   */
+  static isPriorityQueue = (input?: any): boolean =>
+    input instanceof MutablePriorityQueue ||
+    input instanceof ImmutablePriorityQueue;
+
+
+  /**
    *    Performs a reduction on the elements of `sourceQueue`, using an associative accumulation {@link TBinaryOperator},
    * and returns a value describing the reduced elements, if any. Returns `undefined` otherwise.
    *
@@ -475,8 +493,12 @@ export class QueueUtil {
    * Sorts the given `sourceQueue` using `comparator` if provided or default ordination otherwise.
    *
    * @apiNote
-   *    The default sort order is ascending, built upon converting the elements into strings, then comparing their
-   * sequences of UTF-16 code units values.
+   *    When `comparator` is not provided:
+   *    <ul>
+   *      <li>If `sourceQueue` is a priority queue, their elements are returned (equivalent to {@link QueueUtil#toArray}).</li>
+   *      <li>If `sourceQueue` is not a priority queue, the sort order is ascending, built upon converting the elements into strings,
+   *          then comparing their sequences of UTF-16 code units values.</li>
+   *    </ul>
    *
    * <pre>
    *    sort(                                              Result:
@@ -508,7 +530,9 @@ export class QueueUtil {
           Comparator.of(comparator)
             .getComparator()
         )
-      : clonedSourceQueueAsArray.sort();
+      : this.isPriorityQueue(sourceQueue)
+          ? clonedSourceQueueAsArray
+          : clonedSourceQueueAsArray.sort();
   }
 
 

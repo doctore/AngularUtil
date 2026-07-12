@@ -885,6 +885,65 @@ describe('QueueUtil', () => {
 
 
 
+  describe('isPriorityQueue', () => {
+
+    it('when given input is null or undefined then false will be returned', () => {
+      const expectedResult = false;
+
+      expect(QueueUtil.isPriorityQueue()).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue(undefined)).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue(null)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is not a priority queue then false will be returned', () => {
+      const user = new User(1, 'user1');
+      const nativeSet = new Set<number>(
+        [ 1 ]
+      );
+      const mutableHashSet = MutableHashSet.of<string>(
+        undefined,
+        undefined,
+        [ 'a', 'b', 'c' ]
+      );
+      const immutableHashSet = ImmutableHashSet.of<User>(
+        undefined,
+        undefined,
+        [ new User(1, 'user1') ]
+      );
+
+      const expectedResult = false;
+
+      expect(QueueUtil.isPriorityQueue(12)).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue("abc")).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue({})).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue(user)).toEqual(expectedResult);
+
+      expect(QueueUtil.isPriorityQueue(nativeSet)).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue(mutableHashSet)).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue(immutableHashSet)).toEqual(expectedResult);
+    });
+
+
+    it('when given input is a priority queue then true will be returned', () => {
+      const mutablePriorityQueue = MutablePriorityQueue.of<number>(
+        reverseNumberComparator,
+        [ 1, 3 ]
+      );
+      const immutablePriorityQueue = ImmutablePriorityQueue.of<Role>(
+        roleIdComparator
+      );
+
+      const expectedResult = true;
+
+      expect(QueueUtil.isPriorityQueue(mutablePriorityQueue)).toEqual(expectedResult);
+      expect(QueueUtil.isPriorityQueue(immutablePriorityQueue)).toEqual(expectedResult);
+    });
+
+  });
+
+
+
   describe('reduce', () => {
 
     it('when given sourceQueue is null, undefined or empty then initialValue is returned', () => {
@@ -976,13 +1035,13 @@ describe('QueueUtil', () => {
     });
 
 
-    it('when given sourceQueue is a non-empty mutable one but comparator is null or undefined then default sort is applied', () => {
+    it('when given sourceQueue is a non-empty mutable priority queue one but comparator is null or undefined then internal sort is applied', () => {
       const mutablePriorityQueue = MutablePriorityQueue.of(
         numberComparator,
         [ 1, 10, 21, 2 ]
       );
 
-      const expectedResult = [ 1, 10, 2, 21 ];
+      const expectedResult = [ 1, 2, 10, 21 ];
 
       verifyArrays(
         QueueUtil.sort(mutablePriorityQueue),
@@ -999,13 +1058,13 @@ describe('QueueUtil', () => {
     });
 
 
-    it('when given sourceQueue is a non-empty immutable one but comparator is null or undefined then default sort is applied', () => {
+    it('when given sourceQueue is a non-empty immutable priority queue one but comparator is null or undefined then internal sort is applied', () => {
       const immutablePriorityQueue = ImmutablePriorityQueue.of(
         numberComparator,
         [ 1, 10, 21, 2 ]
       );
 
-      const expectedResult = [ 1, 10, 2, 21 ];
+      const expectedResult = [ 1, 2, 10, 21 ];
 
       verifyArrays(
         QueueUtil.sort(immutablePriorityQueue),
