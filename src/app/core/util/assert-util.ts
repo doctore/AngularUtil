@@ -14,6 +14,64 @@ export class AssertUtil {
 
 
   /**
+   * Checks if the given `value` is `false`.
+   *
+   * @param value
+   *    Value to check
+   * @param message
+   *    Custom message to include more information about the error
+   *
+   * @return `true` if `value` is `false`,
+   *         {IllegalArgumentError} if `value` is `undefined`, `null` or `true`
+   *
+   * @throws {IllegalArgumentError} if `value` is `undefined`, `null` or `true`
+   */
+  static isFalse(value: NullableOrUndefined<boolean>,
+                 message?: Nullable<string>): boolean;
+
+
+  /**
+   * Checks if the given `value` is `false`.
+   *
+   * @param value
+   *    Value to check
+   * @param errorSupplier
+   *    {@link TFunction0} used to provide the returned {@link Error}
+   *
+   * @return `true` if `value` is `false`,
+   *         {IllegalArgumentError} if `value` is `null` or `undefined`
+   *         if `value` is `true`:
+   *            Custom {@link Error} if `errorSupplier` is defined,
+   *            {IllegalArgumentError} otherwise
+   *
+   * @throws {IllegalArgumentError} if `value` is `undefined`, `null` or `true`
+   */
+  static isFalse(value: NullableOrUndefined<boolean>,
+                 errorSupplier?: Nullable<TFunction0<Error>>): boolean;
+
+
+  static isFalse(value: NullableOrUndefined<boolean>,
+                 errorSupplierOrMessage?: Nullable<TFunction0<Error> | string>): boolean {
+    AssertUtil.notNullOrUndefined(
+      value,
+      'value is null or undefined'
+    );
+    if (!value) {
+      return true;
+    }
+    if (Function0.isFunction(errorSupplierOrMessage) || isFFunction0(errorSupplierOrMessage)) {
+      throw Function0.of(errorSupplierOrMessage)
+        .apply();
+    }
+    throw new IllegalArgumentError(
+      errorSupplierOrMessage
+        ? errorSupplierOrMessage
+        : 'value is true'
+    );
+  }
+
+
+  /**
    * Checks if the given `value` is `true`.
    *
    * @param value
@@ -52,13 +110,13 @@ export class AssertUtil {
 
   static isTrue(value: NullableOrUndefined<boolean>,
                 errorSupplierOrMessage?: Nullable<TFunction0<Error> | string>): boolean {
-    if (value) {
-      return true;
-    }
     AssertUtil.notNullOrUndefined(
       value,
       'value is null or undefined'
     );
+    if (value) {
+      return true;
+    }
     if (Function0.isFunction(errorSupplierOrMessage) || isFFunction0(errorSupplierOrMessage)) {
       throw Function0.of(errorSupplierOrMessage)
         .apply();
