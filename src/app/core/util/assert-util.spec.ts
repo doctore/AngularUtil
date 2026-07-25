@@ -20,6 +20,66 @@ describe('AssertUtil', () => {
 
 
 
+  describe('hasText', () => {
+
+    it('when given value is null or undefined then an IllegalArgumentError with default message is thrown', () => {
+      const nullOrUndefinedErrorMessage = 'value is null or undefined';
+      const errorSupplierFF: FFunction0<TypeError> = () => new TypeError('never thrown');
+      const errorSupplierF: Function0<TypeError> = Function0.of(() => new TypeError('never thrown'));
+
+      expect(() => AssertUtil.hasText(undefined)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+      expect(() => AssertUtil.hasText(null)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+
+      expect(() => AssertUtil.hasText(undefined, errorSupplierFF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+      expect(() => AssertUtil.hasText(null, errorSupplierFF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+
+      expect(() => AssertUtil.hasText(undefined, errorSupplierF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+      expect(() => AssertUtil.hasText(null, errorSupplierF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+    });
+
+
+    it('when given value is not a valid one and the second parameter should be managed as error message then an IllegalArgumentError is thrown', () => {
+      const defaultErrorMessage = 'value does not contain valid string content';
+      const errorMessage = 'There is an error';
+
+      expect(() => AssertUtil.hasText('')).toThrowError(new IllegalArgumentError(defaultErrorMessage));
+      expect(() => AssertUtil.hasText('  ', errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+    });
+
+
+    it('when given value is not a valid one and the second parameter is a FFunction0 then an specific Error is thrown', () => {
+      const errorMessage = 'There is an error';
+      const errorSupplier: FFunction0<TypeError> = () => new TypeError(errorMessage);
+
+      expect(() => AssertUtil.hasText('', errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.hasText('  ', () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+    });
+
+
+    it('when given value is not a valid one and the second parameter is a Function0 then an specific Error is thrown', () => {
+      const errorMessage = 'There is an error';
+      const errorSupplier: Function0<TypeError> = Function0.of(() => new TypeError(errorMessage));
+
+      expect(() => AssertUtil.hasText('', errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.hasText('  ', errorSupplier)).toThrowError(new TypeError(errorMessage));
+    });
+
+
+    it('when given value is a valid string then true one is returned', () => {
+      const errorMessage = 'There is an error';
+      const errorSupplier: Function0<TypeError> = Function0.of(() => new TypeError(errorMessage));
+      const errorFSupplier: FFunction0<TypeError> = () => new TypeError(errorMessage);
+
+      expect(AssertUtil.hasText(' a ')).toBe(true);
+      expect(AssertUtil.hasText('123', errorMessage)).toBe(true);
+      expect(AssertUtil.hasText('a   ', errorSupplier)).toBe(true);
+      expect(AssertUtil.hasText('    b', errorFSupplier)).toBe(true);
+    });
+
+  });
+
+
+
   describe('isFalse', () => {
 
     it('when given value is null or undefined then an IllegalArgumentError with default message is thrown', () => {
@@ -65,7 +125,7 @@ describe('AssertUtil', () => {
     });
 
 
-    it('when given value is false then this one is returned', () => {
+    it('when given value is false then true one is returned', () => {
       const errorMessage = 'There is an error';
       const errorSupplier: Function0<TypeError> = Function0.of(() => new TypeError(errorMessage));
       const errorFSupplier: FFunction0<TypeError> = () => new TypeError(errorMessage);
@@ -125,7 +185,7 @@ describe('AssertUtil', () => {
     });
 
 
-    it('when given value is true then this one is returned', () => {
+    it('when given value is true then true is returned', () => {
       const errorMessage = 'There is an error';
       const errorSupplier: Function0<TypeError> = Function0.of(() => new TypeError(errorMessage));
       const errorFSupplier: FFunction0<TypeError> = () => new TypeError(errorMessage);
@@ -175,7 +235,7 @@ describe('AssertUtil', () => {
     });
 
 
-    it('when given value is neither null nor undefined then this one is returned', () => {
+    it('when given value is neither null nor undefined then true is returned', () => {
       const numberForTesting = 10;
       const stringForTesting = 'ForTestPurpose';
       const objectForTesting = { name: 'ForTestPurpose' };

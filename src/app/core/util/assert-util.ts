@@ -1,4 +1,4 @@
-import { ObjectUtil } from '@app-core/util';
+import { ObjectUtil, StringUtil } from '@app-core/util';
 import { Nullable, NullableOrUndefined } from '@app-core/type';
 import { Function0, isFFunction0, TFunction0 } from '@app-core/type/function';
 import { IllegalArgumentError } from '@app-core/error';
@@ -10,6 +10,65 @@ export class AssertUtil {
 
   constructor() {
     throw new SyntaxError('AssertUtil is an utility class');
+  }
+
+
+  /**
+   *    Checks if the given `value` contains valid string content; that is, it must not be `null` or `undefined`
+   * and must contain at least one non-whitespace character.
+   *
+   * @param value
+   *    Value to check
+   * @param message
+   *    Custom message to include more information about the error
+   *
+   * @return `true` if `value` is `false`,
+   *         {IllegalArgumentError} if `value` is `undefined`, `null` or does not contain valid string content
+   *
+   * @throws {IllegalArgumentError} if `value` is `undefined`, `null` or does not contain valid string content
+   */
+  static hasText(value: NullableOrUndefined<string>,
+                 message?: Nullable<string>): boolean;
+
+
+  /**
+   * Checks if the given `value` is `false`.
+   *
+   * @param value
+   *    Value to check
+   * @param errorSupplier
+   *    {@link TFunction0} used to provide the returned {@link Error}
+   *
+   * @return `true` if `value` is a valid non-empty string value,
+   *         {IllegalArgumentError} if `value` is `null` or `undefined`
+   *         if `value` does not contain valid string content:
+   *            Custom {@link Error} if `errorSupplier` is defined,
+   *            {IllegalArgumentError} otherwise
+   *
+   * @throws {IllegalArgumentError} if `value` is `undefined`, `null` or does not contain valid string content
+   */
+  static hasText(value: NullableOrUndefined<string>,
+                 errorSupplier?: Nullable<TFunction0<Error>>): boolean;
+
+
+  static hasText(value: NullableOrUndefined<string>,
+                 errorSupplierOrMessage?: Nullable<TFunction0<Error> | string>): boolean {
+    AssertUtil.notNullOrUndefined(
+      value,
+      'value is null or undefined'
+    );
+    if (!StringUtil.isBlank(value)) {
+      return true;
+    }
+    if (Function0.isFunction(errorSupplierOrMessage) || isFFunction0(errorSupplierOrMessage)) {
+      throw Function0.of(errorSupplierOrMessage)
+        .apply();
+    }
+    throw new IllegalArgumentError(
+      errorSupplierOrMessage
+        ? errorSupplierOrMessage
+        : 'value does not contain valid string content'
+    );
   }
 
 
