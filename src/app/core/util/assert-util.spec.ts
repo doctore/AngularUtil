@@ -1,6 +1,10 @@
 import { AssertUtil } from '@app-core/util';
 import { FFunction0, Function0 } from '@app-core/type/function';
 import { IllegalArgumentError } from '@app-core/error';
+import { EqualityFunction, HashFunction } from '@app-core/type/collection';
+import { ImmutableLinkedHashSet, MutableHashSet } from '@app-core/type/collection/set';
+import { FComparator } from '@app-core/type/comparator';
+import { ImmutablePriorityQueue, MutablePriorityQueue } from '@app-core/type/collection/queue';
 
 /**
  * To invoke only this test:
@@ -200,6 +204,158 @@ describe('AssertUtil', () => {
 
 
 
+  describe('nonNullOrUndefinedElements', () => {
+
+    it('when given value is null or undefined then an IllegalArgumentError with default message is thrown', () => {
+      const nullOrUndefinedErrorMessage = 'values is null or undefined';
+      const errorSupplierFF: FFunction0<TypeError> = () => new TypeError('never thrown');
+      const errorSupplierF: Function0<TypeError> = Function0.of(() => new TypeError('never thrown'));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements(undefined)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements(null)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements(undefined, errorSupplierFF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements(null, errorSupplierFF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements(undefined, errorSupplierF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements(null, errorSupplierF)).toThrowError(new IllegalArgumentError(nullOrUndefinedErrorMessage));
+    });
+
+
+    it('when given value is not a valid one and the second parameter should be managed as error message then an IllegalArgumentError is thrown', () => {
+      const defaultErrorMessage = 'values contains null or undefined elements';
+      const errorMessage = 'There is an error';
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ null ])).toThrowError(new IllegalArgumentError(defaultErrorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ undefined ], errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ 2, undefined ], errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ 2, null ], errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements(new Set<number | null>([ 1, null ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements(new Set<number | undefined>([ 1, undefined ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 1, null ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 3, undefined ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 1, null ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 3, undefined ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 1, null ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 3, undefined ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 1, null ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 3, undefined ]), errorMessage)).toThrowError(new IllegalArgumentError(errorMessage));
+    });
+
+
+    it('when given value is not a valid one and the second parameter is a FFunction0 then an specific Error is thrown', () => {
+      const errorMessage = 'There is an error';
+      const errorSupplier: FFunction0<TypeError> = () => new TypeError(errorMessage);
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ null ], errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ undefined ], () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ 2, undefined ], errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ 2, null ], () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements(new Set<number | null>([ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements(new Set<number | undefined>([ 1, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 1, null ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+    });
+
+
+    it('when given value is not a valid one and the second parameter is a Function0 then an specific Error is thrown', () => {
+      const errorMessage = 'There is an error';
+      const errorSupplier: Function0<TypeError> = Function0.of(() => new TypeError(errorMessage));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ null ], errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ undefined ], errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ 2, undefined ], errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements([ 2, null ], errorSupplier)).toThrowError(new TypeError(errorMessage));
+
+      expect(() => AssertUtil.nonNullOrUndefinedElements(new Set<number | null>([ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      expect(() => AssertUtil.nonNullOrUndefinedElements(new Set<number | undefined>([ 1, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 1, null ]), errorSupplier)).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 1, null ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+      // @ts-ignore
+      expect(() => AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 3, undefined ]), () => new TypeError(errorMessage))).toThrowError(new TypeError(errorMessage));
+    });
+
+
+    it('when given value is a valid iterable then true one is returned', () => {
+      const errorMessage = 'There is an error';
+      const errorSupplier: Function0<TypeError> = Function0.of(() => new TypeError(errorMessage));
+      const errorFSupplier: FFunction0<TypeError> = () => new TypeError(errorMessage);
+
+      expect(AssertUtil.nonNullOrUndefinedElements([ 1 ])).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements([ 1 ], errorMessage)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements([ 1 ], errorSupplier)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements([ 1 ], errorFSupplier)).toBe(true);
+
+      expect(AssertUtil.nonNullOrUndefinedElements(new Set<number>([ 1 ]))).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(new Set<number>([ 1 ]), errorMessage)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(new Set<number>([ 1 ]), errorSupplier)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(new Set<number>([ 1 ]), errorFSupplier)).toBe(true);
+
+      expect(AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 1 ]))).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 1 ]), errorMessage)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 1 ]), errorSupplier)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(MutableHashSet.of(numberHash, areNumberEquals, [ 1 ]), errorFSupplier)).toBe(true);
+
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 1 ]))).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 1 ]), errorMessage)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 1 ]), errorSupplier)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutableLinkedHashSet.of(numberHash, areNumberEquals, [ 1 ]), errorFSupplier)).toBe(true);
+
+      expect(AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 1 ]))).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 1 ]), errorMessage)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 1 ]), errorSupplier)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(MutablePriorityQueue.of(numberFComparator, [ 1 ]), errorFSupplier)).toBe(true);
+
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 1 ]))).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 1 ]), errorMessage)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 1 ]), errorSupplier)).toBe(true);
+      expect(AssertUtil.nonNullOrUndefinedElements(ImmutablePriorityQueue.of(numberFComparator, [ 1 ]), errorFSupplier)).toBe(true);
+    });
+
+  });
+
+
+
   describe('notNullOrUndefined', () => {
 
     it('when given value is null or undefined and the second parameter should be managed as error message then an IllegalArgumentError is thrown', () => {
@@ -255,3 +411,14 @@ describe('AssertUtil', () => {
   });
 
 });
+
+
+
+const areNumberEquals: EqualityFunction<number> =
+  (n1: number, n2: number) => n1 == n2;
+
+const numberFComparator: FComparator<number> =
+  (n1: number, n2: number) => n1 - n2;
+
+const numberHash: HashFunction<number> =
+  (n: number) => n % 50;
