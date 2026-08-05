@@ -562,6 +562,43 @@ export class ArrayUtil {
 
 
   /**
+   *    Returns `true` if based on the provided `equalsFunction`, the given `itemToFind` was found in `sourceArray`.
+   * `false` otherwise.
+   *
+   * <pre>
+   *    exists(                                                                            Result:
+   *      [1, 3, 11, 20],                                                                   false
+   *      16
+   *    )
+   *    exists(                                                                            Result:
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         true
+   *      {id: 2, name: 'user2 v2'},
+   *      (u1: User, u2: User) => u1.id == u2.id
+   *    )
+   * </pre>
+   *
+   * @param sourceArray
+   *    Array to search
+   * @param itemToFind
+   *    Element to compare and search in `sourceArray`
+   * @param equalsFunction
+   *    {@link TPredicate2} used to compare `itemToFind` with the current element in `sourceArray`. If it is `null`
+   *    or `undefined` then {@link ObjectUtil#equals} will be used.
+   *
+   * @return `false` if `sourceArray` has no elements or no one verifies provided `equalsFunction`.
+   *         `true` otherwise
+   */
+  static exists = <T>(sourceArray: NullableOrUndefined<T[]>,
+                      itemToFind: T,
+                      equalsFunction?: NullableOrUndefined<TPredicate2<T, T>>): boolean =>
+    -1 !== this.findIndex(
+      sourceArray,
+      itemToFind,
+      equalsFunction
+    )
+
+
+  /**
    *    Returns a new array using `sourceArray` as source, adding from the result the elements that verify the
    * given {@link TPredicate1} `filterPredicate`.
    *

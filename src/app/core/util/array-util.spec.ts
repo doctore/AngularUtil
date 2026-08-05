@@ -871,6 +871,72 @@ describe('ArrayUtil', () => {
 
 
 
+  describe('exists', () => {
+
+    it('when given sourceArray is undefined, null or empty and itemToFind is provided then false is returned', () => {
+      const emptyArray: Role[] = [];
+      const role = { id: 1, name: 'role1' } as Role;
+
+      expect(ArrayUtil.exists(undefined, role)).toBe(false);
+      expect(ArrayUtil.exists(null, role)).toBe(false);
+      expect(ArrayUtil.exists(emptyArray, role)).toBe(false);
+    });
+
+
+    it('when given sourceArray is undefined, null or empty and itemToFind and equalsFunction are provided then false is returned', () => {
+      const emptyArray: Role[] = [];
+      const role = { id: 1, name: 'role1' } as Role;
+
+      expect(ArrayUtil.exists(undefined, role, areAllRolePropertiesEqualsFPredicate)).toBe(false);
+      expect(ArrayUtil.exists(null, role, areAllRolePropertiesEqualsFPredicate)).toBe(false);
+      expect(ArrayUtil.exists(emptyArray, role, areAllRolePropertiesEqualsFPredicate)).toBe(false);
+    });
+
+
+    it('when given sourceArray is not empty and contains null or undefined, the itemToFind is null or undefined then true is returned', () => {
+      expect(ArrayUtil.exists([1, undefined, 2], undefined)).toBe(true);
+      expect(ArrayUtil.exists([1, 3, null], null)).toBe(true);
+    });
+
+
+    it('when given sourceArray is not empty, itemToFind is provided but there is no element that matches then false is returned', () => {
+      const u1 = new User(1, 'user1');
+      const u2 = new User(2, 'user2');
+      const u3 = new User(1, 'user2');
+      const u4 = new User(4, 'user1');
+      const sourceArray = [ u1, u2, u3, u4 ];
+
+      const uToSearch = new User(5, 'user5');
+
+      expect(ArrayUtil.exists(sourceArray, uToSearch)).toBe(false);
+      expect(ArrayUtil.exists(sourceArray, uToSearch, null)).toBe(false);
+      expect(ArrayUtil.exists(sourceArray, uToSearch, areUsersEqualsByIdRaw)).toBe(false);
+      expect(ArrayUtil.exists(sourceArray, uToSearch, areAllUserPropertiesEqualsFPredicate)).toBe(false);
+      expect(ArrayUtil.exists(sourceArray, uToSearch, areUsersEqualsPredicate)).toBe(false);
+    });
+
+
+    it('when given sourceArray is not empty, itemToFind is provided and there is an element that matches then true is returned', () => {
+      const r1 = { id: 1, name: 'role1' } as Role;
+      const r2 = { id: 2, name: 'role2' } as Role;
+      const r3 = { id: 2, name: 'role3' } as Role;
+      const r4 = { id: 4, name: 'role2' } as Role;
+      const sourceArray = [ r1, r2, r3, r4 ];
+
+      const r2SameId = { id: 2, name: 'role2 v2' } as Role;
+      const r2Cloned = { id: 2, name: 'role2' } as Role;
+
+      expect(ArrayUtil.exists(sourceArray, r2, null)).toBe(true);
+      expect(ArrayUtil.exists(sourceArray, r3, areRolesEqualsByIdRaw)).toBe(true);
+      expect(ArrayUtil.exists(sourceArray, r2SameId, areRolesEqualsByIdRaw)).toBe(true);
+      expect(ArrayUtil.exists(sourceArray, r2Cloned, areAllRolePropertiesEqualsFPredicate)).toBe(true);
+      expect(ArrayUtil.exists(sourceArray, r3, areRolesEqualsPredicate)).toBe(true);
+    });
+
+  });
+
+
+
   describe('filter', () => {
 
     it('when given sourceArray has no elements then empty array is returned', () => {
