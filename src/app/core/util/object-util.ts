@@ -241,14 +241,12 @@ export class ObjectUtil {
    * @return new object cloning the properties and/or values included in `sourceObject`,
    *         `undefined` if `sourceObject` is `null` or `undefined`
    */
-  static copy = <T> (sourceObject: NullableOrUndefined<T>): OrUndefined<T> => {
-    if (this.isNullOrUndefined(sourceObject)) {
-      return undefined;
-    }
-    return _.cloneDeep(
-      sourceObject
-    );
-  }
+  static copy = <T> (sourceObject: NullableOrUndefined<T>): OrUndefined<T> =>
+    this.isNullOrUndefined(sourceObject)
+      ? undefined
+      : _.cloneDeep(
+          sourceObject
+        );
 
 
   /**
