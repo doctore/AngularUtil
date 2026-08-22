@@ -220,6 +220,38 @@ export class ObjectUtil {
 
 
   /**
+   * Clones the given `sourceObject` including internal properties if it exists.
+   *
+   * @apiNote
+   *    This method supports cloning arrays, array buffers, booleans, date objects, maps, numbers, Object objects, regexes,
+   * sets, strings, symbols, and typed arrays. The own enumerable properties of arguments objects are cloned as plain objects.
+   *
+   * <pre>
+   *    copy(                                          Result:
+   *      null                                          null
+   *    )
+   *    copy(
+   *       { user: 'Juan', age: 36, active: true }      { user: 'Juan', age: 36, active: true }
+   *    )
+   * </pre>
+   *
+   * @param sourceObject
+   *    Instance to copy
+   *
+   * @return new object cloning the properties and/or values included in `sourceObject`,
+   *         `undefined` if `sourceObject` is `null` or `undefined`
+   */
+  static copy = <T> (sourceObject: NullableOrUndefined<T>): OrUndefined<T> => {
+    if (this.isNullOrUndefined(sourceObject)) {
+      return undefined;
+    }
+    return _.cloneDeep(
+      sourceObject
+    );
+  }
+
+
+  /**
    *    Using provided `sourceObject` returns a new object containing the property-value pairs that match with given
    * array of properties `propertiesToCopy`.
    *

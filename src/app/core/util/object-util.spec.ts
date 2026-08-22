@@ -201,6 +201,73 @@ describe('ObjectUtil', () => {
 
 
 
+  describe('copy', () => {
+
+    it('when given sourceObject is null or undefined then undefined is returned', () => {
+      // @ts-ignore
+      expect(ObjectUtil.copy(null)).toBe(undefined);
+      // @ts-ignore
+      expect(ObjectUtil.copy(undefined)).toBe(undefined);
+    });
+
+
+    it('when given sourceObject belonging to a native type is provided then a copy of it is returned.', () => {
+      const numberValue = 12;
+      const booleanValue = true;
+      const stringValue = 'test';
+      const tupleValue = [ numberValue, booleanValue, stringValue ];
+
+      enum Color { Red, Green, Blue }
+      const enumValue: Color = Color.Green;
+
+      expect(ObjectUtil.copy(numberValue)).toBe(numberValue);
+      expect(ObjectUtil.copy(booleanValue)).toBe(booleanValue);
+      expect(ObjectUtil.copy(stringValue)).toBe(stringValue);
+      expect(ObjectUtil.copy(enumValue)).toBe(enumValue);
+
+      expect(ObjectUtil.copy(tupleValue)).not.toBe(tupleValue);
+      expect(ObjectUtil.copy(tupleValue)).toStrictEqual(tupleValue);
+    });
+
+
+    it('when given sourceObject is an object then a copy of it is returned.', () => {
+      const plainObject = {
+        user: 'Juan',
+        age: 36,
+        active: true
+      };
+      const user = new User(10, 'user1', [ { id: 10, name: 'role name' } as Role ]);
+
+      expect(ObjectUtil.copy(plainObject)).not.toBe(plainObject);
+      expect(ObjectUtil.copy(plainObject)).toStrictEqual(plainObject);
+
+      expect(ObjectUtil.copy(plainObject)).not.toBe(plainObject);
+      expect(ObjectUtil.copy(user)).toStrictEqual(user);
+    });
+
+
+    it('when given sourceObject is an array then a copy of it is returned.', () => {
+      const plainObject = {
+        user: 'Juan',
+        age: 36,
+        active: true
+      };
+      const user = new User(10, 'user1', [ { id: 10, name: 'role name' } as Role ]);
+
+      const nativeArray = [ 3, 5, 21, 7];
+      const objectArray = [ plainObject, user ];
+
+      expect(ObjectUtil.copy(nativeArray)).not.toBe(nativeArray);
+      expect(ObjectUtil.copy(nativeArray)).toStrictEqual(nativeArray);
+
+      expect(ObjectUtil.copy(objectArray)).not.toBe(objectArray);
+      expect(ObjectUtil.copy(objectArray)).toStrictEqual(objectArray);
+    });
+
+  });
+
+
+
   describe('copyProperties', () => {
 
     it('when given sourceObject is null or undefined then undefined is returned', () => {
