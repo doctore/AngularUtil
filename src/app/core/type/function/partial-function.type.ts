@@ -22,7 +22,6 @@ import { FPredicate1, FPredicate2, Predicate1, Predicate2, TPredicate1, TPredica
  * efficient than calling both {@link PartialFunction#isDefinedAt} and {@link PartialFunction#apply}.
  *
  * <pre>
- * Example:
  *    const multiply2ForEven: PartialFunction<number, number> = PartialFunction.of(
  *      (n: number) => 0 == n % 2
  *      (n: number) => 2 * n

@@ -401,8 +401,6 @@ export abstract class Either<L, R> {
    * transforming internal values into another one.
    *
    * <pre>
-   * Example:
-   *
    *   // Return 11
    *   Either.right<string, number>(11)
    *         .fold(

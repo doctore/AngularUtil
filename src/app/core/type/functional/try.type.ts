@@ -777,8 +777,6 @@ export abstract class Try<T> {
    * applied and throws an {@link Error}, then `mapperFailure` is applied with this {@link Error}.
    *
    * <pre>
-   * Example:
-   *
    *   const fromNumToString = (n: number) => '' + n;
    *   const returnErrorMessage = (error: Error) => error.message;
    *
@@ -973,8 +971,6 @@ export abstract class Try<T> {
    * {@link Failure} applying `mapper`.
    *
    * <pre>
-   * Example:
-   *
    *   // @ts-ignore
    *   Try.ofFunction0(() => doesNotExits)
    *      .recover((e1: Error) => 9999);
@@ -1004,8 +1000,6 @@ export abstract class Try<T> {
    * {@link Failure} applying `mapper`.
    *
    * <pre>
-   * Example:
-   *
    *   // @ts-ignore
    *   Try.ofFunction0(() => doesNotExits)
    *      .recoverWith((e1: Error) => Try.success(9999));
@@ -1090,8 +1084,6 @@ export abstract class Try<T> {
    * will be {@link Failure}.
    *
    * <pre>
-   * Example:
-   *
    *   const fromNumToString = (n: number) => '' + n;
    *   const getErrorMessage = (e: Error) => e.message;
    *

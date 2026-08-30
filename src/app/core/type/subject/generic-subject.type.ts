@@ -32,8 +32,6 @@ export class GenericSubject<T> {
    * Creates a new {@link Observable} with this {@link Subject} as the source.
    *
    * <pre>
-   * Example:
-   *
    *   @Injectable({
    *     providedIn: 'root'
    *   })
@@ -78,8 +76,6 @@ export class GenericSubject<T> {
    * when to stop managing new values.
    *
    * <pre>
-   * Example:
-   *
    *   @Injectable({
    *     providedIn: 'root'
    *   })

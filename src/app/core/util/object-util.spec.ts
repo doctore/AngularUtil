@@ -486,6 +486,84 @@ describe('ObjectUtil', () => {
 
 
 
+  describe('getPathValue', () => {
+
+    it('when given sourceObject or path are null or undefined then undefined is returned', () => {
+      expect(ObjectUtil.getPathValue(null, 'DoesNotCare')).toBe(undefined);
+      expect(ObjectUtil.getPathValue(undefined, "DoesNotCare")).toBe(undefined);
+
+      expect(ObjectUtil.getPathValue({}, null)).toBe(undefined);
+      expect(ObjectUtil.getPathValue({}, undefined)).toBe(undefined);
+    });
+
+
+    it('when given sourceObject is valid but does not contain provided path then undefined is returned', () => {
+      const userRaw = {
+        profile: {
+          name: 'John'
+        }
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      expect(ObjectUtil.getPathValue(userRaw, 'NotFound')).toBe(undefined);
+      expect(ObjectUtil.getPathValue(userRaw, 'profile.id')).toBe(undefined);
+
+      expect(ObjectUtil.getPathValue(role, 'NotFound')).toBe(undefined);
+      expect(ObjectUtil.getPathValue(role, 'profile.id')).toBe(undefined);
+
+      expect(ObjectUtil.getPathValue(user, 'NotFound')).toBe(undefined);
+      expect(ObjectUtil.getPathValue(user, 'profile.id')).toBe(undefined);
+    });
+
+
+    it('when given sourceObject is valid but path is an existing function then undefined is returned', () => {
+      const userRaw = {
+        profile: {
+          name: 'John'
+        }
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      expect(ObjectUtil.getPathValue(userRaw, 'toString')).toBe(undefined);
+
+      expect(ObjectUtil.getPathValue(user, 'compareTo')).toBe(undefined);
+      expect(ObjectUtil.getPathValue(user, 'equals')).toBe(undefined);
+      expect(ObjectUtil.getPathValue(user, 'has')).toBe(undefined);
+      expect(ObjectUtil.getPathValue(user, 'toString')).toBe(undefined);
+    });
+
+
+    it('when given sourceObject is valid and path exists and does not belong to a function then stored value is returned', () => {
+      const userRaw = {
+        profile: {
+          name: 'John'
+        }
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      expect(ObjectUtil.getPathValue(userRaw, 'profile.name')).not.toBe(undefined);
+      expect(ObjectUtil.getPathValue(userRaw, 'profile.name')).toBe(userRaw.profile.name);
+
+      expect(ObjectUtil.getPathValue(role, 'id')).not.toBe(undefined);
+      expect(ObjectUtil.getPathValue(role, 'id')).toBe(role.id);
+      expect(ObjectUtil.getPathValue(role, 'name')).not.toBe(undefined);
+      expect(ObjectUtil.getPathValue(role, 'name')).toBe(role.name);
+
+      expect(ObjectUtil.getPathValue(user, 'id')).not.toBe(undefined);
+      expect(ObjectUtil.getPathValue(user, 'id')).toBe(user.id);
+      expect(ObjectUtil.getPathValue(user, 'name')).not.toBe(undefined);
+      expect(ObjectUtil.getPathValue(user, 'name')).toBe(user.name);
+      expect(ObjectUtil.getPathValue(user, 'roles')).not.toBe(undefined);
+      expect(ObjectUtil.getPathValue(user, 'roles')).toBe(user.roles);
+    });
+
+  });
+
+
+
   describe('hash', () => {
 
     it('when input is null or undefined then 0 is returned', () => {
@@ -522,6 +600,63 @@ describe('ObjectUtil', () => {
       expect(ObjectUtil.hash(role1)).toBe(-2053073999);
       expect(ObjectUtil.hash(role2)).toBe(-699763341);
       expect(ObjectUtil.hash(role3)).toBe(653547317);
+    });
+
+  });
+
+
+
+  describe('hasPath', () => {
+
+    it('when given sourceObject or path are null or undefined then false is returned', () => {
+      expect(ObjectUtil.hasPath(null, 'DoesNotCare')).toBe(false);
+      expect(ObjectUtil.hasPath(undefined, "DoesNotCare")).toBe(false);
+
+      expect(ObjectUtil.hasPath({}, null)).toBe(false);
+      expect(ObjectUtil.hasPath({}, undefined)).toBe(false);
+    });
+
+
+    it('when given sourceObject is valid but does not contain provided path then false is returned', () => {
+      const userRaw = {
+        profile: {
+          name: 'John'
+        }
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      expect(ObjectUtil.hasPath(userRaw, 'NotFound')).toBe(false);
+      expect(ObjectUtil.hasPath(userRaw, 'profile.id')).toBe(false);
+
+      expect(ObjectUtil.hasPath(role, 'NotFound')).toBe(false);
+      expect(ObjectUtil.hasPath(role, 'profile.id')).toBe(false);
+
+      expect(ObjectUtil.hasPath(user, 'NotFound')).toBe(false);
+      expect(ObjectUtil.hasPath(user, 'profile.id')).toBe(false);
+    });
+
+
+    it('when given sourceObject is valid and path exists then true is returned', () => {
+      const userRaw = {
+        profile: {
+          name: 'John'
+        }
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      expect(ObjectUtil.hasPath(userRaw, 'profile.name')).toBe(true);
+      expect(ObjectUtil.hasPath(userRaw, 'toString')).toBe(true);
+
+      expect(ObjectUtil.hasPath(role, 'id')).toBe(true);
+      expect(ObjectUtil.hasPath(role, 'name')).toBe(true);
+      expect(ObjectUtil.hasPath(role, 'toString')).toBe(true);
+
+      expect(ObjectUtil.hasPath(user, 'id')).toBe(true);
+      expect(ObjectUtil.hasPath(user, 'name')).toBe(true);
+      expect(ObjectUtil.hasPath(user, 'roles')).toBe(true);
+      expect(ObjectUtil.hasPath(user, 'toString')).toBe(true);
     });
 
   });

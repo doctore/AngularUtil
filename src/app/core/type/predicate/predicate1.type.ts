@@ -57,7 +57,6 @@ export class Predicate1<T> {
    * Checks all given `predicates` to verify if all of them are satisfied.
    *
    * <pre>
-   * Example:
    *   const isEven: Predicate1<number> = Predicate1.of((n: number) => 0 == n % 2)
    *   const isLowerThan20: FPredicate1<number> = (n: number) => 20 > n;
    *
@@ -115,7 +114,6 @@ export class Predicate1<T> {
    * Checks all given `predicates` to verify that at least one is satisfied.
    *
    * <pre>
-   * Example:
    *   const isEven: Predicate1<number> = Predicate1.of((n: number) => 0 == n % 2)
    *   const isLowerThan20: FPredicate1<number> = (n: number) => 20 > n;
    *

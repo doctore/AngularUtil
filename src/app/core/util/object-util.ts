@@ -104,8 +104,6 @@ export class ObjectUtil {
    * if exists. Otherwise, are compared by their String representation.
    *
    * <pre>
-   * Example:
-   *
    *   class User {
    *     public id: number;
    *     public name: string;
@@ -156,13 +154,13 @@ export class ObjectUtil {
     if (this.isNullOrUndefined(b)) {
       return 1;
     }
-    if (typeof a === "number" && typeof b === "number") {
+    if (typeof a === 'number' && typeof b === 'number') {
       return a - b;
     }
-    if (typeof a === "string" && typeof b === "string") {
+    if (typeof a === 'string' && typeof b === 'string') {
       return a.localeCompare(b);
     }
-    if (typeof a === "boolean" && typeof b === "boolean") {
+    if (typeof a === 'boolean' && typeof b === 'boolean') {
       return Number(a) - Number(b);
     }
     if (a instanceof Date && b instanceof Date) {
@@ -254,8 +252,6 @@ export class ObjectUtil {
    * array of properties `propertiesToCopy`.
    *
    * <pre>
-   * Example:
-   *
    *   class User {
    *     public id: number;
    *     public name: string;
@@ -306,8 +302,6 @@ export class ObjectUtil {
    * that match with given array of properties `propertiesToCopy`.
    *
    * <pre>
-   * Example:
-   *
    *   class User {
    *     public id: number;
    *     public name: string;
@@ -368,8 +362,6 @@ export class ObjectUtil {
    *    Functions and DOM nodes are compared by strict equality, i.e. ===.
    *
    * <pre>
-   * Example:
-   *
    *   class User {
    *     public id: number;
    *     public name: string;
@@ -478,6 +470,79 @@ export class ObjectUtil {
 
 
   /**
+   * Gets a value from an object `sourceObject` using a dot-separated property `path`.
+   *
+   * @apiNote
+   *    Own and inherited properties are supported. Function values are not returned and are never invoked.
+   *
+   * <pre>
+   *   class User {
+   *     public id: number;
+   *     public name: string;
+   *
+   *     constructor(id: number, name: string) {
+   *       this.id = id;
+   *       this.name = name;
+   *     }
+   *
+   *     compareTo = (other?: User | null): number =>
+   *       ObjectUtil.isNullOrUndefined(other)
+   *         ? 1
+   *         : this.id - other.id;
+   *   }
+   *
+   *   const userRaw = {
+   *     profile: {
+   *         name: 'John'
+   *     }
+   *   };
+   *   const user = new User(10, 'user1');
+   *
+   *   getPathValue(userRaw, 'profile.name');   // 'John'
+   *   getPathValue(userRaw, 'profile.id');     // undefined
+   *   getPathValue(userRaw, 'toString');       // undefined
+   *
+   *   getPathValue(user, 'profile.name');   // undefined
+   *   getPathValue(user, 'id');             // 10
+   *   getPathValue(user, 'name');           // 'user1'
+   *   getPathValue(user, 'compareTo');      // undefined
+   *   getPathValue(user, 'toString');       // undefined
+   * </pre>
+   *
+   * @param sourceObject
+   *    The object to traverse
+   * @param path
+   *    A dot-separated property path, such as `"user.profile.name"`
+   *
+   * @return the value at the specified `path` in `sourceObject`.
+   *         `undefined` if `sourceObject` or `path` are `null` or `undefined`, or the `path` cannot be traversed or
+   *         resolves to a function.
+   */
+  static getPathValue(sourceObject: NullableOrUndefined<unknown>,
+                      path: NullableOrUndefined<string>): OrUndefined<unknown> {
+    if (this.isNullOrUndefined(sourceObject) || this.isNullOrUndefined(path)) {
+      return undefined;
+    }
+    return path.split('.')
+      .reduce<unknown>((current, key) => {
+        // Stop if there is nothing left to traverse.
+        // Functions are allowed here because they can have properties too.
+        if (null == current || (typeof current !== 'object' && typeof current !== 'function')) {
+          return undefined;
+        }
+        // Normal property access includes both own and inherited properties.
+        const value = (current as Record<string, unknown>)[key];
+
+        // Do not return function values (e.g. methods, toString, constructor). The function is never invoked.
+        return typeof value === 'function'
+          ? undefined
+          : value;
+
+      }, sourceObject);
+  }
+
+
+  /**
    * Returns the key used for hashing related with provided `input`.
    *
    * @apiNote
@@ -488,8 +553,6 @@ export class ObjectUtil {
    *    </ol>
    *
    * <pre>
-   * Example:
-   *
    *   class User {
    *     public id: number;
    *     public name: string;
@@ -538,6 +601,79 @@ export class ObjectUtil {
       h = ((h << 5) - h + jsonOfInput.charCodeAt(i)) | 0;
     }
     return h;
+  }
+
+
+  /**
+   * Checks whether a property `path` exists on an `sourceObject`.
+   *
+   * @apiNote
+   *    Both own and inherited properties are considered. No filtering is applied to the values found: functions and
+   * properties such as `constructor` and `toString` are considered valid paths. Functions are never invoked.
+   *
+   * <pre>
+   *   class User {
+   *     public id: number;
+   *     public name: string;
+   *
+   *     constructor(id: number, name: string) {
+   *       this.id = id;
+   *       this.name = name;
+   *     }
+   *
+   *     compareTo = (other?: User | null): number =>
+   *       ObjectUtil.isNullOrUndefined(other)
+   *         ? 1
+   *         : this.id - other.id;
+   *   }
+   *
+   *   const userRaw = {
+   *     profile: {
+   *         name: 'John'
+   *     }
+   *   };
+   *   const user = new User(10, 'user1');
+   *
+   *   hasPath(userRaw, 'profile.name');   // true
+   *   hasPath(userRaw, 'profile.id');     // false
+   *   hasPath(userRaw, 'toString');       // true (inherited)
+   *
+   *   hasPath(user, 'profile.name');   // false
+   *   hasPath(user, 'id');             // true
+   *   hasPath(user, 'name');           // true
+   *   hasPath(user, 'compareTo');      // true
+   *   hasPath(user, 'toString');       // true (inherited)
+   * </pre>
+   *
+   * @param sourceObject
+   *    The object to traverse
+   * @param path
+   *    A dot-separated property path, such as `"user.profile.name"`
+   *
+   * @return `true` if every segment of the `path` exists in `sourceObject`,
+   *         otherwise `false` (including if `sourceObject` or `path` are `null` or `undefined`)
+   */
+  static hasPath(sourceObject: NullableOrUndefined<unknown>,
+                 path: NullableOrUndefined<string>): boolean {
+    if (this.isNullOrUndefined(sourceObject) || this.isNullOrUndefined(path)) {
+      return false;
+    }
+    let current: unknown = sourceObject;
+
+    for (const key of path.split('.')) {
+      // Stop if there is nothing left to traverse.
+      if (null == current || (typeof current !== 'object' && typeof current !== 'function')) {
+        return false;
+      }
+      // `in` checks both own and inherited properties.
+      // No filtering is applied: functions count as existing properties.
+      if (!(key in (current as object))) {
+        return false;
+      }
+      // Move to the next value without invoking functions.
+      current = (current as Record<string, unknown>)[key];
+    }
+    return true;
   }
 
 

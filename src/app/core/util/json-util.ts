@@ -60,8 +60,6 @@ export class JsonUtil {
    *  2. Typescript getter/setter accessors were added into the class' definition.
    *
    * <pre>
-   * Example:
-   *
    *   class User {
    *      private _id: number;
    *      private _name: string;

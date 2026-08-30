@@ -67,7 +67,6 @@ export class Predicate3<T1, T2, T3> {
    * Checks all given `predicates` to verify if all of them are satisfied.
    *
    * <pre>
-   * Example:
    *   const isNumberEvenAndStringLongerThan2AndBooleanFalse: Predicate3<number, string, boolean> =
    *      Predicate3.of((n: number, s: string, b: boolean) => 0 == n % 2 && 2 < s.length && !b);
    *
@@ -136,7 +135,6 @@ export class Predicate3<T1, T2, T3> {
    * Checks all given `predicates` to verify that at least one is satisfied.
    *
    * <pre>
-   * Example:
    *   const isNumberEvenAndStringLongerThan2AndBooleanFalse: Predicate3<number, string, boolean> =
    *      Predicate3.of((n: number, s: string, b: boolean) => 0 == n % 2 && 2 < s.length && !b);
    *

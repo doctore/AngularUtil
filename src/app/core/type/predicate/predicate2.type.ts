@@ -62,7 +62,6 @@ export class Predicate2<T1, T2> {
    * Checks all given `predicates` to verify if all of them are satisfied.
    *
    * <pre>
-   * Example:
    *   const isNumberEvenAndStringLongerThan2: Predicate2<number, string> = Predicate2.of((n: number, s: string) => 0 == n % 2 && 2 < s.length);
    *   const isNumberLowerThan20AndStringLongerThan5: FPredicate2<number, string> = (n: number, s: string) => 20 > n && 5 < s.length;
    *
@@ -121,7 +120,6 @@ export class Predicate2<T1, T2> {
    * Checks all given `predicates` to verify that at least one is satisfied.
    *
    * <pre>
-   * Example:
    *   const isNumberEvenAndStringLongerThan2: Predicate2<number, string> = Predicate2.of((n: number, s: string) => 0 == n % 2 && 2 < s.length);
    *   const isNumberLowerThan20AndStringLongerThan5: FPredicate2<number, string> = (n: number, s: string) => 20 > n && 5 < s.length;
    *

@@ -418,8 +418,6 @@ export abstract class Validation<E, T> {
    * {@link Invalid}, transforming internal values into another one.
    *
    * <pre>
-   * Example:
-   *
    *   // Return 11
    *   Validation.valid<string, number>(11)
    *         .fold(

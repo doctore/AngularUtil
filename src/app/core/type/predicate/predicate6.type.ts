@@ -81,7 +81,6 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
    * Checks all given `predicates` to verify if all of them are satisfied.
    *
    * <pre>
-   * Example:
    *   const areNumbersEvenAndStringsLongerThan2: Predicate6<number, string, string, number, number, number> =
    *      Predicate6.of((n1: number, s1: string, s2: string, n2: number, n3: number, n4: number) =>
    *        0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2 && 0 == n3 % 2 && 0 == n4 % 2);
@@ -155,7 +154,6 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
    * Checks all given `predicates` to verify that at least one is satisfied.
    *
    * <pre>
-   * Example:
    *  const areNumbersEvenAndStringsLongerThan2: Predicate6<number, string, string, number, number, number> =
    *      Predicate6.of((n1: number, s1: string, s2: string, n2: number, n3: number, n4: number) =>
    *        0 == n1 % 2 && 2 < s1.length && 2 < s2.length && 0 == n2 % 2 && 0 == n3 % 2 && 0 == n4 % 2);
