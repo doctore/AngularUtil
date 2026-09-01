@@ -498,15 +498,15 @@ export class ObjectUtil {
    *   };
    *   const user = new User(10, 'user1');
    *
-   *   getPathValue(userRaw, 'profile.name');   // 'John'
-   *   getPathValue(userRaw, 'profile.id');     // undefined
-   *   getPathValue(userRaw, 'toString');       // undefined
+   *   getPropertyValue(userRaw, 'profile.name');   // 'John'
+   *   getPropertyValue(userRaw, 'profile.id');     // undefined
+   *   getPropertyValue(userRaw, 'toString');       // undefined
    *
-   *   getPathValue(user, 'profile.name');   // undefined
-   *   getPathValue(user, 'id');             // 10
-   *   getPathValue(user, 'name');           // 'user1'
-   *   getPathValue(user, 'compareTo');      // undefined
-   *   getPathValue(user, 'toString');       // undefined
+   *   getPropertyValue(user, 'profile.name');   // undefined
+   *   getPropertyValue(user, 'id');             // 10
+   *   getPropertyValue(user, 'name');           // 'user1'
+   *   getPropertyValue(user, 'compareTo');      // undefined
+   *   getPropertyValue(user, 'toString');       // undefined
    * </pre>
    *
    * @param sourceObject
@@ -518,8 +518,8 @@ export class ObjectUtil {
    *         `undefined` if `sourceObject` or `path` are `null` or `undefined`, or the `path` cannot be traversed or
    *         resolves to a function.
    */
-  static getPathValue(sourceObject: NullableOrUndefined<unknown>,
-                      path: NullableOrUndefined<string>): OrUndefined<unknown> {
+  static getPropertyValue(sourceObject: NullableOrUndefined<unknown>,
+                          path: NullableOrUndefined<string>): OrUndefined<unknown> {
     if (this.isNullOrUndefined(sourceObject) || this.isNullOrUndefined(path)) {
       return undefined;
     }

@@ -486,14 +486,14 @@ describe('ObjectUtil', () => {
 
 
 
-  describe('getPathValue', () => {
+  describe('getPropertyValue', () => {
 
     it('when given sourceObject or path are null or undefined then undefined is returned', () => {
-      expect(ObjectUtil.getPathValue(null, 'DoesNotCare')).toBe(undefined);
-      expect(ObjectUtil.getPathValue(undefined, "DoesNotCare")).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(null, 'DoesNotCare')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(undefined, "DoesNotCare")).toBe(undefined);
 
-      expect(ObjectUtil.getPathValue({}, null)).toBe(undefined);
-      expect(ObjectUtil.getPathValue({}, undefined)).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue({}, null)).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue({}, undefined)).toBe(undefined);
     });
 
 
@@ -506,14 +506,14 @@ describe('ObjectUtil', () => {
       const role = { id: 10, name: 'role name' } as Role;
       const user = new User(10, 'user1', [role]);
 
-      expect(ObjectUtil.getPathValue(userRaw, 'NotFound')).toBe(undefined);
-      expect(ObjectUtil.getPathValue(userRaw, 'profile.id')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(userRaw, 'NotFound')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(userRaw, 'profile.id')).toBe(undefined);
 
-      expect(ObjectUtil.getPathValue(role, 'NotFound')).toBe(undefined);
-      expect(ObjectUtil.getPathValue(role, 'profile.id')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(role, 'NotFound')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(role, 'profile.id')).toBe(undefined);
 
-      expect(ObjectUtil.getPathValue(user, 'NotFound')).toBe(undefined);
-      expect(ObjectUtil.getPathValue(user, 'profile.id')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'NotFound')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'profile.id')).toBe(undefined);
     });
 
 
@@ -526,12 +526,12 @@ describe('ObjectUtil', () => {
       const role = { id: 10, name: 'role name' } as Role;
       const user = new User(10, 'user1', [role]);
 
-      expect(ObjectUtil.getPathValue(userRaw, 'toString')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(userRaw, 'toString')).toBe(undefined);
 
-      expect(ObjectUtil.getPathValue(user, 'compareTo')).toBe(undefined);
-      expect(ObjectUtil.getPathValue(user, 'equals')).toBe(undefined);
-      expect(ObjectUtil.getPathValue(user, 'has')).toBe(undefined);
-      expect(ObjectUtil.getPathValue(user, 'toString')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'compareTo')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'equals')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'has')).toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'toString')).toBe(undefined);
     });
 
 
@@ -544,20 +544,20 @@ describe('ObjectUtil', () => {
       const role = { id: 10, name: 'role name' } as Role;
       const user = new User(10, 'user1', [role]);
 
-      expect(ObjectUtil.getPathValue(userRaw, 'profile.name')).not.toBe(undefined);
-      expect(ObjectUtil.getPathValue(userRaw, 'profile.name')).toBe(userRaw.profile.name);
+      expect(ObjectUtil.getPropertyValue(userRaw, 'profile.name')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(userRaw, 'profile.name')).toBe(userRaw.profile.name);
 
-      expect(ObjectUtil.getPathValue(role, 'id')).not.toBe(undefined);
-      expect(ObjectUtil.getPathValue(role, 'id')).toBe(role.id);
-      expect(ObjectUtil.getPathValue(role, 'name')).not.toBe(undefined);
-      expect(ObjectUtil.getPathValue(role, 'name')).toBe(role.name);
+      expect(ObjectUtil.getPropertyValue(role, 'id')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(role, 'id')).toBe(role.id);
+      expect(ObjectUtil.getPropertyValue(role, 'name')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(role, 'name')).toBe(role.name);
 
-      expect(ObjectUtil.getPathValue(user, 'id')).not.toBe(undefined);
-      expect(ObjectUtil.getPathValue(user, 'id')).toBe(user.id);
-      expect(ObjectUtil.getPathValue(user, 'name')).not.toBe(undefined);
-      expect(ObjectUtil.getPathValue(user, 'name')).toBe(user.name);
-      expect(ObjectUtil.getPathValue(user, 'roles')).not.toBe(undefined);
-      expect(ObjectUtil.getPathValue(user, 'roles')).toBe(user.roles);
+      expect(ObjectUtil.getPropertyValue(user, 'id')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'id')).toBe(user.id);
+      expect(ObjectUtil.getPropertyValue(user, 'name')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'name')).toBe(user.name);
+      expect(ObjectUtil.getPropertyValue(user, 'roles')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, 'roles')).toBe(user.roles);
     });
 
   });
