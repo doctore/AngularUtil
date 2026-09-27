@@ -1,6 +1,8 @@
 import { ObjectUtil } from '@app-core/util';
 import { FFunction0, Function0 } from '@app-core/type/function';
 import { Optional } from '@app-core/type/functional';
+import { FObjectPredicate, ObjectPredicate } from '@app-core/type/predicate';
+import { expect } from 'vitest';
 
 /**
  * To invoke only this test:
@@ -254,7 +256,7 @@ describe('ObjectUtil', () => {
       };
       const user = new User(10, 'user1', [ { id: 10, name: 'role name' } as Role ]);
 
-      const nativeArray = [ 3, 5, 21, 7];
+      const nativeArray = [ 3, 5, 21, 7 ];
       const objectArray = [ plainObject, user ];
 
       expect(ObjectUtil.copy(nativeArray)).not.toBe(nativeArray);
@@ -288,69 +290,188 @@ describe('ObjectUtil', () => {
     });
 
 
-    it('when given sourceObject and propertiesToCopy are valid then a new object containing required properties of sourceObject is returned', () => {
-      const role1 = { id: 10, name: 'role1 name' } as Role;
-      const role2 = { id: 11, name: 'role2 name' } as Role;
-      const user = new User(10, 'user name', [role1, role2]);
-
-      const expectedWithIdAndName = {
-        id: user.id,
-        name: user.name
-      };
-      const expectedWithIdAndRoles = {
-        id: user.id,
-        roles: user.roles
-      };
-
-      expect(ObjectUtil.copyProperties(user, ['id', 'name'])).toEqual(expectedWithIdAndName);
-      expect(ObjectUtil.copyProperties(user, ['id', 'roles'])).toEqual(expectedWithIdAndRoles);
-    });
-
-  });
-
-
-
-  describe('copyPropertiesOptional', () => {
-
-    it('when given sourceObject is null or undefined then empty Optional is returned', () => {
-      // @ts-ignore
-      expect(ObjectUtil.copyPropertiesOptional(null, ['id']).isPresent()).toBe(false);
-      // @ts-ignore
-      expect(ObjectUtil.copyPropertiesOptional(undefined, ['id']).isPresent()).toBe(false);
-    });
-
-
-    it('when given propertiesToCopy has no elements then empty Optional is returned', () => {
+    it('when given sourceObject does not contain provided propertiesToCopy then empty object is returned', () => {
       const role = { id: 10, name: 'role name' } as Role;
       const user = new User(10, 'user name', [role]);
+      const userRaw = {
+        name: 'CJ',
+        age: 30,
+        minimumScore: 10,
+        city: 'Las Palmas',
+        address: {
+          street: 'León y Castillo 23'
+        }
+      };
 
-      expect(ObjectUtil.copyPropertiesOptional(user, null).isPresent()).toBe(false);
-      expect(ObjectUtil.copyPropertiesOptional(user, undefined).isPresent()).toBe(false);
-      expect(ObjectUtil.copyPropertiesOptional(user, []).isPresent()).toBe(false);
+      expect(ObjectUtil.copyProperties(role, ['notFound'])).toEqual({});
+      expect(ObjectUtil.copyProperties(role, ['_id', '_name'])).toEqual({});
+
+      expect(ObjectUtil.copyProperties(user, ['notFound'])).toEqual({});
+      expect(ObjectUtil.copyProperties(user, ['id', 'name'])).toEqual({});
+
+      expect(ObjectUtil.copyProperties(userRaw, ['notFound'])).toEqual({});
+      expect(ObjectUtil.copyProperties(userRaw, ['ciudad', 'address.notFound'])).toEqual({});
     });
 
 
-    it('when given sourceObject and propertiesToCopy are valid then an Optional with a new object containing required properties of sourceObject is returned', () => {
+    it('when given sourceObject has Symbol properties and their description is part of provided propertiesToCopy then they are copied in the returned object', () => {
+      const id = Symbol("id");
+      const name = Symbol("name");
+      const userRaw = {
+        [id]: 123,
+        [name]: 'CJ',
+        age: 30
+      };
+
+      const result = ObjectUtil.copyProperties(userRaw, ["id", 'name']);
+
+      expect(result).not.toBe(undefined);
+      expect(result![id]).toBe(123);
+      expect(result![name]).toBe('CJ');
+      expect(Object.getOwnPropertySymbols(result)).toEqual([id, name]);
+    });
+
+
+    it('when given sourceObject has Symbol and string properties with the same name and their description is part of provided propertiesToCopy then string properties take precedence over Symbol ones in the returned object', () => {
+      const id = Symbol("id");
+      const userRaw = {
+        id: 100,
+        [id]: 200
+      };
+
+      const result = ObjectUtil.copyProperties(userRaw, ["id"]);
+
+      expect(result).not.toBe(undefined);
+      expect(result!.id).toBe(100);
+      expect(result![id]).toBeUndefined();
+    });
+
+
+    it('when given sourceObject inherits from another class and propertiesToCopy includes property names from both the parent and child classes then the child class properties take precedence over the parent ones in the returned object', () => {
+      class Parent {
+        name = 'parent value';
+        value = 100;
+      }
+      class Child extends Parent {
+        id = 10;
+        override value = 200;
+      }
+
+      const result = ObjectUtil.copyProperties(new Child(), ["id", "name", "value"]);
+
+      expect(result).not.toBe(undefined);
+      expect(result!.id).toBe(10);
+      expect(result!.name).toBe('parent value');
+      expect(result!.value).toBe(200);
+    });
+
+
+    it('when given sourceObject contains private properties and methods and propertiesToCopy includes both then only the properties are included in the returned object', () => {
       const role1 = { id: 10, name: 'role1 name' } as Role;
       const role2 = { id: 11, name: 'role2 name' } as Role;
       const user = new User(10, 'user name', [role1, role2]);
 
-      const expectedWithIdAndName = {
-        id: user.id,
-        name: user.name
+      const expectedResultWithIdAndName = {
+        _id: user.id,
+        _name: user.name
       };
-      const expectedWithIdAndRoles = {
-        id: user.id,
-        roles: user.roles
+      const expectedResultWithIdAndRoles = {
+        _id: user.id,
+        _roles: user.roles
       };
 
-      const resultWithIdAndName = ObjectUtil.copyPropertiesOptional(user, ['id', 'name']);
-      expect(resultWithIdAndName.isPresent()).toBe(true);
-      expect(resultWithIdAndName.get()).toEqual(expectedWithIdAndName);
+      expect(ObjectUtil.copyProperties(user, ['_id', '_name', 'equals'])).toEqual(expectedResultWithIdAndName);
+      expect(ObjectUtil.copyProperties(user, ['_id', '_roles', 'hash'])).toEqual(expectedResultWithIdAndRoles);
+    });
 
-      const resultWithIdAndRoles = ObjectUtil.copyPropertiesOptional(user, ['id', 'roles']);
-      expect(resultWithIdAndRoles.isPresent()).toBe(true);
-      expect(resultWithIdAndRoles.get()).toEqual(expectedWithIdAndRoles);
+
+    it('when given sourceObject contains properties and methods and propertiesToCopy includes objects with methods then internal methods are included in the returned object', () => {
+      const userRaw = {
+        address: {
+          city: "Las Palmas",
+          country: "Spain",
+          format() {
+            return `${this.city}, ${this.country}`;
+          }
+        }
+      };
+
+      const result = ObjectUtil.copyProperties(
+        userRaw,
+        ["address"]
+      );
+
+      expect(result!.address).toBe(userRaw.address);
+      expect((result!.address as typeof userRaw.address).format()).toBe("Las Palmas, Spain");
+    });
+
+
+    it('when given sourceObject contains data and propertiesToCopy includes nested properties then they are included in the returned object', () => {
+      const userRaw = {
+        address: {
+          city: "Las Palmas",
+          country: {
+            name: "Spain",
+            state: "Canarias"
+          }
+        }
+      };
+
+      const result = ObjectUtil.copyProperties(
+        userRaw,
+        ["address.country.name", 'address.country.state']
+      );
+
+      expect(result).toEqual({
+        address: {
+          country: {
+            name: "Spain",
+            state: "Canarias"
+          }
+        }
+      });
+    });
+
+
+    it('when given sourceObject contains data and methods and propertiesToCopy includes nested properties then more specific paths take precedence in the returned object', () => {
+      const userRaw = {
+        address: {
+          city: "Las Palmas",
+          country: {
+            name: "Spain",
+            state: "Canarias"
+          }
+        }
+      };
+
+      const result = ObjectUtil.copyProperties(
+        userRaw,
+        ["address", "address.country", 'address.country.name']
+      );
+
+      expect(result).toEqual({
+        address: {
+          country: {
+            name: "Spain"
+          }
+        }
+      });
+    });
+
+
+    it('when given sourceObject contains data and several versions of propertiesToCopy are provided then the resulted object contains the same information', () => {
+      const userRaw = {
+        age: 30,
+        address: {
+          city: "Las Palmas",
+          country: "Spain"
+        }
+      };
+
+      const first = ObjectUtil.copyProperties(userRaw, ["address", "address.city"]);
+      const second = ObjectUtil.copyProperties(userRaw, ["address.city", "address"]);
+
+      expect(first).toEqual(second);
     });
 
   });
@@ -434,6 +555,310 @@ describe('ObjectUtil', () => {
 
       expect(ObjectUtil.equals(role1, role3)).toBe(true);
       expect(ObjectUtil.equals(role3, role1)).toBe(true);
+    });
+
+  });
+
+
+
+  describe('filterObject', () => {
+
+    it('when sourceObject is null or undefined then an empty object is returned', () => {
+      const expectedResult = {};
+
+      expect(ObjectUtil.filterObject(null, ObjectPredicate.alwaysFalse())).toEqual(expectedResult);
+      expect(ObjectUtil.filterObject(undefined, ObjectPredicate.alwaysFalse())).toEqual(expectedResult);
+    });
+
+
+    it('when sourceObject is defined but filterPredicate is null or undefined then a copy of sourceObject is returned', () => {
+      const userRaw = {
+        name: "Juan",
+        age: 30,
+        active: true,
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      expect(ObjectUtil.filterObject(userRaw, null)).toStrictEqual(userRaw);
+      expect(ObjectUtil.filterObject(userRaw, undefined)).toStrictEqual(userRaw);
+
+      expect(ObjectUtil.filterObject(role, null)).toStrictEqual(role);
+      expect(ObjectUtil.filterObject(role, undefined)).toStrictEqual(role);
+
+      expect(ObjectUtil.filterObject(user, null)).toStrictEqual(user);
+      expect(ObjectUtil.filterObject(user, undefined)).toStrictEqual(user);
+    });
+
+
+    it('then returns an empty object when nothing matches', () => {
+      const userRaw = {
+        name: "Juan",
+        age: 30,
+        active: true,
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      const alwaysFalseFilter = () => false;
+
+      expect(ObjectUtil.filterObject(userRaw, alwaysFalseFilter)).toEqual({ });
+      expect(ObjectUtil.filterObject(role, alwaysFalseFilter)).toEqual({ });
+      expect(ObjectUtil.filterObject(user, alwaysFalseFilter)).toEqual({ });
+    });
+
+
+    it('then returns all properties when everything matches', () => {
+      const userRaw = {
+        name: "Juan",
+        age: 30,
+        active: true,
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user1', [role]);
+
+      const alwaysTrueFilter = () => true;
+
+      expect(ObjectUtil.filterObject(userRaw, alwaysTrueFilter)).toEqual(userRaw);
+      expect(ObjectUtil.filterObject(role, alwaysTrueFilter)).toEqual(role);
+      expect(ObjectUtil.filterObject(user, alwaysTrueFilter)).toEqual(user);
+    });
+
+
+    it('when sourceObject and filterPredicate are defined and filterPredicate filters only by key then the expected result is returned', () => {
+      const userRaw = {
+        name: "Juan",
+        age: 30,
+        active: true,
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(10, 'user 10', [role]);
+
+      const isNamePropertyRaw =
+        (key: any) =>
+          key === "name";
+
+      const isNamePropertyFObjectPredicate: FObjectPredicate<User> =
+        (key: any) =>
+          key === "_name";
+
+      const isNamePropertyObjectPredicate: ObjectPredicate<Role> =
+        ObjectPredicate.of(
+          (key, value, obj) =>
+            key === "name"
+        );
+
+      expect(ObjectUtil.filterObject(userRaw, isNamePropertyRaw)).toEqual({ name: "Juan" });
+      expect(ObjectUtil.filterObject(role, isNamePropertyObjectPredicate)).toEqual({ name: "role name" });
+      expect(ObjectUtil.filterObject(user, isNamePropertyFObjectPredicate)).toEqual({ _name: "user 10" });
+    });
+
+
+    it('when sourceObject and filterPredicate are defined and filterPredicate uses symbol key then the expected result is returned', () => {
+      const id = Symbol("id");
+      const userRaw = {
+        name: "Juan",
+        [id]: 123,
+      };
+
+      const result = ObjectUtil.filterObject(
+        userRaw,
+        (key: any) => key === id
+      );
+
+      expect(result[id]).toBe(123);
+      expect(result).not.toHaveProperty("name");
+    });
+
+
+
+    it('when sourceObject and filterPredicate are defined and filterPredicate includes inherited properties then the expected result is returned', () => {
+      class Parent {
+        name = 'parent value';
+        value = 100;
+      }
+      class Child extends Parent {
+        id = 10;
+        override value = 200;
+      }
+      const userPrototype = {
+        role: "user",
+        country: "Spain",
+      };
+
+      const child = new Child();
+      const rawUser = Object.create(userPrototype);
+      rawUser.name = "Juan";
+
+      const resultTraditionalInherit = ObjectUtil.filterObject(
+        child,
+        (key: any, value: any) =>
+          typeof value === "number"
+      );
+      const resultUserPrototype = ObjectUtil.filterObject(
+        rawUser,
+        () => true
+      );
+
+      expect(resultTraditionalInherit).toEqual({ id: 10, value: 200 });
+      expect(resultUserPrototype).toEqual({ name: "Juan", role: "user", country: "Spain" });
+    });
+
+
+    it('when sourceObject and filterPredicate are defined and filterPredicate includes inherited symbol properties then the expected result is returned', () => {
+      const metadata = Symbol("metadata");
+      const prototype = {
+        [metadata]: "admin",
+      };
+
+      const object: {
+        name: string;
+      } & typeof prototype = Object.create(prototype);
+
+      object.name = "Juan";
+
+      const result = ObjectUtil.filterObject(
+        object,
+        () => true
+      );
+
+      expect(result.name).toBe("Juan");
+      expect(result[metadata]).toBe("admin");
+    });
+
+
+    it('when sourceObject and filterPredicate are defined then the result does not include non-enumerable inherited properties', () => {
+      const prototype = {
+        visible: "yes",
+      };
+      Object.defineProperty(prototype, "hidden", {
+        value: "no",
+        enumerable: false,
+      });
+
+      const object = Object.create(prototype);
+      object.own = "yes";
+
+      const result = ObjectUtil.filterObject(
+        object,
+        () => true
+      );
+
+      expect(result).toEqual({
+        own: "yes",
+        visible: "yes",
+      });
+    });
+
+
+    it('when sourceObject and filterPredicate are defined then the result does not include non-enumerable own properties', () => {
+      const object = {
+        visible: "yes",
+      };
+      Object.defineProperty(object, "hidden", {
+        value: "no",
+        enumerable: false,
+      });
+
+      const result = ObjectUtil.filterObject(
+        object,
+        () => true
+      );
+
+      expect(result).toEqual({
+        visible: "yes",
+      });
+    });
+
+
+    it('when sourceObject and filterPredicate are defined and filterPredicate filters only by value then the expected result is returned', () => {
+      const userRaw = {
+        name: "Juan",
+        age: 30,
+        active: true,
+      };
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(11, 'user 11', [role]);
+
+      const isValueNumericRaw =
+        (key: any, value: any) =>
+          typeof value === "number";
+
+      const isValueNumericFObjectPredicate: FObjectPredicate<Role> =
+        (_, value) =>
+          typeof value === "number";
+
+      const isValueNumericObjectPredicate: ObjectPredicate<User> =
+        ObjectPredicate.of((_, value, obj) =>
+          typeof value === "number"
+        );
+
+      expect(ObjectUtil.filterObject(userRaw, isValueNumericRaw)).toEqual({ age: 30 });
+      expect(ObjectUtil.filterObject(role, isValueNumericFObjectPredicate)).toEqual({ id: 10 });
+      expect(ObjectUtil.filterObject(user, isValueNumericObjectPredicate)).toEqual({ _id: 11 });
+    });
+
+
+    it('when sourceObject and filterPredicate are defined and filterPredicate filter null and undefined values then the expected result is returned', () => {
+      const object = {
+        a: null,
+        b: undefined,
+        c: "value",
+      };
+
+      const result = ObjectUtil.filterObject(
+        object,
+        (_, value: any) => value == null
+      );
+      expect(result).toEqual({ a: null, b: undefined });
+    });
+
+
+    it('when sourceObject and filterPredicate are defined and sourceObject contains object references then the result preserves object references in values', () => {
+      const nested = {
+        foo: "bar",
+      };
+      const object = {
+        nested,
+        value: 42,
+      };
+
+      const result = ObjectUtil.filterObject(
+        object,
+        () => true
+      );
+
+      expect(result.nested).toBe(nested);
+    });
+
+
+    it('when sourceObject and filterPredicate are defined and filterPredicate filters by key, value and current object then the expected result is returned', () => {
+      const role = { id: 10, name: 'role name' } as Role;
+      const user = new User(11, 'user1', [role]);
+
+      const filterByKeyValueAndObjectRaw =
+        (key: any, value: any, object: any) =>
+          key === "_id" &&
+          typeof value === "number" &&
+          value >= object.roles[0].id;
+
+      const filterByKeyValueAndObjectFObjectPredicate: FObjectPredicate<Role> =
+        (key, value, object) =>
+          key === "id" &&
+          typeof value === "number" &&
+          value >= 10;
+
+      const filterByKeyValueAndObjectObjectPredicate: ObjectPredicate<User> =
+        ObjectPredicate.of(
+          (key, value, object) =>
+            key === "id" &&
+            typeof value === "number" &&
+            value >= object.roles[0].id
+        );
+
+      expect(ObjectUtil.filterObject(role, filterByKeyValueAndObjectFObjectPredicate)).toEqual({ id: 10 });
+      expect(ObjectUtil.filterObject(user, filterByKeyValueAndObjectRaw)).toEqual({ _id: 11 });
+      expect(ObjectUtil.filterObject(user, filterByKeyValueAndObjectObjectPredicate)).toEqual({ });
     });
 
   });
@@ -554,10 +979,16 @@ describe('ObjectUtil', () => {
 
       expect(ObjectUtil.getPropertyValue(user, 'id')).not.toBe(undefined);
       expect(ObjectUtil.getPropertyValue(user, 'id')).toBe(user.id);
+      expect(ObjectUtil.getPropertyValue(user, '_id')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, '_id')).toBe(user.id);
       expect(ObjectUtil.getPropertyValue(user, 'name')).not.toBe(undefined);
       expect(ObjectUtil.getPropertyValue(user, 'name')).toBe(user.name);
+      expect(ObjectUtil.getPropertyValue(user, '_name')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, '_name')).toBe(user.name);
       expect(ObjectUtil.getPropertyValue(user, 'roles')).not.toBe(undefined);
       expect(ObjectUtil.getPropertyValue(user, 'roles')).toBe(user.roles);
+      expect(ObjectUtil.getPropertyValue(user, '_roles')).not.toBe(undefined);
+      expect(ObjectUtil.getPropertyValue(user, '_roles')).toBe(user.roles);
     });
 
   });
@@ -654,8 +1085,11 @@ describe('ObjectUtil', () => {
       expect(ObjectUtil.hasPath(role, 'toString')).toBe(true);
 
       expect(ObjectUtil.hasPath(user, 'id')).toBe(true);
+      expect(ObjectUtil.hasPath(user, '_id')).toBe(true);
       expect(ObjectUtil.hasPath(user, 'name')).toBe(true);
+      expect(ObjectUtil.hasPath(user, '_name')).toBe(true);
       expect(ObjectUtil.hasPath(user, 'roles')).toBe(true);
+      expect(ObjectUtil.hasPath(user, '_roles')).toBe(true);
       expect(ObjectUtil.hasPath(user, 'toString')).toBe(true);
     });
 
@@ -714,11 +1148,11 @@ describe('ObjectUtil', () => {
   });
 
 
-  describe('sortObjectProperties', () => {
+  describe('sortProperties', () => {
 
     it('when given sourceObject is null or undefined then undefined is returned', () => {
-      expect(ObjectUtil.sortObjectProperties(null)).toBe(undefined);
-      expect(ObjectUtil.sortObjectProperties(undefined)).toBe(undefined);
+      expect(ObjectUtil.sortProperties(null)).toBe(undefined);
+      expect(ObjectUtil.sortProperties(undefined)).toBe(undefined);
     });
 
 
@@ -726,8 +1160,8 @@ describe('ObjectUtil', () => {
       const intValue = 11;
       const stringValue = 'abd';
 
-      expect(ObjectUtil.sortObjectProperties(intValue)).toEqual(intValue);
-      expect(ObjectUtil.sortObjectProperties(stringValue)).toEqual(stringValue);
+      expect(ObjectUtil.sortProperties(intValue)).toEqual(intValue);
+      expect(ObjectUtil.sortProperties(stringValue)).toEqual(stringValue);
     });
 
 
@@ -752,10 +1186,10 @@ describe('ObjectUtil', () => {
       const expectedJsonRawObject1 = '{"a":"2","b":false,"c":1}';
       const expectedJsonRawObject2 = '{"a":"2","b":1,"h":{"a":"ea","c":{"d":"123","f":false},"z":11}}';
 
-      const resultTawObject1 = ObjectUtil.sortObjectProperties(rawObject1);
+      const resultTawObject1 = ObjectUtil.sortProperties(rawObject1);
       expect(JSON.stringify(resultTawObject1)).toEqual(expectedJsonRawObject1);
 
-      const resultTawObject2 = ObjectUtil.sortObjectProperties(rawObject2);
+      const resultTawObject2 = ObjectUtil.sortProperties(rawObject2);
       expect(JSON.stringify(resultTawObject2)).toEqual(expectedJsonRawObject2);
     });
 

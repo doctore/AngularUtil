@@ -219,9 +219,6 @@ describe('Predicate3', () => {
         );
 
       expect(Predicate3.isPredicate(isNumberEvenAndStringNotNull)).toBe(false);
-
-      expect(Predicate3.isPredicate(Predicate3.alwaysTrue())).toBe(true);
-      expect(Predicate3.isPredicate(Predicate3.alwaysFalse())).toBe(true);
     });
 
 
@@ -235,6 +232,8 @@ describe('Predicate3', () => {
         );
 
       expect(Predicate3.isPredicate(isNumberEvenAndStringBooleanNotNull)).toBe(true);
+      expect(Predicate3.isPredicate(Predicate3.alwaysTrue())).toBe(true);
+      expect(Predicate3.isPredicate(Predicate3.alwaysFalse())).toBe(true);
     });
 
   });

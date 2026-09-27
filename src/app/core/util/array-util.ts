@@ -429,7 +429,7 @@ export class ArrayUtil {
    *
    * <pre>
    *    delete(                                                                              Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user2 v2'}],        [{id: 1, name: 'user1'}]
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user2 v2'}],        [{ id: 1, name: 'user1' }]
    *      {id: 2, name: 'user2'},
    *      (u1: User, u2: User) => u1.id == u2.id
    *    )
@@ -474,7 +474,7 @@ export class ArrayUtil {
    *
    * <pre>
    *    deleteFirst(                                                                         Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user2 v2'}],        [{id: 1, name: 'user1'}, {id: 2, name: 'user2 v2'}]
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 2, name: 'user2 v2'}],        [{ id: 1, name: 'user1'}, {id: 2, name: 'user2 v2' }]
    *      {id: 2, name: 'user2 v2'},
    *      (u1: User, u2: User) => u1.id == u2.id
    *    )
@@ -604,7 +604,7 @@ export class ArrayUtil {
    *
    * <pre>
    *    filter(                                                                            Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{id: 1, name: 'user1'}, {id: 3, name: 'user3'}]
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         [{ id: 1, name: 'user1' }, { id: 3, name: 'user3' }]
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -646,7 +646,7 @@ export class ArrayUtil {
    *
    * <pre>
    *    filterFirst(                                                                       Result:
-   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         {id: 1, name: 'user1'}
+   *      [{id: 1, name: 'user1'}, {id: 2, name: 'user2'}, {id: 3, name: 'user3'}],         { id: 1, name: 'user1' }
    *      (user: NullableOrUndefined<User>) => 1 == user!.id % 2
    *    )
    * </pre>
@@ -2429,7 +2429,7 @@ export class ArrayUtil {
             let value = prop.split(".").reduce((object, cur) => object?.[cur], currentElement);
             return [
               JSON.stringify(
-                ObjectUtil.sortObjectProperties(
+                ObjectUtil.sortProperties(
                   value
                 )
               ),

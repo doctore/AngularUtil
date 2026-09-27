@@ -66,7 +66,7 @@ export class Predicate1<T> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate1} to verify
+   *    Array of {@link TPredicate1} to verify
    *
    * @return {@link Predicate1} verifying all provided ones
    */
@@ -123,7 +123,7 @@ export class Predicate1<T> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate1} to verify
+   *    Array of {@link TPredicate1} to verify
    *
    * @return {@link Predicate1} verifying provided ones
    */
@@ -178,6 +178,7 @@ export class Predicate1<T> {
     undefined !== (input as Predicate1<T>).getVerifier &&
     undefined !== (input as Predicate1<T>).not &&
     undefined !== (input as Predicate1<T>).or &&
+    undefined !== (input as Predicate1<T>).xor &&
     isFPredicate1((input as Predicate1<T>).getVerifier());
 
 
@@ -201,7 +202,7 @@ export class Predicate1<T> {
     );
     return Predicate1.isPredicate<T>(predicate)
       ? predicate
-      : new Predicate1(predicate);
+      : new Predicate1<T>(predicate);
   }
 
 
@@ -230,11 +231,11 @@ export class Predicate1<T> {
    */
   and = (predicate: TPredicate1<T>): Predicate1<T> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate1(
+      ? new Predicate1<T>(
           (t: T) =>
             this.apply(t)
         )
-      : new Predicate1(
+      : new Predicate1<T>(
           (t: T) =>
             this.apply(t) &&
               Predicate1.of(predicate).apply(t)
@@ -260,7 +261,7 @@ export class Predicate1<T> {
    * @return a {@link Predicate1} that represents the logical negation of this {@link Predicate1}
    */
   not = (): Predicate1<T> =>
-    new Predicate1(
+    new Predicate1<T>(
       (t: T) =>
         !this.apply(t)
     );
@@ -282,11 +283,11 @@ export class Predicate1<T> {
    */
   or = (predicate: TPredicate1<T>): Predicate1<T> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate1(
+      ? new Predicate1<T>(
           (t: T) =>
             this.apply(t)
         )
-      : new Predicate1(
+      : new Predicate1<T>(
           (t: T) =>
             this.apply(t) ||
               Predicate1.of(predicate).apply(t)
@@ -309,13 +310,13 @@ export class Predicate1<T> {
    */
   xor = (predicate: TPredicate1<T>): Predicate1<T> => {
     if (ObjectUtil.isNullOrUndefined(predicate)) {
-      return new Predicate1(
+      return new Predicate1<T>(
         (t: T) =>
           this.apply(t)
       );
     }
     const givenPredicate = Predicate1.of(predicate);
-    return new Predicate1(
+    return new Predicate1<T>(
       (t: T) => {
         const currentApply = this.apply(t);
         const givenApply = givenPredicate.apply(t);

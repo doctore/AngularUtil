@@ -260,14 +260,13 @@ describe('Predicate7', () => {
         );
 
       expect(Predicate7.isPredicate(areNumbersEvenAndStringNotNull)).toBe(false);
-
-      expect(Predicate7.isPredicate(Predicate7.alwaysTrue())).toBe(true);
-      expect(Predicate7.isPredicate(Predicate7.alwaysFalse())).toBe(true);
     });
 
 
     it('when a Predicate7 is provided then true is returned', () => {
       expect(Predicate7.isPredicate(areNumbersEvenAndStringsLongerThan2Predicate)).toBe(true);
+      expect(Predicate7.isPredicate(Predicate7.alwaysTrue())).toBe(true);
+      expect(Predicate7.isPredicate(Predicate7.alwaysFalse())).toBe(true);
     });
 
   });

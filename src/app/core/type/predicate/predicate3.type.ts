@@ -85,7 +85,7 @@ export class Predicate3<T1, T2, T3> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate3} to verify
+   *    Array of {@link TPredicate3} to verify
    *
    * @return {@link Predicate3} verifying all provided ones
    */
@@ -153,7 +153,7 @@ export class Predicate3<T1, T2, T3> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate3} to verify
+   *    Array of {@link TPredicate3} to verify
    *
    * @return {@link Predicate3} verifying provided ones
    */
@@ -224,6 +224,7 @@ export class Predicate3<T1, T2, T3> {
     undefined !== (input as Predicate3<T1, T2, T3>).getVerifier &&
     undefined !== (input as Predicate3<T1, T2, T3>).not &&
     undefined !== (input as Predicate3<T1, T2, T3>).or &&
+    undefined !== (input as Predicate3<T1, T2, T3>).xor &&
     isFPredicate3((input as Predicate3<T1, T2, T3>).getVerifier());
 
 
@@ -247,7 +248,7 @@ export class Predicate3<T1, T2, T3> {
     );
     return Predicate3.isPredicate<T1, T2, T3>(predicate)
       ? predicate
-      : new Predicate3(predicate);
+      : new Predicate3<T1, T2, T3>(predicate);
   }
 
 
@@ -276,13 +277,13 @@ export class Predicate3<T1, T2, T3> {
    */
   and = (predicate: TPredicate3<T1, T2, T3>): Predicate3<T1, T2, T3> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate3(
+      ? new Predicate3<T1, T2, T3>(
           (t1: T1,
            t2: T2,
            t3: T3) =>
             this.apply(t1, t2, t3)
         )
-      : new Predicate3(
+      : new Predicate3<T1, T2, T3>(
           (t1: T1,
            t2: T2,
            t3: T3) =>
@@ -317,7 +318,7 @@ export class Predicate3<T1, T2, T3> {
    * @return a {@link Predicate3} that represents the logical negation of this {@link Predicate3}
    */
   not = (): Predicate3<T1, T2, T3> =>
-    new Predicate3(
+    new Predicate3<T1, T2, T3>(
       (t1: T1,
        t2: T2,
        t3: T3) =>
@@ -341,13 +342,13 @@ export class Predicate3<T1, T2, T3> {
    */
   or = (predicate: TPredicate3<T1, T2, T3>): Predicate3<T1, T2, T3> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate3(
+      ? new Predicate3<T1, T2, T3>(
           (t1: T1,
            t2: T2,
            t3: T3) =>
             this.apply(t1, t2, t3)
         )
-      : new Predicate3(
+      : new Predicate3<T1, T2, T3>(
           (t1: T1,
            t2: T2,
            t3: T3) =>
@@ -373,7 +374,7 @@ export class Predicate3<T1, T2, T3> {
    */
   xor = (predicate: TPredicate3<T1, T2, T3>): Predicate3<T1, T2, T3> => {
     if (ObjectUtil.isNullOrUndefined(predicate)) {
-      return new Predicate3(
+      return new Predicate3<T1, T2, T3>(
         (t1: T1,
          t2: T2,
          t3: T3) =>

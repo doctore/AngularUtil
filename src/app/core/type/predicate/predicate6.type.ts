@@ -101,7 +101,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate6} to verify
+   *    Array of {@link TPredicate6} to verify
    *
    * @return {@link Predicate6} verifying all provided ones
    */
@@ -174,7 +174,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate6} to verify
+   *    Array of {@link TPredicate6} to verify
    *
    * @return {@link Predicate6} verifying provided ones
    */
@@ -260,6 +260,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
     undefined !== (input as Predicate6<T1, T2, T3, T4, T5, T6>).getVerifier &&
     undefined !== (input as Predicate6<T1, T2, T3, T4, T5, T6>).not &&
     undefined !== (input as Predicate6<T1, T2, T3, T4, T5, T6>).or &&
+    undefined !== (input as Predicate6<T1, T2, T3, T4, T5, T6>).xor &&
     isFPredicate6((input as Predicate6<T1, T2, T3, T4, T5, T6>).getVerifier());
 
 
@@ -283,7 +284,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
     );
     return Predicate6.isPredicate<T1, T2, T3, T4, T5, T6>(predicate)
       ? predicate
-      : new Predicate6(predicate);
+      : new Predicate6<T1, T2, T3, T4, T5, T6>(predicate);
   }
 
 
@@ -312,7 +313,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
    */
   and = (predicate: TPredicate6<T1, T2, T3, T4, T5, T6>): Predicate6<T1, T2, T3, T4, T5, T6> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate6(
+      ? new Predicate6<T1, T2, T3, T4, T5, T6>(
           (t1: T1,
            t2: T2,
            t3: T3,
@@ -321,7 +322,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
            t6: T6) =>
             this.apply(t1, t2, t3, t4, t5, t6)
         )
-      : new Predicate6(
+      : new Predicate6<T1, T2, T3, T4, T5, T6>(
           (t1: T1,
            t2: T2,
            t3: T3,
@@ -395,7 +396,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
    */
   or = (predicate: TPredicate6<T1, T2, T3, T4, T5, T6>): Predicate6<T1, T2, T3, T4, T5, T6> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate6(
+      ? new Predicate6<T1, T2, T3, T4, T5, T6>(
           (t1: T1,
            t2: T2,
            t3: T3,
@@ -404,7 +405,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
            t6: T6) =>
             this.apply(t1, t2, t3, t4, t5, t6)
         )
-      : new Predicate6(
+      : new Predicate6<T1, T2, T3, T4, T5, T6>(
           (t1: T1,
            t2: T2,
            t3: T3,
@@ -433,7 +434,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
    */
   xor = (predicate: TPredicate6<T1, T2, T3, T4, T5, T6>): Predicate6<T1, T2, T3, T4, T5, T6> => {
     if (ObjectUtil.isNullOrUndefined(predicate)) {
-      return new Predicate6(
+      return new Predicate6<T1, T2, T3, T4, T5, T6>(
         (t1: T1,
          t2: T2,
          t3: T3,
@@ -444,7 +445,7 @@ export class Predicate6<T1, T2, T3, T4, T5, T6> {
       );
     }
     const givenPredicate = Predicate6.of(predicate);
-    return new Predicate6(
+    return new Predicate6<T1, T2, T3, T4, T5, T6>(
       (t1: T1,
        t2: T2,
        t3: T3,

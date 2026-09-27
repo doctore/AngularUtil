@@ -71,7 +71,7 @@ export class Predicate2<T1, T2> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate2} to verify
+   *    Array of {@link TPredicate2} to verify
    *
    * @return {@link Predicate2} verifying all provided ones
    */
@@ -129,7 +129,7 @@ export class Predicate2<T1, T2> {
    * </pre>
    *
    * @param predicates
-   *    Array of {@link Predicate2} to verify
+   *    Array of {@link TPredicate2} to verify
    *
    * @return {@link Predicate2} verifying provided ones
    */
@@ -195,6 +195,7 @@ export class Predicate2<T1, T2> {
     undefined !== (input as Predicate2<T1, T2>).getVerifier &&
     undefined !== (input as Predicate2<T1, T2>).not &&
     undefined !== (input as Predicate2<T1, T2>).or &&
+    undefined !== (input as Predicate2<T1, T2>).xor &&
     isFPredicate2((input as Predicate2<T1, T2>).getVerifier());
 
 
@@ -218,7 +219,7 @@ export class Predicate2<T1, T2> {
     );
     return Predicate2.isPredicate<T1, T2>(predicate)
       ? predicate
-      : new Predicate2(predicate);
+      : new Predicate2<T1, T2>(predicate);
   }
 
 
@@ -247,12 +248,12 @@ export class Predicate2<T1, T2> {
    */
   and = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate2(
+      ? new Predicate2<T1, T2>(
           (t1: T1,
            t2: T2) =>
             this.apply(t1, t2)
         )
-      : new Predicate2(
+      : new Predicate2<T1, T2>(
           (t1: T1,
            t2: T2) =>
             this.apply(t1, t2) &&
@@ -283,7 +284,7 @@ export class Predicate2<T1, T2> {
    * @return a {@link Predicate2} that represents the logical negation of this {@link Predicate2}
    */
   not = (): Predicate2<T1, T2> =>
-    new Predicate2(
+    new Predicate2<T1, T2>(
       (t1: T1,
        t2: T2) =>
         !this.apply(t1, t2)
@@ -306,12 +307,12 @@ export class Predicate2<T1, T2> {
    */
   or = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> =>
     ObjectUtil.isNullOrUndefined(predicate)
-      ? new Predicate2(
+      ? new Predicate2<T1, T2>(
           (t1: T1,
            t2: T2) =>
             this.apply(t1, t2)
         )
-      : new Predicate2(
+      : new Predicate2<T1, T2>(
           (t1: T1,
            t2: T2) =>
             this.apply(t1, t2) ||
@@ -336,7 +337,7 @@ export class Predicate2<T1, T2> {
    */
   xor = (predicate: TPredicate2<T1, T2>): Predicate2<T1, T2> => {
     if (ObjectUtil.isNullOrUndefined(predicate)) {
-      return new Predicate2(
+      return new Predicate2<T1, T2>(
         (t1: T1,
          t2: T2) =>
           this.apply(t1, t2)

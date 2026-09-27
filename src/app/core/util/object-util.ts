@@ -1,14 +1,17 @@
 import { ArrayUtil } from '@app-core/util';
 import { Function0, isFFunction0, TFunction0 } from '@app-core/type/function';
 import { Optional } from '@app-core/type/functional';
-import { NullableOrUndefined, OrUndefined } from '@app-core/type';
-import { Predicate1 } from '@app-core/type/predicate';
+import { CopyPropertiesResult, NullableOrUndefined, OrUndefined } from '@app-core/type';
+import { DynamicObjectPredicate, FObjectPredicate, ObjectPredicate, Predicate1 } from '@app-core/type/predicate';
 import _ from 'lodash';
 
 /**
  * Helper functions to manage common operations related with class instances.
  */
 export class ObjectUtil {
+
+  static PATH_SEPARATOR: string = '.';
+
 
   constructor() {
     throw new SyntaxError('ObjectUtil is an utility class');
@@ -251,101 +254,250 @@ export class ObjectUtil {
    *    Using provided `sourceObject` returns a new object containing the property-value pairs that match with given
    * array of properties `propertiesToCopy`.
    *
-   * <pre>
-   *   class User {
-   *     public id: number;
-   *     public name: string;
-   *     public age: number;
+   * @apiNote
+   *    If the requested property contains methods, they will be returned. However, when the request corresponds directly
+   * to a method's path, that method will not be included in the result. This is not a deep clone of the `sourceObject`.
    *
-   *     constructor(id: number, name: string, age: number) {
+   * <pre>
+   *  class User {
+   *     public id: number;
+   *     private _name: string;
+   *
+   *     constructor(id: number, name: string) {
    *       this.id = id;
-   *       this.name = name;
-   *       this.age = age;
+   *       this._name = name;
    *     }
+   *
+   *     get name(): string {
+   *       return this._name;
+   *     }
+   *     set name(name: string) {
+   *       this._name = name;
+   *     }
+   *
+   *     compareTo = (other?: User | null): number =>
+   *       ObjectUtil.isNullOrUndefined(other)
+   *         ? 1
+   *         : this.id - other.id;
    *   }
    *
-   *   // Will return { id: 10, name: 'user1' }
-   *   ObjectUtil.copyProperties(
-   *      new User(10, 'user1', 31),
-   *      ['id', 'name']
-   *   );
+   *   const userRaw = {
+   *     profile: {
+   *         name: 'John'
+   *     }
+   *   };
+   *   const user = new User(10, 'user1');
+   *
+   *   copyProperties(userRaw, 'profile.name');   // { profile: { name: 'John' } }
+   *   copyProperties(userRaw, 'profile.id');     // undefined
+   *   copyProperties(userRaw, 'toString');       // undefined
+   *
+   *   copyProperties(user, 'profile.name');      // undefined
+   *   copyProperties(user, 'id');                // { id: 10 }
+   *   copyProperties(user, 'name');              // {}
+   *   copyProperties(user, '_name');             // { _name: 'user1' }
+   *   copyProperties(user, 'compareTo');         // undefined
    * </pre>
    *
    * @param sourceObject
    *    Instance with the property values to copy
    * @param propertiesToCopy
-   *    Array of the property to copy in the returned object
+   *    Array of the properties to copy of the returned object
    *
    * @return new object containing the property-value pairs that match with `propertiesToCopy`, included in `sourceObject`,
    *         `undefined` if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements
    */
-  static copyProperties = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
-                                                 propertiesToCopy: NullableOrUndefined<K[]>): OrUndefined<Pick<T, K>> => {
+  static copyProperties = <T extends object, const P extends readonly string[]>(sourceObject: NullableOrUndefined<T>,
+                                                                                propertiesToCopy: NullableOrUndefined<P>): OrUndefined<CopyPropertiesResult<P>> => {
     if (this.isNullOrUndefined(sourceObject) ||
-        ArrayUtil.isEmpty(propertiesToCopy)) {
+       (this.isNullOrUndefined(propertiesToCopy) || 0 == propertiesToCopy.length)) {
       return undefined;
     }
-    const result = {} as Pick<T, K>;
-    for (let property of propertiesToCopy!) {
-      if (this.nonNullOrUndefined(property)) {
-        result[property] = _.cloneDeep(
-          sourceObject![property]
+    const result: Record<string, unknown> = {};
+    type Found = {
+      key: PropertyKey;
+      value: unknown;
+    };
+
+    /**
+     * Searches for a data property on the in `object` and in its prototype string. Priority:
+     *
+     * <ol>
+     *   <li>Object/child before prototype/parent</li>
+     *   <li>Property string before Symbol(description)</li>
+     * </ol>
+     *
+     * Getters/setters and functions are not valid values for a directly requested path.
+     *
+     * @param object
+     *    Source object
+     * @param name
+     *    Name of the property to search inside `object`
+     *
+     * @return {@link Found} if `name` is a data property inside `object`,
+     *         `undefined` otherwise.
+     */
+    function findProperty(object: object,
+                          name: string): Found | undefined {
+      for (let current: object | null = object; current !== null; current = Object.getPrototypeOf(current)) {
+        // A string property takes precedence over a Symbol with the same description
+        const descriptor = Object.getOwnPropertyDescriptor(
+          current,
+          name
         );
+        if (descriptor) {
+          // Getter/setter: they are neither invoked nor looked up in the parent class
+          if (!("value" in descriptor)) {
+            return undefined;
+          }
+          return {
+            key: name,
+            value: descriptor.value
+          };
+        }
+        // Searches Symbols when there is no string property
+        for (const symbol of Object.getOwnPropertySymbols(current)) {
+          if (symbol.description !== name) {
+            continue;
+          }
+          const symbolDescriptor = Object.getOwnPropertyDescriptor(
+            current,
+            symbol
+          );
+          if (!symbolDescriptor) {
+            continue;
+          }
+          // Getter/setter.
+          if (!("value" in symbolDescriptor)) {
+            return undefined;
+          }
+          return {
+            key: symbol,
+            value: symbolDescriptor.value
+          };
+        }
+      }
+      return undefined;
+    }
+
+    /**
+     * Resolve all the path values before updating `resolved`. This ensures that an incomplete route such as:
+     *
+     * <pre>
+     *  "address.notFound"
+     * </pre>
+     *
+     * does not create:
+     *
+     * <pre>
+     *  { address: {} }
+     * </pre>
+     */
+    const resolved: {
+      parts: string[];
+      keys: PropertyKey[];
+      value: unknown;
+    }[] = [];
+
+    for (const path of propertiesToCopy) {
+      if (!path) {
+        continue;
+      }
+      const parts = path.split(ObjectUtil.PATH_SEPARATOR);
+
+      // Avoid undesired paths
+      if (
+        parts.some(
+          part =>
+            !part ||
+            part === "__proto__" ||
+            part === "prototype" ||
+            part === "constructor"
+        )
+      ) {
+        continue;
+      }
+      let value: unknown = sourceObject;
+      const keys: PropertyKey[] = [];
+      let valid = true;
+
+      for (const part of parts) {
+        if (value === null ||
+            (typeof value !== "object" && typeof value !== "function")) {
+          valid = false;
+          break;
+        }
+        const found = findProperty(
+          value,
+          part
+        );
+        if (!found) {
+          valid = false;
+          break;
+        }
+        keys.push(found.key);
+        value = found.value;
+      }
+      /**
+       *    If the requested property contains methods, they will be returned. However, when the request corresponds directly
+       * to a method's path, that method will not be included in the result.
+       */
+      if (valid && typeof value !== "function") {
+        resolved.push({
+          parts,
+          keys,
+          value
+        });
       }
     }
-    return result;
-  }
-
-
-  /**
-   *    Using provided `sourceObject` returns an {@link Optional} containing a new object with the property-value pairs
-   * that match with given array of properties `propertiesToCopy`.
-   *
-   * <pre>
-   *   class User {
-   *     public id: number;
-   *     public name: string;
-   *     public age: number;
-   *
-   *     constructor(id: number, name: string, age: number) {
-   *       this.id = id;
-   *       this.name = name;
-   *       this.age = age;
-   *     }
-   *   }
-   *
-   *   // Will return Optional({ id: 10, name: 'user1' })
-   *   ObjectUtil.copyPropertiesOptional(
-   *      new User(10, 'user1', 31),
-   *      ['id', 'name']
-   *   );
-   * </pre>
-   *
-   * @param sourceObject
-   *    Instance with the property values to copy
-   * @param propertiesToCopy
-   *    Array of the property to copy in the returned object
-   *
-   * @return {@link Optional} new object containing the property-value pairs that match with `propertiesToCopy`, included in `sourceObject`,
-   *         {@link Optional#empty} if `sourceObject` is `null` or `undefined` and/or `propertiesToCopy` has no elements
-   */
-  static copyPropertiesOptional = <T, K extends keyof T>(sourceObject: NullableOrUndefined<T>,
-                                                         propertiesToCopy: NullableOrUndefined<K[]>): Optional<Pick<T, K>> => {
-    if (this.isNullOrUndefined(sourceObject) ||
-        ArrayUtil.isEmpty(propertiesToCopy)) {
-      return Optional.empty<Pick<T, K>>();
-    }
-    const result = {} as Pick<T, K>;
-    for (let property of propertiesToCopy!) {
-      if (this.nonNullOrUndefined(property)) {
-        result[property] = _.cloneDeep(
-          sourceObject![property]
-        );
-      }
-    }
-    return Optional.of<Pick<T, K>>(
-      result
+    /**
+     * The most specific paths win. For example:
+     *
+     * <pre>
+     *   ["address", "address.city"]
+     * </pre>
+     *
+     * will create:
+     *
+     * <pre>
+     *   { address: { city: ... } }
+     * </pre>
+     */
+    const selected = resolved.filter(
+      (candidate, index, all) =>
+        !all.some(
+          (other, otherIndex) =>
+            index !== otherIndex &&
+            other.parts.length > candidate.parts.length &&
+            candidate.parts.every(
+              (part, i) => part === other.parts[i]
+            )
+        )
     );
+    // The found objects will be copied by reference. Deep cloning is not performed.
+    for (const { keys, value } of selected) {
+      let target: Record<PropertyKey, unknown> = result;
+
+      for (let i = 0; i < keys.length - 1; i++) {
+        const key = keys[i];
+        const existing = target[key];
+
+        if (typeof existing === "object" && existing !== null) {
+          target = existing as Record<PropertyKey, unknown>;
+        } else {
+          const nested: Record<PropertyKey, unknown> = {};
+          target[key] = nested;
+          target = nested;
+        }
+      }
+      Object.defineProperty(target, keys[keys.length - 1], {
+        value,
+        enumerable: true,
+        writable: true,
+        configurable: true
+      });
+    }
+    return result as CopyPropertiesResult<P>;
   }
 
 
@@ -417,6 +569,223 @@ export class ObjectUtil {
   }
 
 
+  static filterObject<T extends object>(sourceObject: NullableOrUndefined<T>,
+                                        filterPredicate: NullableOrUndefined<ObjectPredicate<T>>): Partial<T>;
+
+  static filterObject<T extends object>(sourceObject: NullableOrUndefined<T>,
+                                        filterPredicate: NullableOrUndefined<DynamicObjectPredicate<T>>): Partial<T>;
+
+  static filterObject<T extends object>(sourceObject: NullableOrUndefined<T>,
+                                        filterPredicate: NullableOrUndefined<FObjectPredicate<T>>): Partial<T>;
+
+  /**
+   *    Creates a new `object` containing only the properties for which the `filterPredicate` returns `true`. By default,
+   * only own enumerable properties are considered.
+   *
+   * @apiNote
+   *    `String` and `symbol` keys are supported. The original object is never modified. The returned object preserves
+   * object references in values.
+   *
+   * <pre>
+   *   class User {
+   *     public id: number;
+   *     private _name: string;
+   *
+   *     constructor(id: number, name: string) {
+   *       this.id = id;
+   *       this._name = name;
+   *     }
+   *
+   *     get name(): string {
+   *       return this._name;
+   *     }
+   *     set name(name: string) {
+   *       this._name = name;
+   *     }
+   *
+   *     compareTo = (other?: User | null): number =>
+   *       ObjectUtil.isNullOrUndefined(other)
+   *         ? 1
+   *         : this.id - other.id;
+   *   }
+   *
+   *   interface Role {
+   *     id: number;
+   *     name: string;
+   *   }
+   *
+   *   const userRaw = {
+   *     name: 'CJ',
+   *     age: 30,
+   *     minimumScore: 10,
+   *     city: 'Las Palmas',
+   *     address: {
+   *        street: 'León y Castillo 23'
+   *     }
+   *   };
+   *   const user = new User(1, 'user 1');
+   *   const role = { id: 10, name: 'role 10' } as Role;
+   *
+   *                                                                         Result:
+   *   ObjectUtil.filterObject(                                               { name: 'CJ'}
+   *     userRaw,
+   *     (key, _) => key === "address.notFound" || key === "name"
+   *   );
+   *   ObjectUtil.filterObject(                                               { age: 30, address { street: 'León y Castillo 23' } }
+   *     userRaw,
+   *     (key, value) =>
+   *       key === "address.street" ||
+   *       (typeof value === "number" &&
+   *        value > object.minimumScore)
+   *   );
+   *   ObjectUtil.filterObject(                                               { id: 10 }
+   *     role,
+   *     (key, value, object) =>
+   *       key === "id" ||
+   *       typeof value === "number"
+   *   );
+   *   ObjectUtil.filterObject(                                               { _id: 1 }
+   *     user,
+   *     (key, value) =>
+   *       key === "id" ||
+   *       key === "_id"
+   *   );
+   * </pre>
+   *
+   * @param sourceObject
+   *    Instance with the properties and values to filter. If it is `null` or `undefined` an empty object is returned
+   * @param filterPredicate
+   *    {@link ObjectPredicate}, {@link DynamicObjectPredicate} or {@link FObjectPredicate} with the conditions to apply
+   *    to the content of provided `sourceObject`. If it is `null` or `undefined` a cloned object is returned
+   *
+   * @return filtered `object` based on provided `sourceObject` and `filterPredicate`
+   */
+  static filterObject<T extends object>(sourceObject: NullableOrUndefined<T>,
+                                        filterPredicate: NullableOrUndefined<ObjectPredicate<T> | DynamicObjectPredicate<T> | FObjectPredicate<T>>): Partial<T> {
+    /**
+     *    Contains the data properties that match the predicate (they can come from `sourceObject` or
+     * from its prototype chain)
+     */
+    const result: Partial<T> = {};
+    if (this.nonNullOrUndefined(sourceObject)) {
+      if (this.isNullOrUndefined(filterPredicate)) {
+        // @ts-ignore
+        return this.copy(
+          sourceObject
+        );
+      }
+      /**
+       *    Prevents the same property key from being processed more than once. This preserves normal JavaScript
+       * shadowing semantics:
+       *
+       *    If `name` exists on sourceObject, a `name` property found later on its prototype is ignored
+       */
+      const processedKeys = new Set<PropertyKey>();
+
+      // Start with the object itself and then walk through its prototypes.
+      let current = sourceObject;
+
+      while (null != current) {
+
+        // Reflect.ownKeys() returns both string and symbol keys, including enumerable and non-enumerable properties
+        for (const key of Reflect.ownKeys(current)) {
+          /**
+           * If the key has already been found on a more-derived object,
+           * the current prototype property is shadowed.
+           */
+          if (processedKeys.has(key)) {
+            continue;
+          }
+          processedKeys.add(
+            key
+          );
+          // Get the descriptor from the object currently being inspected.
+          const descriptor = Object.getOwnPropertyDescriptor(
+            current,
+            key
+          );
+          if (!descriptor) {
+            continue;
+          }
+          /**
+           * An accessor is a property defined through a getter and/or setter.
+           *
+           * Example:
+           *
+           *   get name() {
+           *     return this._name;
+           *   }
+           *
+           * Accessors participate in filtering but are NEVER copied to result.
+           */
+          const isAccessor =
+            descriptor.get !== undefined ||
+            descriptor.set !== undefined;
+
+          /**
+           *    A data property has a `value` field in its descriptor. Do not use `descriptor.value !== undefined`,
+           * because `undefined` is a perfectly valid value for a data property.
+           */
+          const isDataProperty = "value" in descriptor;
+
+          /**
+           *    Ignore non-enumerable data properties. Accessors are intentionally allowed to continue through the filter
+           * even when they are non-enumerable.
+           */
+          if (!isAccessor && !descriptor.enumerable) {
+            continue;
+          }
+          /**
+           *    Get the value from sourceObject. This intentionally evaluates getters. The value is needed so that the
+           * predicate can decide whether the property matches.
+           *
+           *    Even if this is an accessor, the value obtained here will NOT be copied to result because of the
+           * `isDataProperty` check below.
+           */
+          const value = Reflect.get(
+            sourceObject,
+            key
+          );
+          let matches: boolean;
+
+          if (ObjectPredicate.isObjectPredicate<T>(filterPredicate)) {
+            matches = filterPredicate.apply(
+              key as keyof T,
+              value as T[keyof T],
+              sourceObject
+            );
+          } else {
+            matches = (filterPredicate as DynamicObjectPredicate<T>)(
+              key,
+              value as T[keyof T],
+              sourceObject
+            );
+          }
+          // The predicate determines whether the property matches.
+          if (!matches) {
+            continue;
+          }
+          /**
+           *    Only data properties are copied. This is deliberately independent of `current === sourceObject`, so
+           * inherited data properties are copied as well.
+           *
+           *    Accessors are evaluated above and therefore participate in the filtering process, but they stop here
+           * and are never copied.
+           */
+          if (isDataProperty) {
+            (result as Record<PropertyKey, T[keyof T]>)[key] = value;
+          }
+        }
+        // Continue with the next prototype in the inheritance chain.
+        current = Object.getPrototypeOf(
+          current
+        );
+      }
+    }
+    return result;
+  }
+
+
   /**
    *    Returns the given `valueToVerify` if it is neither `undefined` nor `null`,
    * `defaultValue` otherwise.
@@ -473,16 +842,24 @@ export class ObjectUtil {
    * Gets a value from an object `sourceObject` using a dot-separated property `path`.
    *
    * @apiNote
-   *    Own and inherited properties are supported. Function values are not returned and are never invoked.
+   *    Own and inherited properties are supported. Function values are not returned and are never invoked. Accessors
+   *    will be taken into account.
    *
    * <pre>
-   *   class User {
+   *  class User {
    *     public id: number;
-   *     public name: string;
+   *     private _name: string;
    *
    *     constructor(id: number, name: string) {
    *       this.id = id;
-   *       this.name = name;
+   *       this._name = name;
+   *     }
+   *
+   *     get name(): string {
+   *       return this._name;
+   *     }
+   *     set name(name: string) {
+   *       this._name = name;
    *     }
    *
    *     compareTo = (other?: User | null): number =>
@@ -505,6 +882,7 @@ export class ObjectUtil {
    *   getPropertyValue(user, 'profile.name');   // undefined
    *   getPropertyValue(user, 'id');             // 10
    *   getPropertyValue(user, 'name');           // 'user1'
+   *   getPropertyValue(user, '_name');          // 'user1'
    *   getPropertyValue(user, 'compareTo');      // undefined
    *   getPropertyValue(user, 'toString');       // undefined
    * </pre>
@@ -523,7 +901,7 @@ export class ObjectUtil {
     if (this.isNullOrUndefined(sourceObject) || this.isNullOrUndefined(path)) {
       return undefined;
     }
-    return path.split('.')
+    return path.split(ObjectUtil.PATH_SEPARATOR)
       .reduce<unknown>((current, key) => {
         // Stop if there is nothing left to traverse.
         // Functions are allowed here because they can have properties too.
@@ -609,16 +987,24 @@ export class ObjectUtil {
    *
    * @apiNote
    *    Both own and inherited properties are considered. No filtering is applied to the values found: functions and
-   * properties such as `constructor` and `toString` are considered valid paths. Functions are never invoked.
+   * properties such as `constructor` and `toString` are considered valid paths. Functions are never invoked. Accessors
+   * will be taken into account.
    *
    * <pre>
    *   class User {
    *     public id: number;
-   *     public name: string;
+   *     private _name: string;
    *
    *     constructor(id: number, name: string) {
    *       this.id = id;
-   *       this.name = name;
+   *       this._name = name;
+   *     }
+   *
+   *     get name(): string {
+   *       return this._name;
+   *     }
+   *     set name(name: string) {
+   *       this._name = name;
    *     }
    *
    *     compareTo = (other?: User | null): number =>
@@ -641,6 +1027,7 @@ export class ObjectUtil {
    *   hasPath(user, 'profile.name');   // false
    *   hasPath(user, 'id');             // true
    *   hasPath(user, 'name');           // true
+   *   hasPath(user, '_name');          // true
    *   hasPath(user, 'compareTo');      // true
    *   hasPath(user, 'toString');       // true (inherited)
    * </pre>
@@ -660,7 +1047,7 @@ export class ObjectUtil {
     }
     let current: unknown = sourceObject;
 
-    for (const key of path.split('.')) {
+    for (const key of path.split(ObjectUtil.PATH_SEPARATOR)) {
       // Stop if there is nothing left to traverse.
       if (null == current || (typeof current !== 'object' && typeof current !== 'function')) {
         return false;
@@ -710,11 +1097,11 @@ export class ObjectUtil {
    *    If `sourceObject` is not an {@link Object} then it will be returned.
    *
    * <pre>
-   *    sortObjectProperties(                                 Result:
-   *       12                                                  12
+   *    sortProperties(                                 Result:
+   *       12                                            12
    *    )
-   *    sortObjectProperties(                                 Result:
-   *       { b: 1, a: '2', h: { z: 11, a: 'ea' }}              { a: '2', b: 1, h: { a: 'ea', z: 11 }}
+   *    sortProperties(                                 Result:
+   *       { b: 1, a: '2', h: { z: 11, a: 'ea' }}        { a: '2', b: 1, h: { a: 'ea', z: 11 }}
    *    )
    * </pre>
    *
@@ -724,7 +1111,7 @@ export class ObjectUtil {
    * @return new object containing the same properties but sorted,
    *         `undefined` if `sourceObject` is `null` or `undefined`.
    */
-  static sortObjectProperties<T>(sourceObject: NullableOrUndefined<T>): OrUndefined<T> {
+  static sortProperties<T>(sourceObject: NullableOrUndefined<T>): OrUndefined<T> {
     if (this.isNullOrUndefined(sourceObject)) {
       return undefined;
     }
@@ -736,7 +1123,7 @@ export class ObjectUtil {
       .reduce(
         (accumulator, currentKey) => {
           // @ts-ignore
-          accumulator[currentKey] = ObjectUtil.sortObjectProperties(sourceObject![currentKey]);
+          accumulator[currentKey] = ObjectUtil.sortProperties(sourceObject![currentKey]);
           return accumulator;
         },
         {} as T

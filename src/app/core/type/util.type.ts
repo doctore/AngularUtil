@@ -1,4 +1,16 @@
 /**
+ * Type to cover all the options included in the returned type of {@link ObjectUtil#copyProperties}.
+ */
+export type CopyPropertiesResult<P extends readonly string[]> =
+  // Creates a new property for every element of P
+  {
+    [K in P[number]]: unknown;
+  }
+  // Allow to access to the result using Symbol keys
+  & Record<symbol, unknown>;
+
+
+/**
  *    Equivalent type of enum in TypeScript. This is necessary because, although it is an option in the language,
  * internally it is not a real data type.
  */
